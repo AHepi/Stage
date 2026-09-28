@@ -189,6 +189,10 @@ def main(argv=None):
     if first_word and first_word not in table.commands and first_word != "help" and first_word in PLANNED_COMMANDS:
         module = PLANNED_COMMANDS[first_word]
         reason = broken.get(f"stage_tools.{module}")
+        if not reason and (TOOLS_FOLDER / "stage_tools" / f"{module}.py").is_file():
+            print(f"The command {first_word} is planned but not built yet (stage_tools/{module}.py does not provide "
+                  "it). Use what the house rules give for it when you cannot run code.")
+            return 2
         detail = f" (loading it failed: {reason})" if reason else f" (stage_tools/{module}.py is missing)"
         print(f"The command {first_word} is not available in this copy of the tools{detail}. "
               "Use a complete copy of the skill folder.")
