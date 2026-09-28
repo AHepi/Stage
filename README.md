@@ -14,5 +14,7 @@ That is one shot from a plan Stage made for The Catch, a screenplay of 30 scenes
 - **08 Skill for Claude apps.zip**: the kit for the Claude website and Claude desktop.
 - **09 Example - The Catch, scene 10**: one finished scene to look at first.
 - **My stories** and **My breakdowns**: your stories, and the projects made from them.
+- **Stage - project story**: how Stage was built, where it stands, and what comes next.
+- **Project notes**: the blueprint, the first test report and the fix list, numbered to match the project story's log.
 
 Before you upload a story that is not published, turn off model training in your app; 01 Read me first says how.
