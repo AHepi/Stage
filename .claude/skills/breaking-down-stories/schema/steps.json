@@ -1,0 +1,3268 @@
+{
+ "about": "The steps of Stage as data (blueprint 3, 6.1-6.2, 7.2, 7.4, 11.6). Read by stage.py next, make_handout.py and check_records.py. Written by WP1 on 2026-09-28.",
+ "schema_version": "1.0",
+ "unit_id_format": {
+  "syntax": "U-<step two digits>-<scope>[-<batch or part>]",
+  "examples": [
+   "U-07-SC10",
+   "U-08-SC10-B2",
+   "U-07-SC13-P1"
+  ],
+  "range_scope": "a scope of several scenes is written first..last (U-05-SC01..SC05)"
+ },
+ "unit_order": {
+  "steps_0_to_6": "Steps 0 to 6 run in order, once each; checkpoint B sits between steps 5 and 6.",
+  "steps_7_and_8": {
+   "rule": "sequence by sequence",
+   "per_sequence": [
+    "U-07 units for every scene of the sequence, in screen order (a big scene as -P1, -P2, -LIST)",
+    "checkpoint C: blocks for the first sequence only, unless the user said 'stop after each group'; later sequences report and carry on",
+    "U-08 units for every scene of the sequence, in screen order, batches in ID order",
+    "after each scene's last batch: ID-07 and COVER-02 to COVER-04 in full, and TIME-03",
+    "then the next sequence starts"
+   ],
+   "previous_shot": "In a handout, the previous scene's last shot is a finished SHOT for scenes in an earlier sequence, and a list item for an earlier scene of the same sequence.",
+   "quick_depth": "At quick depth step 8 does not run: each sequence is its U-07 units and checkpoint C.",
+   "chat": "A chat holds one sequence; at its end the resume line names the check chat (7.4).",
+   "example_the_catch": {
+    "sequences": {
+     "SQ01": "SC01..SC05",
+     "SQ02": "SC06",
+     "SQ03": "SC07..SC10",
+     "SQ04": "SC11..SC13",
+     "SQ05": "SC14..SC17",
+     "SQ06": "SC18..SC22",
+     "SQ07": "SC23..SC25",
+     "SQ08": "SC26..SC27",
+     "SQ09": "SC28..SC30"
+    },
+    "sequences_source": "K13 (B3's nine stretches, the default)",
+    "order": [
+     "U-07-SC01",
+     "U-07-SC02",
+     "U-07-SC03",
+     "U-07-SC04",
+     "U-07-SC05",
+     "checkpoint C (blocks)",
+     "U-08-SC01-B1",
+     "U-08-SC01-B2",
+     "(every other batch of SC01 to SC05, in order)",
+     "U-08-SC05-B<last>",
+     "U-07-SC06",
+     "checkpoint C (reports)",
+     "U-08-SC06-B1",
+     "(every other batch of SC06)",
+     "U-07-SC07",
+     "U-07-SC08",
+     "U-07-SC09",
+     "U-07-SC10",
+     "checkpoint C (reports)",
+     "U-08-SC07-B1",
+     "(every other batch of SC07 to SC10)",
+     "U-07-SC11",
+     "U-07-SC12-P1",
+     "U-07-SC12-P2",
+     "U-07-SC12-LIST",
+     "U-07-SC13-P1",
+     "U-07-SC13-P2",
+     "U-07-SC13-LIST",
+     "checkpoint C (reports)",
+     "U-08-SC11-B1",
+     "(every other batch of SC11 to SC13)",
+     "(the same pattern for SQ05 to SQ09)"
+    ],
+    "note": "SC12 (84 non-blank lines) and SC13 (98) are split into parts and a list unit; SC10 (55 non-blank lines, 11 beats) is one unit."
+   }
+  },
+  "steps_9_to_11": "After the last sequence in scope, in order.",
+  "add_ons": "On request, after step 11: A (12) storyboards, B (13) grey previews (Claude Code only), C (14) generation packs, D (15) edit and finishing. Nothing else depends on them.",
+  "resume": "Step 16 is not a stage of the work: it runs whenever the user resumes or something goes wrong, and hands back to the next unit."
+ },
+ "card_part_rules": {
+  "naming": "A card part is written {card, part}. 'whole' loads the whole file. Cards R05 and R07 are the reference files 05 and 07.",
+  "headings": "Every part except 'whole' is a ## heading in its card with exactly the heading text given here; the part runs to the next ## heading. Card writers (WP11) write each listed heading; a department card may also have ## headings for its nine anatomy parts (6.4), read when the card is loaded whole.",
+  "situation_cards": "Situation cards (15-20) always have the ## headings 'Questions in order' and 'Traps'; steps 7 and 8 load only those two.",
+  "cap": "At most card_tokens_per_unit_max card tokens per unit (limits.json).",
+  "merge_order": [
+   "the depth's base list (quick, or standard for step 8)",
+   "situation parts for the scene's tags, in tag order",
+   "standard_adds",
+   "detailed_adds"
+  ],
+  "drop_rule": "make_handout.py drops the lowest-listed parts first when the cap is reached.",
+  "depth_lists": "quick, standard and detailed lists are cumulative: standard = quick + standard_adds; detailed = standard + detailed_adds. all_depths applies at every depth; when_* lists apply when their condition holds.",
+  "target_words": "target_words is a guide for card writers so a unit's parts fit the cap; about 1.4 tokens per word (limits.json)."
+ },
+ "cards": {
+  "01": {
+   "file": "cards/01 Reading the whole story.md",
+   "type": "department",
+   "parts": {
+    "length": {
+     "heading": "Length",
+     "target_words": 400,
+     "covers": "estimating length, splitting scenes or chapters (step 1)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "02": {
+   "file": "cards/02 Adapting prose.md",
+   "type": "department",
+   "parts": {
+    "intake": {
+     "heading": "Intake",
+     "target_words": 500,
+     "covers": "formats, thin sources, stage plays, comic and game scripts, other languages (D14; step 1)"
+    },
+    "externalising": {
+     "heading": "Externalising inner life",
+     "target_words": 400,
+     "covers": "A3 §7.2's externalisation ladder for tag prose_interior at step 7"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "03": {
+   "file": "cards/03 Scenes, values and beats.md",
+   "type": "department",
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "04": {
+   "file": "cards/04 Dialogue on screen.md",
+   "type": "department",
+   "parts": {
+    "landing_face": {
+     "heading": "Landing face",
+     "target_words": 350,
+     "covers": "who we watch when a line lands; tie-breaks (A1 R19, R2)"
+    },
+    "flaws": {
+     "heading": "Flaws",
+     "target_words": 350,
+     "covers": "on the nose, melodrama, forced exposition, monologue, interrupted, can play silent: flagged and staged (A1 R35-R36, R22, R31, R30a, R18)"
+    },
+    "pauses": {
+     "heading": "Pauses",
+     "target_words": 300,
+     "covers": "pause ranking and tiers (constant pause_tiers), what the picture does in a pause"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "05": {
+   "file": "cards/05 Characters.md",
+   "type": "department",
+   "parts": {
+    "state_lines": {
+     "heading": "State lines",
+     "target_words": 400,
+     "covers": "state lines, sides in own terms, sides by era (step 5)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "06": {
+   "file": "cards/06 Voices and performance.md",
+   "type": "department",
+   "parts": {
+    "voices": {
+     "heading": "Voices",
+     "target_words": 600,
+     "covers": "voice design, pace, paths, accents (step 4)"
+    },
+    "display_and_stillness": {
+     "heading": "Display and stillness",
+     "target_words": 450,
+     "covers": "display levels 1-3 and the closer-is-lower rule, stillness written out, eyeline dwell, looks saved for later beats (D15)"
+    },
+    "lip_sync": {
+     "heading": "Lip sync and voice takes",
+     "target_words": 400,
+     "covers": "voices first, consent, lip sync routes, voice takes (D3; add-on C)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "07": {
+   "file": "cards/07 Places, things and motifs.md",
+   "type": "department",
+   "parts": {
+    "emphasis": {
+     "heading": "Emphasis",
+     "target_words": 350,
+     "covers": "B4's emphasis ladder and budgets on a scene's beats (step 7 detailed)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "08": {
+   "file": "cards/08 World, style and genre.md",
+   "type": "department",
+   "parts": {
+    "genre_and_tone": {
+     "heading": "Genre and tone",
+     "target_words": 600,
+     "covers": "D10 tone values, home tone, undercurrents and shifts, tone_defaults.json (step 2)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "09": {
+   "file": "cards/09 Film rules and restraint.md",
+   "type": "department",
+   "parts": {
+    "film_pass": {
+     "heading": "Film pass",
+     "target_words": 500,
+     "covers": "the film-pass audits and questions (step 9)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "10": {
+   "file": "cards/10 Camera.md",
+   "type": "department",
+   "parts": {
+    "camera_system": {
+     "heading": "Camera system",
+     "target_words": 600,
+     "covers": "B1 §9 camera system template, character camera rules, lens family (step 6)"
+    },
+    "slots_and_moves": {
+     "heading": "Slots and moves",
+     "target_words": 800,
+     "covers": "the six camera slots with reasons, size ladder, height, lens, one move and its cause (step 8)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "11": {
+   "file": "cards/11 Light and colour.md",
+   "type": "department",
+   "parts": {
+    "lighting_plan": {
+     "heading": "Lighting plan",
+     "target_words": 600,
+     "covers": "LOOK records: main light placed in the room, contrast, what stays dark (step 6)"
+    },
+    "colour_script": {
+     "heading": "Colour script",
+     "target_words": 450,
+     "covers": "VISUAL rows, peaks first, the monotony test (step 6)"
+    },
+    "per_scene_light": {
+     "heading": "Per-scene light",
+     "target_words": 300,
+     "covers": "light held as the look unless a story source changes it (B2 R10; step 7 detailed)"
+    },
+    "per_shot_light": {
+     "heading": "Per-shot light",
+     "target_words": 300,
+     "covers": "shot light, light cues, dark skin in low light (B2 R24; step 8 detailed)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "12": {
+   "file": "cards/12 Staging and composition.md",
+   "type": "department",
+   "parts": {
+    "set_plans": {
+     "heading": "Set plans",
+     "target_words": 500,
+     "covers": "B3 §6 set-plan template, marks, orientation (step 4)"
+    },
+    "visual_structure": {
+     "heading": "Visual structure",
+     "target_words": 400,
+     "covers": "B3 §2.5-2.7 visual structure and counterpoint (step 6)"
+    },
+    "stations_and_configuration": {
+     "heading": "Stations and configuration",
+     "target_words": 450,
+     "covers": "stations, distances, moves with a named want, configuration change on turns, engaged pair and silent third (step 7)"
+    },
+    "frame_rules": {
+     "heading": "Frame rules",
+     "target_words": 450,
+     "covers": "frame placement, glass physics summary, the line (step 8)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "13": {
+   "file": "cards/13 Cutting, rhythm and sound.md",
+   "type": "department",
+   "parts": {
+    "sound_plan": {
+     "heading": "Sound plan",
+     "target_words": 500,
+     "covers": "music policy, device budget, planned ruptures (step 6)"
+    },
+    "scene_rhythm": {
+     "heading": "Scene rhythm",
+     "target_words": 450,
+     "covers": "rhythm shape, target average shot length, the one rupture (step 7)"
+    },
+    "cut_points_and_sound": {
+     "heading": "Cut points and sound",
+     "target_words": 500,
+     "covers": "cut in and cut out reasons, split edits, room sound, silence grades (step 8)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "14": {
+   "file": "cards/14 Shot design.md",
+   "type": "department",
+   "parts": {
+    "shot_list": {
+     "heading": "The one-line shot list",
+     "target_words": 700,
+     "covers": "turn shots first, must-keep shots, coverage from the dial, list items (step 7)"
+    },
+    "full_shots": {
+     "heading": "Full shots",
+     "target_words": 900,
+     "covers": "purpose, because and why in pairs, the fields that need a why, film-level saved choices, behaviour not emotion, reading floors (step 8)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": [
+    "The job",
+    "Questions in order",
+    "Translation menus with pitfalls",
+    "Budgets and saved choices",
+    "The baseline is a strong answer",
+    "Cliché traps",
+    "Reasons that fail and reasons that pass",
+    "Two worked examples",
+    "Self-check"
+   ]
+  },
+  "15": {
+   "file": "cards/15 Action scenes.md",
+   "type": "situation",
+   "tags": [
+    "action"
+   ],
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    },
+    "questions": {
+     "heading": "Questions in order",
+     "target_words": 300,
+     "covers": "the situation's questions in order"
+    },
+    "traps": {
+     "heading": "Traps",
+     "target_words": 200,
+     "covers": "the situation's traps with tests and fixes"
+    }
+   },
+   "anatomy": [
+    "Situation",
+    "Questions in order",
+    "Rules",
+    "Traps",
+    "Words for AI models",
+    "Worked example"
+   ]
+  },
+  "16": {
+   "file": "cards/16 Glass, mirrors and sides.md",
+   "type": "situation",
+   "tags": [
+    "glass_and_reflection",
+    "handedness"
+   ],
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    },
+    "questions": {
+     "heading": "Questions in order",
+     "target_words": 300,
+     "covers": "the situation's questions in order"
+    },
+    "traps": {
+     "heading": "Traps",
+     "target_words": 200,
+     "covers": "the situation's traps with tests and fixes"
+    }
+   },
+   "anatomy": [
+    "Situation",
+    "Questions in order",
+    "Rules",
+    "Traps",
+    "Words for AI models",
+    "Worked example"
+   ]
+  },
+  "17": {
+   "file": "cards/17 Screens, text and in-story cameras.md",
+   "type": "situation",
+   "tags": [
+    "screens_and_text",
+    "in_story_footage"
+   ],
+   "parts": {
+    "text_orientation": {
+     "heading": "Text orientation",
+     "target_words": 300,
+     "covers": "text orientation rules in a mirror story (step 3)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    },
+    "questions": {
+     "heading": "Questions in order",
+     "target_words": 300,
+     "covers": "the situation's questions in order"
+    },
+    "traps": {
+     "heading": "Traps",
+     "target_words": 200,
+     "covers": "the situation's traps with tests and fixes"
+    }
+   },
+   "anatomy": [
+    "Situation",
+    "Questions in order",
+    "Rules",
+    "Traps",
+    "Words for AI models",
+    "Worked example"
+   ]
+  },
+  "18": {
+   "file": "cards/18 Suspense, reveals and the dark.md",
+   "type": "situation",
+   "tags": [
+    "suspense_and_reveal",
+    "darkness"
+   ],
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    },
+    "questions": {
+     "heading": "Questions in order",
+     "target_words": 300,
+     "covers": "the situation's questions in order"
+    },
+    "traps": {
+     "heading": "Traps",
+     "target_words": 200,
+     "covers": "the situation's traps with tests and fixes"
+    }
+   },
+   "anatomy": [
+    "Situation",
+    "Questions in order",
+    "Rules",
+    "Traps",
+    "Words for AI models",
+    "Worked example"
+   ]
+  },
+  "19": {
+   "file": "cards/19 Inner life, montage and time.md",
+   "type": "situation",
+   "tags": [
+    "prose_interior",
+    "montage_and_time"
+   ],
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    },
+    "questions": {
+     "heading": "Questions in order",
+     "target_words": 300,
+     "covers": "the situation's questions in order"
+    },
+    "traps": {
+     "heading": "Traps",
+     "target_words": 200,
+     "covers": "the situation's traps with tests and fixes"
+    }
+   },
+   "anatomy": [
+    "Situation",
+    "Questions in order",
+    "Rules",
+    "Traps",
+    "Words for AI models",
+    "Worked example"
+   ]
+  },
+  "20": {
+   "file": "cards/20 Creatures, violence and filters.md",
+   "type": "situation",
+   "tags": [
+    "creature",
+    "violence"
+   ],
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    },
+    "questions": {
+     "heading": "Questions in order",
+     "target_words": 300,
+     "covers": "the situation's questions in order"
+    },
+    "traps": {
+     "heading": "Traps",
+     "target_words": 200,
+     "covers": "the situation's traps with tests and fixes"
+    }
+   },
+   "anatomy": [
+    "Situation",
+    "Questions in order",
+    "Rules",
+    "Traps",
+    "Words for AI models",
+    "Worked example"
+   ]
+  },
+  "21": {
+   "file": "cards/21 Making pictures and video with AI.md",
+   "type": "production",
+   "parts": {
+    "cost": {
+     "heading": "Cost",
+     "target_words": 400,
+     "covers": "what generation costs and how the estimate prices it (step 10)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": null
+  },
+  "22": {
+   "file": "cards/22 Previs.md",
+   "type": "production",
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": null
+  },
+  "23": {
+   "file": "cards/23 Finishing, captions and delivery.md",
+   "type": "production",
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": null
+  },
+  "24": {
+   "file": "cards/24 Rights, consent and disclosure.md",
+   "type": "production",
+   "parts": {
+    "rights_question": {
+     "heading": "The rights question",
+     "target_words": 300,
+     "covers": "the one rights question at step 0 and study_only"
+    },
+    "names_and_likeness": {
+     "heading": "Names and likeness",
+     "target_words": 400,
+     "covers": "name check for invented names, no real likeness (step 4)"
+    },
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": null
+  },
+  "R05": {
+   "file": "reference/05 Quality rubric.md",
+   "type": "reference",
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": null
+  },
+  "R07": {
+   "file": "reference/07 Report and message formats.md",
+   "type": "reference",
+   "parts": {
+    "whole": {
+     "heading": null,
+     "covers": "the whole file"
+    }
+   },
+   "anatomy": null
+  }
+ },
+ "chat_checks": {
+  "in_reply": {
+   "about": "The mechanical checks in words at the end of every chat reply (7.4 part 1): counting and matching only.",
+   "checks": [
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-12",
+    "ID-01",
+    "ID-03",
+    "ID-06",
+    "ID-07",
+    "ID-08",
+    "COVER-01",
+    "COVER-02",
+    "COVER-03",
+    "COVER-04"
+   ]
+  },
+  "check_chat": {
+   "about": "Judgement and arithmetic checks in a separate check chat at the end of each sequence (7.4 part 2).",
+   "checks": [
+    "CITE-01",
+    "CITE-02",
+    "TIME-01",
+    "TIME-04",
+    "TIME-05",
+    "TIME-08",
+    "SIDE-01",
+    "SIDE-02",
+    "SIDE-03",
+    "CRAFT-01",
+    "CRAFT-02",
+    "CRAFT-03",
+    "CRAFT-04",
+    "CRAFT-06",
+    "CRAFT-14",
+    "CRAFT-18",
+    "REASON-01",
+    "REASON-03",
+    "REASON-04",
+    "WORDS-01"
+   ],
+   "plus": "step 9's judgement questions and step 10's review questions when the user reaches them"
+  }
+ },
+ "steps": [
+  {
+   "step": 0,
+   "name": "Start",
+   "step_file": "steps/00 Start.md",
+   "user_number": 1,
+   "user_name": "starting",
+   "purpose": "Make the project, test the app, settle rights, show what the user will get.",
+   "runs": "once, first",
+   "reads": [],
+   "writes": [
+    "PROJECT",
+    "CHOICE",
+    "RIGHTS"
+   ],
+   "files_written": [
+    "00 Start here.md",
+    "01 Choices.md",
+    "Original/",
+    "22 Rights and credits.md (the story's own RIGHTS record)"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-00-SELFTEST",
+     "example": "U-00-SELFTEST",
+     "scope": "the project",
+     "batch_rule": "one reply: selftest_records SHOT records and the END line, deleted after scoring",
+     "writes": [
+      "SHOT (test records in SC99 or SC999, deleted)"
+     ],
+     "surfaces": "code",
+     "commands": [
+      "selftest --prepare",
+      "selftest --score"
+     ],
+     "sets": [
+      "PROJECT.batch_size",
+      "PROJECT.code_execution",
+      "PROJECT.surface"
+     ]
+    },
+    {
+     "id_pattern": "U-00-START",
+     "example": "U-00-START",
+     "scope": "the project",
+     "batch_rule": "one reply: one finished shot line from a strong turn, the welcome with one question (rights)",
+     "writes": [
+      "PROJECT",
+      "CHOICE-001",
+      "CHOICE-002",
+      "CHOICE-003"
+     ],
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "24",
+      "part": "rights_question"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13"
+   ],
+   "check_command": "check --step 0",
+   "checkpoint": {
+    "id": "rights",
+    "user_name": "the rights question",
+    "blocks": true,
+    "default": "It's mine",
+    "question": "Is this story yours, or do you have permission to adapt it?",
+    "if_not_mine": "rights: study_only; every export is marked 'Private study, not for publication'; generation packs refuse public-release batches"
+   },
+   "done_test": [
+    "PROJECT has rights, depth, training_off, surface, code_execution, batch_size",
+    "CHOICE-001 to CHOICE-003 answered or defaulted",
+    "check --step 0 exits 0"
+   ],
+   "redo": "'Start again' makes a new project; the old one is kept.",
+   "chat": {
+    "self_test": "the AI quotes the story's first and last line; batch_size 12; code_execution: no"
+   }
+  },
+  {
+   "step": 1,
+   "name": "Read the story",
+   "step_file": "steps/01 Read the story.md",
+   "user_number": 2,
+   "user_name": "reading the story",
+   "purpose": "Turn any story file into numbered text and fix the scene (or chapter) IDs everything hangs on.",
+   "runs": "once",
+   "reads": [
+    "PROJECT",
+    "CHOICE"
+   ],
+   "writes": [
+    "SCENE",
+    "CHAPTER",
+    "CHARACTER",
+    "CHOICE",
+    "PROJECT"
+   ],
+   "files_written": [
+    "03 Story - numbered.md",
+    "04 Scene list.md",
+    "05 Story plan.md (CHAPTER stubs)",
+    "07 Characters and voices.md (CHARACTER stubs)",
+    "14 Time and cost.md (the first estimate)",
+    "For machines - do not edit/speeches.json",
+    "00 Start here.md (PROJECT title, source kind and format, format, scene_id_digits)",
+    "01 Choices.md"
+   ],
+   "units": [
+    {
+     "id_pattern": "code: stage.py read",
+     "example": null,
+     "scope": "the whole story",
+     "batch_rule": "code reads any length",
+     "surfaces": "code",
+     "commands": [
+      "read"
+     ]
+    },
+    {
+     "id_pattern": "U-01-ODDLINES",
+     "example": "U-01-ODDLINES",
+     "scope": "the odd-lines report",
+     "batch_rule": "one reply",
+     "writes": [
+      "CHOICE",
+      "PROJECT.title (small choice)",
+      "SCENE.presentation"
+     ],
+     "surfaces": "code"
+    },
+    {
+     "id_pattern": "U-01-SCENES-P<n>",
+     "example": "U-01-SCENES-P1",
+     "scope": "part of the scene list",
+     "batch_rule": "one or two replies for 30 scenes; each scene's lines as a quote anchor pair",
+     "writes": [
+      "SCENE",
+      "CHARACTER (names)",
+      "CHOICE"
+     ],
+     "when": "screenplay",
+     "surfaces": "chat"
+    },
+    {
+     "id_pattern": "U-01-<chapter>",
+     "example": "U-01-CP01",
+     "scope": "one chapter",
+     "batch_rule": "one chapter per reply",
+     "writes": [
+      "CHAPTER"
+     ],
+     "when": "prose",
+     "surfaces": "chat"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "01",
+      "part": "length"
+     }
+    ],
+    "when_source_not_screenplay": [
+     {
+      "card": "02",
+      "part": "intake"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "ID-05",
+    "ID-09",
+    "CITE-02",
+    "CITE-07"
+   ],
+   "check_command": "check --step 1",
+   "checkpoint": {
+    "id": "A",
+    "user_name": "the scene list",
+    "blocks": true,
+    "default": "keep everything",
+    "question": "Length: as written it runs about N minutes. Keep everything, or give me a target?",
+    "prose": "only 'I found 14 chapters, 49,152 words; I'll plan the whole book next' (no question); the scene list comes at checkpoint P",
+    "sets": [
+     "PROJECT.runtime_target_s",
+     "PROJECT.scope",
+     "PROJECT.format (CHOICE-004, asked: no)"
+    ]
+   },
+   "done_test": [
+    "screenplay: scene count equals the story's headings; every cue resolved or listed as odd; every = and > line placed; checkpoint A choices answered or defaulted; scene IDs locked",
+    "prose: every chapter heading found; title and front matter placed; chapter IDs fixed; first and last lines quoted per chapter",
+    "check --step 1 exits 0"
+   ],
+   "redo": "Before the lock: stage.py read again. After the lock scenes are never renumbered: an inserted scene takes a letter (SC06A); a removed one becomes status: omitted.",
+   "chat": {
+    "note": "every value of kind lines is a quote anchor; stage.py adopt turns them into numbers later"
+   }
+  },
+  {
+   "step": 2,
+   "name": "Story plan",
+   "step_file": "steps/02 Story plan.md",
+   "user_number": 3,
+   "user_name": "planning the whole story",
+   "purpose": "The film-level plan: events, sequences, one climax and a crisis, peaks, plants and payoffs, who knows what, genre and tone; for prose the macro plans and the step outline.",
+   "runs": "once",
+   "reads": [
+    "SCENE",
+    "CHAPTER",
+    "CHOICE",
+    "PROJECT"
+   ],
+   "writes": [
+    "PLAN",
+    "SEQUENCE",
+    "PLANT",
+    "FACT",
+    "CHAPTER",
+    "STRAND",
+    "CARDINAL",
+    "RULE",
+    "SCENE",
+    "CHOICE"
+   ],
+   "files_written": [
+    "05 Story plan.md",
+    "04 Scene list.md (plan fields; prose: the step-outline SCENE records)",
+    "06 World and style.md (prose: RULE records of kind device)",
+    "01 Choices.md"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-02-<first scene>..<last scene>",
+     "example": "U-02-SC01..SC10",
+     "scope": "event_unit_scenes scenes",
+     "batch_rule": "one unit per event_unit_scenes scenes; 3 units for The Catch",
+     "writes": [
+      "SCENE (event, sequence, scene_intensity, whose_scene, story_day, rhythm_class, tone, tone_undercurrent, tags)"
+     ],
+     "when": "screenplay",
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-02-FILM",
+     "example": "U-02-FILM",
+     "scope": "the whole film, from the event lines only",
+     "batch_rule": "one unit",
+     "writes": [
+      "PLAN",
+      "SEQUENCE",
+      "PLANT",
+      "FACT",
+      "CHOICE (a second climax reading)"
+     ],
+     "when": "screenplay",
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-02-COMPRESS",
+     "example": "U-02-COMPRESS",
+     "scope": "the whole film",
+     "batch_rule": "one unit, only when a shorter target was set at checkpoint A",
+     "writes": [
+      "CARDINAL",
+      "SCENE (keep, merged_into)",
+      "PLAN (op, loses)"
+     ],
+     "when": "screenplay and compressing",
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-02-<chapter>",
+     "example": "U-02-CP01",
+     "scope": "one chapter",
+     "batch_rule": "one digest unit per chapter (14 for The Long Places)",
+     "writes": [
+      "CHAPTER (digest, candidates)"
+     ],
+     "when": "prose",
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-02-BOOK",
+     "example": "U-02-BOOK",
+     "scope": "the whole book, from the digests",
+     "batch_rule": "one unit",
+     "writes": [
+      "STRAND",
+      "CARDINAL",
+      "RULE (kind device)",
+      "PLAN (plan_option)"
+     ],
+     "when": "prose",
+     "surfaces": "all",
+     "commands": [
+      "estimate --version v0"
+     ]
+    },
+    {
+     "id_pattern": "U-02-OUTLINE-P<n>",
+     "example": "U-02-OUTLINE-P1",
+     "scope": "outline_chapters_per_unit chapters",
+     "batch_rule": "about 6 units for The Long Places, after checkpoint P",
+     "writes": [
+      "SCENE (step outline)",
+      "PLAN",
+      "SEQUENCE",
+      "PLANT",
+      "FACT"
+     ],
+     "when": "prose",
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "01",
+      "part": "whole"
+     },
+     {
+      "card": "08",
+      "part": "genre_and_tone"
+     }
+    ],
+    "when_source_not_screenplay": [
+     {
+      "card": "02",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "ID-06",
+    "CITE-02",
+    "COVER-05",
+    "COVER-06",
+    "PLAN-01",
+    "PLAN-02",
+    "PLAN-03",
+    "PLAN-04",
+    "PLAN-05",
+    "WORDS-02"
+   ],
+   "check_command": "check --step 2",
+   "checkpoint": {
+    "id": "P",
+    "user_name": "how the book becomes a film",
+    "blocks": true,
+    "when": "prose only",
+    "default": "plan A; start the scene work with chapter I as a trial",
+    "question": "How should the book become a film? Reply 'defaults', or answer by number.",
+    "sets": [
+     "PROJECT.scope",
+     "PROJECT.format",
+     "PROJECT.runtime_target_s"
+    ]
+   },
+   "done_test": [
+    "one climax; one scene intensity 10 (or one 10 range) on it; every scene in exactly one sequence; every plant has a payoff; every peak away from the climax has a reason; every story point's quote found once in its scene",
+    "prose: every cardinal function in a kept scene; step targets within step_outline_tolerance of the runtime target; checkpoint P answered; scope set; scene IDs issued and locked",
+    "check --step 2 exits 0"
+   ],
+   "redo": "'Redo the story plan' rewrites unlocked plan records and lists scenes that cite changed sequences or plants. 'Make it 20 minutes' re-runs compression; cut scenes become omitted, never renumbered.",
+   "chat": null
+  },
+  {
+   "step": 3,
+   "name": "World and style",
+   "step_file": "steps/03 World and style.md",
+   "user_number": 4,
+   "user_name": "world and style",
+   "purpose": "Decide once where and when the story happens, what the film looks like, and the story-world rules.",
+   "runs": "once",
+   "reads": [
+    "PLAN",
+    "SCENE",
+    "CHOICE",
+    "PROJECT"
+   ],
+   "writes": [
+    "STYLE",
+    "WORLD",
+    "RULE",
+    "CHOICE",
+    "SETVALUE",
+    "PROJECT"
+   ],
+   "files_written": [
+    "06 World and style.md",
+    "01 Choices.md",
+    "00 Start here.md (PROJECT prompt_words)"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-03-WORLD",
+     "example": "U-03-WORLD",
+     "scope": "the whole film",
+     "batch_rule": "one unit",
+     "writes": [
+      "STYLE",
+      "WORLD",
+      "RULE",
+      "CHOICE",
+      "SETVALUE",
+      "PROJECT.prompt_words"
+     ],
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "08",
+      "part": "whole"
+     },
+     {
+      "card": "17",
+      "part": "text_orientation"
+     }
+    ],
+    "when_mirror_rule": [
+     {
+      "card": "16",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "CITE-02",
+    "CITE-03",
+    "WORDS-02",
+    "WORDS-03"
+   ],
+   "check_command": "check --step 3",
+   "checkpoint": {
+    "id": null,
+    "note": "its CHOICE records go to checkpoint B"
+   },
+   "done_test": [
+    "STYLE and WORLD present; every story-world rule has start and end lines found in the story; every governed ID exists or is listed for step 4",
+    "check --step 3 exits 0"
+   ],
+   "redo": "'Make it animated': STYLE changes; shot designs stand; fixed descriptions, look blocks and compiled prompts are marked stale.",
+   "chat": null
+  },
+  {
+   "step": 4,
+   "name": "Characters, places and things",
+   "step_file": "steps/04 Characters, places and things.md",
+   "user_number": 5,
+   "user_name": "characters, places and things",
+   "purpose": "Design everything the film shows more than once: characters and voices, places with set plans, things, text in picture, motifs, in-story cameras.",
+   "runs": "once",
+   "reads": [
+    "PLAN",
+    "SCENE",
+    "STYLE",
+    "WORLD",
+    "RULE",
+    "CHARACTER"
+   ],
+   "writes": [
+    "CHARACTER",
+    "VOICE",
+    "LOCATION",
+    "PROP",
+    "TEXT",
+    "MOTIF",
+    "CAMERA",
+    "CHOICE"
+   ],
+   "files_written": [
+    "07 Characters and voices.md",
+    "08 Places and things.md",
+    "01 Choices.md"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-04-MOTIFS",
+     "example": "U-04-MOTIFS",
+     "scope": "the harvest and every motif",
+     "batch_rule": "one unit, first",
+     "writes": [
+      "MOTIF"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "07",
+       "part": "whole"
+      }
+     ]
+    },
+    {
+     "id_pattern": "U-04-<character>",
+     "example": "U-04-CH-IONA",
+     "scope": "one principal character and its voice",
+     "batch_rule": "one unit per principal",
+     "writes": [
+      "CHARACTER",
+      "VOICE",
+      "CHOICE"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "05",
+       "part": "whole"
+      },
+      {
+       "card": "06",
+       "part": "voices"
+      },
+      {
+       "card": "24",
+       "part": "names_and_likeness"
+      }
+     ]
+    },
+    {
+     "id_pattern": "U-04-MINOR-P<n>",
+     "example": "U-04-MINOR-P1",
+     "scope": "minor_characters_per_unit minor characters",
+     "batch_rule": "one unit per minor_characters_per_unit",
+     "writes": [
+      "CHARACTER",
+      "VOICE",
+      "CHOICE"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "05",
+       "part": "whole"
+      },
+      {
+       "card": "06",
+       "part": "voices"
+      },
+      {
+       "card": "24",
+       "part": "names_and_likeness"
+      }
+     ]
+    },
+    {
+     "id_pattern": "U-04-PLACES-P<n>",
+     "example": "U-04-PLACES-P1",
+     "scope": "places_per_unit places",
+     "batch_rule": "one unit per places_per_unit",
+     "writes": [
+      "LOCATION"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "12",
+       "part": "set_plans"
+      },
+      {
+       "card": "07",
+       "part": "whole"
+      }
+     ]
+    },
+    {
+     "id_pattern": "U-04-THINGS",
+     "example": "U-04-THINGS",
+     "scope": "every thing, every text in picture and every in-story camera",
+     "batch_rule": "one unit",
+     "writes": [
+      "PROP",
+      "TEXT",
+      "CAMERA"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "07",
+       "part": "whole"
+      },
+      {
+       "card": "17",
+       "part": "whole"
+      }
+     ]
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "05",
+      "part": "whole"
+     },
+     {
+      "card": "06",
+      "part": "voices"
+     },
+     {
+      "card": "07",
+      "part": "whole"
+     },
+     {
+      "card": "12",
+      "part": "set_plans"
+     },
+     {
+      "card": "17",
+      "part": "whole"
+     },
+     {
+      "card": "24",
+      "part": "names_and_likeness"
+     }
+    ],
+    "note": "each unit loads only the parts listed on it"
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "CITE-02",
+    "CITE-03",
+    "CITE-07",
+    "SIDE-01",
+    "SIDE-02",
+    "WORDS-02",
+    "WORDS-03",
+    "WORDS-05",
+    "CRAFT-20"
+   ],
+   "check_command": "check --step 4",
+   "checkpoint": {
+    "id": null,
+    "note": "design ideas and small choices go to checkpoint B"
+   },
+   "done_test": [
+    "every speaking cue has a CHARACTER; every principal has a VOICE, a lineup, face, movement, gesture, status_play and distance",
+    "no two principals share four or more lineup columns (CRAFT-20); fixed descriptions within fixed_description_words",
+    "every sided feature has an own side and origin; every readable text item has a TEXT record",
+    "check --step 4 exits 0"
+   ],
+   "redo": "'Saye is frightened, not cold': only CH-SAYE re-runs; the impact list names every shot citing CH-SAYE or CR-SAYE.",
+   "chat": null,
+   "inputs_note": "per element, a code-built list of every source line mentioning its aliases, capped at alias_mentions_cap (stage.py lines CH-X --more on request)"
+  },
+  {
+   "step": 5,
+   "name": "Continuity",
+   "step_file": "steps/05 Continuity.md",
+   "user_number": 6,
+   "user_name": "continuity",
+   "purpose": "Know the state of every changeable element in every scene, with the line that changed it, and every side.",
+   "runs": "once",
+   "reads": [
+    "SCENE",
+    "CHARACTER",
+    "PROP",
+    "LOCATION",
+    "RULE",
+    "STATE"
+   ],
+   "writes": [
+    "STATE",
+    "CHOICE"
+   ],
+   "files_written": [
+    "09 Continuity.md",
+    "01 Choices.md",
+    "02 Whole-film summary.md (after checkpoint B: code; the AI in chat)"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-05-<first scene>..<last scene>",
+     "example": "U-05-SC01..SC05",
+     "scope": "continuity_unit_scenes scenes with the states entering them",
+     "batch_rule": "one unit per continuity_unit_scenes scenes (6 units for The Catch)",
+     "writes": [
+      "STATE",
+      "CHOICE"
+     ],
+     "when": "screenplay",
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-05-<sequence>",
+     "example": "U-05-SQ01",
+     "scope": "one sequence",
+     "batch_rule": "one unit per sequence",
+     "writes": [
+      "STATE",
+      "CHOICE"
+     ],
+     "when": "prose",
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "05",
+      "part": "state_lines"
+     }
+    ],
+    "when_mirror_rule": [
+     {
+      "card": "16",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "CITE-01",
+    "CITE-02",
+    "CITE-03",
+    "STATE-02",
+    "STATE-03",
+    "SIDE-01",
+    "SIDE-02",
+    "WORDS-02"
+   ],
+   "check_command": "check --step 5",
+   "checkpoint": {
+    "id": "B",
+    "user_name": "the big choices",
+    "blocks": true,
+    "after": "step 5, before step 6",
+    "items_max_constant": "checkpoint_b_items_max",
+    "marked_constant": "checkpoint_b_marked_items",
+    "items_in_order": [
+     "climax reading",
+     "style and frame shape (with the home tone only when unclear)",
+     "place and time",
+     "music",
+     "story-world rules (grouped, with eras and exceptions)",
+     "what each principal's appearance must say",
+     "small choices I made (one accept item pointing to 01 Choices)"
+    ],
+    "default": "accept all",
+    "question": "The big choices. Reply 'defaults', or answer by number.",
+    "then": "answers become CHOICE answers, set their fields and lock the step 2-5 records they name; code writes 02 Whole-film summary.md (the AI writes it in chat)",
+    "chat_unit": "U-05-SUMMARY (chat only: the AI writes 02 Whole-film summary.md)"
+   },
+   "done_test": [
+    "every change cites a line found in the story; CONTINUOUS scenes inherit; every element named in a scene has a state for it",
+    "check --step 5 exits 0"
+   ],
+   "redo": "'Redo continuity from scene 12'.",
+   "chat": null
+  },
+  {
+   "step": 6,
+   "name": "Film rules",
+   "step_file": "steps/06 Film rules.md",
+   "user_number": 7,
+   "user_name": "the film's rules",
+   "purpose": "Write each department's system for the whole film before any scene, keyed to the one sequence list and the one climax.",
+   "runs": "once, after checkpoint B",
+   "reads": [
+    "PLAN",
+    "SEQUENCE",
+    "SCENE",
+    "STYLE",
+    "WORLD",
+    "RULE",
+    "CHARACTER",
+    "VOICE",
+    "LOCATION",
+    "PROP",
+    "MOTIF",
+    "STATE",
+    "CHOICE"
+   ],
+   "writes": [
+    "CAMSYS",
+    "CAMRULE",
+    "RESERVE",
+    "LENS",
+    "LOOK",
+    "VISUAL",
+    "SOUNDPLAN",
+    "LADDER",
+    "CHOICE"
+   ],
+   "files_written": [
+    "10 Film rules.md",
+    "01 Choices.md"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-06-CAMERA",
+     "example": "U-06-CAMERA",
+     "scope": "the whole film",
+     "batch_rule": "one unit",
+     "writes": [
+      "CAMSYS",
+      "CAMRULE",
+      "RESERVE",
+      "LENS"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "09",
+       "part": "whole"
+      },
+      {
+       "card": "10",
+       "part": "camera_system"
+      }
+     ],
+     "must_include": "the two film-level RESERVE records: extreme_close_up_film_max and push_in_scene_share_max"
+    },
+    {
+     "id_pattern": "U-06-LOOKS",
+     "example": "U-06-LOOKS",
+     "scope": "every place and time in use",
+     "batch_rule": "one unit",
+     "writes": [
+      "LOOK"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "11",
+       "part": "lighting_plan"
+      }
+     ]
+    },
+    {
+     "id_pattern": "U-06-PLANS",
+     "example": "U-06-PLANS",
+     "scope": "every sequence, the sound plan and the ladder",
+     "batch_rule": "one unit",
+     "writes": [
+      "VISUAL",
+      "SOUNDPLAN",
+      "LADDER",
+      "CHOICE (voice_policy)"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "11",
+       "part": "colour_script"
+      },
+      {
+       "card": "12",
+       "part": "visual_structure"
+      },
+      {
+       "card": "13",
+       "part": "sound_plan"
+      },
+      {
+       "card": "09",
+       "part": "whole"
+      }
+     ]
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "09",
+      "part": "whole"
+     },
+     {
+      "card": "10",
+      "part": "camera_system"
+     },
+     {
+      "card": "11",
+      "part": "lighting_plan"
+     },
+     {
+      "card": "11",
+      "part": "colour_script"
+     },
+     {
+      "card": "12",
+      "part": "visual_structure"
+     },
+     {
+      "card": "13",
+      "part": "sound_plan"
+     }
+    ],
+    "note": "each unit loads only the parts listed on it"
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "CITE-02",
+    "CITE-03",
+    "WORDS-02",
+    "WORDS-03"
+   ],
+   "check_command": "check --step 6",
+   "checkpoint": {
+    "id": null,
+    "note": "film rules are locked on writing; the first checkpoint C message states them in five plain lines"
+   },
+   "done_test": [
+    "every principal has a CAMRULE; every saved and banned choice is listed, including the two film-level reserves; every lens exception names where it applies",
+    "every location in use has at least one LOOK; every sequence has a VISUAL; the ladder names every scene with a main turn; every story point's quote found once in its scene",
+    "check --step 6 exits 0"
+   ],
+   "redo": "'Redo the colour script': VISUAL records re-run; scenes and shots citing them go stale.",
+   "chat": null
+  },
+  {
+   "step": 7,
+   "name": "Scene design and shot list",
+   "step_file": "steps/07 Scene design and shot list.md",
+   "user_number": 8,
+   "user_name": "designing the scenes and listing their shots",
+   "purpose": "Per scene: what happens, who wants what, where it turns, how bodies move, each department's one idea, the turn pictures, the dial, and a one-line shot list that fixes the shot IDs.",
+   "runs": "sequence by sequence, with step 8 (see unit_order)",
+   "reads": [
+    "SCENE",
+    "SEQUENCE",
+    "PLAN",
+    "CAMSYS",
+    "CAMRULE",
+    "RESERVE",
+    "LENS",
+    "VISUAL",
+    "LOOK",
+    "SOUNDPLAN",
+    "LADDER",
+    "CHARACTER",
+    "VOICE",
+    "STATE",
+    "FACT",
+    "PLANT",
+    "MOTIF",
+    "LOCATION",
+    "PROP",
+    "TEXT",
+    "SPEECH",
+    "SHOT or SHOTLIST (the previous scene's last shot)"
+   ],
+   "writes": [
+    "SCENE",
+    "PART",
+    "BEAT",
+    "SPEECH",
+    "MOVE",
+    "SETUP",
+    "SHOTLIST",
+    "CHOICE"
+   ],
+   "files_written": [
+    "11 Scenes/Scene NN - <place>.md",
+    "01 Choices.md (the scene's small choices)"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-07-<scene>",
+     "example": "U-07-SC10",
+     "scope": "one scene",
+     "batch_rule": "one scene per unit",
+     "writes": [
+      "SCENE (design)",
+      "PART",
+      "BEAT",
+      "SPEECH (prose only)",
+      "MOVE",
+      "SETUP",
+      "SHOTLIST"
+     ],
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-07-<scene>-P<n>",
+     "example": "U-07-SC13-P1",
+     "scope": "one part of a big scene",
+     "batch_rule": "a scene over scene_split_non_blank_lines non-blank lines or scene_split_beats beats is designed in two units by part",
+     "writes": [
+      "SCENE (design)",
+      "PART",
+      "BEAT",
+      "MOVE",
+      "SETUP"
+     ],
+     "when": "big scene",
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-07-<scene>-LIST",
+     "example": "U-07-SC13-LIST",
+     "scope": "the shot list of a big scene",
+     "batch_rule": "a third unit writes the list",
+     "writes": [
+      "SHOTLIST"
+     ],
+     "when": "big scene",
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "quick": [
+     {
+      "card": "03",
+      "part": "whole"
+     },
+     {
+      "card": "14",
+      "part": "shot_list"
+     }
+    ],
+    "standard_adds": [
+     {
+      "card": "04",
+      "part": "landing_face"
+     },
+     {
+      "card": "04",
+      "part": "flaws"
+     },
+     {
+      "card": "04",
+      "part": "pauses"
+     },
+     {
+      "card": "12",
+      "part": "stations_and_configuration"
+     },
+     {
+      "card": "13",
+      "part": "scene_rhythm"
+     }
+    ],
+    "detailed_adds": [
+     {
+      "card": "06",
+      "part": "display_and_stillness"
+     },
+     {
+      "card": "07",
+      "part": "emphasis"
+     },
+     {
+      "card": "11",
+      "part": "per_scene_light"
+     }
+    ],
+    "by_tag": {
+     "action": [
+      {
+       "card": "15",
+       "part": "questions"
+      },
+      {
+       "card": "15",
+       "part": "traps"
+      }
+     ],
+     "glass_and_reflection": [
+      {
+       "card": "16",
+       "part": "questions"
+      },
+      {
+       "card": "16",
+       "part": "traps"
+      }
+     ],
+     "handedness": [
+      {
+       "card": "16",
+       "part": "questions"
+      },
+      {
+       "card": "16",
+       "part": "traps"
+      }
+     ],
+     "screens_and_text": [
+      {
+       "card": "17",
+       "part": "questions"
+      },
+      {
+       "card": "17",
+       "part": "traps"
+      }
+     ],
+     "in_story_footage": [
+      {
+       "card": "17",
+       "part": "questions"
+      },
+      {
+       "card": "17",
+       "part": "traps"
+      }
+     ],
+     "suspense_and_reveal": [
+      {
+       "card": "18",
+       "part": "questions"
+      },
+      {
+       "card": "18",
+       "part": "traps"
+      }
+     ],
+     "darkness": [
+      {
+       "card": "18",
+       "part": "questions"
+      },
+      {
+       "card": "18",
+       "part": "traps"
+      }
+     ],
+     "prose_interior": [
+      {
+       "card": "19",
+       "part": "questions"
+      },
+      {
+       "card": "19",
+       "part": "traps"
+      },
+      {
+       "card": "02",
+       "part": "externalising"
+      }
+     ],
+     "montage_and_time": [
+      {
+       "card": "19",
+       "part": "questions"
+      },
+      {
+       "card": "19",
+       "part": "traps"
+      }
+     ],
+     "creature": [
+      {
+       "card": "20",
+       "part": "questions"
+      },
+      {
+       "card": "20",
+       "part": "traps"
+      }
+     ],
+     "violence": [
+      {
+       "card": "20",
+       "part": "questions"
+      },
+      {
+       "card": "20",
+       "part": "traps"
+      }
+     ],
+     "dialogue_duel": [],
+     "three_or_more": []
+    }
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-03",
+    "ID-04",
+    "ID-06",
+    "ID-07",
+    "CITE-01",
+    "CITE-02",
+    "CITE-03",
+    "CITE-06",
+    "COVER-01",
+    "COVER-02",
+    "COVER-03",
+    "COVER-04",
+    "CRAFT-04",
+    "CRAFT-05",
+    "CRAFT-10",
+    "CRAFT-18",
+    "CRAFT-19",
+    "TIME-04",
+    "TIME-05",
+    "TIME-08",
+    "GEOM-05",
+    "WORDS-01",
+    "WORDS-02"
+   ],
+   "check_command": "check --step 7",
+   "checkpoint": {
+    "id": "C",
+    "user_name": "each group of shots",
+    "blocks": "the first sequence only, unless the user said 'stop after each group'",
+    "after": "the last scene of each sequence has its list",
+    "default": "next",
+    "question": "Reply next, or tell me what to change.",
+    "first_sequence_adds": "the film rules in five plain lines, and 'After this group I'll carry on and show you each group; say \"stop after each group\" if you prefer.'",
+    "shows": "each scene's At a glance and one-line list in plain words, total screen time, the additions that change meaning, anything flagged"
+   },
+   "done_test": [
+    "every source line of the scene is in a beat; every speech is in a beat; every turn has a turn picture and at least one list item with role: turn",
+    "the dial covers every beat; list items cover every beat; every list ID is in the issued block and in tens; every story point in the scene resolved to a beat",
+    "check --step 7 --scene SC10 exits 0"
+   ],
+   "redo": "'Redo scene 10' (design and list) or 'Change shot 150 to ...' (list item; the expanded shot then goes stale).",
+   "chat": null,
+   "issued_ids": "beats SC10-B01..SC10-B30, parts, moves, setups, shots SC10-SH010..SC10-SH400 in tens (constant issued_blocks); speeches listed with their IDs and words",
+   "quick_note": "at quick depth the one-line shot list is the final shot plan; COVER-02 to COVER-04 run on list items",
+   "checks_note": "At step 7 the shots are list items: COVER-02 to COVER-04 read list items (the list must cover every line, speech and beat), and ID-07's 'list item without its SHOT' half runs only from step 8, batch by batch (7.2)."
+  },
+  {
+   "step": 8,
+   "name": "Shot details",
+   "step_file": "steps/08 Shot details.md",
+   "user_number": 9,
+   "user_name": "writing the shots",
+   "purpose": "Expand the approved one-line list into full SHOT and CUT records, batch by batch.",
+   "runs": "sequence by sequence, after checkpoint C (see unit_order); standard and detailed only",
+   "reads": [
+    "everything step 7 reads",
+    "SCENE (design)",
+    "PART",
+    "BEAT",
+    "MOVE",
+    "SETUP",
+    "SHOTLIST"
+   ],
+   "writes": [
+    "SHOT",
+    "CUT",
+    "PREVIS (stubs, by code)"
+   ],
+   "files_written": [
+    "11 Scenes/Scene NN - <place>.md (code surfaces)",
+    "11 Scenes/Scene NN - <place> - shots NNN-NNN.md (chat batch files)",
+    "19 Grey previews/Grey preview jobs.md (PREVIS stubs, by code)"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-08-<scene>-B<n>",
+     "example": "U-08-SC10-B2",
+     "scope": "one batch of a scene's list items, split by ID range",
+     "batch_rule": "batch_size shots per unit (12 by default, 18 once the self-test passes); the manifest records each scene's expected batch ranges",
+     "writes": [
+      "SHOT",
+      "CUT"
+     ],
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "standard": [
+     {
+      "card": "14",
+      "part": "full_shots"
+     },
+     {
+      "card": "10",
+      "part": "slots_and_moves"
+     },
+     {
+      "card": "12",
+      "part": "frame_rules"
+     },
+     {
+      "card": "13",
+      "part": "cut_points_and_sound"
+     },
+     {
+      "card": "04",
+      "part": "landing_face"
+     },
+     {
+      "card": "04",
+      "part": "pauses"
+     },
+     {
+      "card": "06",
+      "part": "display_and_stillness"
+     }
+    ],
+    "detailed_adds": [
+     {
+      "card": "11",
+      "part": "per_shot_light"
+     }
+    ],
+    "by_tag": {
+     "action": [
+      {
+       "card": "15",
+       "part": "questions"
+      },
+      {
+       "card": "15",
+       "part": "traps"
+      }
+     ],
+     "glass_and_reflection": [
+      {
+       "card": "16",
+       "part": "questions"
+      },
+      {
+       "card": "16",
+       "part": "traps"
+      }
+     ],
+     "handedness": [
+      {
+       "card": "16",
+       "part": "questions"
+      },
+      {
+       "card": "16",
+       "part": "traps"
+      }
+     ],
+     "screens_and_text": [
+      {
+       "card": "17",
+       "part": "questions"
+      },
+      {
+       "card": "17",
+       "part": "traps"
+      }
+     ],
+     "in_story_footage": [
+      {
+       "card": "17",
+       "part": "questions"
+      },
+      {
+       "card": "17",
+       "part": "traps"
+      }
+     ],
+     "suspense_and_reveal": [
+      {
+       "card": "18",
+       "part": "questions"
+      },
+      {
+       "card": "18",
+       "part": "traps"
+      }
+     ],
+     "darkness": [
+      {
+       "card": "18",
+       "part": "questions"
+      },
+      {
+       "card": "18",
+       "part": "traps"
+      }
+     ],
+     "prose_interior": [
+      {
+       "card": "19",
+       "part": "questions"
+      },
+      {
+       "card": "19",
+       "part": "traps"
+      },
+      {
+       "card": "02",
+       "part": "externalising"
+      }
+     ],
+     "montage_and_time": [
+      {
+       "card": "19",
+       "part": "questions"
+      },
+      {
+       "card": "19",
+       "part": "traps"
+      }
+     ],
+     "creature": [
+      {
+       "card": "20",
+       "part": "questions"
+      },
+      {
+       "card": "20",
+       "part": "traps"
+      }
+     ],
+     "violence": [
+      {
+       "card": "20",
+       "part": "questions"
+      },
+      {
+       "card": "20",
+       "part": "traps"
+      }
+     ],
+     "dialogue_duel": [],
+     "three_or_more": []
+    }
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-03",
+    "ID-04",
+    "ID-05",
+    "ID-06",
+    "ID-07",
+    "ID-08",
+    "CITE-01",
+    "CITE-02",
+    "CITE-03",
+    "CITE-04",
+    "CITE-05",
+    "COVER-02",
+    "COVER-03",
+    "COVER-04",
+    "COVER-07",
+    "COVER-08",
+    "TIME-01",
+    "TIME-02",
+    "TIME-03",
+    "TIME-06",
+    "TIME-09",
+    "TIME-10",
+    "STATE-01",
+    "STATE-04",
+    "SIDE-03",
+    "SIDE-04",
+    "SIDE-05",
+    "GEOM-01",
+    "GEOM-02",
+    "GEOM-03",
+    "GEOM-04",
+    "GEOM-05",
+    "GEOM-06",
+    "GEOM-07",
+    "GEOM-08",
+    "CRAFT-01",
+    "CRAFT-02",
+    "CRAFT-03",
+    "CRAFT-06",
+    "CRAFT-07",
+    "CRAFT-08",
+    "CRAFT-09",
+    "CRAFT-10",
+    "CRAFT-11",
+    "CRAFT-12",
+    "CRAFT-13",
+    "CRAFT-14",
+    "CRAFT-15",
+    "CRAFT-16",
+    "CRAFT-17",
+    "CRAFT-19",
+    "CRAFT-21",
+    "CRAFT-22",
+    "CRAFT-23",
+    "CRAFT-24",
+    "CRAFT-25",
+    "CRAFT-26",
+    "INFO-01",
+    "INFO-02",
+    "REASON-01",
+    "REASON-02",
+    "REASON-03",
+    "REASON-04",
+    "REASON-05",
+    "REASON-06",
+    "REASON-07",
+    "REASON-08",
+    "REASON-09",
+    "WORDS-01",
+    "WORDS-02",
+    "WORDS-03",
+    "WORDS-04"
+   ],
+   "check_command": "check --step 8",
+   "checkpoint": {
+    "id": null,
+    "note": "none (the list was the checkpoint)"
+   },
+   "done_test": [
+    "every list item has exactly one SHOT with the same beats, role and size",
+    "every batch file's END count matches its range",
+    "check --step 8 --scene SC10 exits 0 (no ERROR; warnings shown at the next checkpoint)"
+   ],
+   "redo": "'Redo the shots for scene 10' keeps the list; 'Make shot 150 tighter' edits one list item and its shot.",
+   "chat": null,
+   "batch_checks": "during step 8, ID-07 and COVER-02 to COVER-04 run only on the batch's ID range and its beats; they run in full after the scene's last batch, together with TIME-03",
+   "handout_adds": "each list item's provisional time floor; only the sizes, angles and moves the camera system allows here; the fields that need a why with their defaults"
+  },
+  {
+   "step": 9,
+   "name": "Film pass",
+   "step_file": "steps/09 Film pass.md",
+   "user_number": 10,
+   "user_name": "the film pass",
+   "purpose": "Judge the whole film as a structure before any picture is made.",
+   "runs": "once, after the last sequence",
+   "reads": [
+    "film strip (derived)",
+    "CAMSYS",
+    "CAMRULE",
+    "RESERVE",
+    "LENS",
+    "LOOK",
+    "VISUAL",
+    "SOUNDPLAN",
+    "LADDER",
+    "PLAN",
+    "MOTIF",
+    "SCENE"
+   ],
+   "writes": [
+    "FINDING",
+    "CHOICE"
+   ],
+   "files_written": [
+    "12 Whole-film check.md",
+    "01 Choices.md"
+   ],
+   "units": [
+    {
+     "id_pattern": "code: stage.py check --film",
+     "example": null,
+     "scope": "the whole film",
+     "batch_rule": "code",
+     "surfaces": "code",
+     "commands": [
+      "check --film"
+     ]
+    },
+    {
+     "id_pattern": "U-09-JUDGE",
+     "example": "U-09-JUDGE",
+     "scope": "the film strip and the turn pictures",
+     "batch_rule": "one fresh unit; one per act (U-09-JUDGE-A1 ...) when the strip passes film_strip_tokens_per_unit_max",
+     "writes": [
+      "FINDING",
+      "CHOICE"
+     ],
+     "surfaces": "all",
+     "chat_note": "in chat, a check chat"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "09",
+      "part": "film_pass"
+     }
+    ]
+   },
+   "checks": [
+    "FILM-01",
+    "FILM-02",
+    "FILM-03",
+    "FILM-04",
+    "FILM-05",
+    "FILM-06",
+    "FILM-07",
+    "FILM-08",
+    "FILM-09",
+    "FILM-10",
+    "FILM-11",
+    "FILM-12",
+    "TIME-07"
+   ],
+   "check_command": "check --step 9",
+   "checkpoint": {
+    "id": null,
+    "note": "only findings that change a creative decision reach the user (usually none to three, as CHOICE records)"
+   },
+   "done_test": [
+    "all FILM errors fixed; every FINDING fixed or accepted with a reason"
+   ],
+   "redo": "'Run the film pass again'.",
+   "chat": null,
+   "depths_run": {
+    "quick": "code audits only",
+    "standard": "all",
+    "detailed": "all"
+   }
+  },
+  {
+   "step": 10,
+   "name": "Check and estimate",
+   "step_file": "steps/10 Check and estimate.md",
+   "user_number": 11,
+   "user_name": "the health check",
+   "purpose": "Prove the breakdown is complete and consistent, score its quality, and say what it will cost.",
+   "runs": "once",
+   "reads": [
+    "all records",
+    "adapters",
+    "prices"
+   ],
+   "writes": [
+    "REVIEW",
+    "FINDING"
+   ],
+   "files_written": [
+    "13 Health check.md",
+    "14 Time and cost.md",
+    "For machines - do not edit/breakdown.json",
+    "15 The breakdown/ (first version)"
+   ],
+   "units": [
+    {
+     "id_pattern": "code: export book, check --all, compile --lint-only, estimate --version v1, questions --sample",
+     "example": null,
+     "scope": "all records",
+     "batch_rule": "code",
+     "surfaces": "code",
+     "commands": [
+      "export book",
+      "check --all",
+      "compile --lint-only",
+      "estimate --version v1",
+      "questions --sample"
+     ]
+    },
+    {
+     "id_pattern": "U-10-QUESTIONS-B<n>",
+     "example": "U-10-QUESTIONS-B1",
+     "scope": "question_batch_size questions",
+     "batch_rule": "one fresh unit per batch, reading only the records and lines it cites",
+     "writes": [
+      "REVIEW",
+      "FINDING"
+     ],
+     "surfaces": "all",
+     "chat_note": "in chat, a check chat with only the saved files and 05 Checks in words.md"
+    },
+    {
+     "id_pattern": "U-10-SCORES",
+     "example": "U-10-SCORES",
+     "scope": "the rubric",
+     "batch_rule": "one fresh unit",
+     "writes": [
+      "REVIEW (score)"
+     ],
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "R05",
+      "part": "whole"
+     },
+     {
+      "card": "21",
+      "part": "cost"
+     }
+    ]
+   },
+   "checks": [
+    "all checks of 7.2 (check --all)",
+    "GEN-01",
+    "GEN-02",
+    "GEN-03",
+    "GEN-04",
+    "GEN-05",
+    "GEN-06",
+    "GEN-07",
+    "GEN-08",
+    "GEN-09",
+    "GEN-10",
+    "GEN-11",
+    "GEN-12",
+    "GEN-13",
+    "GEN-14",
+    "GEN-15",
+    "GEN-16",
+    "GEN-17"
+   ],
+   "check_command": "check --step 10",
+   "checkpoint": {
+    "id": "acceptance",
+    "user_name": "the finished check",
+    "blocks": true,
+    "default": "no",
+    "question": "Anything you want changed in these three scenes?",
+    "shows": "at most acceptance_items_max things to check, each with a default, and scenes_to_read scenes (the climax, the densest dialogue, the biggest action) with the 10-question review sheet"
+   },
+   "done_test": [
+    "no ERROR; rubric pass rule met (11.3); acceptance answered or defaulted"
+   ],
+   "redo": "'Check again' at any time.",
+   "chat": null
+  },
+  {
+   "step": 11,
+   "name": "Book and exports",
+   "step_file": "steps/11 Book and exports.md",
+   "user_number": 12,
+   "user_name": "the book and exports",
+   "purpose": "Hand the user the deliverable.",
+   "runs": "once",
+   "reads": [
+    "all records"
+   ],
+   "writes": [],
+   "files_written": [
+    "15 The breakdown/The breakdown.html",
+    "15 The breakdown/The breakdown.md",
+    "16 Spreadsheets/Shot list.csv",
+    "16 Spreadsheets/People, places and things.csv",
+    "17 Captions and audio description/",
+    "For machines - do not edit/timeline.otio",
+    "For machines - do not edit/timeline.edl",
+    "For machines - do not edit/breakdown.json",
+    "For machines - do not edit/breakdown.schema.json"
+   ],
+   "units": [
+    {
+     "id_pattern": "code: stage.py export all",
+     "example": null,
+     "scope": "all records",
+     "batch_rule": "code",
+     "surfaces": "code",
+     "commands": [
+      "export all"
+     ]
+    },
+    {
+     "id_pattern": "U-11-CONTENTS",
+     "example": "U-11-CONTENTS",
+     "scope": "the book's contents page",
+     "batch_rule": "one reply",
+     "writes": [
+      "15 The breakdown/The breakdown.md (contents page linking the scene files)"
+     ],
+     "surfaces": "chat"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "23",
+      "part": "whole"
+     },
+     {
+      "card": "R07",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "export format checks: CSV byte-order mark and columns (5.9); OTIO structure; SRT and WebVTT format; breakdown.json against breakdown.schema.json"
+   ],
+   "check_command": "check --step 11",
+   "checkpoint": {
+    "id": null,
+    "note": "none; the report says which files are for reading and which are for other programs"
+   },
+   "done_test": [
+    "every export produced; CSV opens with its byte-order mark; OTIO passes the structural check; captions pass the SRT and WebVTT format checks"
+   ],
+   "redo": "'Make the book again' (minutes, by code).",
+   "chat": null
+  },
+  {
+   "step": 12,
+   "name": "Add-on - storyboards",
+   "step_file": "steps/12 Add-on - storyboards.md",
+   "user_number": null,
+   "user_name": "storyboards",
+   "purpose": "First D5's style test; then storyboard frames (PIC records, use: storyboard), frame prompts and the storyboard page.",
+   "runs": "on request ('Make storyboards'), after step 11",
+   "reads": [
+    "SHOT",
+    "SHOTLIST",
+    "STYLE",
+    "CHARACTER",
+    "STATE",
+    "LOOK",
+    "LOCATION",
+    "PROP"
+   ],
+   "writes": [
+    "PIC",
+    "STYLE",
+    "CHOICE"
+   ],
+   "files_written": [
+    "18 Storyboard/",
+    "06 World and style.md (STYLE style_picture)",
+    "01 Choices.md"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-12-STYLETEST",
+     "example": "U-12-STYLETEST",
+     "scope": "three style directions on three hard shots",
+     "batch_rule": "one unit, once, unless add-on C ran it",
+     "writes": [
+      "PIC (use: style)",
+      "CHOICE"
+     ],
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-12-<scene>",
+     "example": "U-12-SC10",
+     "scope": "one scene's frames",
+     "batch_rule": "one scene per unit; up to two options per shot, the AI keeps the one that passes its checks",
+     "writes": [
+      "PIC (use: storyboard)"
+     ],
+     "surfaces": "all",
+     "commands": [
+      "compile --storyboard"
+     ]
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "21",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "GEN-06",
+    "GEN-07",
+    "GEN-12",
+    "GEN-15",
+    "WORDS-03"
+   ],
+   "check_command": null,
+   "checkpoint": {
+    "id": "style_test",
+    "user_name": "which of three styles",
+    "blocks": true,
+    "default": "A",
+    "question": "Which of these three styles?",
+    "then": "a slideshow per group of scenes; the user names only frames to redo"
+   },
+   "done_test": [
+    "every shot with storyboard: yes has a compiled frame prompt, and an approved PIC once pictures exist"
+   ],
+   "redo": "'Redo the frames for scene 10'.",
+   "chat": null,
+   "add_on": "A"
+  },
+  {
+   "step": 13,
+   "name": "Add-on - previs",
+   "step_file": "steps/13 Add-on - previs.md",
+   "user_number": null,
+   "user_name": "grey previews",
+   "purpose": "PREVIS records, plan files, grey renders, blocking reports and contact sheets (Claude Code on the user's computer only).",
+   "runs": "on request ('Make grey previews'), Claude Code only",
+   "reads": [
+    "LOCATION",
+    "SCENE (start)",
+    "MOVE",
+    "SETUP",
+    "SHOT",
+    "CHARACTER",
+    "PROJECT"
+   ],
+   "writes": [
+    "PREVIS",
+    "PROJECT (previs_colours, by code)"
+   ],
+   "files_written": [
+    "19 Grey previews/",
+    "For machines - do not edit/previs plans/",
+    "00 Start here.md (PROJECT previs_colours)"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-13-<scene>",
+     "example": "U-13-SC10",
+     "scope": "one scene's shots at previs_plan_level_min or more",
+     "batch_rule": "one scene per unit; code compiles and renders",
+     "writes": [
+      "PREVIS",
+      "19 Grey previews/extras/<shot>.json"
+     ],
+     "surfaces": "claude_code",
+     "commands": [
+      "previs",
+      "previs --render"
+     ]
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "22",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "PREVIS-01",
+    "PREVIS-02",
+    "PREVIS-03",
+    "CLASH",
+    "OVERLAP",
+    "CAMERA"
+   ],
+   "check_command": null,
+   "checkpoint": {
+    "id": "D",
+    "user_name": "the grey previews",
+    "blocks": "one contact sheet per scene of framing-critical shots",
+    "default": "fine",
+    "question": "Reply with the numbers of any that look wrong, or 'fine'."
+   },
+   "done_test": [
+    "every shot at previs level 2 or more has a plan, BLOCKING OK and facings within facing_tolerance_deg",
+    "shots with framing_critical: yes need the answer at D; the others are approved: auto once they pass those two checks"
+   ],
+   "redo": "'Lower the camera to knee height' and other plain-word changes; two or three rounds are normal.",
+   "chat": null,
+   "add_on": "B"
+  },
+  {
+   "step": 14,
+   "name": "Add-on - generation packs",
+   "step_file": "steps/14 Add-on - generation packs.md",
+   "user_number": null,
+   "user_name": "prompts for AI video",
+   "purpose": "Style test if needed; reference-picture jobs, start and end picture jobs, the voice line script and voice takes, compiled prompts per model, lint, cost, take records.",
+   "runs": "on request ('Get it ready for AI video'), after step 11",
+   "reads": [
+    "all shot-related records",
+    "adapters",
+    "prices"
+   ],
+   "writes": [
+    "PIC",
+    "TAKE",
+    "VOICETAKE",
+    "RIGHTS",
+    "CHOICE",
+    "CHARACTER (skin_light)",
+    "VOICE (source through a CHOICE)",
+    "PROJECT (spend_cap_usd, intended_use, licensed_data_only)"
+   ],
+   "files_written": [
+    "20 Prompts for AI video/",
+    "22 Rights and credits.md",
+    "00 Start here.md (PROJECT spend_cap_usd, intended_use, licensed_data_only)",
+    "01 Choices.md",
+    "07 Characters and voices.md (CHARACTER skin_light, VOICE source)"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-14-STYLETEST",
+     "example": "U-14-STYLETEST",
+     "scope": "three style directions on three hard shots",
+     "batch_rule": "one unit, once, if add-on A has not run",
+     "writes": [
+      "PIC",
+      "CHOICE"
+     ],
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-14-REFERENCES",
+     "example": "U-14-REFERENCES",
+     "scope": "every element state in scope",
+     "batch_rule": "one unit per group of scenes",
+     "writes": [
+      "PIC (use: reference)"
+     ],
+     "surfaces": "all"
+    },
+    {
+     "id_pattern": "U-14-VOICES",
+     "example": "U-14-VOICES",
+     "scope": "every recurring speaker",
+     "batch_rule": "one unit, before any clip with a visible speaking mouth",
+     "writes": [
+      "VOICETAKE",
+      "RIGHTS",
+      "CHOICE"
+     ],
+     "surfaces": "all",
+     "commands": [
+      "export voices"
+     ]
+    },
+    {
+     "id_pattern": "U-14-<scene>",
+     "example": "U-14-SC10",
+     "scope": "one scene's pack",
+     "batch_rule": "one scene per unit; code compiles and prices",
+     "writes": [
+      "PIC (start, end)"
+     ],
+     "surfaces": "all",
+     "commands": [
+      "compile --scene SC10"
+     ]
+    },
+    {
+     "id_pattern": "U-14-TAKES-<scene>",
+     "example": "U-14-TAKES-SC10",
+     "scope": "one scene's takes",
+     "batch_rule": "per take: the AI suggests keep or reject from the questions",
+     "writes": [
+      "TAKE"
+     ],
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "21",
+      "part": "whole"
+     },
+     {
+      "card": "06",
+      "part": "lip_sync"
+     },
+     {
+      "card": "24",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "GEN-01",
+    "GEN-02",
+    "GEN-03",
+    "GEN-04",
+    "GEN-05",
+    "GEN-06",
+    "GEN-07",
+    "GEN-08",
+    "GEN-09",
+    "GEN-10",
+    "GEN-11",
+    "GEN-12",
+    "GEN-13",
+    "GEN-14",
+    "GEN-15",
+    "GEN-16",
+    "GEN-17"
+   ],
+   "check_command": null,
+   "checkpoint": {
+    "id": "E",
+    "user_name": "keeping takes",
+    "blocks": "per take; spending needs a cap first and is never defaulted",
+    "default": "the AI's suggestion",
+    "question": "Keep or reject each take?",
+    "first": "the spending cap, once (spend_cap_usd)"
+   },
+   "done_test": [
+    "every shot in scope compiles with 0 GEN errors on its routed model and is priced with a model-facts date under model_facts_max_age_days",
+    "quick-depth scenes are made standard first"
+   ],
+   "redo": "'Make a new take of shot 150'; a wrong clip is traced to the earliest wrong record first.",
+   "chat": null,
+   "add_on": "C"
+  },
+  {
+   "step": 15,
+   "name": "Add-on - edit and finishing",
+   "step_file": "steps/15 Add-on - edit and finishing.md",
+   "user_number": null,
+   "user_name": "planning the edit",
+   "purpose": "Finishing jobs created from shots, music cues if any, the assembly guide and the disclosure text.",
+   "runs": "on request ('Plan the edit'), after step 11",
+   "reads": [
+    "SHOT",
+    "SOUNDPLAN",
+    "TAKE",
+    "RIGHTS"
+   ],
+   "writes": [
+    "FINISH",
+    "MUSIC",
+    "RIGHTS"
+   ],
+   "files_written": [
+    "21 Edit and finishing/",
+    "22 Rights and credits.md"
+   ],
+   "units": [
+    {
+     "id_pattern": "U-15-FINISH",
+     "example": "U-15-FINISH",
+     "scope": "every finishing job code created",
+     "batch_rule": "one unit per group of scenes",
+     "writes": [
+      "FINISH (tool, inputs, output, done)"
+     ],
+     "surfaces": "all",
+     "commands": [
+      "export finishing"
+     ]
+    },
+    {
+     "id_pattern": "U-15-MUSIC",
+     "example": "U-15-MUSIC",
+     "scope": "the music cues",
+     "batch_rule": "one unit, only if the music policy is sparse or scored",
+     "writes": [
+      "MUSIC"
+     ],
+     "surfaces": "all",
+     "commands": [
+      "export spotting"
+     ]
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "23",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-01",
+    "FORM-02",
+    "FORM-03",
+    "FORM-04",
+    "FORM-05",
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "FORM-09",
+    "FORM-10",
+    "FORM-11",
+    "FORM-12",
+    "FORM-13",
+    "ID-01",
+    "ID-02",
+    "ID-04",
+    "GEN-14"
+   ],
+   "check_command": null,
+   "checkpoint": {
+    "id": null,
+    "note": "none"
+   },
+   "done_test": [
+    "every derived post operation has a FINISH record; the timeline and assembly guide exist"
+   ],
+   "redo": "'Plan the edit again'.",
+   "chat": null,
+   "add_on": "D"
+  },
+  {
+   "step": 16,
+   "name": "Resume and recovery",
+   "step_file": "steps/16 Resume and recovery.md",
+   "user_number": null,
+   "user_name": "carrying on",
+   "purpose": "Pick up where the work stopped, in any app, and recover from a cut-off reply, skipped records, a full chat, a lost file or a refusal.",
+   "runs": "whenever the user types 'Continue my breakdown.' or something goes wrong",
+   "reads": [
+    "PROJECT",
+    "00 Start here.md",
+    "manifest"
+   ],
+   "writes": [],
+   "files_written": [
+    "none, or the missing records re-sent"
+   ],
+   "units": [
+    {
+     "id_pattern": "code: stage.py status",
+     "example": null,
+     "scope": "the project",
+     "batch_rule": "code",
+     "surfaces": "code",
+     "commands": [
+      "status",
+      "check"
+     ]
+    },
+    {
+     "id_pattern": "U-16-RESUME",
+     "example": "U-16-RESUME",
+     "scope": "the next unit",
+     "batch_rule": "one line of where things stand, then the next unit of its own step",
+     "surfaces": "all"
+    }
+   ],
+   "cards": {
+    "all_depths": [
+     {
+      "card": "R07",
+      "part": "whole"
+     }
+    ]
+   },
+   "checks": [
+    "FORM-06",
+    "FORM-07",
+    "FORM-08",
+    "ID-06",
+    "ID-07"
+   ],
+   "check_command": null,
+   "checkpoint": {
+    "id": null,
+    "note": "none"
+   },
+   "done_test": [
+    "the next unit is named in one line; a cut-off reply is re-sent from the start of its last complete record; skipped records are sent by their IDs, then the END line"
+   ],
+   "redo": "'continue' re-sends; a record is never split across replies.",
+   "chat": null,
+   "recoveries": {
+    "reply cut off": "continue: re-send from the start of the last complete record",
+    "records silently skipped": "continue: send only the missing IDs, then the END line",
+    "chat full or a decision forgotten": "hand-over: new chat with the resume line",
+    "format slip": "tidy fixes logged; real problems come back as 'Fix only these', at most repair_rounds_max rounds",
+    "early choice changed": "list what it affects in plain words, ask once if costly, redo only those",
+    "file lost": "Claude surfaces restore from git or the save ZIP; chat apps redo that scene",
+    "attachment not read in full": "ask the user to paste that part",
+    "text refused": "state once that this is pre-production, use production words; if refused again, log it and suggest another model or app"
+   }
+  }
+ ]
+}

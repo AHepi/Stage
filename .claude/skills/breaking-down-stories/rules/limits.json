@@ -1,0 +1,151 @@
+{
+ "about": "Per-surface sizes (blueprint 2.3, 2.4, 2.5, 6.1, 13.5). Written by WP1 on 2026-09-28. Token counts are estimates: English prose is about 1.2-1.8 tokens per word (D1 §0).",
+ "tokens_per_word_estimate": {
+  "value": 1.4,
+  "source": "D1 §0 (1.2-1.8 tokens per English word)"
+ },
+ "handout_tokens_max": {
+  "claude_code": 30000,
+  "claude_cowork": 30000,
+  "claude_web": 30000,
+  "chatgpt": 20000,
+  "source": "blueprint 2.3 and 6.1 (Claude surfaces 30,000; ChatGPT sandbox 20,000)"
+ },
+ "handout_over_ceiling_order": [
+  "drop the gold example",
+  "drop the lowest-listed card parts",
+  "trim source to the unit's lines",
+  "split the unit"
+ ],
+ "handout_typical_tokens": {
+  "step_excerpt": 2000,
+  "whole_film_summary_lines": [
+   800,
+   2000
+  ],
+  "card_parts": [
+   3000,
+   9000
+  ],
+  "gold_excerpt": 1500,
+  "source_lines": [
+   1000,
+   8000
+  ],
+  "records": [
+   2000,
+   6000
+  ],
+  "total": [
+   10000,
+   28000
+  ],
+  "source": "blueprint 6.1"
+ },
+ "card_tokens_per_unit_max": {
+  "value": 9000,
+  "source": "blueprint 2.3, 3 step 7, 6.1"
+ },
+ "batch_size": {
+  "default": 12,
+  "after_selftest": 18,
+  "constant": "batch_size",
+  "source": "D1 §2.4, blueprint 3 step 8"
+ },
+ "units_per_chat": {
+  "value": "one sequence",
+  "source": "blueprint 2.3, 13.5; D1 rule 13",
+  "also_stop_when": "the app says it is summarising, or usage passes chat_usage_handover_share"
+ },
+ "chat_usage_handover_share": {
+  "value": 0.8,
+  "source": "D1 rule 14 (§4.6), blueprint 13.5"
+ },
+ "input_share_of_window_max": {
+  "value": 0.6,
+  "source": "D1 rule 3 (§2.3)"
+ },
+ "files_per_upload": {
+  "gemini": {
+   "value": 10,
+   "per": "prompt"
+  },
+  "claude_web": {
+   "value": 20,
+   "per": "chat"
+  },
+  "chatgpt": {
+   "value": 25,
+   "per": "project"
+  },
+  "source": "blueprint 2.3, 2.5, 7.4"
+ },
+ "chat_kit": {
+  "instructions_characters_max": 6000,
+  "knowledge_files_gemini": 6,
+  "knowledge_words_total_about": 60000,
+  "attachments_per_working_chat_max": 7,
+  "check_chat_messages_when_over_files": 2,
+  "gemini_free_plan_tokens": 32000,
+  "source": "blueprint 2.3, 2.5, 7.4 (the Project instruction limit is [U, smoke test])"
+ },
+ "whole_film_summary_words_max": {
+  "value": 6000,
+  "source": "blueprint 6.1"
+ },
+ "film_strip_tokens_per_unit_max": {
+  "value": 20000,
+  "constant": "film_strip_tokens_per_unit_max",
+  "source": "blueprint 3, step 9"
+ },
+ "surfaces": {
+  "claude_code": {
+   "code_execution": "yes",
+   "loop": "code",
+   "handout_tokens_max": 30000,
+   "files_live_in": "the folder",
+   "previs": true
+  },
+  "claude_cowork": {
+   "code_execution": "yes",
+   "loop": "code",
+   "handout_tokens_max": 30000,
+   "files_live_in": "the connected folder",
+   "previs": false
+  },
+  "claude_web": {
+   "code_execution": "yes",
+   "loop": "code",
+   "handout_tokens_max": 30000,
+   "files_live_in": "the sandbox, carried as one save ZIP",
+   "files_per_chat": 20,
+   "previs": false
+  },
+  "chatgpt": {
+   "code_execution": "yes",
+   "loop": "code",
+   "handout_tokens_max": 20000,
+   "files_live_in": "the sandbox, carried as one save ZIP",
+   "files_per_project": 25,
+   "instructions_characters_max": 6000,
+   "previs": false
+  },
+  "gemini": {
+   "code_execution": "no",
+   "loop": "chat",
+   "handout_tokens_max": null,
+   "files_live_in": "the user's own folder, saved from copy boxes",
+   "files_per_prompt": 10,
+   "knowledge_files": 6,
+   "previs": false
+  },
+  "other": {
+   "code_execution": "no",
+   "loop": "chat",
+   "handout_tokens_max": null,
+   "files_live_in": "the user's own folder",
+   "previs": false
+  },
+  "source": "blueprint 2.4"
+ }
+}

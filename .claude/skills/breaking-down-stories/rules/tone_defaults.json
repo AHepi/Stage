@@ -1,0 +1,241 @@
+{
+ "about": "D10 §2.2's defaults shift table, one row per tone, as the first build ships it (blueprint 14.4: tuned later from test runs). Read by estimate.py (shot_length_factor times rhythm_class_asl_s), TIME-07 and the rhythm checks, and taught by card 08. Written by WP1 on 2026-09-28.",
+ "source": "D10 §2.2 (research file and digest); every factor, range and budget there is [J], a starting value.",
+ "how_to_read": [
+  "Read a row as 'from this scene's tone, start here'. A departure gets one line in the record's note (D10 §2.2).",
+  "shot_length_factor is D10's asl_factor: the multiplier on the scene's usual average shot length (D13 §5). Where D10 gives a range or a bound, shot_length_factor is the value the estimate uses and shot_length_note keeps D10's words.",
+  "contrast_band maps D10's light column onto B2 §2.3's bands (low about 2:1, medium about 4:1, high about 8:1, extreme 16:1 and beyond) and the LOOK contrast values; the mapping is WP1's [judgement]. In prompts write the visible result, never the ratio (B2).",
+  "music_default maps D10's sound column onto SOUNDPLAN.music_policy words [judgement]; the film's music policy is always the user's choice (K31) and every clip stays music-free.",
+  "display_level maps D10's performance column onto D15 §2.2's display levels 1-3 for a medium shot [judgement]; the closer the shot, the lower the level (D15), and display 3 at close-up or tighter needs a why (CRAFT-25).",
+  "Tone moves the dial, not the map: it never changes which beat is the turning point, what the text marks, or in-story footage and physics rules (D10 principle 1)."
+ ],
+ "tones": {
+  "grave": {
+   "shot_length_factor": 1.0,
+   "shot_length_note": "1.0",
+   "size_and_lens": "Approach progression; normal lens; tightest size on the turn",
+   "camera_move": "Static; at most 1 push-in",
+   "light": "Motivated, about 4:1",
+   "contrast_band": [
+    "medium"
+   ],
+   "contrast_note": "about 4:1",
+   "sound_and_music": "Sparse music that must not state subtext",
+   "music_default": "sparse",
+   "performance": "Naturalistic",
+   "display_level": [
+    1,
+    2
+   ],
+   "opener": "A quiet, serious drama scene.",
+   "push_ins_per_scene_max": 1
+  },
+  "tense": {
+   "shot_length_factor": 0.9,
+   "shot_length_note": "0.9, but hold on the unaware (A4 S2)",
+   "size_and_lens": "Sizes tighten across the scene; longer lens for watching",
+   "camera_move": "Static baseline; handheld only at loss of control (B1 R17)",
+   "light": "4:1 to 8:1, practical sources",
+   "contrast_band": [
+    "medium",
+    "medium_high",
+    "high"
+   ],
+   "contrast_note": "4:1 to 8:1",
+   "sound_and_music": "Beds, a rising or ticking sound; score sparse",
+   "music_default": "sparse",
+   "performance": "Contained",
+   "display_level": [
+    1,
+    1
+   ],
+   "opener": "A tense dramatic thriller scene.",
+   "opener_note": "plus explicit light words",
+   "hold_on_unaware": true
+  },
+  "dread": {
+   "shot_length_factor": 1.3,
+   "shot_length_note": "1.3 before a startle; the startle shot under 1 s",
+   "size_and_lens": "Wides with empty areas; deep focus; threat partial or off frame",
+   "camera_move": "Static or very slow push toward empty space; the threat never causes a move",
+   "light": "8:1 and more, dark but readable",
+   "contrast_band": [
+    "high",
+    "extreme"
+   ],
+   "contrast_note": "8:1 and more",
+   "sound_and_music": "Sound before sight; rough textures; stings only on budgeted startles",
+   "music_default": "sparse",
+   "performance": "Underplayed until the break",
+   "display_level": [
+    1,
+    1
+   ],
+   "opener": "A quiet, eerie suspense scene.",
+   "startle_shot_max_s": 1.0
+  },
+  "enigmatic": {
+   "shot_length_factor": 1.1,
+   "shot_length_note": "1.1",
+   "size_and_lens": "Objective framings; evidence inserts held to read (A4 R8)",
+   "camera_move": "Static; move or rack only on a noticing beat",
+   "light": "Readable, low to medium contrast",
+   "contrast_band": [
+    "low",
+    "medium"
+   ],
+   "contrast_note": "low to medium",
+   "sound_and_music": "Minimal; motifs as clues, clean",
+   "music_default": "sparse",
+   "performance": "Naturalistic, withheld",
+   "display_level": [
+    1,
+    2
+   ],
+   "opener": "A calm, puzzling mystery scene."
+  },
+  "comic_light": {
+   "shot_length_factor": 0.9,
+   "shot_length_note": "0.9 in banter; reaction holds added (D10 §4)",
+   "size_and_lens": "Wides and two-shots holding both bodies; normal-to-wide lens; deep focus",
+   "camera_move": "Static; any move timed to the reveal",
+   "light": "High-key, about 2:1",
+   "contrast_band": [
+    "low"
+   ],
+   "contrast_note": "about 2:1",
+   "sound_and_music": "Timed effects over music; no mickey-mousing",
+   "music_default": "sparse",
+   "performance": "Heightened to broad",
+   "display_level": [
+    2,
+    3
+   ],
+   "opener": "A warm, light comedy scene.",
+   "reaction_holds": true
+  },
+  "comic_dark": {
+   "shot_length_factor": 1.1,
+   "shot_length_note": "1.1 (deadpan holds)",
+   "size_and_lens": "Frontal, centred, symmetrical mediums and wides",
+   "camera_move": "Static; no push-ins",
+   "light": "Even, flat, neutral",
+   "contrast_band": [
+    "low"
+   ],
+   "contrast_note": "even, flat",
+   "sound_and_music": "No music under jokes; one timed effect",
+   "music_default": "none",
+   "performance": "Deadpan (underplayed)",
+   "display_level": [
+    1,
+    1
+   ],
+   "opener": "A dry, deadpan dark comedy scene.",
+   "push_ins_per_scene_max": 0
+  },
+  "romantic": {
+   "shot_length_factor": 1.2,
+   "shot_length_note": "1.2",
+   "size_and_lens": "Two-shots and matched close singles; long lens along the line between them (B1 R13); shallow focus; anamorphic may fit (B1 §4.4)",
+   "camera_move": "Slow, minimal; one push-in at the turn",
+   "light": "Soft, warm key; low to medium contrast",
+   "contrast_band": [
+    "low",
+    "medium"
+   ],
+   "contrast_note": "low to medium",
+   "sound_and_music": "A theme is allowed if the music policy is scored",
+   "music_default": "scored",
+   "performance": "Intimate, naturalistic",
+   "display_level": [
+    1,
+    2
+   ],
+   "opener": "A tender romantic drama scene.",
+   "push_ins_per_scene_max": 1
+  },
+  "kinetic": {
+   "shot_length_factor": 0.5,
+   "shot_length_note": "0.5 at peaks",
+   "size_and_lens": "Calm geography wide first (A4 C6); wide lens near the action; each blow whole in frame",
+   "camera_move": "Follow or lead; one move per clip (B1)",
+   "light": "Hard, high contrast; flashes at most 3 per second (D10 §5)",
+   "contrast_band": [
+    "high"
+   ],
+   "contrast_note": "hard, high",
+   "sound_and_music": "Percussive; hits synced; music drops at the rupture",
+   "music_default": "scored",
+   "performance": "Physical, heightened",
+   "display_level": [
+    2,
+    3
+   ],
+   "opener": "A fast, physical action scene.",
+   "flashes_per_second_max": 3,
+   "applies_at": "peaks"
+  },
+  "lyric": {
+   "shot_length_factor": 3.0,
+   "shot_length_note": "Numbers: 2 to 4 (the estimate uses the middle, 3.0 [judgement])",
+   "size_and_lens": "Full figure for dance; near-frontal for singing",
+   "camera_move": "Track with the performer; one crane allowed",
+   "light": "A light cue when the number starts",
+   "contrast_band": null,
+   "contrast_note": "not stated by D10",
+   "sound_and_music": "Song locked first; cuts on bars (D10 §6)",
+   "music_default": "scored",
+   "performance": "Heightened",
+   "display_level": [
+    2,
+    3
+   ],
+   "opener": "A joyful musical scene with singing.",
+   "shot_length_range": [
+    2,
+    4
+   ],
+   "applies_at": "numbers"
+  },
+  "wonder": {
+   "shot_length_factor": 1.0,
+   "shot_length_note": "1.0, reading times x 1.5",
+   "size_and_lens": "Clear, centred staging; eye level at the child's height",
+   "camera_move": "Smooth, motivated",
+   "light": "Bright, saturated",
+   "contrast_band": [
+    "low"
+   ],
+   "contrast_note": "bright, high-key",
+   "sound_and_music": "Melodic score; music matched to action tolerated",
+   "music_default": "scored",
+   "performance": "Broad, readable faces and silhouettes",
+   "display_level": [
+    2,
+    3
+   ],
+   "opener": "A bright, gentle family animation scene.",
+   "reading_time_factor": 1.5
+  },
+  "contemplative": {
+   "shot_length_factor": 2.5,
+   "shot_length_note": "at least 2.5, never under 10 s average shot length",
+   "size_and_lens": "Wide or held medium; deep focus; the frame outlasts the action",
+   "camera_move": "Static; slow tracking only",
+   "light": "Natural, source-true, changing in real time",
+   "contrast_band": null,
+   "contrast_note": "not stated by D10",
+   "sound_and_music": "Ambient and field sound; no score, or source only",
+   "music_default": "source_only",
+   "performance": "Underplayed, task-based",
+   "display_level": [
+    1,
+    1
+   ],
+   "opener": "A slow, quiet, observational scene in one long take.",
+   "asl_min_s": 10,
+   "open_question": "D10's contemplative factor on top of D13's contemplative rhythm class gives about 15 s shots; D13 proposes renaming its class (D10 digest §8)."
+  }
+ }
+}
