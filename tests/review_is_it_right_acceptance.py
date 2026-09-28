@@ -17,7 +17,20 @@ What it proves:
   Catch's scene 29 rings, B3 §8.2): silent when the payoff is on the other side, a warning when it is not;
 - GEN-15 catches a mood phrase (words.json's mood-only phrases) and a departure's meaning_kept in a prompt, as 8.1
   rule 2 says reasons and mood words never travel;
-- the fixes found by the review's crash search (see the build log) keep their inputs from stopping the tools.
+- WORDS-01 does not report "hurt" or "tense" next to a body part ("his hurt arm"), which describe the body;
+- TIME-01 skips a shot whose lines (or its beats' lines) are quotes not found in the story given, instead of
+  passing it on a floor that leaves out the pause owed;
+- refresh-models reads its age limit from rules/constants.json by name;
+- a spoken line is taken out of a moment's words as whole words ("No" never cuts "Nothing" apart);
+- the health check names the add-on records (pictures, grey previews, takes, voice takes, finishing jobs, music, the
+  visual plan) in plain words, never by their codes;
+- flip: never turns the plate route into direct too, so a sided insert (Saye's ring) is never flipped (K07);
+- where a picture shows an element pre-reversed (a mirrored element made as it appears, or a normal one made before
+  the clip's flip), its pasted words have left and right turned (B1 method 1) and GEN-04 accepts exactly that
+  change; the reference sheets say frame-left and never "no people" (5.7, K18);
+- a title card or caption reads normally in every era (D12 rule 17), so its reading time is never doubled;
+- the inputs the crash search found stopping a tool (malformed shot and setup IDs) now run through the checks,
+  build, compile and the plans.
 
 Usage: python tests/review_is_it_right_acceptance.py
 The scene 10 excerpt (tests/fixtures/The Catch - lines 397-489.txt) gives the story; without it the groups that need
@@ -430,6 +443,11 @@ def pre_reversed_sides():
     assert "a plain gold ring on her left hand" in plate, plate
     edit = jobs["SC10-SH080:start"]["edit_prompt"]      # Iona is shown normally and made unflipped
     assert "her right palm raw" in edit, edit
+    # reference sheets: the one word frame-left (5.7), and no "no people" in a picture prompt (K18)
+    for job in jobs.values():
+        if job["use"] == "reference":
+            assert "image-left" not in job["prompt"] and not re.search(r"\bno (?:people|text|labels)\b",
+                                                                      job["prompt"], re.IGNORECASE), job["prompt"]
     state = breakdown.record("CH-SAYE.S01", "STATE").get("state_line")
     files = record_files(gold_texts())
     run = check_records.CheckRun(files, SCHEMA, WORDS, CONSTANTS)
