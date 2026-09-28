@@ -1,0 +1,103 @@
+STAGE EXCERPT HEADER
+story: The Catch
+source: the workshop revision of 25 September 2026, the whole story as the user gave it
+first_line_number: 397
+last_line_number: 489
+first_scene_number: 10
+whole_story_lines: 1852
+whole_story_scenes: 30
+note: Scene 10 only. Every line below keeps its number in the whole story: the first line after this header is line 397 and the last is line 489. Only this excerpt is kept in the repository (decision 16); give the whole story with --story <path> to check anything outside it.
+END OF STAGE EXCERPT HEADER
+## INT. SAYE'S HOUSE - KITCHEN - BEFORE DAWN
+
+DR SAYE, fifties, grey and tidy, fully dressed at four in the morning, looks at the three of them on her step. At the blood. Then, for a long moment, at the flask.
+
+@SAYE
+Kitchen.
+
+A kitchen with nothing of anybody in it. No photographs. No magnets on the fridge. A pot of mint on the windowsill, and that is all.
+
+Jude on the table. Saye's medical case open. Iona holds the lamp.
+
+Saye cuts Jude's shirt away, cleans the wound, works down his chest with quick flat hands. Stops at an old white scar low on his belly.
+
+@SAYE
+Was your appendix on the left?
+
+@JUDE
+They didn't let me watch.
+
+She puts her stethoscope on his chest. Listens. Frowns. Moves it to the other side. Listens there a long time.
+
+@IONA
+That's his right. The scar. It's where it should be.
+
+Saye looks up at her.
+
+@SAYE
+Hold up your right hand.
+
+Iona holds it up. Saye holds up hers.
+
+They stand facing each other across the table like a woman and her reflection, each with the wrong hand in the air.
+
+@SAYE
+That is your left.
+
+@IONA
+It's my right.
+
+Saye's wedding ring. On her right hand.
+
+Iona looks down at her own ring, on her own left hand.
+
+Across the room Eli twists the cap of a water bottle. It will not give. He stops. Twists it the other way. It comes off.
+
+Saye is watching him. He sees her watching. Her hand moves towards the flask on the counter.
+
+@ELI
+Don't open the flask.
+
+Saye sets her scissors down.
+
+She goes to the windowsill, tears a leaf from the pot of mint, and holds it out.
+
+@SAYE
+Chew that.
+
+Iona chews it.
+
+Her face changes.
+
+@SAYE
+What does it taste of?
+
+@IONA
+(not steady)
+Not mint.
+
+@SAYE
+Nothing has happened to the mint. Nothing has happened to the street signs either.
+
+She picks up her phone.
+
+@IONA
+Who are you calling?
+
+@SAYE
+The hospital. Then the police.
+
+Iona moves between her and Eli.
+
+@SAYE
+Look at Jude. I cannot finish that here.
+
+She waits until Iona steps aside.
+
+@SAYE
+Nobody leave this room.
+
+> CUT TO BLACK.
+
+= THE CATCH
+

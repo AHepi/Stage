@@ -1,0 +1,4312 @@
+{
+ "about": "Expected results for the grammar fixtures (work package 2). Each run parses its files, runs the listed FORM checks with its context and compares with 'expected'. 'rule' names the grammar rule the run covers; 'must_fire' lists, by hand, the check IDs (with the record they name) that must appear; 'no_levels' lists levels that must not appear. The 'expected' parts were computed by tests/wp2_acceptance.py --write-expected and then read line by line against blueprint 5.1 and 7.2 before they were kept.",
+ "runs": [
+  {
+   "name": "G01 free text",
+   "rule": "G1",
+   "files": [
+    "G01 free text.md"
+   ],
+   "no_levels": [
+    "E",
+    "W",
+    "N"
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G01 free text.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "The first winding",
+        "known": true,
+        "line": 15,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ],
+         [
+          "turn",
+          "none"
+         ],
+         [
+          "beat_intensity",
+          "2"
+         ]
+        ],
+        "notes": [
+         "> Mara winds the lamp and it dies again."
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B02",
+        "title": "The second winding",
+        "known": true,
+        "line": 25,
+        "fields": [
+         [
+          "lines",
+          "25-31"
+         ],
+         [
+          "turn",
+          "main_turn"
+         ],
+         [
+          "turn_kind",
+          "action"
+         ],
+         [
+          "beat_intensity",
+          "4"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "The Lantern, scene 3 beats",
+        "count": 2,
+        "strict": true,
+        "line": 36
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 23
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "name": "G02 record headings",
+   "rule": "G2",
+   "files": [
+    "G02 record headings.md"
+   ],
+   "no_levels": [
+    "E",
+    "W"
+   ],
+   "must_fire": [
+    [
+     "FORM-13",
+     "SC10-SH160"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G02 record headings.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC10-SH150",
+        "title": "The lamp stays lit",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "size",
+          "close_up"
+         ]
+        ]
+       },
+       {
+        "type": "PLAN",
+        "id": null,
+        "title": "",
+        "known": true,
+        "line": 8,
+        "fields": [
+         [
+          "theme_question",
+          "Can a promise outlast the one who made it?"
+         ]
+        ]
+       },
+       {
+        "type": "STYLE",
+        "id": null,
+        "title": "The film's style",
+        "known": true,
+        "line": 11,
+        "fields": [
+         [
+          "medium",
+          "live_action"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC10-B07",
+        "title": "",
+        "known": true,
+        "line": 14,
+        "fields": [
+         [
+          "lines",
+          "40-44"
+         ]
+        ]
+       },
+       {
+        "type": "SHOT",
+        "id": "SC10-SH160",
+        "title": "written in lower case",
+        "known": true,
+        "line": 17,
+        "fields": [
+         [
+          "size",
+          "wide"
+         ]
+        ]
+       },
+       {
+        "type": "CHARACTER",
+        "id": "CH-MARA",
+        "title": "Mara Voss",
+        "known": true,
+        "line": 20,
+        "fields": [
+         [
+          "tier",
+          "principal"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Headings",
+        "count": 6,
+        "strict": true,
+        "line": 23
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "N FORM-13 SC10-SH160 record type \"shot\" read as SHOT. [G02 record headings.md, line 17]",
+     "N FORM-13 SC10-SH160 ID \"sc10-sh160\" read as SC10-SH160. [G02 record headings.md, line 17]"
+    ]
+   }
+  },
+  {
+   "name": "G03 where a record ends",
+   "rule": "G3",
+   "files": [
+    "G03 where a record ends.md"
+   ],
+   "no_levels": [
+    "E",
+    "W",
+    "N"
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G03 where a record ends.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "Ended by a heading",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B02",
+        "title": "Ended by a rule line",
+        "known": true,
+        "line": 10,
+        "fields": [
+         [
+          "lines",
+          "25-31"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B03",
+        "title": "Ended by the END line",
+        "known": true,
+        "line": 15,
+        "fields": [
+         [
+          "lines",
+          "32-35"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Where a record ends",
+        "count": 3,
+        "strict": true,
+        "line": 17
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 10
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "name": "G04 field lines",
+   "rule": "G4",
+   "files": [
+    "G04 field lines.md"
+   ],
+   "no_levels": [
+    "E",
+    "W"
+   ],
+   "must_fire": [
+    [
+     "FORM-13",
+     "SC03-SH010"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G04 field lines.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH010",
+        "title": "Field lines written loosely",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "screen_time",
+          "6"
+         ],
+         [
+          "cut_out_on",
+          "thought_complete"
+         ],
+         [
+          "size",
+          "wide"
+         ],
+         [
+          "move",
+          "static"
+         ],
+         [
+          "angle",
+          "eye_level"
+         ],
+         [
+          "focus_on",
+          "CH-MARA"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Field lines",
+        "count": 1,
+        "strict": true,
+        "line": 13
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "N FORM-13 SC03-SH010 field name \"Screen Time\" read as screen_time. [G04 field lines.md, line 6]",
+     "N FORM-13 SC03-SH010 field name \"cut-out-on\" read as cut_out_on. [G04 field lines.md, line 7]",
+     "N FORM-13 SC03-SH010 the line \"-size: wide\" read as a field line; a field line starts with \"- \" (a dash and a space). [G04 field lines.md, line 8]",
+     "N FORM-13 SC03-SH010 the line \"* move: static\" read as a field line; a field line starts with \"- \" (a dash and a space). [G04 field lines.md, line 9]",
+     "N FORM-13 SC03-SH010 the line \"- angle: eye_level\" read as a field line; a field line starts with \"- \" (a dash and a space). [G04 field lines.md, line 10]"
+    ]
+   }
+  },
+  {
+   "name": "G05 value kinds",
+   "rule": "G5",
+   "files": [
+    "G05 value kinds.md"
+   ],
+   "no_levels": [
+    "E",
+    "W"
+   ],
+   "must_fire": [
+    [
+     "FORM-13",
+     "SC03-SH020"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G05 value kinds.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH020",
+        "title": "Every common kind",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "beats",
+          "SC03-B01, SC03-B02"
+         ],
+         [
+          "lines",
+          "20-24, 26, 28-31"
+         ],
+         [
+          "purpose",
+          "Mara learns the lamp will not stay lit for her."
+         ],
+         [
+          "because",
+          "SC03-B02, MO-LAMP, line:26, line: \"The wick takes the flame at last.\" to \"It holds.\""
+         ],
+         [
+          "role",
+          "must_keep"
+         ],
+         [
+          "kind",
+          "live"
+         ],
+         [
+          "frame",
+          "single"
+         ],
+         [
+          "size",
+          "medium close-up"
+         ],
+         [
+          "angle",
+          "eye_level"
+         ],
+         [
+          "height",
+          "eye:CH-MARA"
+         ],
+         [
+          "lens_mm",
+          "50"
+         ],
+         [
+          "move",
+          "static"
+         ],
+         [
+          "subject",
+          "CH-MARA.S01 | at: left_third | faces: frame_right | does: winds the key three turns; waits | display: 2 | still: head, hands | dwell_s: 2.5 | eyeline: PR-LAMP"
+         ],
+         [
+          "screen_time",
+          "6"
+         ],
+         [
+          "moment",
+          "0-2.5 | shows: winds the key"
+         ],
+         [
+          "moment",
+          "2.5-6 | shows: waits with the lamp at eye height"
+         ],
+         [
+          "held",
+          "no"
+         ],
+         [
+          "content_flags",
+          "none"
+         ],
+         [
+          "route",
+          "auto"
+         ]
+        ],
+        "items": {
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "at",
+             "left_third"
+            ],
+            [
+             "faces",
+             "frame_right"
+            ],
+            [
+             "does",
+             "winds the key three turns; waits"
+            ],
+            [
+             "display",
+             "2"
+            ],
+            [
+             "still",
+             "head, hands"
+            ],
+            [
+             "dwell_s",
+             "2.5"
+            ],
+            [
+             "eyeline",
+             "PR-LAMP"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "moment": [
+          {
+           "first": "0-2.5",
+           "parts": [
+            [
+             "shows",
+             "winds the key"
+            ]
+           ],
+           "unnamed": []
+          },
+          {
+           "first": "2.5-6",
+           "parts": [
+            [
+             "shows",
+             "waits with the lamp at eye height"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "beats": [
+          [
+           "SC03-B01",
+           "SC03-B02"
+          ]
+         ],
+         "because": [
+          [
+           "SC03-B02",
+           "MO-LAMP",
+           "line:26",
+           "line: \"The wick takes the flame at last.\" to \"It holds.\""
+          ]
+         ],
+         "subject.still": [
+          [
+           "head",
+           "hands"
+          ]
+         ],
+         "content_flags": [
+          [
+           "none"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "PLAN",
+        "id": null,
+        "title": "",
+        "known": true,
+        "line": 26,
+        "fields": [
+         [
+          "crisis",
+          "SC24 \"She puts the lamp out herself.\""
+         ],
+         [
+          "climax",
+          "SC26..SC27"
+         ],
+         [
+          "tone_home",
+          "grave"
+         ],
+         [
+          "tone_range",
+          "grave, tense, lyric"
+         ]
+        ],
+        "lists": {
+         "tone_range": [
+          [
+           "grave",
+           "tense",
+           "lyric"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SEQUENCE",
+        "id": "SQ02",
+        "title": "The long night",
+        "known": true,
+        "line": 32,
+        "fields": [
+         [
+          "scenes",
+          "SC05..SC09"
+         ],
+         [
+          "scene_intensity",
+          "4-6"
+         ],
+         [
+          "travel",
+          "left_to_right"
+         ]
+        ]
+       },
+       {
+        "type": "LOCATION",
+        "id": "LOC-SHED",
+        "title": "The shed",
+        "known": true,
+        "line": 37,
+        "fields": [
+         [
+          "size",
+          "[4.0, 3.0, 2.4]"
+         ],
+         [
+          "mark",
+          "MARA_MARK | at: [1.2, 1.5]"
+         ],
+         [
+          "object",
+          "WORKBENCH | at: [2.0, 0.5] | size: [1.8, 0.6, 0.9] | base: 0 | material: wood | meaning: where the lamp is mended | furniture: none"
+         ]
+        ],
+        "items": {
+         "mark": [
+          {
+           "first": "MARA_MARK",
+           "parts": [
+            [
+             "at",
+             "[1.2, 1.5]"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "object": [
+          {
+           "first": "WORKBENCH",
+           "parts": [
+            [
+             "at",
+             "[2.0, 0.5]"
+            ],
+            [
+             "size",
+             "[1.8, 0.6, 0.9]"
+            ],
+            [
+             "base",
+             "0"
+            ],
+            [
+             "material",
+             "wood"
+            ],
+            [
+             "meaning",
+             "where the lamp is mended"
+            ],
+            [
+             "furniture",
+             "none"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "CHOICE",
+        "id": "CHOICE-005",
+        "title": "Length",
+        "known": true,
+        "line": 42,
+        "fields": [
+         [
+          "date",
+          "2026-10-02"
+         ],
+         [
+          "affects",
+          "PROJECT.runtime_target_s, SC03-SU01.lens_mm"
+         ],
+         [
+          "asked",
+          "yes"
+         ]
+        ],
+        "lists": {
+         "affects": [
+          [
+           "PROJECT.runtime_target_s",
+           "SC03-SU01.lens_mm"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "CAMSYS",
+        "id": null,
+        "title": "",
+        "known": true,
+        "line": 47,
+        "fields": [
+         [
+          "lens_family",
+          "25, 35, 50, 85"
+         ],
+         [
+          "normal_lens_mm",
+          "35"
+         ]
+        ],
+        "lists": {
+         "lens_family": [
+          [
+           "25",
+           "35",
+           "50",
+           "85"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "CHAPTER",
+        "id": "CP01",
+        "title": "The first night",
+        "known": true,
+        "line": 51,
+        "fields": [
+         [
+          "first_line",
+          "\"The lamp was older than the house.\""
+         ],
+         [
+          "words",
+          "3120"
+         ]
+        ]
+       },
+       {
+        "type": "CHARACTER",
+        "id": "CH-MARA",
+        "title": "Mara Voss",
+        "known": true,
+        "line": 55,
+        "fields": [
+         [
+          "names",
+          "MARA, MARA VOSS"
+         ],
+         [
+          "lineup",
+          "height: short | mass: slight | shape: long | value: light | colour: grey | tempo: slow"
+         ]
+        ],
+        "items": {
+         "lineup": [
+          {
+           "first": null,
+           "parts": [
+            [
+             "height",
+             "short"
+            ],
+            [
+             "mass",
+             "slight"
+            ],
+            [
+             "shape",
+             "long"
+            ],
+            [
+             "value",
+             "light"
+            ],
+            [
+             "colour",
+             "grey"
+            ],
+            [
+             "tempo",
+             "slow"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "names": [
+          [
+           "MARA",
+           "MARA VOSS"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "STATE",
+        "id": "CH-MARA.S01",
+        "title": "Hands blackened",
+        "known": true,
+        "line": 59,
+        "fields": [
+         [
+          "element",
+          "CH-MARA"
+         ],
+         [
+          "from",
+          "SC03 | line: 22"
+         ],
+         [
+          "cause",
+          "22 | quote: \"black to the wrist\""
+         ],
+         [
+          "handedness",
+          "original"
+         ]
+        ],
+        "items": {
+         "from": [
+          {
+           "first": "SC03",
+           "parts": [
+            [
+             "line",
+             "22"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "cause": [
+          {
+           "first": "22",
+           "parts": [
+            [
+             "quote",
+             "\"black to the wrist\""
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B02",
+        "title": "The second winding",
+        "known": true,
+        "line": 65,
+        "fields": [
+         [
+          "charge",
+          "SC03-V1 | charge: ++"
+         ],
+         [
+          "beat_intensity",
+          "4"
+         ]
+        ],
+        "items": {
+         "charge": [
+          {
+           "first": "SC03-V1",
+           "parts": [
+            [
+             "charge",
+             "++"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Value kinds",
+        "count": 10,
+        "strict": true,
+        "line": 69
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "N FORM-13 SC03-SH020 size \"medium close-up\" read as medium_close_up. [G05 value kinds.md, line 13]"
+    ]
+   }
+  },
+  {
+   "name": "G06 items and sub-parts",
+   "rule": "G6",
+   "files": [
+    "G06 items and sub-parts.md"
+   ],
+   "no_levels": [
+    "E",
+    "W",
+    "N"
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G06 items and sub-parts.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH030",
+        "title": "Sub-parts in any order",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "subject",
+          "CH-MARA.S01 | does: sets the lamp down | faces: camera | at: centre | still: hands"
+         ],
+         [
+          "subject",
+          "CH-OSKAR | at: right_edge | faces: frame_left | does: watches from the door"
+         ],
+         [
+          "hear",
+          "SC03-D02 | speaker: off_screen | words: \"Leave it, it will not hold.\""
+         ],
+         [
+          "thing",
+          "PR-LAMP | emphasis: 2 | at: centre"
+         ]
+        ],
+        "items": {
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "does",
+             "sets the lamp down"
+            ],
+            [
+             "faces",
+             "camera"
+            ],
+            [
+             "at",
+             "centre"
+            ],
+            [
+             "still",
+             "hands"
+            ]
+           ],
+           "unnamed": []
+          },
+          {
+           "first": "CH-OSKAR",
+           "parts": [
+            [
+             "at",
+             "right_edge"
+            ],
+            [
+             "faces",
+             "frame_left"
+            ],
+            [
+             "does",
+             "watches from the door"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "hear": [
+          {
+           "first": "SC03-D02",
+           "parts": [
+            [
+             "speaker",
+             "off_screen"
+            ],
+            [
+             "words",
+             "\"Leave it, it will not hold.\""
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "thing": [
+          {
+           "first": "PR-LAMP",
+           "parts": [
+            [
+             "emphasis",
+             "2"
+            ],
+            [
+             "at",
+             "centre"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "subject.still": [
+          [
+           "hands"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "CHARACTER",
+        "id": "CH-OSKAR",
+        "title": "Oskar",
+        "known": true,
+        "line": 11,
+        "fields": [
+         [
+          "lineup",
+          "tempo: fast | height: tall | mass: heavy | shape: square | value: dark | colour: brown"
+         ],
+         [
+          "speech",
+          "sentences: short | contractions: yes | vocabulary: plain, trade words"
+         ]
+        ],
+        "items": {
+         "lineup": [
+          {
+           "first": null,
+           "parts": [
+            [
+             "tempo",
+             "fast"
+            ],
+            [
+             "height",
+             "tall"
+            ],
+            [
+             "mass",
+             "heavy"
+            ],
+            [
+             "shape",
+             "square"
+            ],
+            [
+             "value",
+             "dark"
+            ],
+            [
+             "colour",
+             "brown"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "speech": [
+          {
+           "first": null,
+           "parts": [
+            [
+             "sentences",
+             "short"
+            ],
+            [
+             "contractions",
+             "yes"
+            ],
+            [
+             "vocabulary",
+             "plain, trade words"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 15,
+        "fields": [
+         [
+          "value",
+          "SC03-V1 | name: hope | core: yes | open: - | close: ++ | turns_at: SC03-B02 | kind: action"
+         ],
+         [
+          "want",
+          "CH-MARA | want: to make the lamp hold | hidden: to prove Oskar wrong | holds_back: her fear of the dark"
+         ]
+        ],
+        "items": {
+         "value": [
+          {
+           "first": "SC03-V1",
+           "parts": [
+            [
+             "name",
+             "hope"
+            ],
+            [
+             "core",
+             "yes"
+            ],
+            [
+             "open",
+             "-"
+            ],
+            [
+             "close",
+             "++"
+            ],
+            [
+             "turns_at",
+             "SC03-B02"
+            ],
+            [
+             "kind",
+             "action"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "want": [
+          {
+           "first": "CH-MARA",
+           "parts": [
+            [
+             "want",
+             "to make the lamp hold"
+            ],
+            [
+             "hidden",
+             "to prove Oskar wrong"
+            ],
+            [
+             "holds_back",
+             "her fear of the dark"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Items",
+        "count": 3,
+        "strict": true,
+        "line": 19
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "name": "G07 empty and undecided",
+   "rule": "G7",
+   "files": [
+    "G07 empty and undecided.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-04",
+     "SC03-SH040"
+    ],
+    [
+     "FORM-13",
+     "SC03-SH040"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G07 empty and undecided.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH040",
+        "title": "Empty words",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "additions",
+          "none"
+         ],
+         [
+          "text",
+          "none"
+         ],
+         [
+          "effect",
+          "none"
+         ],
+         [
+          "size",
+          "none"
+         ],
+         [
+          "lens_mm",
+          "open"
+         ],
+         [
+          "status",
+          "open"
+         ],
+         [
+          "angle",
+          "auto"
+         ],
+         [
+          "route",
+          "auto"
+         ],
+         [
+          "purpose",
+          "null"
+         ],
+         [
+          "because",
+          "N/A"
+         ],
+         [
+          "move",
+          "-"
+         ],
+         [
+          "end",
+          ""
+         ],
+         [
+          "frame",
+          "None"
+         ]
+        ],
+        "lists": {
+         "text": [
+          [
+           "none"
+          ]
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Empty and undecided",
+        "count": 1,
+        "strict": true,
+        "line": 20
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-04 SC03-SH040 size is none, which is not allowed here. Fix: write a value. Allowed: extreme_wide, wide, medium_wide, medium, medium_close_up, close_up, extreme_close_up, insert. [G07 empty and undecided.md, line 9]",
+     "E FORM-04 SC03-SH040 status is open, but only fields the AI or the user write may be open. Fix: write the value. [G07 empty and undecided.md, line 11]",
+     "E FORM-04 SC03-SH040 angle is auto, which is allowed only where code decides this field. Fix: write the value. Allowed: eye_level, low, high, top_down, worms_eye, dutch. [G07 empty and undecided.md, line 12]",
+     "E FORM-04 SC03-SH040 frame is none, which is not allowed here. Fix: write a value. Allowed: single, two_shot, three_shot, group, over_shoulder, pov, near_pov, empty. [G07 empty and undecided.md, line 18]",
+     "N FORM-13 SC03-SH040 purpose \"null\" reads as missing (G7). Write none for empty, or open for a question to the user. [G07 empty and undecided.md, line 14]",
+     "N FORM-13 SC03-SH040 because \"N/A\" reads as missing (G7). Write none for empty, or open for a question to the user. [G07 empty and undecided.md, line 15]",
+     "N FORM-13 SC03-SH040 move \"-\" reads as missing (G7). Write none for empty, or open for a question to the user. [G07 empty and undecided.md, line 16]",
+     "N FORM-13 SC03-SH040 end \"blank\" reads as missing (G7). Write none for empty, or open for a question to the user. [G07 empty and undecided.md, line 17]"
+    ]
+   }
+  },
+  {
+   "name": "G08 notes",
+   "rule": "G8",
+   "files": [
+    "G08 notes.md"
+   ],
+   "no_levels": [
+    "E",
+    "W",
+    "N"
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G08 notes.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B03",
+        "title": "A beat with notes",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "lines",
+          "32-35"
+         ],
+         [
+          "turn",
+          "none"
+         ]
+        ],
+        "notes": [
+         "> Staging assumed: the story does not say where Oskar stands.",
+         "> - turn: main_turn",
+         "> A note after the last field."
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Notes",
+        "count": 1,
+        "strict": true,
+        "line": 12
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "name": "G09 END line",
+   "rule": "G9",
+   "files": [
+    "G09 END line.md"
+   ],
+   "no_levels": [
+    "E",
+    "W",
+    "N"
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G09 END line.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B02",
+        "title": "",
+        "known": true,
+        "line": 8,
+        "fields": [
+         [
+          "lines",
+          "25-31"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3 beats 1-2",
+        "count": 2,
+        "strict": true,
+        "line": 11
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "name": "G09 END line read tolerantly",
+   "rule": "G9",
+   "files": [
+    "G09 END line tolerant.md"
+   ],
+   "no_levels": [
+    "E",
+    "W"
+   ],
+   "must_fire": [
+    [
+     "FORM-13",
+     "\"G09 END line tolerant.md\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G09 END line tolerant.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3 beat 1",
+        "count": 1,
+        "strict": false,
+        "line": 4
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     }
+    ],
+    "problems": [
+     "N FORM-13 \"G09 END line tolerant.md\" END line \"end of file | Scene 3 beat 1 | 1 record\" read as \"END OF FILE | Scene 3 beat 1 | 1 records\". [G09 END line tolerant.md, line 4]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-06 END line missing: a cut-off reply",
+   "rule": "G9",
+   "files": [
+    "G09 cut off reply.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-06",
+     "\"G09 cut off reply.md\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G09 cut off reply.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH010",
+        "title": "The lamp on its hook",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "beats",
+          "SC03-B01"
+         ],
+         [
+          "purpose",
+          "The lamp is the only light in the shed."
+         ],
+         [
+          "size",
+          "wide"
+         ]
+        ],
+        "lists": {
+         "beats": [
+          [
+           "SC03-B01"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH020",
+        "title": "Mara winds it",
+        "known": true,
+        "line": 10,
+        "fields": [
+         [
+          "beats",
+          "SC03-B01, SC03-B02"
+         ],
+         [
+          "purpose",
+          "Mara tries again and"
+         ]
+        ],
+        "lists": {
+         "beats": [
+          [
+           "SC03-B01",
+           "SC03-B02"
+          ]
+         ]
+        }
+       }
+      ],
+      "end_lines": [],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-06 \"G09 cut off reply.md\" END line missing: the reply may have been cut off; the last record, SC03-SH020, may be incomplete. Fix: re-send from the start of SC03-SH020 (### SHOT SC03-SH020) and end the file with \"END OF FILE | <what the file holds> | <n> records\" [G09 cut off reply.md]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-06 two END lines",
+   "rule": "G9",
+   "files": [
+    "G09 two END lines.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-06",
+     "\"G09 two END lines.md\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G09 two END lines.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B02",
+        "title": "",
+        "known": true,
+        "line": 6,
+        "fields": [
+         [
+          "lines",
+          "25-31"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3 beat 1",
+        "count": 1,
+        "strict": true,
+        "line": 4
+       },
+       {
+        "what": "Scene 3 beat 2",
+        "count": 1,
+        "strict": true,
+        "line": 9
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 1
+     }
+    ],
+    "problems": [
+     "E FORM-06 \"G09 two END lines.md\" has 2 END lines; a file ends with exactly one. Fix: save each reply as its own file, or keep only the last END line with the total count. [G09 two END lines.md, line 9]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-06 text after the END line",
+   "rule": "G9",
+   "files": [
+    "G09 text after END line.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-06",
+     "\"G09 text after END line.md\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G09 text after END line.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3 beat 1",
+        "count": 1,
+        "strict": true,
+        "line": 4
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 1
+     }
+    ],
+    "problems": [
+     "E FORM-06 \"G09 text after END line.md\" has 1 line(s) after its END line, starting \"Save as: 11 Scenes/Scene 03 - Shed.md\". Fix: the END line is the file's last line; move the records above it and recount. [G09 text after END line.md, line 5]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-06 END line without a count",
+   "rule": "G9",
+   "files": [
+    "G09 END line without count.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-06",
+     "\"G09 END line without count.md\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G09 END line without count.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "",
+        "count": -1,
+        "strict": false,
+        "line": 4
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     }
+    ],
+    "problems": [
+     "E FORM-06 \"G09 END line without count.md\" END line \"END OF FILE | Scene 3 beat 1\" has no record count. Fix: write \"END OF FILE | <what the file holds> | <n> records\" [G09 END line without count.md, line 4]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-07 END count differs",
+   "rule": "G9",
+   "files": [
+    "G09 END line wrong count.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-07",
+     "\"G09 END line wrong count.md\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G09 END line wrong count.md",
+      "records": [
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B03",
+        "title": "",
+        "known": true,
+        "line": 4,
+        "fields": [
+         [
+          "lines",
+          "32-35"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3 beats 1-3",
+        "count": 3,
+        "strict": true,
+        "line": 7
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     }
+    ],
+    "problems": [
+     "E FORM-07 \"G09 END line wrong count.md\" END line counts 3 records but the file holds 2. Fix: send any record that was dropped, or correct the count to the ### records in the file. [G09 END line wrong count.md, line 7]"
+    ]
+   }
+  },
+  {
+   "name": "G10 merge by ID",
+   "rule": "G10",
+   "files": [
+    "G10 merge - scene list.md",
+    "G10 merge - scene file.md"
+   ],
+   "no_levels": [
+    "E",
+    "W",
+    "N"
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G10 merge - scene list.md",
+      "records": [
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "heading",
+          "INT. SHED - NIGHT"
+         ],
+         [
+          "event",
+          "Mara made the lamp hold for the first time."
+         ],
+         [
+          "tags",
+          "dialogue_duel"
+         ],
+         [
+          "status",
+          "approved"
+         ],
+         [
+          "locked",
+          "yes"
+         ]
+        ],
+        "lists": {
+         "tags": [
+          [
+           "dialogue_duel"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH030",
+        "title": "Saved in the first batch",
+        "known": true,
+        "line": 12,
+        "fields": [
+         [
+          "size",
+          "medium"
+         ],
+         [
+          "subject",
+          "CH-MARA.S01 | at: left_third | faces: camera | does: sets the lamp down"
+         ]
+        ],
+        "items": {
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "at",
+             "left_third"
+            ],
+            [
+             "faces",
+             "camera"
+            ],
+            [
+             "does",
+             "sets the lamp down"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene list",
+        "count": 2,
+        "strict": true,
+        "line": 16
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     },
+     {
+      "file": "G10 merge - scene file.md",
+      "records": [
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "location",
+          "LOC-SHED"
+         ],
+         [
+          "event",
+          "Mara made the lamp hold for the first time."
+         ],
+         [
+          "scene_idea",
+          "the lamp holds only when she stops watching it"
+         ]
+        ]
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH030",
+        "title": "Saved again in the second batch",
+        "known": true,
+        "line": 10,
+        "fields": [
+         [
+          "size",
+          "medium"
+         ],
+         [
+          "subject",
+          "CH-MARA.S01 | at: left_third | faces: camera | does: sets the lamp down"
+         ],
+         [
+          "subject",
+          "CH-OSKAR | at: right_edge | faces: frame_left | does: watches from the door"
+         ]
+        ],
+        "items": {
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "at",
+             "left_third"
+            ],
+            [
+             "faces",
+             "camera"
+            ],
+            [
+             "does",
+             "sets the lamp down"
+            ]
+           ],
+           "unnamed": []
+          },
+          {
+           "first": "CH-OSKAR",
+           "parts": [
+            [
+             "at",
+             "right_edge"
+            ],
+            [
+             "faces",
+             "frame_left"
+            ],
+            [
+             "does",
+             "watches from the door"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3",
+        "count": 2,
+        "strict": true,
+        "line": 15
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [],
+    "merged": [
+     {
+      "type": "SCENE",
+      "id": "SC03",
+      "fields": [
+       [
+        "heading",
+        "INT. SHED - NIGHT"
+       ],
+       [
+        "event",
+        "Mara made the lamp hold for the first time."
+       ],
+       [
+        "tags",
+        "dialogue_duel"
+       ],
+       [
+        "status",
+        "approved"
+       ],
+       [
+        "locked",
+        "yes"
+       ],
+       [
+        "location",
+        "LOC-SHED"
+       ],
+       [
+        "scene_idea",
+        "the lamp holds only when she stops watching it"
+       ]
+      ]
+     },
+     {
+      "type": "SHOT",
+      "id": "SC03-SH030",
+      "fields": [
+       [
+        "size",
+        "medium"
+       ],
+       [
+        "subject",
+        "CH-MARA.S01 | at: left_third | faces: camera | does: sets the lamp down"
+       ],
+       [
+        "subject",
+        "CH-OSKAR | at: right_edge | faces: frame_left | does: watches from the door"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "FORM-09 different values in copies",
+   "rule": "G10",
+   "files": [
+    "FORM-09 conflict - part 1.md",
+    "FORM-09 conflict - part 2.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-09",
+     "SC03"
+    ],
+    [
+     "FORM-09",
+     "SC03-SH130"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-09 conflict - part 1.md",
+      "records": [
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "event",
+          "Mara made the lamp hold for the first time."
+         ],
+         [
+          "tags",
+          "dialogue_duel"
+         ]
+        ],
+        "lists": {
+         "tags": [
+          [
+           "dialogue_duel"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH130",
+        "title": "Two sizes in one record",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "size",
+          "wide"
+         ],
+         [
+          "purpose",
+          "The shed from the door."
+         ],
+         [
+          "size",
+          "medium"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Conflict part 1",
+        "count": 2,
+        "strict": true,
+        "line": 10
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     },
+     {
+      "file": "FORM-09 conflict - part 2.md",
+      "records": [
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "event",
+          "Oskar put the lamp out."
+         ],
+         [
+          "tags",
+          "Dialogue duel"
+         ]
+        ],
+        "lists": {
+         "tags": [
+          [
+           "Dialogue duel"
+          ]
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Conflict part 2",
+        "count": 1,
+        "strict": true,
+        "line": 5
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     }
+    ],
+    "problems": [
+     "E FORM-09 SC03 event has different values in copies of this record: \"Mara made the lamp h [shortened] first time.\" (FORM-09 conflict - part 1.md, line 2) and \"Oskar put the lamp out.\" (FORM-09 conflict - part 2.md, line 2). Fix: keep one value; copies of a record in several files must agree (G10). [FORM-09 conflict - part 1.md, line 1]",
+     "E FORM-09 SC03-SH130 size is written twice with different values: \"wide\" (line 6) and \"medium\". Fix: keep one line; this field takes one value. [FORM-09 conflict - part 1.md, line 8]",
+     "N FORM-13 SC03 tags \"Dialogue duel\" read as dialogue_duel. [FORM-09 conflict - part 2.md, line 3]"
+    ],
+    "merged": [
+     {
+      "type": "SCENE",
+      "id": "SC03",
+      "fields": [
+       [
+        "event",
+        "Mara made the lamp hold for the first time."
+       ],
+       [
+        "tags",
+        "dialogue_duel"
+       ]
+      ]
+     },
+     {
+      "type": "SHOT",
+      "id": "SC03-SH130",
+      "fields": [
+       [
+        "size",
+        "wide"
+       ],
+       [
+        "purpose",
+        "The shed from the door."
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "FORM-08 shortening markers",
+   "rule": "G11",
+   "files": [
+    "G11 shortening markers.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-08",
+     "SC03-SH040"
+    ],
+    [
+     "FORM-08",
+     "SC03-SH050"
+    ],
+    [
+     "FORM-08",
+     "SC03-SH060"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G11 shortening markers.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH040",
+        "title": "Markers in values",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "purpose",
+          "Mara waits for the lamp..."
+         ],
+         [
+          "physics_note",
+          "winds, waits, winds again etc."
+         ],
+         [
+          "end",
+          "the same as above"
+         ],
+         [
+          "moment",
+          "0-2 | shows: winds the key and so on"
+         ],
+         [
+          "why",
+          "\"Leave it... it will not hold.\" is where the scene turns, so the frame stays on her."
+         ]
+        ],
+        "items": {
+         "moment": [
+          {
+           "first": "0-2",
+           "parts": [
+            [
+             "shows",
+             "winds the key and so on"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH050",
+        "title": "More markers",
+        "known": true,
+        "line": 12,
+        "fields": [
+         [
+          "purpose",
+          "As before, the lamp on its hook."
+         ],
+         [
+          "end",
+          "still…"
+         ],
+         [
+          "gen_note",
+          "omitted for brevity"
+         ]
+        ]
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH060",
+        "title": "A marker line",
+        "known": true,
+        "line": 17,
+        "fields": [
+         [
+          "purpose",
+          "Oskar at the door."
+         ],
+         [
+          "size",
+          "wide"
+         ]
+        ],
+        "loose": [
+         "// remaining shots follow the same pattern"
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3 shots 040-060",
+        "count": 3,
+        "strict": true,
+        "line": 22
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-08 SC03-SH040 purpose has the shortening marker \"...\". Fix: write the whole value; if the reply is getting long, stop after a whole record and continue in the next batch. [G11 shortening markers.md, line 6]",
+     "E FORM-08 SC03-SH040 physics_note has the shortening marker \"etc.\". Fix: write the whole value; if the reply is getting long, stop after a whole record and continue in the next batch. [G11 shortening markers.md, line 7]",
+     "E FORM-08 SC03-SH040 end has the shortening marker \"same as above\". Fix: write the whole value; if the reply is getting long, stop after a whole record and continue in the next batch. [G11 shortening markers.md, line 8]",
+     "E FORM-08 SC03-SH040 moment has the shortening marker \"and so on\". Fix: write the whole value; if the reply is getting long, stop after a whole record and continue in the next batch. [G11 shortening markers.md, line 9]",
+     "E FORM-08 SC03-SH050 purpose has the shortening marker \"as before\". Fix: write the whole value; if the reply is getting long, stop after a whole record and continue in the next batch. [G11 shortening markers.md, line 13]",
+     "E FORM-08 SC03-SH050 end has the shortening marker \"…\". Fix: write the whole value; if the reply is getting long, stop after a whole record and continue in the next batch. [G11 shortening markers.md, line 14]",
+     "E FORM-08 SC03-SH050 gen_note has the shortening marker \"omitted for brevity\". Fix: write the whole value; if the reply is getting long, stop after a whole record and continue in the next batch. [G11 shortening markers.md, line 15]",
+     "E FORM-08 SC03-SH060 has the shortening marker \"//\" in the line \"// remaining shots follow the same pattern\". Fix: write every record and field in full (G11). [G11 shortening markers.md, line 19]"
+    ]
+   }
+  },
+  {
+   "name": "G12 quotes",
+   "rule": "G12",
+   "files": [
+    "G12 quotes.md"
+   ],
+   "no_levels": [
+    "E",
+    "W",
+    "N"
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G12 quotes.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH070",
+        "title": "Commas and bars inside quotes",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "because",
+          "SC03-B02, line: \"Wait, wait, it holds.\" to \"The shed is warm now.\", MO-LAMP"
+         ],
+         [
+          "hear",
+          "SC03-D04 | speaker: on_screen | words: \"Light, then dark, then light.\""
+         ],
+         [
+          "why",
+          "\"Wait, wait, it holds.\" is the turn; the frame holds on her hands."
+         ]
+        ],
+        "items": {
+         "hear": [
+          {
+           "first": "SC03-D04",
+           "parts": [
+            [
+             "speaker",
+             "on_screen"
+            ],
+            [
+             "words",
+             "\"Light, then dark, then light.\""
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "because": [
+          [
+           "SC03-B02",
+           "line: \"Wait, wait, it holds.\" to \"The shed is warm now.\"",
+           "MO-LAMP"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "PLANT",
+        "id": "PL-01",
+        "title": "The spare wick",
+        "known": true,
+        "line": 10,
+        "fields": [
+         [
+          "planted_at",
+          "SC02 \"A spare wick, wrapped in paper.\""
+         ],
+         [
+          "paid_off_at",
+          "SC26 \"She unwraps the paper, slowly.\""
+         ]
+        ]
+       },
+       {
+        "type": "CHARACTER",
+        "id": "CH-MARA",
+        "title": "Mara Voss",
+        "known": true,
+        "line": 14,
+        "fields": [
+         [
+          "status_play",
+          "default: low | flips: SC03 \"Wait, wait, it holds.\", SC09 \"You will not take it.\""
+         ]
+        ],
+        "items": {
+         "status_play": [
+          {
+           "first": null,
+           "parts": [
+            [
+             "default",
+             "low"
+            ],
+            [
+             "flips",
+             "SC03 \"Wait, wait, it holds.\", SC09 \"You will not take it.\""
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "status_play.flips": [
+          [
+           "SC03 \"Wait, wait, it holds.\"",
+           "SC09 \"You will not take it.\""
+          ]
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Quotes",
+        "count": 3,
+        "strict": true,
+        "line": 17
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "name": "G13 headings in free text",
+   "rule": "G13",
+   "files": [
+    "G13 headings in free text.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-01",
+     "\"### At a glance\""
+    ],
+    [
+     "FORM-01",
+     "\"#### A deeper heading\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "G13 headings in free text.md",
+      "records": [
+       {
+        "type": "AT",
+        "id": "a",
+        "title": "glance",
+        "known": false,
+        "line": 8,
+        "fields": [
+         [
+          "size",
+          "wide"
+         ]
+        ]
+       },
+       {
+        "type": "#",
+        "id": "A",
+        "title": "deeper heading",
+        "known": false,
+        "line": 11,
+        "fields": [],
+        "loose": [
+         "Some words."
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 14,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Headings in free text",
+        "count": 3,
+        "strict": true,
+        "line": 17
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 7
+     }
+    ],
+    "problems": [
+     "E FORM-01 \"### At a glance\" names At, which is not a record type. Fix: a free-text heading uses # or ## only (G13); a record heading names a record type, as ### SHOT SC10-SH150. [G13 headings in free text.md, line 8]",
+     "E FORM-01 \"#### A deeper heading\" starts with more than three #, so it is read as a record heading with no record type. Fix: a free-text heading uses # or ## only (G13); a record heading names a record type, as ### SHOT SC10-SH150. [G13 headings in free text.md, line 11]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-01 unknown record type",
+   "rule": "G2",
+   "files": [
+    "FORM-01 unknown record type.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-01",
+     "\"### SHOTT SC03-SH080 A misspelt type\""
+    ],
+    [
+     "FORM-01",
+     "\"### Notes on the scene\""
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-01 unknown record type.md",
+      "records": [
+       {
+        "type": "SHOTT",
+        "id": "SC03-SH080",
+        "title": "A misspelt type",
+        "known": false,
+        "line": 5,
+        "fields": [
+         [
+          "size",
+          "wide"
+         ]
+        ]
+       },
+       {
+        "type": "NOTES",
+        "id": "on",
+        "title": "the scene",
+        "known": false,
+        "line": 8,
+        "fields": [],
+        "loose": [
+         "Oskar should stay by the door."
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "",
+        "known": true,
+        "line": 11,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Unknown types",
+        "count": 3,
+        "strict": true,
+        "line": 14
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-01 \"### SHOTT SC03-SH080 A misspelt type\" names SHOTT, which is not a record type. Did you mean SHOT? [FORM-01 unknown record type.md, line 5]",
+     "E FORM-01 \"### Notes on the scene\" names Notes, which is not a record type. Fix: a free-text heading uses # or ## only (G13); a record heading names a record type, as ### SHOT SC10-SH150. [FORM-01 unknown record type.md, line 8]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-02 IDs that do not fit",
+   "rule": "G2",
+   "files": [
+    "FORM-02 IDs that do not fit.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-02",
+     "SC03-SH15"
+    ],
+    [
+     "FORM-02",
+     "SC03-B7"
+    ],
+    [
+     "FORM-02",
+     "SHOT"
+    ],
+    [
+     "FORM-02",
+     "SC03-LIST"
+    ],
+    [
+     "FORM-02",
+     "SC03"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-02 IDs that do not fit.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH15",
+        "title": "Not in tens with three digits",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "size",
+          "wide"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B7",
+        "title": "",
+        "known": true,
+        "line": 8,
+        "fields": [
+         [
+          "lines",
+          "20-24"
+         ]
+        ]
+       },
+       {
+        "type": "SHOT",
+        "id": null,
+        "title": "",
+        "known": true,
+        "line": 11,
+        "fields": [
+         [
+          "size",
+          "wide"
+         ]
+        ]
+       },
+       {
+        "type": "SHOTLIST",
+        "id": "SC03-LIST",
+        "title": "",
+        "known": true,
+        "line": 14,
+        "fields": [
+         [
+          "item",
+          "SC03-SH15 | beats: SC03-B01 | role: normal | size: wide | frame: single | subject: CH-MARA | time: 4 | shows: the shed from the door"
+         ]
+        ],
+        "items": {
+         "item": [
+          {
+           "first": "SC03-SH15",
+           "parts": [
+            [
+             "beats",
+             "SC03-B01"
+            ],
+            [
+             "role",
+             "normal"
+            ],
+            [
+             "size",
+             "wide"
+            ],
+            [
+             "frame",
+             "single"
+            ],
+            [
+             "subject",
+             "CH-MARA"
+            ],
+            [
+             "time",
+             "4"
+            ],
+            [
+             "shows",
+             "the shed from the door"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "item.beats": [
+          [
+           "SC03-B01"
+          ]
+         ],
+         "item.subject": [
+          [
+           "CH-MARA"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 17,
+        "fields": [
+         [
+          "value",
+          "SC03-V12 | name: hope | core: yes | open: - | close: ++ | turns_at: SC03-B02 | kind: action"
+         ]
+        ],
+        "items": {
+         "value": [
+          {
+           "first": "SC03-V12",
+           "parts": [
+            [
+             "name",
+             "hope"
+            ],
+            [
+             "core",
+             "yes"
+            ],
+            [
+             "open",
+             "-"
+            ],
+            [
+             "close",
+             "++"
+            ],
+            [
+             "turns_at",
+             "SC03-B02"
+            ],
+            [
+             "kind",
+             "action"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "IDs",
+        "count": 5,
+        "strict": true,
+        "line": 20
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-02 SC03-SH15 is not a valid SHOT ID. Fix: write scene ID, -SH and 3 digits in steps of 10; an insert takes a number between (SH155); 990-999 for end cards and black (for example SC10-SH150). [FORM-02 IDs that do not fit.md, line 5]",
+     "E FORM-02 SC03-B7 is not a valid BEAT ID. Fix: write scene ID, -B and 2 digits (for example SC10-B07). [FORM-02 IDs that do not fit.md, line 8]",
+     "E FORM-02 SHOT has no ID. Fix: write ### SHOT <ID>, the ID being scene ID, -SH and 3 digits in steps of 10; an insert takes a number between (SH155); 990-999 for end cards and black (for example SC10-SH150). [FORM-02 IDs that do not fit.md, line 11]",
+     "E FORM-02 SC03-LIST item first part \"SC03-SH15\" is not the ID of SHOT. Fix: copy the ID exactly as issued (for example SC10-SH150). [FORM-02 IDs that do not fit.md, line 15]",
+     "E FORM-02 SC03 value first part \"SC03-V12\" is not the ID of VALUE. Fix: copy the ID exactly as issued (for example SC10-V1). [FORM-02 IDs that do not fit.md, line 18]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-03 unknown fields",
+   "rule": "G4",
+   "files": [
+    "FORM-03 unknown fields.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-03",
+     "SC03-SH090"
+    ],
+    [
+     "FORM-03",
+     "CHOICE-014-A"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-03 unknown fields.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH090",
+        "title": "Unknown fields",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "scren_time",
+          "12"
+         ],
+         [
+          "mood",
+          "tense"
+         ],
+         [
+          "sparkle",
+          "yes"
+         ],
+         [
+          "size",
+          "wide"
+         ]
+        ],
+        "loose": [
+         "- speed thing"
+        ]
+       },
+       {
+        "type": "SETVALUE",
+        "id": "CHOICE-014-A",
+        "title": "",
+        "known": true,
+        "line": 12,
+        "fields": [
+         [
+          "target",
+          "WR-LAMP"
+         ],
+         [
+          "era",
+          "a | from: 12 | to: 40 | frame: original"
+         ],
+         [
+          "colour",
+          "red"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Unknown fields",
+        "count": 2,
+        "strict": true,
+        "line": 17
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-03 SC03-SH090 scren_time is not a field of SHOT. Did you mean screen_time? [FORM-03 unknown fields.md, line 6]",
+     "E FORM-03 SC03-SH090 mood is not a field of SHOT. Fix: use a field of this record type (reference/03 Field guide lists them). [FORM-03 unknown fields.md, line 7]",
+     "E FORM-03 SC03-SH090 sparkle is not a field of SHOT. Fix: use a field of this record type (reference/03 Field guide lists them). [FORM-03 unknown fields.md, line 8]",
+     "E FORM-03 SC03-SH090 has the line \"- speed thing\", which is not a field line. Fix: write - <field>: <value>, one field per line (G4). [FORM-03 unknown fields.md, line 9]",
+     "E FORM-03 CHOICE-014-A colour is not a field of RULE. Fix: use a field of this record type (reference/03 Field guide lists them). [FORM-03 unknown fields.md, line 15]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-04 values not allowed",
+   "rule": "G5",
+   "files": [
+    "FORM-04 values not allowed.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-04",
+     "SC03-SH100"
+    ],
+    [
+     "FORM-04",
+     "LOC-SHED"
+    ],
+    [
+     "FORM-04",
+     "SC03-B02"
+    ],
+    [
+     "FORM-04",
+     "CHOICE-006"
+    ],
+    [
+     "FORM-04",
+     "PLAN"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-04 values not allowed.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH100",
+        "title": "Values off the lists",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "size",
+          "closeup shot"
+         ],
+         [
+          "angle",
+          "sideways"
+         ],
+         [
+          "role",
+          "key"
+         ],
+         [
+          "screen_time",
+          "fifteen"
+         ],
+         [
+          "lines",
+          "l. 402"
+         ],
+         [
+          "beats",
+          "SC03-B7"
+         ],
+         [
+          "because",
+          "the mood of the scene"
+         ],
+         [
+          "moment",
+          "4-2 | shows: stops"
+         ],
+         [
+          "subject",
+          "CH-MARA.S01 | at: middle | faces: camera | does: waits | display: 5"
+         ],
+         [
+          "held",
+          "maybe"
+         ]
+        ],
+        "items": {
+         "moment": [
+          {
+           "first": "4-2",
+           "parts": [
+            [
+             "shows",
+             "stops"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "at",
+             "middle"
+            ],
+            [
+             "faces",
+             "camera"
+            ],
+            [
+             "does",
+             "waits"
+            ],
+            [
+             "display",
+             "5"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "beats": [
+          [
+           "SC03-B7"
+          ]
+         ],
+         "because": [
+          [
+           "the mood of the scene"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "LOCATION",
+        "id": "LOC-SHED",
+        "title": "The shed",
+        "known": true,
+        "line": 17,
+        "fields": [
+         [
+          "size",
+          "[4.0, 3.0]"
+         ],
+         [
+          "mark",
+          "DOOR_MARK | at: [1.2]"
+         ]
+        ],
+        "items": {
+         "mark": [
+          {
+           "first": "DOOR_MARK",
+           "parts": [
+            [
+             "at",
+             "[1.2]"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B02",
+        "title": "",
+        "known": true,
+        "line": 21,
+        "fields": [
+         [
+          "charge",
+          "SC03-V1 | charge: +-"
+         ]
+        ],
+        "items": {
+         "charge": [
+          {
+           "first": "SC03-V1",
+           "parts": [
+            [
+             "charge",
+             "+-"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "CHOICE",
+        "id": "CHOICE-006",
+        "title": "A date",
+        "known": true,
+        "line": 24,
+        "fields": [
+         [
+          "date",
+          "2026-13-40"
+         ]
+        ]
+       },
+       {
+        "type": "PLAN",
+        "id": null,
+        "title": "",
+        "known": true,
+        "line": 27,
+        "fields": [
+         [
+          "crisis",
+          "the end of the film"
+         ],
+         [
+          "tone_range",
+          "grave, sad"
+         ]
+        ],
+        "lists": {
+         "tone_range": [
+          [
+           "grave",
+           "sad"
+          ]
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Values",
+        "count": 5,
+        "strict": true,
+        "line": 31
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-04 SC03-SH100 size \"closeup shot\" is not an allowed value. Did you mean close_up? Allowed: extreme_wide, wide, medium_wide, medium, medium_close_up, close_up, extreme_close_up, insert. [FORM-04 values not allowed.md, line 6]",
+     "E FORM-04 SC03-SH100 angle \"sideways\" is not an allowed value. Allowed: eye_level, low, high, top_down, worms_eye, dutch. [FORM-04 values not allowed.md, line 7]",
+     "E FORM-04 SC03-SH100 role \"key\" is not an allowed value. Allowed: turn, must_keep, normal. [FORM-04 values not allowed.md, line 8]",
+     "E FORM-04 SC03-SH100 screen_time \"fifteen\" is not a number. Fix: write digits only, with a full stop for decimals; the unit is in the field name. [FORM-04 values not allowed.md, line 9]",
+     "E FORM-04 SC03-SH100 lines \"l. 402\" is neither line numbers nor a quote anchor. Fix: write line numbers (402, 449-463) or a quote anchor (\"Iona chews it.\" to \"street signs either.\"). [FORM-04 values not allowed.md, line 10]",
+     "E FORM-04 SC03-SH100 beats \"SC03-B7\" is not the ID of BEAT. Fix: copy the ID exactly as issued (for example SC10-B07). [FORM-04 values not allowed.md, line 11]",
+     "E FORM-04 SC03-SH100 because \"the mood of the scene\" is neither an ID of a story record nor a line reference. Fix: write IDs (SC10-B07, MO-MINT), line:NNN or line: \"<quote anchor>\" [FORM-04 values not allowed.md, line 12]",
+     "E FORM-04 SC03-SH100 moment first part \"4-2\" ends before it starts. Fix: write start-end with the end later than the start. [FORM-04 values not allowed.md, line 13]",
+     "E FORM-04 SC03-SH100 subject sub-part at \"middle\" is not an allowed value. Allowed: left_edge, left_third, centre, right_third, right_edge. [FORM-04 values not allowed.md, line 14]",
+     "E FORM-04 SC03-SH100 subject sub-part display 5 is not an allowed value. Allowed: 1, 2, 3. [FORM-04 values not allowed.md, line 14]",
+     "E FORM-04 SC03-SH100 held \"maybe\" is not yes or no. Allowed: yes, no. [FORM-04 values not allowed.md, line 15]",
+     "E FORM-04 LOC-SHED size \"[4.0, 3.0]\" is not a size. Fix: write [w, d, h] in metres. [FORM-04 values not allowed.md, line 18]",
+     "E FORM-04 LOC-SHED mark sub-part at \"[1.2]\" is not a point. Fix: write [x, y] or [x, y, z] in metres. [FORM-04 values not allowed.md, line 19]",
+     "E FORM-04 SC03-B02 charge sub-part charge \"+-\" is not a charge. Allowed: ---, --, -, 0, +, ++, +++. [FORM-04 values not allowed.md, line 22]",
+     "E FORM-04 CHOICE-006 date \"2026-13-40\" is not a date. Fix: write year-month-day, as 2026-10-02. [FORM-04 values not allowed.md, line 25]",
+     "E FORM-04 PLAN crisis \"the end of the film\" is not a story point. Fix: write the scene ID and a quote anchor, as SC24 \"She deletes the way home.\", or a beat ID from step 7. [FORM-04 values not allowed.md, line 28]",
+     "E FORM-04 PLAN tone_range \"sad\" is not an allowed value. Allowed: grave, tense, dread, enigmatic, comic_light, comic_dark, romantic, kinetic, lyric, wonder, contemplative. [FORM-04 values not allowed.md, line 29]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-05 required fields at quick depth, step 8",
+   "rule": "G7",
+   "files": [
+    "FORM-05 required fields.md"
+   ],
+   "checks": [
+    "FORM-05"
+   ],
+   "context": {
+    "depth": "quick",
+    "step": 8
+   },
+   "must_fire": [
+    [
+     "FORM-05",
+     "SC03-SH110"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-05 required fields.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH110",
+        "title": "Missing purpose and screen time",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "beats",
+          "SC03-B02"
+         ],
+         [
+          "lines",
+          "25-31"
+         ],
+         [
+          "because",
+          "SC03-B02"
+         ],
+         [
+          "role",
+          "turn"
+         ],
+         [
+          "kind",
+          "live"
+         ],
+         [
+          "origin",
+          "story"
+         ],
+         [
+          "frame",
+          "single"
+         ],
+         [
+          "size",
+          "close_up"
+         ],
+         [
+          "angle",
+          "eye_level"
+         ],
+         [
+          "move",
+          "static"
+         ],
+         [
+          "subject",
+          "CH-MARA.S01 | at: centre | faces: camera"
+         ],
+         [
+          "hear",
+          "none"
+         ],
+         [
+          "status",
+          "draft"
+         ],
+         [
+          "locked",
+          "no"
+         ]
+        ],
+        "items": {
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "at",
+             "centre"
+            ],
+            [
+             "faces",
+             "camera"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "beats": [
+          [
+           "SC03-B02"
+          ]
+         ],
+         "because": [
+          [
+           "SC03-B02"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH120",
+        "title": "Omitted, so nothing is required",
+        "known": true,
+        "line": 21,
+        "fields": [
+         [
+          "status",
+          "omitted"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Required fields",
+        "count": 2,
+        "strict": true,
+        "line": 24
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-05 SC03-SH110 purpose is missing (required at quick depth by step 8). Fix: add \"- purpose: <purpose>\" (reference/03 Field guide shows its form). [FORM-05 required fields.md, line 5]",
+     "E FORM-05 SC03-SH110 subject item CH-MARA.S01 has no sub-part does (required at quick depth). Fix: add \"| does: <value>\" to the item. [FORM-05 required fields.md, line 5]",
+     "E FORM-05 SC03-SH110 screen_time is missing (required at quick depth by step 8). Fix: add a line such as \"- screen_time: 15\" [FORM-05 required fields.md, line 5]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-10 writers, the stored project checked",
+   "rule": "G6",
+   "files": [
+    "FORM-10 writers - project.md"
+   ],
+   "checks": [
+    "FORM-10"
+   ],
+   "must_fire": [
+    [
+     "FORM-10",
+     "LANTERN"
+    ],
+    [
+     "FORM-10",
+     "SC03-SH140"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-10 writers - project.md",
+      "records": [
+       {
+        "type": "PROJECT",
+        "id": "LANTERN",
+        "title": "The Lantern",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "title",
+          "The Lantern"
+         ],
+         [
+          "source_kind",
+          "screenplay"
+         ],
+         [
+          "depth",
+          "standard"
+         ],
+         [
+          "rights",
+          "mine"
+         ],
+         [
+          "training_off",
+          "confirmed"
+         ],
+         [
+          "frame_shape",
+          "2.39"
+         ],
+         [
+          "code_execution",
+          "yes"
+         ],
+         [
+          "status",
+          "draft"
+         ],
+         [
+          "locked",
+          "no"
+         ]
+        ]
+       },
+       {
+        "type": "CHOICE",
+        "id": "CHOICE-001",
+        "title": "Rights",
+        "known": true,
+        "line": 16,
+        "fields": [
+         [
+          "default",
+          "a | reason: most people adapt their own work"
+         ],
+         [
+          "answer",
+          "a"
+         ],
+         [
+          "sets",
+          "PROJECT.rights | value: mine | when: a"
+         ],
+         [
+          "sets",
+          "PROJECT.rights | value: study_only | when: b"
+         ],
+         [
+          "status",
+          "answered"
+         ]
+        ],
+        "items": {
+         "default": [
+          {
+           "first": "a",
+           "parts": [
+            [
+             "reason",
+             "most people adapt their own work"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "sets": [
+          {
+           "first": "PROJECT.rights",
+           "parts": [
+            [
+             "value",
+             "mine"
+            ],
+            [
+             "when",
+             "a"
+            ]
+           ],
+           "unnamed": []
+          },
+          {
+           "first": "PROJECT.rights",
+           "parts": [
+            [
+             "value",
+             "study_only"
+            ],
+            [
+             "when",
+             "b"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "CHOICE",
+        "id": "CHOICE-002",
+        "title": "Depth",
+        "known": true,
+        "line": 23,
+        "fields": [
+         [
+          "default",
+          "a | reason: standard is enough to make pictures and video from"
+         ],
+         [
+          "answer",
+          "b"
+         ],
+         [
+          "sets",
+          "PROJECT.depth | value: standard | when: a"
+         ],
+         [
+          "sets",
+          "PROJECT.depth | value: quick | when: b"
+         ],
+         [
+          "status",
+          "answered"
+         ]
+        ],
+        "items": {
+         "default": [
+          {
+           "first": "a",
+           "parts": [
+            [
+             "reason",
+             "standard is enough to make pictures and video from"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "sets": [
+          {
+           "first": "PROJECT.depth",
+           "parts": [
+            [
+             "value",
+             "standard"
+            ],
+            [
+             "when",
+             "a"
+            ]
+           ],
+           "unnamed": []
+          },
+          {
+           "first": "PROJECT.depth",
+           "parts": [
+            [
+             "value",
+             "quick"
+            ],
+            [
+             "when",
+             "b"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       },
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 30,
+        "fields": [
+         [
+          "heading",
+          "INT. SHED - NIGHT"
+         ],
+         [
+          "characters",
+          "CH-MARA, CH-OSKAR"
+         ],
+         [
+          "status",
+          "draft"
+         ],
+         [
+          "locked",
+          "no"
+         ]
+        ],
+        "lists": {
+         "characters": [
+          [
+           "CH-MARA",
+           "CH-OSKAR"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH140",
+        "title": "A typed label",
+        "known": true,
+        "line": 36,
+        "fields": [
+         [
+          "label",
+          "3A"
+         ],
+         [
+          "size",
+          "wide"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Project records",
+        "count": 5,
+        "strict": true,
+        "line": 40
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-10 LANTERN depth is \"standard\", which differs from what the answered choice sets (\"quick\"). Fix: write the value the choice sets, or ask the user again. [FORM-10 writers - project.md, line 8]",
+     "E FORM-10 LANTERN training_off is the user's to decide, and no answered or defaulted choice sets it. Fix: write open and ask through a choice (or a small choice with a default). [FORM-10 writers - project.md, line 10]",
+     "E FORM-10 LANTERN frame_shape is the user's to decide, and no answered or defaulted choice sets it. Fix: write open and ask through a choice (or a small choice with a default). [FORM-10 writers - project.md, line 11]",
+     "W FORM-10 SC03-SH140 label is worked out by code and never stored; the typed value is dropped. Fix: leave this field out; stage.py build computes it. [FORM-10 writers - project.md, line 37]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-10 writers, an inbox from the AI",
+   "rule": "G6",
+   "files": [
+    "FORM-10 writers - inbox.md"
+   ],
+   "checks": [
+    "FORM-10"
+   ],
+   "context": {
+    "written_by_ai": true,
+    "current_files": [
+     "FORM-10 writers - project.md"
+    ]
+   },
+   "must_fire": [
+    [
+     "FORM-10",
+     "SC03"
+    ],
+    [
+     "FORM-10",
+     "SC03-SH150"
+    ],
+    [
+     "FORM-10",
+     "PLAN"
+    ],
+    [
+     "FORM-10",
+     "LANTERN"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-10 writers - inbox.md",
+      "records": [
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "heading",
+          "INT. SHED - LATER"
+         ],
+         [
+          "characters",
+          "CH-MARA, CH-OSKAR"
+         ],
+         [
+          "event",
+          "Mara made the lamp hold."
+         ],
+         [
+          "status",
+          "approved"
+         ]
+        ],
+        "lists": {
+         "characters": [
+          [
+           "CH-MARA",
+           "CH-OSKAR"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH150",
+        "title": "A new shot",
+        "known": true,
+        "line": 7,
+        "fields": [
+         [
+          "status",
+          "draft"
+         ],
+         [
+          "size",
+          "wide"
+         ],
+         [
+          "clips",
+          "1"
+         ]
+        ]
+       },
+       {
+        "type": "PLAN",
+        "id": null,
+        "title": "",
+        "known": true,
+        "line": 12,
+        "fields": [
+         [
+          "crisis",
+          "SC24 \"She puts the lamp out herself.\" = SC24-B05"
+         ]
+        ]
+       },
+       {
+        "type": "PROJECT",
+        "id": "LANTERN",
+        "title": "The Lantern",
+        "known": true,
+        "line": 15,
+        "fields": [
+         [
+          "rights",
+          "study_only"
+         ],
+         [
+          "fps",
+          "24"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3",
+        "count": 4,
+        "strict": true,
+        "line": 19
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     }
+    ],
+    "problems": [
+     "E FORM-10 SC03 heading is written by code (story); the AI may not change it. Fix: remove the line; code copies it from the story. [FORM-10 writers - inbox.md, line 2]",
+     "E FORM-10 SC03 status is written by code (code_state); the AI may not change it. Fix: remove the line; code keeps it. [FORM-10 writers - inbox.md, line 5]",
+     "W FORM-10 SC03-SH150 clips is worked out by code and never stored; the typed value is dropped. Fix: leave this field out; stage.py build computes it. [FORM-10 writers - inbox.md, line 10]",
+     "E FORM-10 PLAN crisis types the resolved beat after = in \"SC24 \"She puts the lamp out herself.\" = SC24-B05\"; code writes that ending. Fix: write the scene ID and the quote only. [FORM-10 writers - inbox.md, line 13]",
+     "E FORM-10 LANTERN rights is \"study_only\", which differs from what the answered choice sets (\"mine\"). Fix: write the value the choice sets, or ask the user again. [FORM-10 writers - inbox.md, line 16]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-10 writers, an inbox from a chat without code",
+   "rule": "G6",
+   "files": [
+    "FORM-10 writers - inbox.md"
+   ],
+   "checks": [
+    "FORM-10"
+   ],
+   "context": {
+    "written_by_ai": true,
+    "code_execution": "no",
+    "current_files": [
+     "FORM-10 writers - project.md"
+    ]
+   },
+   "must_fire": [
+    [
+     "FORM-10",
+     "SC03-SH150"
+    ],
+    [
+     "FORM-10",
+     "PLAN"
+    ],
+    [
+     "FORM-10",
+     "LANTERN"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-10 writers - inbox.md",
+      "records": [
+       {
+        "type": "SCENE",
+        "id": "SC03",
+        "title": "",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "heading",
+          "INT. SHED - LATER"
+         ],
+         [
+          "characters",
+          "CH-MARA, CH-OSKAR"
+         ],
+         [
+          "event",
+          "Mara made the lamp hold."
+         ],
+         [
+          "status",
+          "approved"
+         ]
+        ],
+        "lists": {
+         "characters": [
+          [
+           "CH-MARA",
+           "CH-OSKAR"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "SHOT",
+        "id": "SC03-SH150",
+        "title": "A new shot",
+        "known": true,
+        "line": 7,
+        "fields": [
+         [
+          "status",
+          "draft"
+         ],
+         [
+          "size",
+          "wide"
+         ],
+         [
+          "clips",
+          "1"
+         ]
+        ]
+       },
+       {
+        "type": "PLAN",
+        "id": null,
+        "title": "",
+        "known": true,
+        "line": 12,
+        "fields": [
+         [
+          "crisis",
+          "SC24 \"She puts the lamp out herself.\" = SC24-B05"
+         ]
+        ]
+       },
+       {
+        "type": "PROJECT",
+        "id": "LANTERN",
+        "title": "The Lantern",
+        "known": true,
+        "line": 15,
+        "fields": [
+         [
+          "rights",
+          "study_only"
+         ],
+         [
+          "fps",
+          "24"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Scene 3",
+        "count": 4,
+        "strict": true,
+        "line": 19
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     }
+    ],
+    "problems": [
+     "W FORM-10 SC03-SH150 clips is worked out by code and never stored; the typed value is dropped. Fix: leave this field out; stage.py build computes it. [FORM-10 writers - inbox.md, line 10]",
+     "E FORM-10 PLAN crisis types the resolved beat after = in \"SC24 \"She puts the lamp out herself.\" = SC24-B05\"; code writes that ending. Fix: write the scene ID and the quote only. [FORM-10 writers - inbox.md, line 13]",
+     "E FORM-10 LANTERN rights is \"study_only\", which differs from what the answered choice sets (\"mine\"). Fix: write the value the choice sets, or ask the user again. [FORM-10 writers - inbox.md, line 16]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-11 locked records",
+   "rule": "G10",
+   "files": [
+    "FORM-11 locked - inbox.md"
+   ],
+   "checks": [
+    "FORM-11"
+   ],
+   "context": {
+    "written_by_ai": true,
+    "current_files": [
+     "FORM-11 locked - project.md"
+    ]
+   },
+   "must_fire": [
+    [
+     "FORM-11",
+     "CH-MARA"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-11 locked - inbox.md",
+      "records": [
+       {
+        "type": "CHARACTER",
+        "id": "CH-MARA",
+        "title": "Mara Voss",
+        "known": true,
+        "line": 1,
+        "fields": [
+         [
+          "fixed_description",
+          "A tall woman of thirty in a red coat, clean hands, long dark hair."
+         ],
+         [
+          "life_want",
+          "to keep the lamp burning"
+         ],
+         [
+          "names",
+          "MARA, OLD MARA"
+         ],
+         [
+          "note",
+          "first note"
+         ],
+         [
+          "note",
+          "a second note"
+         ]
+        ],
+        "lists": {
+         "names": [
+          [
+           "MARA",
+           "OLD MARA"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "PROJECT",
+        "id": "LANTERN",
+        "title": "The Lantern",
+        "known": true,
+        "line": 8,
+        "fields": [
+         [
+          "frame_shape",
+          "2.39"
+         ]
+        ]
+       },
+       {
+        "type": "BEAT",
+        "id": "SC03-B01",
+        "title": "Not locked",
+        "known": true,
+        "line": 11,
+        "fields": [
+         [
+          "lines",
+          "20-26"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Changes",
+        "count": 3,
+        "strict": true,
+        "line": 14
+       }
+      ],
+      "has_divider": false,
+      "free_text_lines": 0
+     }
+    ],
+    "problems": [
+     "E FORM-11 CH-MARA fixed_description changes a locked record (it was \"A small woman of six [shortened] white hair.\"). Fix: keep the locked value; changing it needs a choice the user answers, which unlocks it. [FORM-11 locked - inbox.md, line 2]",
+     "E FORM-11 CH-MARA names changes a locked record (it was \"MARA\"). Fix: keep the locked value; changing it needs a choice the user answers, which unlocks it. [FORM-11 locked - inbox.md, line 4]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-12 sub-parts",
+   "rule": "G6",
+   "files": [
+    "FORM-12 sub-parts.md"
+   ],
+   "must_fire": [
+    [
+     "FORM-12",
+     "SC03-SH160"
+    ]
+   ],
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-12 sub-parts.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH160",
+        "title": "Sub-part mistakes",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "subject",
+          "CH-MARA.S01 | left_third | faces: camera | does: waits"
+         ],
+         [
+          "subject",
+          "CH-OSKAR | position: door | faces: camera | does: watches"
+         ],
+         [
+          "subject",
+          "CH-OSKAR | at: right_edge | at: centre | does: watches"
+         ],
+         [
+          "purpose",
+          "Mara waits | Oskar watches"
+         ],
+         [
+          "thing",
+          "emphasis: 2 | at: centre"
+         ],
+         [
+          "size",
+          "wide | at: centre"
+         ]
+        ],
+        "items": {
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "faces",
+             "camera"
+            ],
+            [
+             "does",
+             "waits"
+            ]
+           ],
+           "unnamed": [
+            "left_third"
+           ]
+          },
+          {
+           "first": "CH-OSKAR",
+           "parts": [
+            [
+             "position",
+             "door"
+            ],
+            [
+             "faces",
+             "camera"
+            ],
+            [
+             "does",
+             "watches"
+            ]
+           ],
+           "unnamed": []
+          },
+          {
+           "first": "CH-OSKAR",
+           "parts": [
+            [
+             "at",
+             "right_edge"
+            ],
+            [
+             "at",
+             "centre"
+            ],
+            [
+             "does",
+             "watches"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "thing": [
+          {
+           "first": "emphasis: 2",
+           "parts": [
+            [
+             "at",
+             "centre"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        }
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Sub-parts",
+        "count": 1,
+        "strict": true,
+        "line": 13
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "E FORM-12 SC03-SH160 subject has an unnamed sub-part \"left_third\". Fix: name it, as \"at: left_third\"; sub-parts are always key: value. [FORM-12 sub-parts.md, line 6]",
+     "E FORM-12 SC03-SH160 subject has the unknown sub-part key position. Allowed: at, faces, does, tactic, energy, display, still, eyeline, dwell_s, travel, must_not, continues. [FORM-12 sub-parts.md, line 7]",
+     "E FORM-12 SC03-SH160 subject has the sub-part at twice in one item. Fix: keep one; a repeatable field takes one line per item. [FORM-12 sub-parts.md, line 8]",
+     "E FORM-12 SC03-SH160 purpose has \" | \" inside a value of kind text. Fix: use a semicolon or a comma instead; a bar separates named sub-parts only. [FORM-12 sub-parts.md, line 9]",
+     "E FORM-12 SC03-SH160 thing has no first part before its named sub-parts (\"emphasis: 2 | at: centre\"). Fix: start the item with its main value (usually an ID), then the named sub-parts. [FORM-12 sub-parts.md, line 10]",
+     "E FORM-12 SC03-SH160 size has \" | \" inside a value of kind word. Fix: use a semicolon or a comma instead; a bar separates named sub-parts only. [FORM-12 sub-parts.md, line 11]"
+    ]
+   }
+  },
+  {
+   "name": "FORM-13 tidy fixes",
+   "rule": "G4",
+   "files": [
+    "FORM-13 tidy fixes.md"
+   ],
+   "no_levels": [
+    "E",
+    "W"
+   ],
+   "must_fire": [
+    [
+     "FORM-13",
+     "SC03-SH170"
+    ],
+    [
+     "FORM-13",
+     "LOC-SHED"
+    ],
+    [
+     "FORM-13",
+     "\"FORM-13 tidy fixes.md\""
+    ]
+   ],
+   "tidied_file": "FORM-13 tidy fixes - after tidying.md",
+   "expected": {
+    "parsed": [
+     {
+      "file": "FORM-13 tidy fixes.md",
+      "records": [
+       {
+        "type": "SHOT",
+        "id": "SC03-SH170",
+        "title": "Tidy fixes",
+        "known": true,
+        "line": 5,
+        "fields": [
+         [
+          "screen_time",
+          "6 s"
+         ],
+         [
+          "size",
+          "MCU"
+         ],
+         [
+          "move",
+          "Dolly In"
+         ],
+         [
+          "frame",
+          "over the shoulder"
+         ],
+         [
+          "held",
+          "Yes"
+         ],
+         [
+          "beats",
+          "sc03-b01,SC03-B02"
+         ],
+         [
+          "lines",
+          "20,22 - 24"
+         ],
+         [
+          "moment",
+          "0 - 2.5 | shows: winds the key"
+         ],
+         [
+          "lens",
+          "50mm"
+         ],
+         [
+          "angle",
+          "Eye Level"
+         ],
+         [
+          "subject",
+          "CH-MARA.S01 | At: centre | faces: camera | does: waits"
+         ],
+         [
+          "duration",
+          "6"
+         ],
+         [
+          "purpose",
+          "The lamp holds at last."
+         ]
+        ],
+        "items": {
+         "moment": [
+          {
+           "first": "0 - 2.5",
+           "parts": [
+            [
+             "shows",
+             "winds the key"
+            ]
+           ],
+           "unnamed": []
+          }
+         ],
+         "subject": [
+          {
+           "first": "CH-MARA.S01",
+           "parts": [
+            [
+             "at",
+             "centre"
+            ],
+            [
+             "faces",
+             "camera"
+            ],
+            [
+             "does",
+             "waits"
+            ]
+           ],
+           "unnamed": []
+          }
+         ]
+        },
+        "lists": {
+         "beats": [
+          [
+           "sc03-b01",
+           "SC03-B02"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "LOCATION",
+        "id": "LOC-SHED",
+        "title": "The shed",
+        "known": true,
+        "line": 20,
+        "fields": [
+         [
+          "size",
+          "[4,3,2.4]"
+         ]
+        ]
+       }
+      ],
+      "end_lines": [
+       {
+        "what": "Tidy fixes",
+        "count": 2,
+        "strict": false,
+        "line": 23
+       }
+      ],
+      "has_divider": true,
+      "free_text_lines": 4
+     }
+    ],
+    "problems": [
+     "N FORM-13 SC03-SH170 record type \"shot\" read as SHOT. [FORM-13 tidy fixes.md, line 5]",
+     "N FORM-13 SC03-SH170 ID \"sc03-sh170\" read as SC03-SH170. [FORM-13 tidy fixes.md, line 5]",
+     "N FORM-13 SC03-SH170 field name \"Screen Time\" read as screen_time. [FORM-13 tidy fixes.md, line 6]",
+     "N FORM-13 SC03-SH170 screen_time \"6 s\" read as 6 (the unit is in the field name). [FORM-13 tidy fixes.md, line 6]",
+     "N FORM-13 SC03-SH170 size \"MCU\" read as medium_close_up (a known spelling). [FORM-13 tidy fixes.md, line 7]",
+     "N FORM-13 SC03-SH170 move \"Dolly In\" read as push_in (a known spelling). [FORM-13 tidy fixes.md, line 8]",
+     "N FORM-13 SC03-SH170 frame \"over the shoulder\" read as over_shoulder (a known spelling). [FORM-13 tidy fixes.md, line 9]",
+     "N FORM-13 SC03-SH170 held \"Yes\" read as yes. [FORM-13 tidy fixes.md, line 10]",
+     "N FORM-13 SC03-SH170 beats \"sc03-b01,SC03-B02\" read as SC03-B01, SC03-B02. [FORM-13 tidy fixes.md, line 11]",
+     "N FORM-13 SC03-SH170 lines \"20,22 - 24\" read as 20, 22-24. [FORM-13 tidy fixes.md, line 12]",
+     "N FORM-13 SC03-SH170 moment first part \"0 - 2.5\" read as 0-2.5. [FORM-13 tidy fixes.md, line 13]",
+     "N FORM-13 SC03-SH170 lens read as lens_mm (the one word for this field). [FORM-13 tidy fixes.md, line 14]",
+     "N FORM-13 SC03-SH170 lens_mm \"50mm\" read as 50 (the unit is in the field name). [FORM-13 tidy fixes.md, line 14]",
+     "N FORM-13 SC03-SH170 angle \"Eye Level\" read as eye_level. [FORM-13 tidy fixes.md, line 15]",
+     "N FORM-13 SC03-SH170 subject has the sub-part key \"At\", read as at. [FORM-13 tidy fixes.md, line 16]",
+     "N FORM-13 SC03-SH170 duration read as screen_time (the one word for this field). [FORM-13 tidy fixes.md, line 17]",
+     "N FORM-13 SC03-SH170 screen_time is written twice with the same value; the second line is a duplicate. [FORM-13 tidy fixes.md, line 17]",
+     "N FORM-13 LOC-SHED size \"[4,3,2.4]\" read as [4, 3, 2.4]. [FORM-13 tidy fixes.md, line 21]",
+     "N FORM-13 \"FORM-13 tidy fixes.md\" END line \"end of file | Tidy fixes | 2 record\" read as \"END OF FILE | Tidy fixes | 2 records\". [FORM-13 tidy fixes.md, line 23]"
+    ]
+   }
+  }
+ ]
+}

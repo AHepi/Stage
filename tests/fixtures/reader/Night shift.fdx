@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<FinalDraft DocumentType="Script" Template="No" Version="5">
+  <Content>
+    <Paragraph Type="Transition"><Text>FADE IN:</Text></Paragraph>
+    <Paragraph Type="Scene Heading"><Text>INT. BAKERY - BACK ROOM - NIGHT</Text></Paragraph>
+    <Paragraph Type="Action"><Text>MARA HOLT, sixties, flour to the elbows, slides a tray into the oven. The bell over the door RINGS.</Text></Paragraph>
+    <Paragraph Type="Character"><Text>MARA</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>We're </Text><Text Style="Italic">closed.</Text></Paragraph>
+    <Paragraph Type="Character"><Text>OSKAR (O.S.)</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>It's me.</Text></Paragraph>
+    <Paragraph Type="Action"><Text>OSKAR, twenties, soaked through, comes in with a paper bag. Inside it: a small brass KEY.</Text></Paragraph>
+    <Paragraph Type="Character"><Text>MARA</Text></Paragraph>
+    <Paragraph Type="Parenthetical"><Text>(not looking up)</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>Where did you find that?</Text></Paragraph>
+    <Paragraph Type="Character"><Text>OSKAR</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>Under the shed. Where you said.</Text></Paragraph>
+    <Paragraph Type="Action"><Text>A sign above the door reads NO ENTRY AFTER TEN.</Text></Paragraph>
+    <Paragraph Type="Transition"><Text>CUT TO BLACK.</Text></Paragraph>
+    <Paragraph Type="Action" Alignment="Center"><Text>NIGHT SHIFT</Text></Paragraph>
+    <Paragraph Type="Scene Heading"><Text>EXT. YARD - CONTINUOUS (ON THE MONITOR)</Text></Paragraph>
+    <Paragraph Type="Action"><Text>A grey picture of the yard, lit by one lamp. A GUARD walks past the gate.</Text></Paragraph>
+    <Paragraph Type="Character"><Text>MARA (V.O.)</Text></Paragraph>
+    <Paragraph Type="Parenthetical"><Text>(in his ear)</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>Walk slowly. Keep to the wall.</Text></Paragraph>
+    <Paragraph Type="Character"><Text>OSKAR</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>I am walking slowly.</Text></Paragraph>
+    <Paragraph Type="Character"><Text>MARA (V.O.)</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>Now left.</Text></Paragraph>
+    <Paragraph Type="Action"><Text>A dog BARKS somewhere.</Text></Paragraph>
+    <Paragraph Type="Scene Heading"><Text>INT. BAKERY - FRONT ROOM - LATER</Text></Paragraph>
+    <Paragraph Type="Action"><Text>The lamp goes out. BLACK. Then the oven light, orange, low.</Text></Paragraph>
+    <Paragraph Type="Character"><Text>MARA</Text></Paragraph>
+    <Paragraph Type="Parenthetical"><Text>(beat)</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>Keep it.</Text></Paragraph>
+    <Paragraph Type="Parenthetical"><Text>(beat)</Text></Paragraph>
+    <Paragraph Type="Dialogue"><Text>Keep it safe.</Text></Paragraph>
+    <Paragraph Type="Transition"><Text>FADE OUT.</Text></Paragraph>
+    <Paragraph Type="Action" Alignment="Center"><Text>THE END</Text></Paragraph>
+  </Content>
+  <TitlePage>
+    <Content>
+      <Paragraph Alignment="Center" Type="Action"><Text>NIGHT SHIFT</Text></Paragraph>
+      <Paragraph Alignment="Center" Type="Action"><Text>A short screenplay made up for testing</Text></Paragraph>
+    </Content>
+  </TitlePage>
+</FinalDraft>

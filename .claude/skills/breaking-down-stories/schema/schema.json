@@ -285,7 +285,8 @@
   "otherwise": "None of the other conditions in the same writer_when list holds.",
   "when_used": "Written only when the thing it records exists (a departure, a flaw, a pov break); the checker never asks for it.",
   "casting_chosen": "Casting (the appearance of the people who play the characters) has been chosen in add-on C.",
-  "music_policy_allows_cues": "SOUNDPLAN.music_policy is sparse or scored."
+  "music_policy_allows_cues": "SOUNDPLAN.music_policy is sparse or scored.",
+  "filmed_shot": "The SHOT kind is not card or black: a camera films it (a title card or black has no setup, height, lens or focus)."
  },
  "common_fields": {
   "about": "Every record type also takes these three fields (5.5). A record type that lists its own status field (CHOICE, FINDING) uses its own list; status_values on each record type gives the allowed statuses.",
@@ -4239,6 +4240,7 @@
      "kind": "id",
      "depth": "s",
      "writer": "ai",
+     "required_when": "filmed_shot",
      "example": "SC10-SU02",
      "id_types": [
       "SETUP"
@@ -4342,6 +4344,7 @@
      "kind": "text",
      "depth": "s",
      "writer": "ai",
+     "required_when": "filmed_shot",
      "example": "eye:CH-IONA",
      "syntax": "eye:CH-ID, seated:CH-ID, kneeling:CH-ID, floor, or metres",
      "pattern": "^((eye|seated|kneeling):CH-[A-Z0-9]+(-[A-Z0-9]+)*|floor|\\d+(\\.\\d+)?)$",
@@ -4357,6 +4360,7 @@
      "kind": "millimetres",
      "depth": "s",
      "writer": "ai",
+     "required_when": "filmed_shot",
      "example": "50",
      "default": "CAMSYS.normal_lens_mm",
      "group": "camera",
@@ -4375,6 +4379,7 @@
      ],
      "depth": "s",
      "writer": "ai",
+     "required_when": "filmed_shot",
      "example": "moderate",
      "default": "moderate",
      "group": "camera",
@@ -4388,6 +4393,7 @@
      "kind": "id",
      "depth": "s",
      "writer": "ai",
+     "required_when": "filmed_shot",
      "example": "CH-IONA",
      "id_types": [
       "CHARACTER",
@@ -4447,6 +4453,7 @@
      "kind": "text",
      "depth": "s",
      "writer": "ai",
+     "required_when": "filmed_shot",
      "example": "none",
      "also_allowed": [
       "none"
@@ -8993,11 +9000,14 @@
     {
      "name": "on",
      "label": "On what",
-     "meaning": "What the text is on.",
+     "meaning": "What the text is on (none for a title card or caption laid over black or over the picture).",
      "kind": "id",
      "depth": "q",
      "writer": "ai",
      "example": "PR-CAGE",
+     "also_allowed": [
+      "none"
+     ],
      "id_types": [
       "PROP",
       "LOCATION",
