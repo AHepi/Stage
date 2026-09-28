@@ -83,7 +83,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - plant_emphasis: <standard: a number from 0 to 3>
 - plot_event: <optional: yes or no; default no>
 - payoff_emphasis: <standard: a number from 0 to 3>
-- rhyme: <standard: yes or no> | framing: <text>
+- rhyme: <standard: yes or no> | framing: <text> | side: <same or reversed>
 - motif: <standard: an ID of MOTIF (MO-MINT), or none>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>

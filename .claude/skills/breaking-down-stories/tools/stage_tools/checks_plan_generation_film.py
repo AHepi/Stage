@@ -669,6 +669,12 @@ def appearance_texts(run, clip):
     return texts
 
 
+def turned_sides(text):
+    """A record's words with every left and right turned (the form compile pastes for an element shown pre-reversed)."""
+    return re.sub(r"\b(?:left|right)\b", lambda match: {"left": "right", "right": "left"}[match.group(0).lower()],
+                  str(text or ""), flags=re.IGNORECASE)
+
+
 def lint_gen_04(run, clips, facts=None, forced=False):
     problems = []
     for clip in clips:
@@ -676,7 +682,9 @@ def lint_gen_04(run, clips, facts=None, forced=False):
             continue
         prompt = normalised(clip.prompt)
         for field_name, what, text in appearance_texts(run, clip):
-            if normalised(text) not in prompt:
+            # the one change allowed: left and right turned, where the picture shows the element pre-reversed
+            # (a mirrored element made as it appears, or a normal one made before the clip's flip; 8.5, B1 method 1)
+            if normalised(text) not in prompt and normalised(turned_sides(text)) not in prompt:
                 problems.append(clip_problem(
                     run, "E", "GEN-04", clip, field_name,
                     f"the prompt does not hold {what} word for word",
@@ -1031,6 +1039,10 @@ def reason_texts(run, clip):
         for name in ("purpose", "why", "move_reason", "pov_break"):
             if not is_empty(shot.get(name)):
                 texts.append((f"the shot's {name}", shot.get(name)))
+        for written in shot.get_all("departure"):
+            kept = split_item(written).get("meaning_kept")
+            if not is_empty(kept):
+                texts.append(("the meaning a departure keeps", kept))
         for written in shot.get_all("thing"):
             motif = run.record(element_of(split_item(written).first or ""))
             if motif is not None and motif.type_name == "MOTIF" and not is_empty(motif.get("meaning")):
@@ -1055,6 +1067,8 @@ def visible_texts(clip):
 
 def lint_gen_15(run, clips, facts=None, forced=False):
     problems = []
+    mood_phrases = [normalised(phrase) for phrase in
+                    ((run.words or {}).get("mood_only_phrases") or {}).get("phrases") or [] if phrase]
     for clip in clips:
         prompt = normalised(clip.prompt)
         visible = visible_texts(clip)
@@ -1070,13 +1084,19 @@ def lint_gen_15(run, clips, facts=None, forced=False):
             identifier = STAGE_IDENTIFIER.search(clip.prompt)
             if identifier:
                 found = ("a record ID from the reasons", identifier.group(0))
+        if found is None:
+            # 8.1 rule 2: mood words never travel either (words.json's mood-only phrases, REASON-04's list)
+            for phrase in mood_phrases:
+                if re.search(r"(?<![a-z])" + re.escape(phrase) + r"(?![a-z])", prompt) and phrase not in visible:
+                    found = ("a mood phrase", phrase)
+                    break
         if found:
             shown = found[1] if len(found[1]) <= 60 else found[1][:57] + "..."
             problems.append(clip_problem(
                 run, "E", "GEN-15", clip, "prompt",
                 f"carries {found[0]} into the prompt ('{shown}')",
-                "Fix: prompts carry only what is seen and heard; keep why, because, purpose and motif meanings in the "
-                "records, and compile again."))
+                "Fix: prompts carry only what is seen and heard; keep why, because, purpose, motif meanings and mood "
+                "words in the records (take a mood word out of the record the prompt pastes), and compile again."))
     return problems
 
 

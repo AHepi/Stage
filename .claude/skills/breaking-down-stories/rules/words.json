@@ -2808,6 +2808,11 @@
     "16:9": "16_9",
     "4:3": "4_3",
     "9:16": "9_16"
+   },
+   "cut_out_on": {
+    "withholding": "keep_hidden",
+    "withhold": "keep_hidden",
+    "withheld": "keep_hidden"
    }
   }
  }

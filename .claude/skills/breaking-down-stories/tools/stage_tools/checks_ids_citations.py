@@ -424,6 +424,9 @@ def check_id_03(run):
     step = int(constant_value(run, "shot_number_step", 10))
     by_scene = {}
     for shot in run.records("SHOT"):
+        # an ID that is not SCnn-SHnnn is FORM-02's to report; ID-03 reads only well-formed shot numbers
+        if not re.fullmatch(r"SC\d{2,3}[A-Z]?-SH\d{3}", shot.identifier or ""):
+            continue
         by_scene.setdefault(scene_of(shot.identifier), {})[shot.identifier] = shot
     listed = {}
     for shot_list in run.records("SHOTLIST"):

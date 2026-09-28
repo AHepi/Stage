@@ -1,5 +1,5 @@
 {
- "shot": "CATCH_SC23_SH09_chest_opens",
+ "shot": "SC25_chest_opens",
  "fps": 24,
  "frames": 96,
  "resolution": [
@@ -12,7 +12,8 @@
  ],
  "stills": [
   1,
-  30,
+  8,
+  26,
   60,
   96
  ],
@@ -461,10 +462,10 @@
   }
  ],
  "camera": {
-  "lens_mm": 40,
+  "lens_mm": 35,
   "sensor_mm": 36,
   "fstop": 2.8,
-  "focus_on": "VESSEL",
+  "focus_on": "fig_chest_back_plate",
   "keys": [
    [
     1,
@@ -475,38 +476,48 @@
     ],
     [
      0.0,
-     0,
+     0.0,
      1.9
-    ],
-    35
+    ]
    ],
    [
-    60,
+    8,
     [
-     0.2,
-     -2.2,
-     1.65
+     0.25,
+     -2.4,
+     1.7
     ],
     [
      0.0,
-     0,
-     1.6
-    ],
-    35
+     0.0,
+     1.9
+    ]
    ],
    [
-    96,
+    26,
     [
-     0.12,
-     -1.95,
-     1.6
+     0.25,
+     -2.4,
+     1.7
     ],
     [
      0.0,
      -0.1,
      1.55
+    ]
+   ],
+   [
+    96,
+    [
+     0.25,
+     -2.4,
+     1.7
     ],
-    50
+    [
+     0.0,
+     -0.1,
+     1.55
+    ]
    ]
   ]
  },
@@ -519,15 +530,15 @@
   ],
   "size_m": 5
  },
- "beats": [
+ "moments": [
   [
    1,
-   "Hand flat on its own chest; pale strip in top of frame",
+   "Hand flat on its own chest; the camera looks up at its head from Iona's eye height, the pale strip in the top of the frame",
    "It puts its hand flat against its own chest."
   ],
   [
    8,
-   "Latches release one by one (sound only)",
+   "Latches release one by one (sound only); the camera tilts down with Iona's eyes, from the head to the chest, until frame 26",
    "Latches let go, one after another, down the front of it."
   ],
   [
@@ -542,8 +553,9 @@
   ],
   [
    96,
-   "Vessel centred between open doors",
+   "The doors stand open; the vessel inside is left for its own macro insert, shot from above",
    "hanging in the mount a glass VESSEL of dark water about as long as her forearm."
   ]
- ]
+ ],
+ "note": "Fixed for K21 (B1 Example 5, B4): the camera stays at (0.25, -2.4, 1.7) on 35 mm with no push-in and no lens change; only the aim tilts, from the head (0, 0, 1.9) to the chest (0, -0.1, 1.55), as the latches let go. The vessel is a separate macro insert, and 'A suit.' plays on Iona, static, 50 mm. The chest opens in scene 25 (The Catch, line 1448), so the shot is named for SC25. 'moments' was the kit's 'beats' (blueprint 9); the kit ignores it."
 }

@@ -562,7 +562,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - evidence: 399 | quote: "fully dressed at four in the morning"
 - evidence: 404 | quote: "A kitchen with nothing of anybody in it."
 - evidence: 436 | quote: "Saye's wedding ring. On her right hand."
-- fixed_description: Dr Saye, a slim, upright woman in her late fifties, short neat grey hair, a long lined face, thin straight brows, level grey eyes, a light grey cardigan buttoned to the collar over a white blouse.
+- fixed_description: Dr Saye, a slim, upright woman in her fifties, short neat grey hair, a long lined face, thin straight brows, level grey eyes, a light grey cardigan buttoned to the collar over a white blouse.
 - height_m: 1.65
 - build: slim and upright, spine straight, shoulders level
 - colour_identity: light cool grey and white, with the mint's green as her one living accent
@@ -653,7 +653,7 @@ Below this line: details for the AI and the checker. You never need to read them
 
 ### VOICE VO-SAYE Saye's voice
 - character: CH-SAYE
-- voice_description: A woman in her late fifties, low and even, precise consonants, every word finished and never a contraction; unhurried, level at the end of each sentence, with warmth held back until she spends it on one person near the end.
+- voice_description: A woman in her fifties, low and even, precise consonants, every word finished and never a contraction; unhurried, level at the end of each sentence, with warmth held back until she spends it on one person near the end.
 - pitch: low_mid
 - pace_wps: 2.0
 - accent: British English, educated

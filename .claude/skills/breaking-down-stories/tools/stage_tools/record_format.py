@@ -104,16 +104,22 @@ def load_skill_data(skill_folder=None):
 # ---------------------------------------------------------------- names and words
 
 def normalise_name(written):
-    """A field name or sub-part key as the schema writes it: lowercase, spaces and hyphens as underscores (G4)."""
-    name = written.strip().lower()
+    """A field name or sub-part key as the schema writes it: lowercase, spaces and hyphens as underscores (G4).
+    A missing name (None) reads as ""."""
+    if written is None:
+        return ""
+    name = str(written).strip().lower()
     name = re.sub(r"[\s\-]+", "_", name)
     name = re.sub(r"_+", "_", name)
     return name.strip("_")
 
 
 def normalise_word(written):
-    """A word value compared the G5 way: lowercase, spaces and hyphens read as underscores."""
-    word = written.strip().lower()
+    """A word value compared the G5 way: lowercase, spaces and hyphens read as underscores. A field that is not
+    there (record.get gives None) reads as "", so callers never crash on a record that lacks the field."""
+    if written is None:
+        return ""
+    word = str(written).strip().lower()
     word = re.sub(r"[\s\-]+", "_", word)
     word = re.sub(r"_+", "_", word)
     return word

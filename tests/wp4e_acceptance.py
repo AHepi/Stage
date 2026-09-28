@@ -17,8 +17,9 @@ What it proves (blueprint 7.2, 3 step 9, 14.2 row WP4):
   source checker, a second run adds no duplicate, and check --all finds nothing wrong with the file it wrote.
 
 The GEN faults use STAND-IN model facts (tests/fixtures/plan generation and film/stand-in model facts.json, values
-from blueprint 8.2 and C3 L02 and L28), given to the checks through use_model_facts, because work package 8 has not
-written adapters/video_models.json yet.
+from blueprint 8.2 and C3 L02 and L28), given to the checks through use_model_facts, so that the faults do not move
+when the dated adapter files change. The gold is also checked with the real adapters/*.json, and the groups about
+missing adapter files hide those files from the checks (without_adapter_files) rather than depend on their absence.
 
 Usage: python tests/wp4e_acceptance.py [--story "<The Catch, the whole story>"]
 Without the scene 10 excerpt the story groups say "skipped: story not present". Standard library only.
@@ -76,6 +77,12 @@ LINE_FORM = re.compile(r"^(?P<level>[EWN]) (?P<check>[A-Z]+-\d{2}) (?P<record>\S
 CODE_IN_PLAIN = re.compile(r"\b(?:[A-Z]{2,6}-\d{2}\b|SC\d{2,3}|FIND-\d|CH-[A-Z]|RC-\d|PL-\d)")
 
 RESULTS = []
+
+
+def without_adapter_files():
+    """Make the GEN checks behave as if adapters/video_models.json and image_models.json were missing (the files
+    exist since work package 8, so their absence is simulated through the module's override)."""
+    generation._MODEL_FACTS_OVERRIDE.update(facts=None, used=True)
 
 
 def report(passed, group, detail=""):
@@ -229,8 +236,12 @@ def check_gold(whole_story):
     stories = [("the scene 10 excerpt", EXCERPT), ("no story", None)]
     if whole_story:
         stories.insert(1, ("the whole story", Path(whole_story)))
-    for facts_name, facts in (("the stand-in model facts", stand_in_facts()), ("no model facts", None)):
-        generation.use_model_facts(facts)
+    for facts_name, facts in (("the stand-in model facts", stand_in_facts()), ("the adapter files", None),
+                              ("no model facts", "hidden")):
+        if facts == "hidden":
+            without_adapter_files()
+        else:
+            generation.use_model_facts(facts)
         for story_name, path in stories:
             story = story_from(path)
             if path is not None and story is None:
@@ -249,16 +260,17 @@ def check_gold(whole_story):
                 report(not found and not crashed and len(ran) == expected,
                        f"gold with {story_name} and {facts_name}, {where}: every PLAN, GEN and FILM check is silent",
                        detail)
-    generation.use_model_facts(None)
+    without_adapter_files()
     story = story_from(EXCERPT)
     result = run_own(files, story)
+    generation.use_model_facts(None)
     skipped = dict(result.skipped)
     whole = [check_id for check_id in ("FILM-01", "FILM-12", "PLAN-04") if "not in the excerpt" in skipped.get(check_id, "")]
     facts = [check_id for check_id in ("GEN-10",) if "work package 8" in skipped.get(check_id, "")]
     packs = [check_id for check_id in ("GEN-01", "GEN-04", "GEN-12") if "no compiled prompts" in skipped.get(check_id, "")]
     report(len(whole) == 3 and facts and len(packs) == 3,
-           "gold: the whole-film checks skip as 'not in the excerpt'; GEN-10 waits for the model facts of work "
-           "package 8; the prompt checks say no prompts are compiled yet",
+           "gold: the whole-film checks skip as 'not in the excerpt'; with the adapter files hidden GEN-10 waits "
+           "for the model facts; the prompt checks say no prompts are compiled yet",
            f"{whole}; {facts}; {packs}")
 
 
@@ -303,8 +315,9 @@ def check_clean_pack():
                "the stand-in model facts: every GEN check is silent",
                "; ".join(str(problem) for problem in found[:3]) or
                f"{len(result.checks_run)} checks read 3 clips, no line" + (f"; not run: {not_run}" if not_run else ""))
-        generation.use_model_facts(None)
+        without_adapter_files()
         result = run_own(files, story, project=project, check_ids=gen)
+        generation.use_model_facts(None)
         waiting = sorted(check_id for check_id, why in result.skipped if "work package 8" in why)
         report(waiting == sorted(NEEDS_FACTS) and not own_lines(result),
                "without adapters/*.json the GEN checks that need model facts skip and say so; the others still read "
@@ -488,7 +501,7 @@ def main():
     if not EXCERPT.is_file():
         info("the scene 10 excerpt is missing: skipped: story not present (the story groups)")
     info("the GEN faults use STAND-IN model facts (tests/fixtures/plan generation and film/stand-in model facts.json), "
-         "because work package 8 has not written adapters/video_models.json yet")
+         "so they do not move when the dated adapter files change")
     check_registry()
     check_gold(arguments.story)
     check_chat_copy()

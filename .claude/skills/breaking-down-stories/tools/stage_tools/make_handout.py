@@ -1738,7 +1738,7 @@ def issued_ids(workspace, unit):
                 lines.append(f"- {workspace.schema.record_types.get(type_name, {}).get('plain_name', type_name).capitalize()}"
                              f": {block[0]} onward.")
             if unit.identifier.startswith("U-02-OUTLINE"):
-                digits = int(workspace.project_value("scene_id_digits", 2) or 2)
+                digits = scene_id_digits_of(workspace)
                 start = max([int(scene[2:2 + digits]) for scene in workspace.scene_order()
                              if re.match(r"^SC\d+$", scene)] + [0]) + 1
                 first = f"SC{start:0{digits}d}"
@@ -1856,6 +1856,15 @@ def story_point_in_scene(value, scene_identifier):
     return scene_of(first) == scene_identifier or first == scene_identifier
 
 
+def scene_id_digits_of(workspace):
+    """PROJECT scene_id_digits as a number (2 or 3); a value that is not a whole number (FORM-04 reports it) reads
+    as 2, so a handout is still made."""
+    try:
+        return int(float(str(workspace.project_value("scene_id_digits", 2) or 2).strip()))
+    except (TypeError, ValueError):
+        return 2
+
+
 def reserve_lines(workspace, scene_identifier, own_shots):
     """(records allowed here, plain lines) for the saved choices (RESERVE): each with how it is matched, where it
     is allowed, how many uses the film allows and how many are left outside this unit's own shots."""
@@ -1864,7 +1873,7 @@ def reserve_lines(workspace, scene_identifier, own_shots):
     except ImportError:
         return workspace.records("RESERVE"), []
     run = workspace.check_run
-    digits = int(workspace.project_value("scene_id_digits", 2) or 2)
+    digits = scene_id_digits_of(workspace)
     allowed_records, lines = [], []
     for reserve in workspace.records("RESERVE"):
         places = film_pass.read_places(reserve.get("allowed_in") or "", digits)

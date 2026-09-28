@@ -937,6 +937,7 @@ def check_time_01(run):
     breakdown = breakdown_of(run)
     problems = []
     words_unknown = []
+    lines_unknown = []
     for scene in kept_scenes(run):
         shots = breakdown.shots_of(scene.identifier)
         if shots:
@@ -946,7 +947,8 @@ def check_time_01(run):
                     continue
                 floor = time_floor(breakdown, shot)
                 if not floor.complete:
-                    words_unknown.append(shot.identifier)
+                    (lines_unknown if floor.unresolved_lines and not floor.unknown_speeches
+                     else words_unknown).append(shot.identifier)
                     continue
                 if screen_time + TIME_TOLERANCE_S >= floor.floor:
                     continue
@@ -978,6 +980,11 @@ def check_time_01(run):
         run.skip("TIME-01", f"story not present: the words heard in {len(words_unknown)} shots are not known (and "
                             f"their hear items give no words), so their floors are not worked out "
                             f"({', '.join(words_unknown[:6])}{' ...' if len(words_unknown) > 6 else ''})")
+    if lines_unknown:
+        run.skip("TIME-01", f"{'story not present' if run.story is None else 'not in the excerpt'}: the lines of "
+                            f"{len(lines_unknown)} shots or their beats are quotes not found in the story given, so the "
+                            f"pause they owe is not known ({', '.join(lines_unknown[:6])}"
+                            f"{' ...' if len(lines_unknown) > 6 else ''})")
     return problems
 
 

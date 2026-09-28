@@ -1,0 +1,466 @@
+{
+ "checked_on": "2026-09-27",
+ "about": "Record values turned into words video and picture models follow (blueprint 8.3; C3 §4-§8, §12, §16; B1 §15; D15; D12). The compiler builds every prompt from these phrases and the records; nothing here is a reason, a mood word or a name.",
+ "size": {
+  "extreme_wide": "Extreme wide shot",
+  "wide": "Wide shot",
+  "medium_wide": "Medium wide shot",
+  "medium": "Medium shot",
+  "medium_close_up": "Medium close-up",
+  "close_up": "Close-up",
+  "extreme_close_up": "Extreme close-up",
+  "insert": "Close insert shot",
+  "marks": "V C3 §4 (shot sizes reliable on top models [P1][P43]); B1 §15"
+ },
+ "frame": {
+  "single": "",
+  "two_shot": "two-shot",
+  "three_shot": "three-shot",
+  "group": "group shot",
+  "over_shoulder": "over the shoulder of {nearest}",
+  "pov": "seen through {whose} eyes, {anchor} in the foreground",
+  "near_pov": "from just beside {whose} eyes",
+  "empty": "",
+  "marks": "V C3 §4 (over-the-shoulder naming the shoulder; POV with a visible anchor) [P1][P34]"
+ },
+ "angle": {
+  "eye_level": "at eye level",
+  "low": "low angle, looking up",
+  "high": "high angle, looking down",
+  "top_down": "top-down, looking straight down",
+  "worms_eye": "from the floor, looking straight up",
+  "marks": "V C3 §4 (low, high, overhead mostly reliable) [P1][P43]; B1 §15"
+ },
+ "move": {
+  "static": "Static shot. The camera does not move.",
+  "pan": "The camera pans {direction}, slowly, ending on {end}.",
+  "tilt": "The camera tilts {direction}, slowly, ending on {end}.",
+  "push_in": "The camera pushes in slowly, ending on {end}.",
+  "pull_back": "The camera pulls back slowly to reveal {end}.",
+  "sideways": "The camera slides sideways, parallel to {subject}, ending on {end}.",
+  "rise": "The camera rises slowly, ending on {end}.",
+  "lower": "The camera lowers slowly, ending on {end}.",
+  "follow": "The camera tracks alongside {subject}, keeping the same distance.",
+  "lead": "The camera moves backward ahead of {subject}, keeping the same distance.",
+  "handheld": "Slight handheld sway.",
+  "crane": "The camera cranes {direction}, slowly, ending on {end}.",
+  "orbit": "The camera makes a slow half-circle around {subject}.",
+  "zoom": "The camera moves slowly closer to {subject}.",
+  "whip_pan": null,
+  "dolly_zoom": null,
+  "drone": "A high, steady aerial view.",
+  "one_extra_take": [
+   "tilt",
+   "crane",
+   "rise",
+   "lower",
+   "orbit"
+  ],
+  "never_in_words": {
+   "whip_pan": "use a cut (C3 §4)",
+   "dolly_zoom": "use a guide video from a grey preview (C3 §4, §9D)",
+   "rack_focus": "split into two shots or composite (B1 R14; C3 §4)"
+  },
+  "marks": "V C3 §4 and its rules 1-4 [P1][P11][P34][P44]; B1 §15; 'usually works' moves get one extra take (C3 §4 [J]); zoom is unreliable as a distinct move (J)"
+ },
+ "hold": {
+  "camera_does_not_move": "The camera does not move.",
+  "marks": "V blueprint 8.1 rule 9; D15 rule 6"
+ },
+ "lens": {
+  "ranges": [
+   {
+    "up_to_mm": 28,
+    "words": "wide-angle view, deep space"
+   },
+   {
+    "up_to_mm": 60,
+    "words": ""
+   },
+   {
+    "up_to_mm": 1000,
+    "words": "compressed background"
+   }
+  ],
+  "note": "a lens in millimetres is never written; its effect is (\"85 mm\" becomes \"compressed background\")",
+  "marks": "V blueprint 8.1 (camera row); C3 §4 (focal lengths U) [P11]; words.json prompt_substitutions"
+ },
+ "focus": {
+  "deep": "deep focus, everything sharp",
+  "moderate": "",
+  "shallow": "shallow focus, the background soft",
+  "marks": "V C3 §4; B1 §15"
+ },
+ "placement": {
+  "left_edge": "at the left edge of the frame",
+  "left_third": "on the left third of the frame",
+  "centre": "in the centre of the frame",
+  "right_third": "on the right third of the frame",
+  "right_edge": "at the right edge of the frame",
+  "marks": "V blueprint 8.1 (subjects row: 'on the left third of the image, facing right')"
+ },
+ "facing": {
+  "frame_left": "facing left",
+  "frame_right": "facing right",
+  "camera": "facing the camera",
+  "away": "facing away from the camera",
+  "up": "looking up",
+  "down": "looking down",
+  "person": "facing {name}",
+  "thing": "facing {name}",
+  "marks": "V blueprint 8.1; C3 L25 (sides and facing in dialogue shots)"
+ },
+ "side": {
+  "frame_left": "on the left of the frame",
+  "frame_right": "on the right of the frame",
+  "nearest the camera": "on the hand nearest the camera",
+  "far from the camera": "on the far hand",
+  "sentence": "{whose} {feature} is {where}.",
+  "marks": "V C1 R22, Ex3; C2 Rule 35 (left and right in image terms)"
+ },
+ "travel": {
+  "frame_left": "{who} moves toward the left edge of the frame.",
+  "frame_right": "{who} moves toward the right edge of the frame.",
+  "up": "{who} moves up the frame.",
+  "down": "{who} moves down the frame.",
+  "toward_camera": "{who} moves toward the camera.",
+  "away": "{who} moves away from the camera.",
+  "marks": "V blueprint 8.1 rule 10; A4 C5"
+ },
+ "display": {
+  "1": "small, contained movements",
+  "2": "clear, visible movements",
+  "3": "large, open movements",
+  "sentence": "{Whose} face and body show {level}.",
+  "marks": "V blueprint 8.1 (subjects row: the display level as the size of the visible behaviour); D15 §2"
+ },
+ "still": {
+  "sentence_parts": "{Whose} {parts} stay still.",
+  "sentence_whole": "{Whose} whole body stays still.",
+  "only_moving": "Only {whose} {parts} move.",
+  "parts": [
+   "head",
+   "eyes",
+   "mouth",
+   "hands",
+   "torso"
+  ],
+  "marks": "V blueprint 8.1 rule 9; D15 rule 6 ('Her head and hands stay completely still ...; only her eyes move.')"
+ },
+ "must_not": {
+  "sentence": "{Who} does not {behaviour}.",
+  "marks": "V blueprint 8.1 rule 9 ('He does not look at her.'); D15 (must-not never written as 'no X')"
+ },
+ "negation_rewrites": {
+  "about": "Negation of a visible thing makes models show it (C3 L14). Code turns the records' negations into the allowed forms before a prompt is written: 'does not <verb>' for a behaviour held back (8.1 rule 9), positive words elsewhere; a sentence it cannot turn is left out of the prompt and listed on the pack page.",
+  "patterns": [
+   {
+    "find": "\\b(will|would|can|could|should|must)\\s+not\\s+",
+    "replace": "does not ",
+    "note": "a held-back behaviour in the present"
+   },
+   {
+    "find": "\\bcannot\\s+",
+    "replace": "does not ",
+    "note": ""
+   },
+   {
+    "find": "\\bwon't\\s+",
+    "replace": "does not ",
+    "note": ""
+   },
+   {
+    "find": "\\bdoesn't\\s+",
+    "replace": "does not ",
+    "note": ""
+   },
+   {
+    "find": "\\bdon't\\s+",
+    "replace": "do not ",
+    "note": ""
+   },
+   {
+    "find": ",?\\s*\\bnot moving\\b",
+    "replace": ", still",
+    "note": "C3 §4 wording: still"
+   },
+   {
+    "find": ",?\\s*\\bwithout moving\\b",
+    "replace": ", still",
+    "note": ""
+   },
+   {
+    "find": ",\\s*not\\s+[^,;.]+",
+    "replace": "",
+    "note": "a contrast clause (\"watches the leaf, not the women\") is left out; the positive part stays"
+   },
+   {
+    "find": "\\bwithout\\s+(\\w+ing)\\b",
+    "replace": "and does not {verb}",
+    "note": "'asks it without looking up' becomes 'asks it and does not look up'"
+   }
+  ],
+  "gerunds": {
+   "looking": "look",
+   "moving": "move",
+   "lowering": "lower",
+   "raising": "raise",
+   "speaking": "speak",
+   "turning": "turn",
+   "blinking": "blink",
+   "breathing": "breathe",
+   "stopping": "stop",
+   "taking": "take",
+   "making": "make",
+   "giving": "give",
+   "leaving": "leave",
+   "using": "use",
+   "closing": "close",
+   "waiting": "wait",
+   "answering": "answer",
+   "touching": "touch",
+   "letting": "let",
+   "putting": "put",
+   "saying": "say",
+   "sitting": "sit",
+   "running": "run",
+   "getting": "get",
+   "cutting": "cut",
+   "hitting": "hit"
+  },
+  "marks": "V C3 L14, §8 rules; blueprint 8.1 rule 9; the patterns are J"
+ },
+ "glass": {
+  "clear": "seen through perfectly clear glass; the room on the camera's side is dark",
+  "marked": "soft, unreadable highlights lie on the glass",
+  "reflecting": "a clear reflection lies on the glass, the reflected side lit brighter than the far side",
+  "screen": "the glass carries a dark, blank screen",
+  "broken_open": "the glass is broken open, jagged at the edges",
+  "marks": "V blueprint 8.1 rule 6 and K18 (clear); B3 R28-R29 and C2 §6 (reflecting, marked) are J wordings"
+ },
+ "physics": {
+  "fall_words": [
+   "falling",
+   "falls",
+   "fall",
+   "fell"
+  ],
+  "weightless": "hair, cloth and straps drift up and outward; nothing settles",
+  "camera_on_the_moving_thing": "The camera is fixed to {thing} and does not move relative to it.",
+  "world_moving": "beyond it, the world streams past, faster and faster",
+  "rule": "never write 'falling' or 'zero gravity' alone: write the visible evidence (C3 R13, L23)",
+  "marks": "V C3 §12, R13, L23; blueprint 8.3"
+ },
+ "text": {
+  "surfaces": "plain, unmarked surfaces",
+  "screen_dark": "the screen is dark and blank, switched off",
+  "screen_green": "the screen is a flat, evenly lit, pure bright green panel, matte, not glowing; its corners stay clear",
+  "never_write": [
+   "HUD",
+   "hologram",
+   "sci-fi interface"
+  ],
+  "marks": "V blueprint 8.1 (TEXT_ON_SCREEN always none: 'plain, unmarked surfaces'); K17; D12 §6"
+ },
+ "people": {
+  "nouns": [
+   "woman",
+   "man",
+   "girl",
+   "boy",
+   "child",
+   "person"
+  ],
+  "fallback": "person",
+  "start_picture_names": "with a start picture, people are 'the woman', 'the man' (C3 R1); several of one kind are told apart by their place in the frame",
+  "pronouns": {
+   "woman": [
+    "she",
+    "her",
+    "Her"
+   ],
+   "girl": [
+    "she",
+    "her",
+    "Her"
+   ],
+   "man": [
+    "he",
+    "his",
+    "His"
+   ],
+   "boy": [
+    "he",
+    "his",
+    "His"
+   ],
+   "child": [
+    "they",
+    "their",
+    "Their"
+   ],
+   "person": [
+    "they",
+    "their",
+    "Their"
+   ]
+  },
+  "marks": "V C3 R1, §9A [P2]"
+ },
+ "audio": {
+  "no_music": "No background music.",
+  "no_dialogue": "No dialogue.",
+  "room_sound": "Room sound: {room}.",
+  "effect": "The sound of {effect}.",
+  "off_screen_voice": "{who}'s voice is heard, {path}; {pronoun} is not visible.",
+  "paths": {
+   "direct": "",
+   "off_screen": "from off screen",
+   "earpiece": "heard only in an earpiece, thin and close",
+   "radio": "through a small radio speaker, narrow and crackly",
+   "intercom": "through a small intercom speaker, slightly thin",
+   "phone": "through a phone's small speaker",
+   "device_speaker": "from a device's small speaker",
+   "recording": "as a recording from a small speaker",
+   "helmet_inside": "inside a helmet, close and dry",
+   "helmet_outside": "muffled through a helmet",
+   "through_glass": "muffled through glass",
+   "voice_over": "as a voice over the picture",
+   "thought": "as a voice over the picture"
+  },
+  "veo_labels": {
+   "ambient": "Ambient noise:",
+   "effects": "SFX:"
+  },
+  "omni_label": "Sound design:",
+  "h3_labels": {
+   "soundscape": "overall_soundscape:",
+   "music": "non_diegetic_music: none."
+  },
+  "marks": "V C3 §7E-§7F, R10, R21 [P1][P6][P8][P26][P31]; K31 (no music in any clip)"
+ },
+ "one_shot": {
+  "default": "Single continuous shot.",
+  "marks": "J C3 §16 generic adapter"
+ },
+ "start_picture": {
+  "lead": "Starting from the opening picture,",
+  "marks": "V C3 §9A [P2][P22]"
+ },
+ "end_picture": {
+  "lead": "It ends exactly on the closing picture.",
+  "marks": "V C3 §9B [P22] (describe the path between)"
+ },
+ "guide_video": {
+  "lead": "Camera movement, pacing and blocking come from the guide video; follow it exactly.",
+  "seedance": "Refer to {tag} for camera movement, pacing, shot-size transitions, subject trajectory, and blocking.",
+  "marks": "V C3 §9D [P18]"
+ },
+ "time_words": {
+  "then": "then",
+  "ordinals": {
+   "1": "1st",
+   "2": "2nd",
+   "3": "3rd",
+   "21": "21st",
+   "22": "22nd",
+   "23": "23rd"
+  },
+  "marks": "V C3 §5 [P12]"
+ },
+ "delivery_default": "level",
+ "delivery_rewrites": {
+  "not steady": "unsteady",
+  "not quite steady": "a little unsteady",
+  "not loud": "quiet",
+  "not loudly": "quietly",
+  "not looking up": "eyes down",
+  "not unkind": "gently",
+  "note": "a delivery with any other negation is replaced by the speaker's tactic in the shot (C3 L14)",
+  "marks": "J from C3 L14 and §7B (tone words for the voice only)"
+ },
+ "check_questions": {
+  "face": "Is {name}'s face as readable and as true in colour as the other faces in this frame?",
+  "same_face": "Is it the same face as {name}'s reference pictures?",
+  "side": "Is {whose} {feature} {where}?",
+  "mouth": "Does only {whose} mouth move for the line, and only at {t0} to {t1} seconds?",
+  "no_music": "Is there no music and no other voice?",
+  "still": "Do {whose} {parts} stay still?",
+  "camera_still": "Does the camera stay still?",
+  "text_blank": "Are the surfaces blank, with no letters?",
+  "one_take": "Is it one continuous take, with no cut inside it?",
+  "end": "Does it end on {end}?",
+  "marks": "V blueprint 8.9 (yes/no questions built from the records; B2 R24 for the face question); C1 Rec11"
+ },
+ "text_graphics": {
+  "canvas": {
+   "2.39": [
+    1920,
+    804
+   ],
+   "1.85": [
+    1920,
+    1038
+   ],
+   "16_9": [
+    1920,
+    1080
+   ],
+   "4_3": [
+    1440,
+    1080
+   ],
+   "9_16": [
+    1080,
+    1920
+   ]
+  },
+  "safe_area_margin_share": 0.05,
+  "must_read_cap_share": 0.04,
+  "secondary_cap_share": 0.025,
+  "texture_cap_share_max": 0.015,
+  "cap_height_per_em": {
+   "IBM Plex Sans": 0.698,
+   "B612": 0.7
+  },
+  "title_card": {
+   "font": "IBM Plex Sans",
+   "weight": 500,
+   "cap_share": 0.06,
+   "colour": "#EDEBE6",
+   "background": "#000000",
+   "letter_spacing_share_of_em": 0.08,
+   "case": "upper"
+  },
+  "sign": {
+   "font": "IBM Plex Sans",
+   "weight": 500,
+   "cap_share": 0.05,
+   "colour": "#E8E6DF",
+   "background": "transparent"
+  },
+  "screen": {
+   "font": "B612",
+   "weight": 400,
+   "cap_share": 0.04,
+   "colour": "#E8E6DF",
+   "background": "transparent"
+  },
+  "fonts": {
+   "IBM Plex Sans": {
+    "licence": "ofl_1_1",
+    "where": "github.com/google/fonts, folder ofl/ibmplexsans"
+   },
+   "B612": {
+    "licence": "ofl_1_1",
+    "where": "github.com/google/fonts, folder ofl/b612"
+   }
+  },
+  "mirror": "the mirrored copy wraps everything in <g transform=\"translate(W,0) scale(-1,1)\"> ... </g> (a bare scale(-1,1) leaves a blank picture)",
+  "never_mirrored": [
+   "title_card",
+   "caption"
+  ],
+  "marks": "V D12 §4 Rec7 (title card: 1920 x 804, Plex Medium, #EDEBE6 on black), R6-R7 (cap heights 4%, 2.5-3%, under 1.5%), R17 (non-story graphics never mirrored); C2 R6 (mirror transform); fonts and licences V D12 §7; the sign and screen sizes and the other canvases are J"
+ }
+}

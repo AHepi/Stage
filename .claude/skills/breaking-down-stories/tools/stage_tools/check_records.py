@@ -935,6 +935,8 @@ def plain_name_of(label, run=None):
             return scene_words
         if rest == "LIST":
             return f"{scene_words}, the shot list"
+        if rest == "MASTER":
+            return f"{scene_words}, the master shot"
         inner = re.match(r"^(SH|SU|B|P|V|D|M|C)(\d+)(?:\.(\d+))?$", rest)
         if inner:
             kind, number, clip = inner.groups()
@@ -969,12 +971,49 @@ def plain_name_of(label, run=None):
     if label.startswith("RV-"):
         scene = plain_name_of(label[3:], run) if label[3:] != "FILM" else "the film"
         return f"the review of {scene}"
+    # the add-on records name what they belong to: their words come from that record, never from the code
+    made = MADE_FOR_PATTERNS.match(label)
+    if made:
+        return made_for_words(made, run)
     if record is not None and record.type_name in TYPE_WORDS:
         return TYPE_WORDS[record.type_name]
     if record is not None and record.title:
         prefix = NAMED_TYPE_WORDS.get(record.type_name, "")
         return f"{prefix} {record.title}".strip()
     return plain_words_from_code(label)
+
+
+MADE_FOR_PATTERNS = re.compile(
+    r"^(?:(?P<visual>VS)-(?P<visual_of>SQ\d+)"
+    r"|(?P<picture>PIC)-(?P<picture_of>.+)-(?P<use>START|END|REFERENCE|STORYBOARD|STILL|LAYOUT|STYLE)-0*(?P<picture_number>\d+)"
+    r"|(?P<previs>PV)-(?P<previs_of>.+)-V0*(?P<try>\d+)"
+    r"|(?P<take>TK)-(?P<take_of>.+)-T0*(?P<take_number>\d+)"
+    r"|(?P<voice>VT)-(?P<voice_of>.+)-T0*(?P<voice_number>\d+)"
+    r"|(?P<finish>FX)-(?P<finish_of>.+)-0*(?P<finish_number>\d+)"
+    r"|(?P<music>MU)-0*(?P<music_number>\d+))$")
+PICTURE_USE_WORDS = {"START": "the start picture", "END": "the end picture", "REFERENCE": "the reference pictures",
+                     "STORYBOARD": "the storyboard frame", "STILL": "the still", "LAYOUT": "the layout picture",
+                     "STYLE": "the style picture"}
+
+
+def made_for_words(match, run=None):
+    """Plain words for an add-on record's ID from what it belongs to: PIC-SC10-SH150-START-01 -> "the start picture of
+    scene 10, shot 150"; PV-SC10-SH080-V01 -> "the grey preview of scene 10, shot 080, try 1"."""
+    if match.group("visual"):
+        return f"the visual plan of {plain_name_of(match.group('visual_of'), run)}"
+    if match.group("picture"):
+        words = f"{PICTURE_USE_WORDS[match.group('use')]} of {plain_name_of(match.group('picture_of'), run)}"
+        number = int(match.group("picture_number"))
+        return words + (f", number {number}" if number > 1 else "")
+    if match.group("previs"):
+        return f"the grey preview of {plain_name_of(match.group('previs_of'), run)}, try {int(match.group('try'))}"
+    if match.group("take"):
+        return f"take {int(match.group('take_number'))} of {plain_name_of(match.group('take_of'), run)}"
+    if match.group("voice"):
+        return f"voice take {int(match.group('voice_number'))} of {plain_name_of(match.group('voice_of'), run)}"
+    if match.group("finish"):
+        return f"finishing job {int(match.group('finish_number'))} of {plain_name_of(match.group('finish_of'), run)}"
+    return f"music cue {int(match.group('music_number'))}"
 
 
 def plain_words_from_code(label):

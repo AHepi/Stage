@@ -479,11 +479,14 @@ class TimeFloor:
     provisional: bool = False
     extra_per_speech_s: float = 0.5
     shared_speeches: list = dataclass_field(default_factory=list)  # (speech ID, other list items sharing its beat)
+    unresolved_lines: list = dataclass_field(default_factory=list)  # records whose lines (quote anchors) are not found
 
     @property
     def complete(self):
-        """False when some speech's words are unknown (no story and no words on the hear item)."""
-        return not self.unknown_speeches
+        """False when some speech's words are unknown (no story and no words on the hear item), or when the lines of
+        the shot or of one of its beats are quote anchors not found in the story given, so the pause owed is not
+        known."""
+        return not self.unknown_speeches and not self.unresolved_lines
 
     def speech_reason(self):
         if not self.speech_parts:
@@ -528,6 +531,8 @@ class TimeFloor:
         line = f"floor {seconds_text(self.floor)} s ({'; '.join(parts)})"
         if self.unknown_speeches:
             line += "; words unknown for " + ", ".join(self.unknown_speeches)
+        if self.unresolved_lines:
+            line += "; lines not found for " + ", ".join(self.unresolved_lines) + ", so the pause owed may be more"
         if self.shared_speeches:
             line += "; " + "; ".join(
                 f"{speech} may be heard in {', '.join(others)} instead (a shared beat), which lowers this floor"
@@ -630,12 +635,17 @@ def time_floor(breakdown, shot):
         text_parts.append((text_identifier, seconds, how))
     text_floor = max((part[1] for part in text_parts), default=0.0)
     shot_lines = set(breakdown.lines_of(shot))
+    unresolved = [shot.identifier] if not shot_lines and lines_written(shot) else []
     pause_parts = []
     for beat_identifier in breakdown.id_list(shot, "beats"):
         beat = breakdown.record(beat_identifier, "BEAT")
         if beat is None:
             continue
-        last = breakdown.last_story_line(breakdown.lines_of(beat))
+        beat_numbers = breakdown.lines_of(beat)
+        if not beat_numbers and lines_written(beat):
+            unresolved.append(beat_identifier)
+            continue
+        last = breakdown.last_story_line(beat_numbers)
         if last is None or last not in shot_lines:
             continue
         seconds, _, why = pause_seconds(breakdown, beat)
@@ -645,8 +655,15 @@ def time_floor(breakdown, shot):
                        round_seconds(speech_floor), round_seconds(text_floor), round_seconds(pause_owed),
                        speech_parts, text_parts, pause_parts, unknown)
     result.extra_per_speech_s = extra
+    result.unresolved_lines = unresolved
     breakdown._cache[key] = result
     return result
+
+
+def lines_written(record):
+    """True when a record writes lines (numbers or quote anchors), not none."""
+    value = (record.get("lines") or "").strip() if record is not None else ""
+    return bool(value) and normalise_word(value) != "none"
 
 
 def list_items(breakdown, scene_identifier):
@@ -1352,12 +1369,20 @@ def rules_governing(breakdown, identifiers):
     return found
 
 
+# Title cards and captions are laid over the finished film and never mirrored (D12 rule 17), in every era; the text
+# graphics tool draws them the same way (make_text_graphics.NEVER_MIRRORED_DEFAULT).
+NEVER_MIRRORED_TEXT_KINDS = ("title_card", "caption")
+
+
 def text_orientation(breakdown, text_identifier, shot):
-    """normal or mirrored for one TEXT in a shot: a rule exception that names it decides; a titles rule reads it
-    normally; otherwise it follows the thing it is on (or the frame when it is on nothing)."""
+    """normal or mirrored for one TEXT in a shot: a title card or caption always reads normally; a rule exception
+    that names it decides; a titles rule reads it normally; otherwise it follows the thing it is on (or the frame
+    when it is on nothing)."""
     text_record = breakdown.record(text_identifier, "TEXT")
     if text_record is None:
         return None
+    if normalise_word(text_record.get("kind") or "") in NEVER_MIRRORED_TEXT_KINDS:
+        return "normal"
     on = text_record.get("on")
     on = None if not on or normalise_word(on) == "none" else on
     for rule in rules_governing(breakdown, [text_identifier] + ([on] if on else [])):
@@ -2330,7 +2355,8 @@ ROUTE_LETTERS = {"plate": "c", "direct": "e", "flip_with_mirrored_references": "
 
 def mirror_route(breakdown, shot):
     """The shot's mirror route, in the order of 8.5: text graphic always when text is in frame; then plate, direct,
-    flip with mirrored references, flip all, or none. flip: never turns a flipping route into direct."""
+    flip with mirrored references, flip all, or none. flip: never turns a route that flips anything (a, b, or the
+    plate of c) into direct."""
     key = ("mirror_route", shot.identifier)
     if key in breakdown._cache:
         return breakdown._cache[key]
@@ -2393,9 +2419,11 @@ def mirror_route(breakdown, shot):
         else:
             route = "none"
             reasons.append("nothing in frame is mirrored")
-    if normalise_word(shot.get("flip") or "auto") == "never" and flipped_after(route):
+    # flip: never means nothing of this shot is ever flipped: not the clip (routes a and b) and not the plate picture
+    # (route c); a sided insert is made from edited stills at their final side (8.5, SIDE-03, K07)
+    if normalise_word(shot.get("flip") or "auto") == "never" and (flipped_after(route) or route == "plate"):
         reasons.append(f"flip: never, so the {route.replace('_', ' ')} route becomes direct (the final picture is "
-                       "made as it appears)")
+                       "made as it appears, from edited stills at their final side)")
         route = "direct"
     result = MirrorRoute(route, ROUTE_LETTERS[route], text_graphic, reasons)
     breakdown._cache[key] = result

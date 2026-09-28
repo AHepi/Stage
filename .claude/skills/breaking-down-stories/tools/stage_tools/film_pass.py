@@ -589,8 +589,22 @@ def framing_of(shot, element):
             "frame side": thing_side(shot, element) if element else None}
 
 
-def framing_differences(plant_shot, payoff_shot, element):
+OTHER_FRAME_SIDE = {"left": "right", "right": "left", "centre": "centre"}
+
+
+def side_reversed_on_purpose(item):
+    """True when a rhyme declares that its payoff mirrors the plant's frame side on purpose (a rhyme item's or a
+    motif appearance's sub-part side: reversed), as The Catch's scene 29 rings reverse the kitchen's reflection
+    two-shot (B3 §8.2)."""
+    return item is not None and normalise_word(item.get("side") or "") == "reversed"
+
+
+def framing_differences(plant_shot, payoff_shot, element, side_reversed=False):
+    """[(what, plant's value, payoff's value)] where the payoff's framing differs from the plant's. With side_reversed
+    the payoff's frame side is expected on the other side of the frame from the plant's."""
     planted, paid = framing_of(plant_shot, element), framing_of(payoff_shot, element)
+    if side_reversed and planted["frame side"] is not None:
+        planted["frame side"] = OTHER_FRAME_SIDE.get(planted["frame side"], planted["frame side"])
     return [(name, planted[name], paid[name]) for name in planted
             if planted[name] is not None and paid[name] is not None and planted[name] != paid[name]]
 
@@ -606,17 +620,23 @@ def shots_linking(run, key, plant_identifier):
     return found
 
 
-def rhyme_line(run, plant_shot, payoff_shot, element, differences, about):
+def rhyme_line(run, plant_shot, payoff_shot, element, differences, about, side_reversed=False):
     field_name, planted, paid = differences[0]
     field_word = "lens_mm" if field_name == "lens_mm" else ("thing" if field_name == "frame side" else field_name)
     rest = "; ".join(f"{name} {new} against {old}" for name, old, new in differences[1:])
-    what = (f"{paid} differs from the plant shot {plant_shot.identifier}'s {planted}"
-            + (f" (also {rest})" if rest else "") + f", though {about} rhymes")
+    if side_reversed and field_name == "frame side":
+        what = (f"frame side {paid} is not the other side from the plant shot {plant_shot.identifier}'s, though "
+                f"{about} rhymes with its side reversed")
+    else:
+        what = (f"{paid} differs from the plant shot {plant_shot.identifier}'s {planted}"
+                + (f" (also {rest})" if rest else "") + f", though {about} rhymes")
     framing = framing_of(plant_shot, element)
+    if side_reversed and framing["frame side"] is not None:
+        framing["frame side"] = OTHER_FRAME_SIDE.get(framing["frame side"], framing["frame side"])
     wanted = ", ".join(f"{name} {value}" for name, value in framing.items() if value is not None)
     return report(run, "W", "FILM-02", payoff_shot, field_word, what,
-                  f"Fix: frame the payoff as the plant was ({wanted}), or accept this finding with a reason that "
-                  "quotes the story (a side reversed on purpose).",
+                  f"Fix: frame the payoff as the plant was ({wanted}), or, when the story reverses the side on purpose, "
+                  "write side: reversed on the rhyme.",
                   place_of(run, payoff_shot, field_word if field_word != "thing" else "thing"))
 
 
@@ -630,9 +650,11 @@ def check_film_02(run):
     problems = []
     waiting = []
     for plant in run.records("PLANT"):
-        rhyme = split_item(plant.get("rhyme") or "no").first or "no"
+        rhyme_item = split_item(plant.get("rhyme") or "no")
+        rhyme = rhyme_item.first or "no"
         if normalise_word(rhyme) != "yes":
             continue
+        reversed_side = side_reversed_on_purpose(rhyme_item)
         planted = shots_linking(run, "plant", plant.identifier)
         paid = shots_linking(run, "payoff", plant.identifier)
         if not planted or not paid:
@@ -642,10 +664,10 @@ def check_film_02(run):
         for payoff_shot, _ in paid:
             if not run.in_scope(payoff_shot.identifier):
                 continue
-            differences = framing_differences(plant_shot, payoff_shot, element)
+            differences = framing_differences(plant_shot, payoff_shot, element, reversed_side)
             if differences:
                 problems.append(rhyme_line(run, plant_shot, payoff_shot, element, differences,
-                                           f"plant {plant.identifier}"))
+                                           f"plant {plant.identifier}", reversed_side))
     for motif in run.records("MOTIF"):
         for written in motif.get_all("appearance"):
             item = split_item(written)
@@ -657,10 +679,11 @@ def check_film_02(run):
                 continue
             if not run.in_scope(later.identifier):
                 continue
-            differences = framing_differences(earlier, later, motif.identifier)
+            reversed_side = side_reversed_on_purpose(item)
+            differences = framing_differences(earlier, later, motif.identifier, reversed_side)
             if differences:
                 problems.append(rhyme_line(run, earlier, later, motif.identifier, differences,
-                                           f"motif {motif.identifier}'s appearance"))
+                                           f"motif {motif.identifier}'s appearance", reversed_side))
     if waiting:
         run.skip("FILM-02", f"{', '.join(waiting)}: the plant or payoff shot is not written yet, or is not in the excerpt")
     return problems

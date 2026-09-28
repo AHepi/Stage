@@ -1,0 +1,745 @@
+{
+ "checked_on": "2026-09-27",
+ "about": "The dated facts about voice design, text to speech, voice changing, lip sync, music and sound-effect tools, with their consent gates and commercial terms (blueprint 8.2, 8.6; D3, D9). Checked 2026-09-27.",
+ "how_to_read": [
+  "voice: tools that make or change speech; lip_sync: tools that fit a mouth to a take afterwards; music and effects: generators, video-to-audio models and libraries.",
+  "commercial and film_use: whether the output may go into a film that is shown or sold (D4; D9 rule 9). A tool whose terms exclude film is never budgeted (D13 R19).",
+  "consent_gate: what the tool demands before a real person's voice is copied. The kit's own rule is stricter: never a celebrity, a child or a dead person, and never from existing recordings (D3 rule 16).",
+  "path_treatments: the saved treatment for each path a voice takes (earpiece, radio, intercom ...), applied in the edit, never asked of a video model (D3 rule 24).",
+  "marks: V verified, V-sec secondary, U unverified, J judgement, with the research file's section and source."
+ ],
+ "voice": {
+  "elevenlabs-v3": {
+   "name": "ElevenLabs Eleven v3",
+   "maker": "ElevenLabs",
+   "kind": "text_to_speech",
+   "aliases": [
+    "Eleven v3",
+    "eleven_v3",
+    "ElevenLabs v3"
+   ],
+   "status": "current",
+   "tags": [
+    "[whispers]",
+    "[sighs]",
+    "[exhales]",
+    "[laughs]",
+    "[strong X accent]",
+    "[sings]"
+   ],
+   "stability": [
+    "creative",
+    "natural",
+    "robust"
+   ],
+   "speed": [
+    0.7,
+    1.2
+   ],
+   "pauses": "ellipses and dashes (no break tags)",
+   "characters_per_request_max": 5000,
+   "text_to_dialogue": "several voices in one call, with a with-timestamps endpoint",
+   "plans_usd_per_month": {
+    "free": 0,
+    "starter": 6,
+    "creator": 22,
+    "pro": 99
+   },
+   "credits_per_month": {
+    "free": 10000,
+    "starter": 30000,
+    "creator": 121000,
+    "pro": 600000
+   },
+   "credit_per_character": 1,
+   "languages": "70+",
+   "access": [
+    "app",
+    "API",
+    "hosted MCP https://api.elevenlabs.io/v1/mcp (sign-in)"
+   ],
+   "commercial": "Starter and above; Free is not commercial",
+   "consent_gate": "instant clones: confirm the right and consent to clone; professional clones: own voice only, voice-captcha verification",
+   "marks": {
+    "tags": "V D3 §2A [S2][S3]",
+    "stability": "V D3 §2A [S2]",
+    "speed": "V D3 §2A [S3]",
+    "characters_per_request_max": "V D3 §2A [S2]",
+    "plans_usd_per_month": "V D3 §2A [S1]; D13 §3",
+    "credits_per_month": "V D3 §2A [S1]",
+    "languages": "V D3 §2A [S2]",
+    "access": "V D3 §2A [S8]",
+    "commercial": "V D3 §2A [S1]",
+    "consent_gate": "V D3 §2A [S4][S5][S10]"
+   },
+   "sources": [
+    "D3 [S1] https://elevenlabs.io/pricing",
+    "D3 [S2] https://elevenlabs.io/docs/overview/models",
+    "D3 [S4] https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning/instant-voice-cloning",
+    "D3 [S5] https://elevenlabs.io/docs/eleven-creative/voices/voice-cloning/professional-voice-cloning"
+   ]
+  },
+  "elevenlabs-voice-design": {
+   "name": "ElevenLabs Voice Design",
+   "maker": "ElevenLabs",
+   "kind": "voice_design",
+   "aliases": [
+    "Voice Design"
+   ],
+   "status": "current",
+   "previews": 3,
+   "settings": [
+    "guidance scale",
+    "loudness"
+   ],
+   "consent_gate": "no stated real-person rule, so D3 rule 18 applies: never name a real person or write 'sounds like'",
+   "marks": {
+    "previews": "V D3 §2A [S6]",
+    "settings": "V D3 §2A [S6]",
+    "consent_gate": "V D3 §2A; J rule 18"
+   },
+   "sources": [
+    "D3 [S6] https://elevenlabs.io/docs/eleven-creative/voices/voice-design"
+   ]
+  },
+  "elevenlabs-voice-changer": {
+   "name": "ElevenLabs Voice Changer",
+   "maker": "ElevenLabs",
+   "kind": "speech_to_speech",
+   "aliases": [
+    "Voice Changer",
+    "Multilingual STS v2"
+   ],
+   "status": "current",
+   "options": [
+    "remove_background_noise",
+    "seed"
+   ],
+   "languages": 29,
+   "best_for": [
+    "lines whose acting is hard to write: perform them on a phone and convert (D3 rule 3)"
+   ],
+   "marks": {
+    "options": "V D3 §2A [S7]",
+    "languages": "V D3 §2A [S2]",
+    "best_for": "J D3 rule 3"
+   },
+   "sources": [
+    "D3 [S7] https://elevenlabs.io/docs/api-reference/speech-to-speech/convert"
+   ]
+  },
+  "gemini-3.8-flash-tts": {
+   "name": "Gemini 3.8 Flash TTS",
+   "maker": "Google",
+   "kind": "text_to_speech",
+   "aliases": [
+    "Gemini 3.8 Flash TTS",
+    "Gemini 3.8 Flash-Lite TTS"
+   ],
+   "status": "current",
+   "voices": 30,
+   "speakers_per_request_max": 2,
+   "tags": [
+    "<breath>",
+    "<sigh>",
+    "<short pause>",
+    "<long pause>",
+    "<laugh>",
+    "<gasp>"
+   ],
+   "voice_design": true,
+   "voice_replication": "persistent voice kept one year; 10-30 s plus the owner's recorded consent sentence",
+   "price": {
+    "flash_text_in_per_million_tokens": 0.5,
+    "flash_audio_out_per_million_tokens": 9,
+    "audio_tokens_per_second": 25,
+    "lite_audio_out_per_million_tokens": 6,
+    "until": "2026-12-31, then double"
+   },
+   "languages": ">130 (Lite >100)",
+   "consent_gate": "replication needs 'I am the owner of this voice and I consent to Google using this voice to create a synthetic voice model', speaker-matched",
+   "region_notes": "replication reportedly blocked in the UK, EEA, India, Texas and Illinois (unverified)",
+   "advice": "a short style per turn; long Director's Notes are the most common cause of voice drift",
+   "marks": {
+    "voices": "V D3 §2A [S13]",
+    "speakers_per_request_max": "V D3 §2A [S13]",
+    "tags": "V D3 §2A [S13]",
+    "voice_replication": "V D3 §2A [S15]",
+    "price": "V D3 §2A [S14]",
+    "consent_gate": "V D3 §2A [S15]",
+    "region_notes": "U D3 §2A [S16]",
+    "advice": "V D3 §2A [S13]"
+   },
+   "sources": [
+    "D3 [S13] https://ai.google.dev/gemini-api/docs/speech-generation",
+    "D3 [S14] https://ai.google.dev/gemini-api/docs/pricing",
+    "D3 [S15] https://ai.google.dev/gemini-api/docs/voice-replication"
+   ]
+  },
+  "openai-gpt-4o-mini-tts": {
+   "name": "OpenAI gpt-4o-mini-tts",
+   "maker": "OpenAI",
+   "kind": "text_to_speech",
+   "aliases": [
+    "gpt-4o-mini-tts"
+   ],
+   "status": "current",
+   "voices": 13,
+   "best_voices": [
+    "marin",
+    "cedar"
+   ],
+   "price": {
+    "text_in_per_million": 0.6,
+    "audio_out_per_million": 12,
+    "per_minute_estimate": 0.015
+   },
+   "consent_gate": "custom voices by approval with a consent recording; tell listeners the voice is AI-generated",
+   "marks": {
+    "voices": "V D3 §2A [S11][S12]",
+    "price": "V D3 §2A [S12]; per-minute U",
+    "consent_gate": "V D3 §2A [S11]"
+   },
+   "sources": [
+    "D3 [S11] https://developers.openai.com/api/docs/guides/text-to-speech",
+    "D3 [S12] https://developers.openai.com/api/docs/models/gpt-4o-mini-tts"
+   ]
+  },
+  "azure-speech": {
+   "name": "Azure Speech",
+   "maker": "Microsoft",
+   "kind": "text_to_speech",
+   "aliases": [
+    "Azure Speech",
+    "Azure HD voices"
+   ],
+   "status": "current",
+   "price": {
+    "hd_per_million_characters": 22
+   },
+   "consent_gate": "personal voice from 5-90 s plus a recorded consent statement; approved use cases only",
+   "marks": {
+    "price": "V D3 §2A [S19]",
+    "consent_gate": "V D3 §2A [S17][S18]"
+   },
+   "sources": [
+    "D3 [S17] https://learn.microsoft.com/en-us/azure/ai-services/speech-service/personal-voice-overview"
+   ]
+  },
+  "cartesia-sonic-3.6": {
+   "name": "Cartesia Sonic-3.6",
+   "maker": "Cartesia",
+   "kind": "text_to_speech",
+   "aliases": [
+    "Sonic-3.6"
+   ],
+   "status": "current",
+   "plans_usd_per_month": {
+    "free": 0,
+    "pro": 5,
+    "startup": 49
+   },
+   "commercial": "from Pro",
+   "languages": 44,
+   "marks": {
+    "plans_usd_per_month": "V D3 §2A [S20]",
+    "commercial": "V D3 §2A [S20]"
+   },
+   "sources": [
+    "D3 [S20] https://cartesia.ai/pricing"
+   ]
+  },
+  "hume-octave-2": {
+   "name": "Hume Octave 2",
+   "maker": "Hume",
+   "kind": "text_to_speech",
+   "aliases": [
+    "Octave 2"
+   ],
+   "status": "current",
+   "plans_usd_per_month": {
+    "free": 0,
+    "starter": 3,
+    "creator": 7,
+    "pro": 70
+   },
+   "commercial": "from Creator ($7); Free and Starter are not commercial",
+   "speed": [
+    0.5,
+    2.0
+   ],
+   "marks": {
+    "plans_usd_per_month": "V D3 §2A [S22]",
+    "commercial": "V D3 §2A [S22]",
+    "speed": "V D3 §2A [S23]"
+   },
+   "sources": [
+    "D3 [S22] https://www.hume.ai/pricing"
+   ]
+  },
+  "chatterbox": {
+   "name": "Chatterbox",
+   "maker": "Resemble AI",
+   "kind": "text_to_speech",
+   "hosting": "open_weights",
+   "aliases": [
+    "Chatterbox"
+   ],
+   "status": "current",
+   "licence": "MIT",
+   "watermark": "Perth watermark on every file (keep it)",
+   "languages": "23+",
+   "marks": {
+    "licence": "V D3 §2A [S24]",
+    "watermark": "V D3 §2A [S24]"
+   },
+   "sources": [
+    "D3 [S24] https://github.com/resemble-ai/chatterbox"
+   ]
+  },
+  "dia": {
+   "name": "Dia",
+   "maker": "Nari Labs",
+   "kind": "text_to_speech",
+   "hosting": "open_weights",
+   "aliases": [
+    "Dia",
+    "Dia2"
+   ],
+   "status": "current",
+   "licence": "Apache 2.0",
+   "languages": "English only",
+   "marks": {
+    "licence": "V D3 §2A [S25]",
+    "languages": "V D3 §2A [S25]"
+   },
+   "sources": [
+    "D3 [S25] https://github.com/nari-labs/dia"
+   ]
+  },
+  "indextts2": {
+   "name": "IndexTTS2",
+   "kind": "text_to_speech",
+   "hosting": "open_weights",
+   "aliases": [
+    "IndexTTS2"
+   ],
+   "status": "current",
+   "licence": "custom bilibili licence: read it before commercial use",
+   "languages": "Chinese, English",
+   "marks": {
+    "licence": "V D3 §2A [S26]"
+   },
+   "sources": [
+    "D3 [S26] https://github.com/index-tts/index-tts"
+   ]
+  }
+ },
+ "lip_sync": {
+  "sync-3": {
+   "name": "sync. sync-3",
+   "maker": "sync.",
+   "kind": "lip_sync",
+   "aliases": [
+    "sync-3"
+   ],
+   "price_usd_per_s": [
+    0.107,
+    0.133
+   ],
+   "best_for": [
+    "profiles and over-the-shoulder shots",
+    "obstructions (hands, microphones, scarves)"
+   ],
+   "marks": {
+    "price_usd_per_s": "V D3 §2B [S28]",
+    "best_for": "V D3 §2B [S28]"
+   },
+   "sources": [
+    "D3 [S28] https://sync.so/docs/models/lipsync",
+    "D3 [S29] https://sync.so/pricing"
+   ]
+  },
+  "lipsync-2-pro": {
+   "name": "sync. lipsync-2-pro",
+   "maker": "sync.",
+   "kind": "lip_sync",
+   "aliases": [
+    "lipsync-2-pro"
+   ],
+   "price_usd_per_s": [
+    0.067,
+    0.083
+   ],
+   "best_for": [
+    "frontal faces with beards (enhanced beard resolution, teeth)"
+   ],
+   "weaknesses": [
+    "extreme profiles"
+   ],
+   "marks": {
+    "price_usd_per_s": "V D3 §2B [S28]",
+    "best_for": "V D3 §2B [S28]"
+   },
+   "sources": [
+    "D3 [S28] https://sync.so/docs/models/lipsync"
+   ]
+  },
+  "lipsync-2": {
+   "name": "sync. lipsync-2",
+   "maker": "sync.",
+   "kind": "lip_sync",
+   "aliases": [
+    "lipsync-2"
+   ],
+   "price_usd_per_s": [
+    0.04,
+    0.05
+   ],
+   "options": [
+    "active_speaker_detection (all sync. models)"
+   ],
+   "marks": {
+    "price_usd_per_s": "V D3 §2B [S28]",
+    "options": "V D3 §2B [S29]"
+   },
+   "sources": [
+    "D3 [S28] https://sync.so/docs/models/lipsync",
+    "D3 [S29] https://sync.so/pricing"
+   ]
+  },
+  "kling-lip-sync": {
+   "name": "Kling Lip Sync",
+   "maker": "Kuaishou",
+   "kind": "lip_sync",
+   "price": "1 credit a second",
+   "needs": "the character's face complete",
+   "marks": {
+    "price": "V D3 §2B [S30]"
+   },
+   "sources": [
+    "D3 [S30] https://kling.ai/quickstart/ai-lip-sync-guide"
+   ]
+  },
+  "hedra-character-3": {
+   "name": "Hedra Character-3",
+   "maker": "Hedra",
+   "kind": "talking_head",
+   "aliases": [
+    "Character-3"
+   ],
+   "price_usd_per_s": {
+    "540p": 0.025,
+    "720p": 0.05,
+    "1080p": 0.0625
+   },
+   "length_max_min": 10,
+   "best_for": [
+    "screen inserts from a still plus clean speech"
+   ],
+   "marks": {
+    "price_usd_per_s": "V D3 §2B [S32]"
+   },
+   "sources": [
+    "D3 [S32] https://www.hedra.com/models/video/hedra/character-3"
+   ]
+  },
+  "latentsync-1.6": {
+   "name": "LatentSync 1.6",
+   "kind": "lip_sync",
+   "hosting": "open_weights",
+   "licence": "Apache 2.0",
+   "hardware": "18 GB graphics memory",
+   "marks": {
+    "licence": "V D3 §2B [S33]"
+   },
+   "sources": [
+    "D3 [S33] https://github.com/bytedance/LatentSync"
+   ]
+  },
+  "musetalk": {
+   "name": "MuseTalk",
+   "kind": "lip_sync",
+   "hosting": "open_weights",
+   "licence": "MIT",
+   "marks": {
+    "licence": "V D3 §2B [S34]"
+   },
+   "sources": [
+    "D3 [S34] https://huggingface.co/TMElyralab/MuseTalk"
+   ]
+  },
+  "infinitetalk": {
+   "name": "InfiniteTalk",
+   "kind": "lip_sync",
+   "hosting": "open_weights",
+   "licence": "Apache 2.0",
+   "marks": {
+    "licence": "V D3 §2B [S35]"
+   },
+   "sources": [
+    "D3 [S35] https://github.com/MeiGen-AI/InfiniteTalk"
+   ]
+  }
+ },
+ "music": {
+  "suno-v6": {
+   "name": "Suno v6",
+   "kind": "music",
+   "released": "2026-09-09",
+   "plans_usd_per_month": {
+    "free": 0,
+    "pro": 8,
+    "premier": 24
+   },
+   "downloads_per_month": {
+    "pro": 20,
+    "premier": 60
+   },
+   "film_use": "yes for songs downloaded while subscribed to a paid plan; trial downloads are not commercial",
+   "marks": {
+    "released": "V D9 §2.1 [S5]",
+    "plans_usd_per_month": "V D9 §2.1 [S3]",
+    "film_use": "V D9 §2.1 [S1][S2]"
+   },
+   "sources": [
+    "D9 [S3] https://suno.com/pricing",
+    "D9 [S5] https://suno.com/release-notes/introducing-v6"
+   ]
+  },
+  "elevenlabs-music": {
+   "name": "ElevenLabs Music v2.5",
+   "kind": "music",
+   "length_s": [
+    3,
+    300
+   ],
+   "film_use": "no below Enterprise Music: every self-serve plan excludes film, TV, radio and studio games",
+   "marks": {
+    "length_s": "V D9 §2.1 [S8]",
+    "film_use": "V D9 §2.1 [S10]"
+   },
+   "sources": [
+    "D9 [S8] https://elevenlabs.io/docs/capabilities/music",
+    "D9 [S10] https://elevenlabs.io/eleven-music-model-specific-terms"
+   ]
+  },
+  "lyria-3.5": {
+   "name": "Google Lyria 3.5",
+   "kind": "music",
+   "aliases": [
+    "lyria-3.5"
+   ],
+   "price_usd": {
+    "per_song": 0.08,
+    "per_30_s_clip": 0.04
+   },
+   "watermark": "SynthID in all output",
+   "film_use": "Google claims no ownership; use a paid key (unpaid submissions improve Google's products)",
+   "marks": {
+    "price_usd": "V D9 §2.1 [S15]",
+    "watermark": "V D9 §2.1 [S13]",
+    "film_use": "V D9 §2.1 [S16]; J D4"
+   },
+   "sources": [
+    "D9 [S13] https://ai.google.dev/gemini-api/docs/music-generation"
+   ]
+  },
+  "stable-audio-3.0": {
+   "name": "Stable Audio 3.0",
+   "kind": "music_and_effects",
+   "released": "2026-05-20",
+   "film_use": "Community Licence: you own outputs under $1M yearly revenue",
+   "marks": {
+    "released": "V-sec D9 §2.1 [S19]",
+    "film_use": "V D9 §2.1 [S18]"
+   },
+   "sources": [
+    "D9 [S17] https://stability.ai/stable-audio",
+    "D9 [S18] https://stability.ai/license"
+   ]
+  },
+  "ace-step-1.5": {
+   "name": "ACE-Step 1.5",
+   "kind": "music",
+   "hosting": "open_weights",
+   "length_s": [
+    10,
+    600
+   ],
+   "licence": "MIT",
+   "controls": [
+    "BPM",
+    "key",
+    "time signature"
+   ],
+   "marks": {
+    "length_s": "V D9 §2.1 [S21]",
+    "licence": "V D9 §2.1 [S21]",
+    "controls": "V D9 §2.1 [S21]"
+   },
+   "sources": [
+    "D9 [S21] https://github.com/ace-step/ACE-Step-1.5"
+   ]
+  },
+  "udio": {
+   "name": "Udio",
+   "kind": "music",
+   "film_use": "no: downloading disabled since the UMG settlement (29 Oct 2025)",
+   "marks": {
+    "film_use": "V D9 §2.1 [S6]"
+   },
+   "sources": [
+    "D9 [S6] https://help.udio.com/en/articles/12683565-changes-associated-with-the-universal-music-group-umg-partnership"
+   ]
+  }
+ },
+ "effects": {
+  "elevenlabs-sound-effects": {
+   "name": "ElevenLabs Sound Effects",
+   "kind": "effects",
+   "length_s_max": 30,
+   "credits_per_second": 40,
+   "film_use": "plan terms; the docs say nothing on licence (unverified)",
+   "marks": {
+    "length_s_max": "V D9 §2.2 [S11]",
+    "credits_per_second": "V D9 §2.2 [S11]",
+    "film_use": "U D9 §2.2"
+   },
+   "sources": [
+    "D9 [S11] https://elevenlabs.io/docs/capabilities/sound-effects"
+   ]
+  },
+  "sonilo-v1.1": {
+   "name": "Sonilo v1.1",
+   "kind": "video_to_audio",
+   "price_usd_per_s": 0.009,
+   "film_use": "for commercial use (fal's page)",
+   "marks": {
+    "price_usd_per_s": "V D9 §2.3 [S25]",
+    "film_use": "V D9 §2.3 [S25]"
+   },
+   "sources": [
+    "D9 [S25] https://fal.ai/models/sonilo/v1.1/video-to-sound-effects"
+   ]
+  },
+  "mirelo-sfx-v1": {
+   "name": "Mirelo SFX v1",
+   "kind": "video_to_audio",
+   "price_usd_per_s": 0.007,
+   "film_use": "commercial use listed",
+   "marks": {
+    "price_usd_per_s": "V D9 §2.3 [S26]",
+    "film_use": "V D9 §2.3 [S26]"
+   },
+   "sources": [
+    "D9 [S26] https://fal.ai/models/mirelo-ai/sfx-v1/video-to-audio"
+   ]
+  },
+  "mmaudio-v2": {
+   "name": "MMAudio",
+   "kind": "video_to_audio",
+   "price_usd_per_s": 0.001,
+   "film_use": "weights CC BY-NC 4.0: not for anything sold, whatever the host's label says",
+   "marks": {
+    "price_usd_per_s": "V D9 §2.3 [S23]",
+    "film_use": "V D9 §2.3 [S22]"
+   },
+   "sources": [
+    "D9 [S22] https://github.com/hkchengrex/MMAudio",
+    "D9 [S23] https://fal.ai/models/fal-ai/mmaudio-v2"
+   ]
+  },
+  "hunyuanvideo-foley": {
+   "name": "HunyuanVideo-Foley",
+   "kind": "video_to_audio",
+   "hosting": "open_weights",
+   "film_use": "the licence does not apply in the EU, the UK and South Korea",
+   "marks": {
+    "film_use": "V D9 §2.3 [S24]"
+   },
+   "sources": [
+    "D9 [S24] https://huggingface.co/tencent/HunyuanVideo-Foley/blob/main/LICENSE"
+   ]
+  },
+  "freesound": {
+   "name": "Freesound",
+   "kind": "library",
+   "film_use": "CC0 and CC BY yes (credit BY); CC BY-NC never in anything sold",
+   "marks": {
+    "film_use": "V D9 §2.4 [S27]"
+   },
+   "sources": [
+    "D9 [S27] https://freesound.org/help/faq/"
+   ]
+  },
+  "sonniss-gdc": {
+   "name": "Sonniss GDC bundles",
+   "kind": "library",
+   "film_use": "royalty free, commercially usable, no attribution",
+   "marks": {
+    "film_use": "V D9 §2.4 [S28]"
+   },
+   "sources": [
+    "D9 [S28] https://sonniss.com/gameaudiogdc"
+   ]
+  }
+ },
+ "path_treatments": {
+  "about": "One saved treatment per path, applied to clean voice takes in the edit (D3 rule 24; blueprint 8.6). Each runs as: ffmpeg -i in.wav -af \"<chain>\" -ac 1 -ar 48000 out.wav (FFmpeg 7.0.2, 27 Sept 2026). Starting points; tune by ear.",
+  "chains": {
+   "radio": "highpass=f=300,lowpass=f=3400,equalizer=f=1800:t=q:w=2:g=4,acompressor=threshold=0.1:ratio=4,acrusher=bits=10:mix=0.25",
+   "earpiece": "highpass=f=400,lowpass=f=3400,acompressor=threshold=0.125:ratio=3,asoftclip=type=tanh",
+   "intercom": "highpass=f=250,lowpass=f=5000,acompressor=threshold=0.2:ratio=2",
+   "device_speaker": "highpass=f=500,lowpass=f=5000,asoftclip=type=tanh",
+   "helmet_inside": "aecho=0.8:0.7:6|9:0.3|0.2,equalizer=f=300:t=q:w=1:g=3",
+   "helmet_outside": "lowpass=f=1800,volume=-8dB"
+  },
+  "in_words": {
+   "off_screen": "more room reverb, 1 to 3 dB lower",
+   "recording": "the device chain plus the recorded room",
+   "through_glass": "low-pass at 1 to 1.5 kHz, 12 dB down; non-verbal sounds only",
+   "phone": "the device_speaker chain"
+  },
+  "marks": {
+   "chains": "V D3 §4 P5, §8.1 [S45][S46] (ran on FFmpeg 7.0.2)",
+   "in_words": "J D3 §8.1"
+  }
+ },
+ "voice_routes": {
+  "first_account": {
+   "tool": "elevenlabs-v3",
+   "plan": "starter or creator",
+   "why": "the cheapest commercial plans that cover design, tags and two-speaker exchanges (D3 rule 2)"
+  },
+  "cheapest": {
+   "tool": "gemini-3.8-flash-tts",
+   "why": "D3 rule 2"
+  },
+  "offline_or_free": {
+   "tools": [
+    "chatterbox",
+    "dia"
+   ],
+   "why": "MIT or Apache 2.0 (D3 rule 4)"
+  },
+  "hard_to_write_lines": {
+   "tool": "elevenlabs-voice-changer",
+   "why": "perform it and convert it; timing and breath are kept (D3 rule 3)"
+  },
+  "lip_sync_order": [
+   "an off-screen line over the listener",
+   "an audio-reference video model",
+   "lip sync after (sync-3 for profiles and obstructions, lipsync-2-pro for frontal beards)",
+   "a cutaway"
+  ],
+  "takes_per_line": 3,
+  "takes_per_marked_line": "2 alternates x 3 takes",
+  "marks": {
+   "first_account": "V prices, J choice (D3 rule 2)",
+   "lip_sync_order": "J D3 rules 20-22",
+   "takes_per_line": "J D3 rule 10"
+  }
+ },
+ "retired": {}
+}

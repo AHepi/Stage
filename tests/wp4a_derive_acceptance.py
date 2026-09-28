@@ -460,20 +460,26 @@ def main():
             completed = subprocess.run(command, capture_output=True, text=True, timeout=300)
             assert completed.returncode == 0, completed.stdout + completed.stderr
             derived = json.loads((project / derive.MACHINE_FOLDER / derive.DERIVED_FILE).read_text(encoding="utf-8"))
-            assert derived["previs_stubs_needed"] == [{"previs": "PV-SC10-MASTER-V01", "for": "SC10-MASTER",
-                                                       "named_by": "SC10-SH080"}], derived["previs_stubs_needed"]
+            listed = [{"previs": "PV-SC10-MASTER-V01", "for": "SC10-MASTER", "named_by": "SC10-SH080"}]
             stub_file = project / derive.PREVIS_FILE
             accepted = derive.checker_accepts_previs_stubs(SCHEMA, WORDS)
             assert stub_file.is_file() == accepted, f"stub file present: {stub_file.is_file()}, accepted: {accepted}"
-            original = derive.checker_accepts_previs_stubs
-            derive.checker_accepts_previs_stubs = lambda schema, words: True
-            try:
-                breakdown_here = derive.Breakdown.from_project(project, SCHEMA, WORDS, CONSTANTS)
-                made = derive.create_previs_stubs(breakdown_here, project)
-            finally:
-                derive.checker_accepts_previs_stubs = original
+            if accepted:
+                # FORM-05 leaves planned stubs alone, so build wrote the stub itself; derived fields.json may list it
+                # as needed (worked out before the stub was written) or not at all (worked out after).
+                assert derived["previs_stubs_needed"] in ([], listed), derived["previs_stubs_needed"]
+                made = []
+            else:
+                assert derived["previs_stubs_needed"] == listed, derived["previs_stubs_needed"]
+                original = derive.checker_accepts_previs_stubs
+                derive.checker_accepts_previs_stubs = lambda schema, words: True
+                try:
+                    breakdown_here = derive.Breakdown.from_project(project, SCHEMA, WORDS, CONSTANTS)
+                    made = derive.create_previs_stubs(breakdown_here, project)
+                finally:
+                    derive.checker_accepts_previs_stubs = original
+                assert made == ["PV-SC10-MASTER-V01"], made
             text = stub_file.read_text(encoding="utf-8")
-            assert made == ["PV-SC10-MASTER-V01"] or accepted, made
             for line in ("### PREVIS PV-SC10-MASTER-V01", "- for: SC10-MASTER", "- level: 3", "- status: planned"):
                 assert line in text, f'"{line}" missing from {derive.PREVIS_FILE}'
             again = derive.previs_stubs_needed(derive.Breakdown.from_project(project, SCHEMA, WORDS, CONSTANTS))

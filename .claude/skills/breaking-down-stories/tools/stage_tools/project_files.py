@@ -34,6 +34,7 @@ from .record_format import (DIVIDER_LINE, FieldLine, OtherLine, Record, TextBloc
 MACHINE_FOLDER = "For machines - do not edit"
 START_HERE = "00 Start here.md"
 CHOICES_FILE = "01 Choices.md"
+RIGHTS_FILE = "22 Rights and credits.md"
 SCENE_LIST_FILE = "04 Scene list.md"
 SCENES_FOLDER = "11 Scenes"
 ORIGINAL_FOLDER = "Original"
@@ -554,11 +555,17 @@ def choices_text(depth, depth_answered):
         "- answer: open",
         "- asked: yes",
         "- checkpoint: none",
-        "- affects: PROJECT.rights",
+        "- affects: PROJECT.rights, RT-001",
         "- sets: PROJECT.rights | value: mine | when: a",
         "- sets: PROJECT.rights | value: permission | when: b",
         "- sets: PROJECT.rights | value: public_domain | when: c",
         "- sets: PROJECT.rights | value: study_only | when: d",
+    ]
+    for letter, (clearance, holder) in RIGHTS_BY_OPTION.items():
+        lines += [f"- sets: RT-001.subject | value: source | when: {letter}",
+                  f"- sets: RT-001.clearance | value: {clearance} | when: {letter}",
+                  f"- sets: RT-001.holder | value: {holder} | when: {letter}"]
+    lines += [
         "- based_on: D4 R1",
         "- status: open",
         "- date: none",
@@ -605,6 +612,40 @@ def choices_text(depth, depth_answered):
     return "\n".join(lines) + "\n"
 
 
+# What each answer to the rights question (CHOICE-001) writes in RT-001, the story's own rights record (step 0;
+# D4): its clearance and its holder, named by role, never by name.
+RIGHTS_BY_OPTION = {
+    "a": ("the author's own work", "the author"),
+    "b": ("adapted with the permission of the rights holder", "the rights holder"),
+    "c": ("in the public domain", "nobody: the story is in the public domain"),
+    "d": ("no permission: private study only, not for publication", "the rights holder"),
+}
+
+
+def rights_text():
+    """22 Rights and credits.md as new makes it: RT-001, the story's own rights record, waiting for the answer to
+    the rights question (choice 1 sets its subject, clearance and holder)."""
+    lines = [
+        "# Rights and credits",
+        "",
+        "## At a glance",
+        "",
+        "Whose story this is waits for your answer to the rights question (choice 1).",
+        "",
+        DIVIDER_LINE,
+        "",
+        "### RIGHTS RT-001 The story",
+        "- subject: open",
+        "- clearance: open",
+        "- holder: open",
+        "- status: draft",
+        "- locked: no",
+        "",
+        "END OF FILE | Rights and credits | 1 records",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def unique_folder(parent, name):
     """A folder name not yet used: 'The Catch', then 'The Catch 2' ('Start again' keeps the old project)."""
     candidate = parent / name
@@ -634,7 +675,11 @@ def unit_in_plain_words(unit, steps=None):
     parts = [f"step {step + 1} ({name})" if step <= 11 else name]
     scene = SCENE_ID.match(scope)
     range_match = re.match(r"^(SC\d+[A-Z]?)\.\.(SC\d+[A-Z]?)$", scope)
-    if range_match:
+    chapter = re.match(r"^CP(\d+)(?:\.\.CP(\d+))?$", scope)
+    if chapter:
+        parts.append(f"chapter {int(chapter.group(1))}" if not chapter.group(2) else
+                     f"chapters {int(chapter.group(1))} to {int(chapter.group(2))}")
+    elif range_match:
         parts.append(f"scenes {scene_number_words(range_match.group(1))[6:]} to {scene_number_words(range_match.group(2))[6:]}")
     elif scene:
         parts.append(scene_number_words(scene.group(1)))
@@ -763,6 +808,12 @@ def apply_inbox(project, inbox_path, steps=None):
     files_by_name = {record_file.name: record_file for record_file in current_files}
     changed_files = set()
     locations = {}
+    # Each stored choice's answer and status before the inbox is merged, so that a new answer to a choice already
+    # answered or defaulted ("I got permission" answers choice 1 again, step 0) is applied, and a repeated one is not.
+    answers_before = {record.key: ((record.get("answer") or "").strip().lower(),
+                                   normalise_word(record.get("status") or "open"))
+                      for record_file in current_files for record in record_file.records
+                      if record.type_name == "CHOICE" and record.identifier}
     for record_file in current_files:
         for record in record_file.records:
             locations.setdefault(record.key, []).append(record_file)
@@ -840,7 +891,7 @@ def apply_inbox(project, inbox_path, steps=None):
             continue
         put(record, record.fields, target, add_code_defaults=True)
 
-    answered = apply_choice_answers(project, inbox, files_by_name, changed_files, result)
+    answered = apply_choice_answers(project, inbox, files_by_name, changed_files, result, answers_before)
     result.history_folder = history_run_folder(project)
     for name in sorted(changed_files):
         record_file = files_by_name[name]
@@ -885,9 +936,25 @@ def keep_in_history(history_folder, path, name):
     return target
 
 
-def apply_choice_answers(project, inbox, files_by_name, changed_files, result):
+def same_answer_as_before(answer, before):
+    """True when an inbox repeats the answer a choice already has: the same letter or text, or 'defaults' for a
+    defaulted choice. before is (answer, status) as stored before the inbox was merged, or None."""
+    if before is None:
+        return False
+    old_answer, old_status = before
+    if old_status not in ("answered", "defaulted"):
+        return False
+    written = answer.strip().lower()
+    if written in ("default", "defaults"):
+        return old_status == "defaulted"
+    return written == old_answer
+
+
+def apply_choice_answers(project, inbox, files_by_name, changed_files, result, answers_before=None):
     """When the AI passes on a user's answer to a choice: code sets its status and date, writes what the answer
-    sets (sets lines and SETVALUE records) and locks what it names. Returns plain notes for the report."""
+    sets (sets lines and SETVALUE records) and locks what it names. A new answer to a choice already answered or
+    defaulted is applied the same way (the user changed their mind); the same answer again changes nothing.
+    Returns plain notes for the report."""
     schema = project.schema
     notes = []
     all_records = [record for record_file in files_by_name.values() for record in record_file.records]
@@ -902,7 +969,13 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result):
         if stored is None:
             continue
         status = normalise_word(stored.get("status") or "open")
-        if status in ("answered", "defaulted"):
+        if answers_before is None:
+            if status in ("answered", "defaulted"):
+                continue
+        elif same_answer_as_before(answer, answers_before.get(stored.key)):
+            before_answer = answers_before[stored.key][0]
+            if (stored.get("answer") or "").strip().lower() != before_answer:
+                stored.set_field("answer", before_answer, schema)  # 'defaults' again keeps the letter it took
             continue
         choice_label = f"choice {int(stored.identifier.split('-')[1])}"
         default_letter = split_item(stored.get("default") or "").first.strip().lower()
@@ -1040,6 +1113,7 @@ def run_new(context):
     (folder / START_HERE).write_text(start_here_text(title, identifier, story.name, fingerprint, depth, surface,
                                                      schema_version, bool(arguments.depth)), encoding="utf-8")
     (folder / CHOICES_FILE).write_text(choices_text(depth, bool(arguments.depth)), encoding="utf-8")
+    (folder / RIGHTS_FILE).write_text(rights_text(), encoding="utf-8")
     project = Project(folder, context.schema, context.words)
     context.project_folder = folder
     project.add_log_entry(f'Project started from the story file "{story.name}".')
@@ -1177,10 +1251,32 @@ def run_apply(context):
             project.add_log_entry(f"Saved {described}: {plural(len(inbox_records), 'record')}, in {files}.{answered}")
         for note in result.notes:
             context.say(note)
+        if result.files_written:
+            views_note = refresh_views(project)
+            if views_note:
+                context.say(views_note)
         context.say(f"Applied {inbox_path.name}: {result.new_records} new and {result.changed_records} changed "
                     f"records in {', '.join(result.files_written) or 'no file'}. Next: stage.py check.")
         context.summary = f"{inbox_path.name} applied"
     return 0
+
+
+def refresh_views(project):
+    """After a unit is saved, remake the plain parts the user reads, above all 00 Start here's where things stand,
+    next step and big choices (13.7: on code surfaces code rewrites them after every unit). Records are never
+    changed. Returns one plain line when a view could not be remade (build remakes it later), else ""."""
+    try:
+        from .make_views import build_views
+    except ImportError:
+        return ""
+    try:
+        views = build_views(project.folder)
+    except Exception as error:  # a view must never undo a saved unit; build remakes it
+        return (f"The plain parts were not remade ({type(error).__name__}: {error}); "
+                "stage.py build remakes them.")
+    if views.problems:
+        return f"{views.problems[0]} (stage.py build tries again)."
+    return ""
 
 
 def add_pack_arguments(parser):

@@ -1,0 +1,354 @@
+{
+ "checked_on": "2026-09-27",
+ "about": "How stage.py compile chooses a video model: the needs code derives from each shot, the first, backup and draft model for each need (blueprint 8.4, C1 §5), how one scene model is chosen, when a shot leaves it, and which picture model makes which picture (C2). Model names are the exact names in video_models.json and image_models.json.",
+ "needs": {
+  "dialogue_recurring": {
+   "meaning": "on-screen dialogue of a recurring speaker: a line whose speaker is seen speaking, sent to the model",
+   "first": [
+    "kling-3.0-omni"
+   ],
+   "first_why": "a voice bound to the character keeps it the same in every clip",
+   "backup": [
+    "seedance-2.5",
+    "minimax-h3"
+   ],
+   "backup_why": "they take the line's recording as an audio reference",
+   "draft": {
+    "model": "gemini-omni-1.1-flash",
+    "resolution": "360p"
+   },
+   "requires": {
+    "audio": true
+   },
+   "marks": "V blueprint 8.4; C1 §5 row 1 and R1 [S11][S12][S32][S22]"
+  },
+  "exact_start_end": {
+   "meaning": "the clip must begin and end on exact pictures",
+   "first": [
+    "minimax-h3"
+   ],
+   "first_why": "its first-and-last mode",
+   "backup": [
+    "kling-3.0"
+   ],
+   "draft": {
+    "model": "veo-3.1-lite",
+    "note": "first and last pictures only in Google Flow, not in the API"
+   },
+   "requires": {
+    "end_picture": true,
+    "start_picture": true
+   },
+   "marks": "V blueprint 8.4; C1 §5 row 4, R3 [S32][S12][S6]"
+  },
+  "guide_video": {
+   "meaning": "an exact camera path copied from a grey preview video",
+   "first": [
+    "seedance-2.5"
+   ],
+   "first_why": "clay-render reference for camera, pacing and blocking",
+   "backup": [
+    "minimax-h3"
+   ],
+   "backup_why": "copies a camera move from a reference video",
+   "draft": {
+    "model": "wan-3.0",
+    "resolution": "480p"
+   },
+   "requires": {
+    "guide_video": true
+   },
+   "marks": "V blueprint 8.4; C1 §5 row 6, R4 [S18][S31]"
+  },
+  "long_take": {
+   "meaning": "a held take longer than 15 seconds with its handles: one continuous take, never split",
+   "first": [
+    "seedance-2.5"
+   ],
+   "backup": [
+    "wan-3.0"
+   ],
+   "draft": {
+    "model": "wan-3.0",
+    "resolution": "480p"
+   },
+   "requires": {
+    "length": true
+   },
+   "marks": "V blueprint 8.4; C1 §5 row 9, R11 [S18][S33]"
+  },
+  "recurring_creature": {
+   "meaning": "a creature (a non-human character) that recurs, built from a reference pack",
+   "first": [
+    "kling-3.0-omni"
+   ],
+   "first_why": "4-7 reference pictures, each addressed by its tag",
+   "backup": [
+    "seedance-2.5"
+   ],
+   "draft": {
+    "model": "kling-3.0-turbo"
+   },
+   "requires": {
+    "references_min": 4
+   },
+   "marks": "V blueprint 8.4; C1 §5 row 7, R5 [S11][S13]"
+  },
+  "physics": {
+   "meaning": "weightlessness or physics a model gets wrong: a guide video, with floating things composited",
+   "first": [
+    "seedance-2.5"
+   ],
+   "first_why": "with a guide video; floaters composited",
+   "backup": [
+    "wan-3.0"
+   ],
+   "backup_why": "with a guide video",
+   "draft": {
+    "model": "wan-3.0",
+    "resolution": "480p"
+   },
+   "requires": {
+    "guide_video": true
+   },
+   "marks": "V blueprint 8.4; C1 §5 row 8, R8 [S65]"
+  },
+  "wide_establishing": {
+   "meaning": "a wide or extreme wide shot with no dialogue",
+   "first": [
+    "veo-3.1"
+   ],
+   "first_resolution": "4k",
+   "backup": [
+    "kling-3.0"
+   ],
+   "backup_resolution": "1080p",
+   "draft": {
+    "model": "veo-3.1-lite",
+    "resolution": "720p"
+   },
+   "marks": "V blueprint 8.4; C1 §5 row 3, R15 (native 4K only for wide, detailed shots)"
+  },
+  "silent_performance": {
+   "meaning": "a close shot (medium close-up or tighter) of a person whose performance carries the beat, with no line sent",
+   "first": [
+    "wan-3.0"
+   ],
+   "first_why": "first on the leaderboard without audio",
+   "backup": [
+    "runway-gen-4.5"
+   ],
+   "draft": {
+    "model": "wan-3.0",
+    "resolution": "480p"
+   },
+   "marks": "V blueprint 8.4 (row 'silent performance'); C1 §2 [S61]; the reading 'close shot of a person' is J"
+  },
+  "performance_transfer": {
+   "meaning": "a performance acted on a phone and copied onto the character (route performance_transfer)",
+   "first": [
+    "kling-3.0"
+   ],
+   "first_why": "Motion Control copies body movement and facial expression from a 2 to 5 second clip",
+   "backup": [
+    "luma-ray3.2"
+   ],
+   "backup_why": "performance transfer for up to 8 faces",
+   "draft": null,
+   "requires": {
+    "guide_video": true
+   },
+   "other_tools": [
+    "runway-act-two (a 3 to 30 second driving video, about $0.05 a second)",
+    "wan-2.2 (Wan-Animate-2, open weights)"
+   ],
+   "marks": "V C1 §5 row 2, R12 [S78][S80][S28][S36]; not a row of blueprint 8.4's table"
+  }
+ },
+ "need_order": [
+  "long_take",
+  "performance_transfer",
+  "guide_video",
+  "physics",
+  "exact_start_end",
+  "recurring_creature",
+  "dialogue_recurring",
+  "wide_establishing",
+  "silent_performance"
+ ],
+ "need_order_why": "when a shot leaves the scene model, the need the scene model cannot meet decides the new model; a length or a guide video is a hard limit, the rest are strengths (J from blueprint 8.4)",
+ "default_draft": {
+  "model": "veo-3.1-lite",
+  "resolution": "720p",
+  "why": "D13 §6.3: draft price $0.05 a second (Veo 3.1 Lite 720p [V])"
+ },
+ "scene_model": {
+  "rule": "Per scene, one model serves the shots with recurring characters (C1 R14; K29). Each candidate scores, over those shots and each need they have: 2 when the routing names it first for that need, 1 when it names it as backup, 0.5 when it can make the shot but is named for none of its needs, 0 when it cannot. The highest score wins; a tie goes to the cheaper final price.",
+  "points": {
+   "first": 2,
+   "backup": 1,
+   "able": 0.5,
+   "unable": 0
+  },
+  "candidates": "current video models whose use includes generation and whose status is current (never test_first or retired); with PROJECT licensed_data_only yes, only models marked licensed_data",
+  "recurring": "a CHARACTER whose tier is principal or minor, or who has a VOICE record",
+  "marks": "V blueprint 8.4 and K29 (one scene model, overrides logged with their reason); the points are J"
+ },
+ "override": {
+  "rule": "A shot leaves the scene model only when the scene model cannot make it: a held take longer than it allows, a start or end picture or guide video it does not take, sound it cannot make for a line that is sent, or too few reference slots. The shot then goes to the first model named for its unmet need that can make it, else the backup, else the cheapest model that can. Every override is logged with its reason, and the pack asks drift questions for it (K29).",
+  "author_override": "SHOT model '<name> | why: ...' wins over routing; a retired name compiles to its first replacement with a warning (blueprint 8.2).",
+  "marks": "V blueprint 8.4, 8.2; K29"
+ },
+ "held_take": {
+  "rule": "A held take (a turn shot, a shot in a oner scene, or held: yes) is one clip: if the scene model allows its length with handles, it stays; else it goes whole to a model that allows it (long_take's models); if none does, GEN-10 is an error and the shot is redesigned with a motivated cut. Other shots split only at a planned cutaway, or, as a flagged last resort, chain from the last frame of the clip before.",
+  "marks": "V blueprint 8.4; C1 R11; C5 R31"
+ },
+ "speech": {
+  "rule": "Voices first: every recurring speaker's lines are made as voice takes before any clip with a visible speaking mouth (K16, D3 rule 1). A line whose speaker is seen is sent to the model in its speaker form, with the voice take as an audio reference where the model takes one; a line whose speaker is off screen is laid in during the edit from its voice take and never sent (D3 rule 20). A clip that would carry two speakers seen speaking is made silent and each line is laid in, with lip sync after (C1 R2; D3 §12).",
+  "marks": "V blueprint 8.6, K16; D3 rules 1, 20, 21; C1 R2"
+ },
+ "frame_shape": {
+  "generation_shape": {
+   "2.39": [
+    "21:9",
+    "16:9"
+   ],
+   "1.85": [
+    "16:9"
+   ],
+   "16_9": [
+    "16:9"
+   ],
+   "4_3": [
+    "4:3",
+    "16:9"
+   ],
+   "9_16": [
+    "9:16"
+   ]
+  },
+  "rule": "Generate at the first shape the model allows in this list, then crop to the frame shape in finishing; on a 16:9 source for a 2.39 film keep heads, hands and text out of the top and bottom eighths (K24; C1 R23).",
+  "ratios": {
+   "21:9": 2.3333,
+   "16:9": 1.7778,
+   "4:3": 1.3333,
+   "1:1": 1.0,
+   "3:4": 0.75,
+   "9:16": 0.5625
+  },
+  "frame_ratios": {
+   "2.39": 2.39,
+   "1.85": 1.85,
+   "16_9": 1.7778,
+   "4_3": 1.3333,
+   "9_16": 0.5625
+  },
+  "marks": "V K24; C1 R23, §5 row 'scope'"
+ },
+ "resolution": {
+  "rule": "Final takes at the highest of the model's sizes up to 1080p (Seedance 720p, H3 2K), and 4K only where the need row names it (a wide establishing shot); Veo at 720p when the clip is 4 or 6 seconds long, because 1080p forces 8 seconds. Upscale kept takes only after picture lock (D13 R14).",
+  "preference": [
+   "1080p",
+   "2k",
+   "768p",
+   "720p",
+   "480p",
+   "360p"
+  ],
+  "marks": "J from C1 R15, R25; D13 R14"
+ },
+ "takes": {
+  "by_cost_class": {
+   "graphic": [
+    0,
+    0
+   ],
+   "reuse": [
+    0,
+    0
+   ],
+   "still_move": [
+    0,
+    0
+   ],
+   "easy": [
+    2,
+    3
+   ],
+   "dialogue": [
+    2,
+    4
+   ],
+   "hard": [
+    4,
+    7
+   ]
+  },
+  "about": "[draft takes, final takes] per shot by its cost_class; a still_move shot needs one picture and no clip",
+  "marks": "V D13 §6.1 (from C3 §17A and C1 R13)"
+ },
+ "pictures": {
+  "storyboard_named": {
+   "model": "nano-banana-2",
+   "size": "1K",
+   "batch": true,
+   "why": "C2 Rule 3: bulk frames with named characters"
+  },
+  "storyboard_other": {
+   "model": "nano-banana-2-lite",
+   "size": "1K",
+   "batch": true,
+   "why": "C2 Rule 3: the cheapest frames without named characters"
+  },
+  "storyboard_many_characters": {
+   "model": "nano-banana-pro",
+   "size": "1K",
+   "why": "C2 Rule 4: three or more named characters"
+  },
+  "start": {
+   "model": "gpt-image-2.5-sunburst",
+   "size_for_2_39": [
+    2560,
+    1072
+   ],
+   "quality": "high",
+   "why": "C2 Rules 5 and 16; K24"
+  },
+  "end": {
+   "model": "gpt-image-2.5-sunburst",
+   "size": "same as the start picture",
+   "why": "edited from the start picture (C2 Rule 15)"
+  },
+  "reference": {
+   "model": "nano-banana-pro",
+   "size": "2K",
+   "why": "C2 Rule 4 and §6.2: five character references"
+  },
+  "plate": {
+   "model": "gpt-image-2.5-sunburst",
+   "size_for_2_39": [
+    2560,
+    1072
+   ],
+   "why": "C2 R5: empty place, flipped, people added unmirrored with an edit model"
+  },
+  "still_with_move": {
+   "model": "gpt-image-2.5-sunburst",
+   "size_for_2_39": [
+    2560,
+    1072
+   ],
+   "quality": "high",
+   "why": "C1 Ex8: a checked final still, pushed slowly in the editor"
+  },
+  "commercial_open_editor": {
+   "model": "qwen-image-edit-2511",
+   "why": "C2 Rule 21: Apache 2.0"
+  },
+  "tries": {
+   "storyboard": 2,
+   "start": 3
+  },
+  "marks": "J from C2 Rules 3, 4, 5, 15, 16, 21 and §6.4 [1][2][10][91]; D13 §6.4 (two storyboard tries, about three start-picture tries)"
+ }
+}

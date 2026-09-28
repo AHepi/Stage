@@ -1775,6 +1775,9 @@ def run_export(context):
         if getattr(context.arguments, "story", None):
             view.breakdown.attach_story_file(context.arguments.story)
     if not view.film_scene_ids() and what not in ("json", "book"):
+        if view.records("CHAPTER") and not view.records("SCENE"):
+            raise StageStop("There are no scenes to export yet: a book's scenes are written with the story plan "
+                            "(step 3 of 12), after its chapters are read. stage.py export book works now.")
         raise StageStop("There are no scenes to export yet: the scene list is empty or no scene is in the project's "
                         "scope. Run stage.py read first, or check PROJECT scope in 00 Start here.")
     timeline = film_timeline(view)

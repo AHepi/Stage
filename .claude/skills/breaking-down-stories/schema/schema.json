@@ -1625,7 +1625,7 @@
      "depth": "q",
      "writer": "ai",
      "filled_by_step": 2,
-     "example": "Saye proved to Iona that the world had changed and kept the three of them in the house.",
+     "example": "Saye proved to Iona with a mint leaf that the three of them had turned and the world had not, and kept them all in her kitchen.",
      "part_of": "plan",
      "repeat": false
     },
@@ -5336,7 +5336,7 @@
       "line_end",
       "sound_hit",
       "rhythm",
-      "withholding"
+      "keep_hidden"
      ],
      "depth": "s",
      "writer": "ai",
@@ -6678,6 +6678,15 @@
        "key": "framing",
        "kind": "text",
        "meaning": "The framing they share."
+      },
+      {
+       "key": "side",
+       "kind": "word",
+       "values": [
+        "same",
+        "reversed"
+       ],
+       "meaning": "reversed when the payoff mirrors the plant's frame side on purpose (The Catch's scene 29 rings reverse the kitchen's reflection two-shot, B3 §8.2); FILM-02 then expects the other side of the frame. Leave it out for the same side."
       }
      ],
      "filled_by_step": 2,
@@ -9255,6 +9264,15 @@
        "id_types": [
         "*"
        ]
+      },
+      {
+       "key": "side",
+       "kind": "word",
+       "values": [
+        "same",
+        "reversed"
+       ],
+       "meaning": "With rhyme_with: reversed when this appearance mirrors the frame side of the one it rhymes with on purpose (B3 §8.2); FILM-02 then expects the other side of the frame. Leave it out for the same side."
       }
      ],
      "filled_by_step": 4

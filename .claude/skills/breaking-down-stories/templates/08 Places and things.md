@@ -98,7 +98,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - meaning: <standard: text>
 - rank: <standard: spine, supporting, single_scene, minor or plot_machinery>
 - channel: <standard: visual, sound or body>
-- appearance: <standard, one line each: SCNN, a story point, or a shot ID> | role: <one word from the note> | emphasis: <a number from 0 to 3> | sound_emphasis: <a number from 0 to 3> | rhyme_with: <an ID of any record ID>
+- appearance: <standard, one line each: SCNN, a story point, or a shot ID> | role: <one word from the note> | emphasis: <a number from 0 to 3> | sound_emphasis: <a number from 0 to 3> | rhyme_with: <an ID of any record ID> | side: <same or reversed>
 - signature: <standard: text, or none>
 - direction: <detailed: text>
 - pole: <detailed: text>

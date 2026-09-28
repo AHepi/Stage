@@ -57,7 +57,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - screen_time: 4
 - moment: 0-4 | shows: the door opens on Saye, dressed and buttoned; her eyes move over the three of them, to the blood, then down, and hold there
 - end: Saye still, eyes down on something below the frame
-- cut_out_on: withholding
+- cut_out_on: keep_hidden
 - held: no
 - previs_level: 0
 - storyboard: yes
@@ -330,7 +330,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - screen_time: 4
 - moment: 0-4 | shows: the disc rests on his own right side; lifts; comes down on his own left side, over the heart, and stays there without moving
 - end: the disc still, on his own left side
-- cut_out_on: withholding
+- cut_out_on: keep_hidden
 - held: no
 - previs_level: 0
 - storyboard: no

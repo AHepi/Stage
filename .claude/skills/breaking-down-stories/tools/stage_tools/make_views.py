@@ -89,7 +89,7 @@ PLAIN_WORDS = {
     "public_domain": "in the public domain", "mine": "the author's own", "permission": "with permission",
     "not_confirmed": "not confirmed yet", "thought_complete": "the thought is complete",
     "action_midpoint": "the middle of an action", "line_end": "the end of a line", "sound_hit": "a sound",
-    "withholding": "keeping something hidden", "flip": "flip", "lip_sync": "lip sync", "voice_path": "voice path",
+    "keep_hidden": "keeping something hidden for later", "flip": "flip", "lip_sync": "lip sync", "voice_path": "voice path",
 }
 # Plain words for sub-part keys and for field names that have no plain label.
 KEY_WORDS = {
@@ -120,7 +120,8 @@ ID_IN_TEXT = re.compile(
     r"|SQ\d{2}|CP\d{2}|SC\d{2,3}[A-Z]?"
     r")(?![\w-])")
 QUOTED_TEXT = re.compile(r'"[^"\n]*"|“[^”\n]*”')
-UNIT_IN_TEXT = re.compile(r"\bU-\d{2}-[A-Z0-9-]+")
+# A unit ID in a text: U-08-SC10-B2, U-07-SC13-P1, U-02-SC01..SC10 (a range of scenes), U-02-CP01.
+UNIT_IN_TEXT = re.compile(r"\bU-\d{2}-[A-Z0-9]+(?:\.\.[A-Z0-9]+)?(?:-[A-Z0-9]+)*")
 SCENE_ID = re.compile(r"^SC(\d{2,3})([A-Z]?)$")
 SHOT_ID = re.compile(r"^(SC\d{2,3}[A-Z]?)-SH(\d{3})$")
 
@@ -235,7 +236,11 @@ def end_sentence(text):
     text = (text or "").strip()
     if not text:
         return text
-    return text if text[-1] in ".!?\"”)" else text + "."
+    # A closing bracket ends a sentence only after a full stop inside it ("(see 01 Choices.)"), never after
+    # "(starting)".
+    if text[-1] in ".!?\"”" or (text[-1] == ")" and text[-2:-1] in (".", "!", "?")):
+        return text
+    return text + "."
 
 
 def lines_words(value):
@@ -1233,7 +1238,7 @@ def next_unit_words(view):
     text = str(found)
     text = re.sub(r"\s*\([^)]*stage\.py[^)]*\)", "", text)
     text = re.sub(r",?\s*(?:work that code does)?:\s*stage\.py.*$", "", text)
-    text = re.sub(r"\bU-\d{2}-[A-Z0-9-]+,\s*", "", text)
+    text = re.sub(UNIT_IN_TEXT.pattern + r",\s*", "", text)
     if "stage.py" in text or not text.strip():
         return ""
     text = view.names.text(text)

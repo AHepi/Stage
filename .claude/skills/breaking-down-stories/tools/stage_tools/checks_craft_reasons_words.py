@@ -899,7 +899,7 @@ def check_craft_07(run):
             family = lens_family_for(run, scene)
             if not family or lens in family:
                 continue
-            targets = [record.identifier, scene]
+            targets = [target for target in (record.identifier, scene) if target]
             if type_name == "SHOT" and record.get("setup"):
                 targets.append(record.get("setup").strip())
             if lens_exception_covers(run, lens, targets):
@@ -2531,13 +2531,39 @@ def check_reason_09(run):
 
 # ---------------------------------------------------------------- WORDS
 
+# Emotion words that also name what a body visibly is ("his hurt arm", "her jaw tense", "tense shoulders"): next to a
+# body part they describe the body, not a feeling, so WORDS-01 does not report them there (WP4d's note; D15 R1 asks
+# for exactly such visible descriptions).
+BODY_STATE_WORDS = ("hurt", "tense")
+BODY_PARTS = ("arm", "arms", "hand", "hands", "shoulder", "shoulders", "leg", "legs", "foot", "feet", "knee", "knees",
+              "back", "neck", "jaw", "jaws", "wrist", "wrists", "ankle", "ankles", "hip", "hips", "palm", "palms",
+              "finger", "fingers", "fist", "fists", "head", "face", "mouth", "lips", "chest", "ribs", "body",
+              "muscles", "brow", "side", "throat")
+BODY_PART_PATTERN = "(?:" + "|".join(BODY_PARTS) + ")"
+
+
+def names_a_body(word, lowered, position):
+    """True when an emotion word that can describe a body stands next to a body part: 'hurt arm', 'the arm is
+    hurt', 'jaw tense', 'shoulders go tense'."""
+    if word not in BODY_STATE_WORDS:
+        return False
+    after = lowered[position + len(word):position + len(word) + 20]
+    before = lowered[max(0, position - 30):position]
+    return bool(re.match(r"\s+(?:left\s+|right\s+)?" + BODY_PART_PATTERN + r"\b", after)
+                or re.search(r"\b" + BODY_PART_PATTERN + r"(?:\s+(?:is|are|go|goes|went|gone|stay|stays|still))?\s+$",
+                             before))
+
+
 def emotion_words_in(words, text):
     rule = (words or {}).get("emotion_adjectives", {})
     lowered = QUOTED.sub(" ", text or "").lower()
     found = []
     for word in rule.get("words", []):
-        if re.search(r"(?<![a-z-])" + re.escape(word.lower()) + r"(?![a-z-])", lowered):
-            found.append(word)
+        word = word.lower()
+        for match in re.finditer(r"(?<![a-z-])" + re.escape(word) + r"(?![a-z-])", lowered):
+            if not names_a_body(word, lowered, match.start()):
+                found.append(word)
+                break
     if re.search(r"\b(feels|feeling)\s+(like|as if|as though|that|of)\b", lowered):
         found.append(re.search(r"\b(feels|feeling)\s+(like|as if|as though|that|of)\b", lowered).group(0))
     return found

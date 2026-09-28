@@ -66,7 +66,9 @@ class FormContext:
             modules = set()
             for type_name, letters in (("PIC", "AC"), ("PREVIS", "B"), ("TAKE", "C"), ("VOICETAKE", "C"),
                                        ("FINISH", "D"), ("MUSIC", "D")):
-                if any(key[0] == type_name for key in index):
+                # A grey preview job code made at step 8 (status planned) does not switch add-on B on: only the
+                # add-on fills it (blueprint 9; WP4a's note).
+                if any(key[0] == type_name and not is_previs_stub(key, record) for key, record in index.items()):
                     modules.update(letters)
         return cls(schema=schema, words=words or {}, depth=depth, step=step, code_execution=code_execution,
                    written_by_ai=written_by_ai, current_records=current_records or {}, index=index,
@@ -607,6 +609,18 @@ def field_is_required(record, definition, context, record_type):
     return True, f"required {depth_text}{step_text}"
 
 
+def is_previs_stub(key, record):
+    """True for a grey preview job code made as a stub at step 8 (PREVIS with status planned)."""
+    return key[0] == "PREVIS" and normalise_word(record.get("status") or "") == "planned"
+
+
+# The only fields of a grey preview stub: code writes them when it makes the stub (derive_fields.create_previs_stubs).
+PREVIS_STUB_FIELDS = ("for", "level", "status", "locked")
+# Fields FORM-05 never asks the AI for, because the AI never writes them: PREVIS approved is written by code
+# (auto, or no until the checks pass) or by the user's answer at the grey previews checkpoint (schema writer_when).
+NEVER_ASKED_OF_THE_AI = {("PREVIS", "approved")}
+
+
 def check_form_05(record_files, context):
     """FORM-05 Required field missing at the project's (or the scene's) depth, among fields filled by the step checked."""
     problems = []
@@ -627,7 +641,10 @@ def check_form_05(record_files, context):
         fields = schema.field_map(key[0])
         if key[0] == "SETVALUE":
             fields = {"target": fields["target"]}
+        stub = is_previs_stub(key, record)
         for name, definition in fields.items():
+            if (key[0], name) in NEVER_ASKED_OF_THE_AI or (stub and name not in PREVIS_STUB_FIELDS):
+                continue
             required, reason = field_is_required(record, definition, context, record_type)
             if not required:
                 continue

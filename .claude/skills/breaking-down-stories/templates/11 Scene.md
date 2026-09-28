@@ -275,7 +275,7 @@ Below this line: details for the AI and the checker. You never need to read them
 > - keep_hidden how: frame_edge, focus, dark, obstruction, timing, sound_first
 > - hear path: direct, off_screen, earpiece, radio, intercom, phone, device_speaker, recording, helmet_inside, helmet_outside, through_glass, voice_over, thought
 > - cut_in_on: action, look, line, sound, rhythm, reveal
-> - cut_out_on: thought_complete, action_midpoint, line_end, sound_hit, rhythm, withholding
+> - cut_out_on: thought_complete, action_midpoint, line_end, sound_hit, rhythm, keep_hidden
 > - route: auto, text, start_picture, start_end_pictures, references, guide_video, performance_transfer, still_with_move, composite_only
 > - content_flags: violence_implied, violence_onscreen, weapon_visible, gunfire, blood_small, gore, nudity, minor_present, self_harm, drug_use, real_person, real_brand, fire, none
 > - policy_route: as_written, restated, split_cause_reaction_aftermath, composite_element, sound_only, cut

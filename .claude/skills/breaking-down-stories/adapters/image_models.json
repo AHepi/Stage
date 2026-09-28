@@ -1,0 +1,938 @@
+{
+ "checked_on": "2026-09-27",
+ "about": "The dated facts about AI picture models for storyboard frames, start and end pictures, reference pictures, plates and edits (blueprint 8.2, C2). Checked 2026-09-27.",
+ "how_to_read": [
+  "One entry per model, by exact name, with aliases. uses: storyboard, start, end, reference, plate, edit, style, lora, text_graphic_reference.",
+  "references: how many pictures one request takes (characters, objects, style). shapes and sizes: the model's presets; custom_size when any width and height is allowed.",
+  "price_usd_per_image: dollars per picture by size or quality; batch prices where the maker offers them.",
+  "licence and commercial: whether the pictures may be used in a film that is shown or sold (C2 Rule 21; D4).",
+  "marks: V verified at the maker's page, V-sec at a reputable secondary page, U unverified, J judgement, with C2's section and source number."
+ ],
+ "models": {
+  "nano-banana-pro": {
+   "name": "Nano Banana Pro",
+   "maker": "Google",
+   "aliases": [
+    "Nano Banana Pro",
+    "Gemini 3 Pro Image",
+    "gemini-3-pro-image"
+   ],
+   "status": "current",
+   "released": "2026-05-28 (generally available)",
+   "uses": [
+    "reference",
+    "start",
+    "end",
+    "plate",
+    "storyboard",
+    "style"
+   ],
+   "references": {
+    "characters": 5,
+    "objects": 6,
+    "style": 3,
+    "total": 14
+   },
+   "shapes": [
+    "1:1",
+    "3:2",
+    "2:3",
+    "3:4",
+    "4:3",
+    "4:5",
+    "5:4",
+    "9:16",
+    "16:9",
+    "21:9"
+   ],
+   "sizes": [
+    "1K",
+    "2K",
+    "4K"
+   ],
+   "pixel_sizes": {
+    "16:9": {
+     "1K": [
+      1376,
+      768
+     ],
+     "2K": [
+      2752,
+      1536
+     ],
+     "4K": [
+      5504,
+      3072
+     ]
+    },
+    "21:9": {
+     "1K": [
+      1584,
+      672
+     ],
+     "2K": [
+      3168,
+      1344
+     ]
+    }
+   },
+   "text_in_image": "strong; Google warns small text and spelling may not be perfect",
+   "price_usd_per_image": {
+    "1K": 0.134,
+    "2K": 0.134,
+    "4K": 0.24,
+    "batch_1K_2K": 0.067,
+    "batch_4K": 0.12,
+    "route_note": "Gemini API; fal 0.15 (4K double); Runway API 0.20 at 1K or 2K"
+   },
+   "llm_drivable": true,
+   "commercial": "paid API output",
+   "best_for": [
+    "character sheets",
+    "frames with three or more named characters",
+    "sheet-to-shot consistency"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [3]",
+    "references": "V C2 §3.1 [2]",
+    "shapes": "V C2 §2.3 [2]",
+    "sizes": "V C2 §2.3 [2]",
+    "pixel_sizes": "V C2 §2.3 [2]",
+    "text_in_image": "V C2 §3.1 [5]",
+    "price_usd_per_image": "V C2 §3.1 [1][88][91]",
+    "best_for": "J C2 Rules 4, 5; §3.1"
+   },
+   "sources": [
+    "C2 [1] https://ai.google.dev/gemini-api/docs/pricing",
+    "C2 [2] https://ai.google.dev/gemini-api/docs/image-generation",
+    "C2 [3] https://ai.google.dev/gemini-api/docs/changelog",
+    "C2 [88] https://fal.ai/models/fal-ai/nano-banana-pro/edit"
+   ]
+  },
+  "nano-banana-2": {
+   "name": "Nano Banana 2",
+   "maker": "Google",
+   "aliases": [
+    "Nano Banana 2",
+    "Gemini 3.1 Flash Image",
+    "gemini-3.1-flash-image"
+   ],
+   "status": "current",
+   "released": "2026-05-28 (generally available)",
+   "uses": [
+    "storyboard",
+    "reference"
+   ],
+   "references": {
+    "characters": 4,
+    "objects": 10,
+    "style": 0,
+    "total": 14
+   },
+   "shapes": [
+    "1:1",
+    "3:2",
+    "2:3",
+    "3:4",
+    "4:3",
+    "4:5",
+    "5:4",
+    "9:16",
+    "16:9",
+    "21:9",
+    "1:4",
+    "4:1",
+    "1:8",
+    "8:1"
+   ],
+   "sizes": [
+    "0.5K",
+    "1K",
+    "2K",
+    "4K"
+   ],
+   "price_usd_per_image": {
+    "0.5K": 0.045,
+    "1K": 0.067,
+    "2K": 0.101,
+    "4K": 0.151,
+    "batch_discount": 0.5
+   },
+   "llm_drivable": true,
+   "commercial": "paid API output",
+   "best_for": [
+    "bulk storyboard frames with named characters"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [3][4]",
+    "references": "V C2 §3.1 [2]",
+    "shapes": "V C2 §2.3 [2][6]",
+    "sizes": "V C2 §2.3 [2]",
+    "price_usd_per_image": "V C2 §3.1 [1]",
+    "best_for": "J C2 Rule 3"
+   },
+   "sources": [
+    "C2 [1] https://ai.google.dev/gemini-api/docs/pricing",
+    "C2 [2] https://ai.google.dev/gemini-api/docs/image-generation",
+    "C2 [4] https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/"
+   ]
+  },
+  "nano-banana-2-lite": {
+   "name": "Nano Banana 2 Lite",
+   "maker": "Google",
+   "aliases": [
+    "Nano Banana 2 Lite",
+    "gemini-3.1-flash-lite-image"
+   ],
+   "status": "current",
+   "released": "2026-06-30",
+   "uses": [
+    "storyboard"
+   ],
+   "references": {
+    "characters": 0,
+    "objects": 14,
+    "style": 0
+   },
+   "sizes": [
+    "1K"
+   ],
+   "price_usd_per_image": {
+    "1K": 0.0336,
+    "batch_1K": 0.0168
+   },
+   "never_for": [
+    "start pictures (1K only)",
+    "frames with named characters (no character references)"
+   ],
+   "best_for": [
+    "the cheapest rough and grey storyboard frames without named characters"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [3]",
+    "references": "V C2 §3.1 [2]",
+    "sizes": "V C2 §2.3 [2]",
+    "price_usd_per_image": "V C2 §3.1 [1]",
+    "never_for": "J C2 Rule 25",
+    "best_for": "J C2 Rule 3"
+   },
+   "sources": [
+    "C2 [1] https://ai.google.dev/gemini-api/docs/pricing",
+    "C2 [2] https://ai.google.dev/gemini-api/docs/image-generation",
+    "C2 [3] https://ai.google.dev/gemini-api/docs/changelog"
+   ]
+  },
+  "gpt-image-2.5-sunburst": {
+   "name": "GPT Image 2.5 Sunburst",
+   "maker": "OpenAI",
+   "aliases": [
+    "GPT Image 2.5 Sunburst",
+    "gpt-image-2.5-sunburst",
+    "GPT Image 2.5"
+   ],
+   "status": "current",
+   "released": "2026-09-08",
+   "uses": [
+    "start",
+    "end",
+    "plate",
+    "edit",
+    "reference"
+   ],
+   "references": {
+    "total": null,
+    "note": "no hard limit documented; examples use 4"
+   },
+   "custom_size": {
+    "multiple_of": 16,
+    "ratio_between": [
+     "1:3",
+     "3:1"
+    ],
+    "longest_edge_max": 3840,
+    "pixels_between": [
+     655360,
+     8294400
+    ],
+    "experimental_above": [
+     2560,
+     1440
+    ]
+   },
+   "size_for_2_39": [
+    2560,
+    1072
+   ],
+   "quality_levels": [
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max"
+   ],
+   "price_usd_per_image": {
+    "low": 0.01,
+    "medium": 0.05,
+    "high": 0.16,
+    "xhigh": 0.28,
+    "max": 0.63,
+    "4K_high": 0.19,
+    "per_reference": 0.01,
+    "route_note": "per image as resold by Runway's API at 1K or 2K; OpenAI prices by tokens (text in $5, image in $8, image out $30 per million)"
+   },
+   "transparent_background": true,
+   "llm_drivable": true,
+   "commercial": "paid API output",
+   "best_for": [
+    "photoreal start pictures",
+    "precise edits that keep the rest intact",
+    "custom 2560 x 1072 frames for a 2.39 film"
+   ],
+   "marks": {
+    "released": "V-sec C2 §3.1 [11][12][13]",
+    "references": "V C2 §3.1 [10]",
+    "custom_size": "V C2 §2.3 [10]",
+    "size_for_2_39": "J C2 §2.3, Rule 16; K24",
+    "quality_levels": "V-sec C2 §3.1 [11]",
+    "price_usd_per_image": "V C2 §3.1 [91] (Runway resale); token prices V [9]",
+    "transparent_background": "V C2 §6.4",
+    "best_for": "J C2 Rule 5; ranked first on Arena (V [43][44])"
+   },
+   "sources": [
+    "C2 [9] https://developers.openai.com/api/docs/pricing",
+    "C2 [10] https://developers.openai.com/api/docs/guides/image-generation",
+    "C2 [11] https://community.openai.com/t/introducing-chatgpt-images-2-5/1395897",
+    "C2 [91] https://docs.dev.runwayml.com/guides/pricing/"
+   ]
+  },
+  "gpt-image-2.5-flare": {
+   "name": "GPT Image 2.5 Flare",
+   "maker": "OpenAI",
+   "aliases": [
+    "GPT Image 2.5 Flare",
+    "gpt-image-2.5-flare"
+   ],
+   "status": "current",
+   "released": "2026-09-08",
+   "uses": [
+    "start",
+    "end",
+    "plate",
+    "edit",
+    "reference"
+   ],
+   "references": {
+    "total": null,
+    "note": "no hard limit documented; examples use 4"
+   },
+   "custom_size": {
+    "multiple_of": 16,
+    "ratio_between": [
+     "1:3",
+     "3:1"
+    ],
+    "longest_edge_max": 3840,
+    "pixels_between": [
+     655360,
+     8294400
+    ],
+    "experimental_above": [
+     2560,
+     1440
+    ]
+   },
+   "size_for_2_39": [
+    2560,
+    1072
+   ],
+   "quality_levels": [
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max"
+   ],
+   "price_usd_per_image": {
+    "low": 0.01,
+    "medium": 0.05,
+    "high": 0.16,
+    "xhigh": 0.28,
+    "max": 0.63,
+    "4K_high": 0.19,
+    "per_reference": 0.01,
+    "route_note": "per image as resold by Runway's API at 1K or 2K; OpenAI prices by tokens (text in $5, image in $8, image out $30 per million)"
+   },
+   "transparent_background": true,
+   "llm_drivable": true,
+   "commercial": "paid API output",
+   "best_for": [
+    "the same as Sunburst, about half again as fast, a little less precise"
+   ],
+   "marks": {
+    "released": "V-sec C2 §3.1 [11][12][13]",
+    "references": "V C2 §3.1 [10]",
+    "custom_size": "V C2 §2.3 [10]",
+    "size_for_2_39": "J C2 §2.3, Rule 16; K24",
+    "quality_levels": "V-sec C2 §3.1 [11]",
+    "price_usd_per_image": "V C2 §3.1 [91] (Runway resale); token prices V [9]",
+    "transparent_background": "V C2 §6.4",
+    "best_for": "V-sec C2 §3.1 [11][12]"
+   },
+   "sources": [
+    "C2 [9] https://developers.openai.com/api/docs/pricing",
+    "C2 [10] https://developers.openai.com/api/docs/guides/image-generation",
+    "C2 [11] https://community.openai.com/t/introducing-chatgpt-images-2-5/1395897",
+    "C2 [91] https://docs.dev.runwayml.com/guides/pricing/"
+   ]
+  },
+  "gpt-image-2": {
+   "name": "GPT Image 2",
+   "maker": "OpenAI",
+   "aliases": [
+    "GPT Image 2",
+    "gpt-image-2"
+   ],
+   "status": "superseded_still_sold",
+   "uses": [
+    "storyboard"
+   ],
+   "price_usd_per_image": {
+    "range": [
+     0.005,
+     0.21
+    ],
+    "batch_image_out_per_million_tokens": 15
+   },
+   "best_for": [
+    "cheap bulk frames in batch if already on OpenAI"
+   ],
+   "marks": {
+    "price_usd_per_image": "V-sec C2 §3.1 [14]; batch V [9]",
+    "best_for": "J C2 §3.1"
+   },
+   "sources": [
+    "C2 [9] https://developers.openai.com/api/docs/pricing",
+    "C2 [14] https://costgoat.com/pricing/openai-images"
+   ]
+  },
+  "flux-2": {
+   "name": "FLUX.2",
+   "maker": "Black Forest Labs",
+   "aliases": [
+    "FLUX.2",
+    "FLUX.2 pro",
+    "FLUX.2 flex",
+    "FLUX.2 max"
+   ],
+   "status": "current",
+   "released": "2025-11-25",
+   "uses": [
+    "start",
+    "reference",
+    "storyboard"
+   ],
+   "references": {
+    "total": 10
+   },
+   "custom_size": {
+    "edit_max_megapixels": 4
+   },
+   "text_in_image": "strong on typography",
+   "price_usd_per_image": {
+    "pro_per_megapixel": 0.03,
+    "pro_edit_per_megapixel": 0.045,
+    "flex_from": 0.05,
+    "max_from": 0.07
+   },
+   "commercial": "hosted output yes",
+   "marks": {
+    "released": "V C2 §3.1 [21]",
+    "references": "V C2 §3.1 [21]",
+    "custom_size": "V C2 §2.3 [21]",
+    "price_usd_per_image": "V C2 §3.1 [22]"
+   },
+   "sources": [
+    "C2 [21] https://bfl.ai/blog/flux-2",
+    "C2 [22] https://docs.bfl.ml/quick_start/pricing"
+   ]
+  },
+  "flux-2-klein-4b": {
+   "name": "FLUX.2 klein 4B",
+   "maker": "Black Forest Labs",
+   "aliases": [
+    "FLUX.2 klein 4B"
+   ],
+   "status": "current",
+   "released": "2026-01",
+   "hosting": "open_weights and API",
+   "uses": [
+    "reference",
+    "storyboard",
+    "lora"
+   ],
+   "price_usd_per_image": {
+    "from": 0.014
+   },
+   "licence": "Apache 2.0: commercial use allowed",
+   "commercial": "yes",
+   "marks": {
+    "released": "V C2 §3.1 [26]",
+    "price_usd_per_image": "V C2 §3.1 [22]",
+    "licence": "V C2 §3.1 [92]"
+   },
+   "sources": [
+    "C2 [22] https://docs.bfl.ml/quick_start/pricing",
+    "C2 [92] https://huggingface.co/black-forest-labs/FLUX.2-klein-4B"
+   ]
+  },
+  "flux-2-klein-9b": {
+   "name": "FLUX.2 klein 9B and FLUX.2 dev",
+   "maker": "Black Forest Labs",
+   "aliases": [
+    "FLUX.2 klein 9B",
+    "FLUX.2 dev"
+   ],
+   "status": "current",
+   "hosting": "open_weights",
+   "uses": [
+    "lora"
+   ],
+   "price_usd_per_image": {
+    "klein_9b_from": 0.015
+   },
+   "licence": "FLUX Non-Commercial Licence: running it yourself for paid work needs a separate licence; outputs may be used commercially",
+   "commercial": "self-hosting for paid work needs a licence",
+   "marks": {
+    "price_usd_per_image": "V C2 §3.1 [22]",
+    "licence": "V C2 §3.1 [92]"
+   },
+   "sources": [
+    "C2 [22] https://docs.bfl.ml/quick_start/pricing",
+    "C2 [92] https://huggingface.co/black-forest-labs/FLUX.2-klein-4B"
+   ]
+  },
+  "seedream-5.0-pro": {
+   "name": "Seedream 5.0 Pro",
+   "maker": "ByteDance",
+   "aliases": [
+    "Seedream 5.0 Pro"
+   ],
+   "status": "current",
+   "released": "2026-07-14",
+   "uses": [
+    "edit",
+    "start",
+    "reference"
+   ],
+   "references": {
+    "total": 10
+   },
+   "sizes_max": [
+    2048,
+    2048
+   ],
+   "price_usd_per_image": {
+    "up_to_1536": 0.0675,
+    "up_to_2048": 0.135,
+    "per_extra_reference": 0.0045,
+    "route_note": "fal, labelled tentative; Runway API 0.05 (1K), 0.09 (2K)"
+   },
+   "best_for": [
+    "region edits by coloured boxes, each tied to one instruction",
+    "layer separation"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [29]",
+    "references": "V C2 §3.1 [28]",
+    "sizes_max": "V C2 §2.3 [28]",
+    "price_usd_per_image": "V C2 §3.1 [28][91]",
+    "best_for": "V C2 §3.1 [28][29]"
+   },
+   "sources": [
+    "C2 [28] https://fal.ai/models/bytedance/seedream/v5/pro/edit",
+    "C2 [29] https://fal.ai/learn/tools/how-to-use-seedream-5-0-pro-v2",
+    "C2 [91] https://docs.dev.runwayml.com/guides/pricing/"
+   ]
+  },
+  "seedream-4.5": {
+   "name": "Seedream 4.5",
+   "maker": "ByteDance",
+   "aliases": [
+    "Seedream 4.5"
+   ],
+   "status": "current",
+   "released": "2025-12-03",
+   "uses": [
+    "storyboard"
+   ],
+   "references": {
+    "total": 10
+   },
+   "price_usd_per_image": {
+    "default": 0.035
+   },
+   "best_for": [
+    "cheap multi-image batches (up to 15 related images in one call)"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [27]",
+    "references": "V C2 §3.1 [27]",
+    "price_usd_per_image": "V-sec C2 §3.1 [80]",
+    "best_for": "V-sec C2 §3.1 [80]"
+   },
+   "sources": [
+    "C2 [27] https://www.byteplus.com/en/blog/seedream4-5"
+   ]
+  },
+  "qwen-image-2.1": {
+   "name": "Qwen-Image-2.1",
+   "maker": "Alibaba",
+   "aliases": [
+    "Qwen-Image-2.1"
+   ],
+   "status": "current",
+   "released": "2026-09-21",
+   "hosting": "open_weights",
+   "uses": [
+    "reference",
+    "edit"
+   ],
+   "references": {
+    "total": 10
+   },
+   "licence": "Qwen Research Licence: research and evaluation only, no commercial use without a separate licence",
+   "commercial": "no",
+   "best_for": [
+    "transparent-background props and local editing on personal and test projects"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [31][32]",
+    "references": "V C2 §3.1 [32]",
+    "licence": "V C2 §3.1 [32]"
+   },
+   "sources": [
+    "C2 [32] https://huggingface.co/Qwen/Qwen-Image-2.1"
+   ]
+  },
+  "qwen-image-edit-2511": {
+   "name": "Qwen-Image-Edit-2511",
+   "maker": "Alibaba",
+   "aliases": [
+    "Qwen-Image-Edit-2511"
+   ],
+   "status": "current",
+   "released": "2025-12",
+   "hosting": "open_weights",
+   "uses": [
+    "edit",
+    "plate"
+   ],
+   "licence": "Apache 2.0: commercial use allowed",
+   "commercial": "yes",
+   "best_for": [
+    "the open editor to use on a commercial project"
+   ],
+   "marks": {
+    "released": "V-sec C2 §3.1 [81]; V [93]",
+    "licence": "V C2 §3.1 [93]",
+    "best_for": "J C2 §3.1"
+   },
+   "sources": [
+    "C2 [93] https://huggingface.co/Qwen/Qwen-Image-Edit-2511"
+   ]
+  },
+  "qwen-image-3.0-pro": {
+   "name": "Qwen-Image-3.0-Pro",
+   "maker": "Alibaba",
+   "aliases": [
+    "Qwen-Image-3.0",
+    "Qwen-Image-3.0-Pro"
+   ],
+   "status": "current",
+   "uses": [
+    "storyboard"
+   ],
+   "price_usd_per_image": {
+    "1K": 0.04,
+    "2K": 0.075
+   },
+   "text_in_image": "text down to 10 pixels, 12 languages",
+   "best_for": [
+    "dense signage and labels"
+   ],
+   "marks": {
+    "price_usd_per_image": "V-sec C2 §3.1 [33]",
+    "text_in_image": "V-sec C2 §3.1 [33]"
+   },
+   "sources": [
+    "C2 [33] https://www.unite.ai/alibaba-launches-qwen-image-3-0-without-benchmarks-or-weights/"
+   ]
+  },
+  "ideogram-4.0": {
+   "name": "Ideogram 4.0",
+   "maker": "Ideogram",
+   "aliases": [
+    "Ideogram 4.0",
+    "Ideogram 4"
+   ],
+   "status": "current",
+   "released": "2026-06-03",
+   "uses": [
+    "text_graphic_reference",
+    "storyboard"
+   ],
+   "text_in_image": "strongest open-weight text (0.97 English OCR); layout by boxes; up to 16 colours per image",
+   "price_usd_per_image": {
+    "turbo": 0.03,
+    "default": 0.06,
+    "quality": 0.1
+   },
+   "licence": "weights 'Ideogram 4 Non-Commercial', code Apache 2.0",
+   "best_for": [
+    "posters, signs, labels"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [34]",
+    "text_in_image": "V C2 §3.1 [34]",
+    "price_usd_per_image": "V-sec C2 §3.1 [36]",
+    "licence": "V C2 §3.1 [94]"
+   },
+   "sources": [
+    "C2 [34] https://ideogram.ai/blog/ideogram-4.0/",
+    "C2 [36] https://developer.puter.com/tutorials/ideogram-api-pricing/",
+    "C2 [94] https://github.com/ideogram-oss/ideogram-4"
+   ]
+  },
+  "recraft-v4.1": {
+   "name": "Recraft V4.1",
+   "maker": "Recraft",
+   "aliases": [
+    "Recraft V4.1"
+   ],
+   "status": "current",
+   "released": "2026-05-14",
+   "uses": [
+    "text_graphic_reference",
+    "storyboard"
+   ],
+   "text_in_image": "strong typography and vectors",
+   "best_for": [
+    "clean vector graphics, signage, interfaces",
+    "clean sheets (Utility variant)"
+   ],
+   "marks": {
+    "released": "V C2 §3.1 [37]",
+    "text_in_image": "V C2 §3.1 [37]"
+   },
+   "sources": [
+    "C2 [37] https://www.recraft.ai/blog/recraft-v4-1-more-beautiful-by-nature"
+   ]
+  },
+  "midjourney-v8.2": {
+   "name": "Midjourney V8.2",
+   "maker": "Midjourney",
+   "aliases": [
+    "Midjourney",
+    "Midjourney V8.2"
+   ],
+   "status": "current",
+   "released": "2026-07-24",
+   "uses": [
+    "style"
+   ],
+   "references": {
+    "total": 4,
+    "note": "in the Edit Model (alpha), replacing omni-reference"
+   },
+   "llm_drivable": false,
+   "api": "none; the terms forbid automated access",
+   "price_usd_per_month": [
+    10,
+    30,
+    60,
+    120
+   ],
+   "best_for": [
+    "look development and style frames only (C2 Rule 8)"
+   ],
+   "marks": {
+    "released": "V-sec C2 §3.1 [18][19]",
+    "references": "V C2 §3.1 [16]",
+    "api": "V-sec C2 §3.1 [20]",
+    "price_usd_per_month": "V-sec C2 §3.1 [18]",
+    "best_for": "J C2 Rule 8"
+   },
+   "sources": [
+    "C2 [16] https://updates.midjourney.com/edit-model-for-v8/",
+    "C2 [18] https://blakecrosley.com/guides/midjourney"
+   ]
+  },
+  "grok-imagine-image-2.0": {
+   "name": "Grok Imagine Image 2.0",
+   "maker": "xAI",
+   "aliases": [
+    "Grok Imagine Image 2.0",
+    "grok-imagine-image-2.0"
+   ],
+   "status": "current",
+   "uses": [
+    "edit",
+    "storyboard"
+   ],
+   "references": {
+    "edit_sources": 5
+   },
+   "shapes": [
+    "16:9",
+    "21:9",
+    "20:9",
+    "5:2",
+    "2:1"
+   ],
+   "sizes": [
+    "1k",
+    "2k"
+   ],
+   "price_usd_per_image": {
+    "default": 0.04
+   },
+   "marks": {
+    "references": "V C2 §3.1 [90]",
+    "shapes": "V C2 §2.3 [89]",
+    "sizes": "V C2 §2.3 [89]",
+    "price_usd_per_image": "V C2 §3.1 [95]"
+   },
+   "sources": [
+    "C2 [89] https://docs.x.ai/developers/model-capabilities/images/generation.md",
+    "C2 [90] https://docs.x.ai/developers/migration/imagine-image-quality-nov-2.md",
+    "C2 [95] https://docs.x.ai/developers/pricing.md"
+   ]
+  },
+  "runway-gen-4-image": {
+   "name": "Runway Gen-4 Image",
+   "maker": "Runway",
+   "aliases": [
+    "Runway Gen-4 Image",
+    "gen4_image",
+    "gen4_image_turbo"
+   ],
+   "status": "current",
+   "uses": [
+    "storyboard",
+    "start",
+    "reference"
+   ],
+   "references": {
+    "total": 3,
+    "tagged": true,
+    "note": "each reference gets a tag written in the prompt: '@iona at the gate of @cage'"
+   },
+   "seed": true,
+   "price_usd_per_image": {
+    "720p": 0.05,
+    "1080p": 0.08,
+    "turbo": 0.02
+   },
+   "best_for": [
+    "frames that must re-run exactly (fixed seed)"
+   ],
+   "marks": {
+    "references": "V C2 §3.1 [96]",
+    "seed": "V C2 §3.1 [96]",
+    "price_usd_per_image": "V C2 §3.1 [91]",
+    "best_for": "J C2 Rule 28"
+   },
+   "sources": [
+    "C2 [91] https://docs.dev.runwayml.com/guides/pricing/",
+    "C2 [96] https://docs.dev.runwayml.com/api.md"
+   ]
+  },
+  "adobe-firefly-image-5": {
+   "name": "Adobe Firefly Image Model 5",
+   "maker": "Adobe",
+   "aliases": [
+    "Firefly Image 5",
+    "Adobe Firefly Image Model 5"
+   ],
+   "status": "current",
+   "released": "2026-03-19",
+   "uses": [
+    "start",
+    "reference"
+   ],
+   "commercial": "Adobe plans",
+   "llm_drivable": "limited (unverified)",
+   "marks": {
+    "released": "V C2 §3.1 [41]",
+    "llm_drivable": "U C2 §3.1"
+   },
+   "sources": [
+    "C2 [41] https://blog.adobe.com/en/publish/2026/03/19/adobe-firefly-expands-video-image-creation-with-new-ai-capabilities-custom-models"
+   ]
+  },
+  "mai-image-2.6": {
+   "name": "MAI-Image-2.6",
+   "maker": "Microsoft",
+   "aliases": [
+    "MAI-Image-2.6"
+   ],
+   "status": "test_first",
+   "released": "2026-08-10",
+   "uses": [
+    "storyboard"
+   ],
+   "marks": {
+    "released": "V-sec C2 §3.1 [42]",
+    "status": "J: public preview"
+   },
+   "sources": [
+    "C2 [42] https://microsoft.ai/news/mai-image-2-6-launches-at-no-2-on-arena-ahead-of-google-meta-and-xai/"
+   ]
+  }
+ },
+ "retired": {
+  "gemini-2.5-flash-image": [
+   "nano-banana-2"
+  ],
+  "imagen-4": [
+   "nano-banana-pro",
+   "gpt-image-2.5-sunburst"
+  ],
+  "gpt-image-1": [
+   "gpt-image-2.5-sunburst"
+  ],
+  "dall-e-3": [
+   "gpt-image-2.5-sunburst"
+  ],
+  "grok-imagine-image-quality": [
+   "grok-imagine-image-2.0"
+  ],
+  "reve-api": [],
+  "flux-1-kontext": [
+   "flux-2"
+  ]
+ },
+ "retired_notes": {
+  "gemini-2.5-flash-image": "the original Nano Banana; shuts down 2026-10-02 (V C2 §3.2 [1])",
+  "imagen-4": "shut down 2026-08-17 (V C2 §3.2 [3])",
+  "gpt-image-1": "reported deprecating 2026-10-23 (V-sec C2 §3.2 [14])",
+  "dall-e-3": "removed from the API 2026-05-12 (V-sec C2 §3.2 [14])",
+  "grok-imagine-image-quality": "retires 2026-11-02; calls are then silently redirected to Grok Imagine Image 2.0 at low quality (V C2 §3.2 [90])",
+  "reve-api": "discontinued 2026-08-14 (V-sec C2 §3.2 [40]); the app remains, not for automation",
+  "flux-1-kontext": "previous generation, superseded by FLUX.2 for new work (V C2 §3.1 [22])"
+ },
+ "storyboard_style_lines": {
+  "rough": "rough pencil storyboard sketch, loose lines, white paper, no color, no text",
+  "default": "greyscale storyboard frame, charcoal and grey marker, 4 tonal values, strong light and shadow shapes, no color, no text, no arrows",
+  "marks": "V C2 §2.1, §6 (image prompts; the negations here are image-model wording, not video prompts)"
+ },
+ "stack_order": [
+  "style picture",
+  "location view nearest the camera position",
+  "per character: face crop and costume-state full body",
+  "each story-critical prop",
+  "optional layout picture (grey preview or stick sketch)"
+ ],
+ "stack_rule": "attach only what is in the shot, name each picture's job in the prompt, and when over the limit drop props, then the location, never faces (C2 §6.6, P3)",
+ "file_names": "PNG named by shot: 'Scene 10 - shot 150 - start picture.png' (C2 Rule 29, in the kit's naming, blueprint 2.7)"
+}

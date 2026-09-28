@@ -1,0 +1,477 @@
+{
+ "shot": "SC10-SH080",
+ "about": "The expected grey preview plan of scene 10, shot 080, compiled from the WP12a gold by section 9's rules (make_previs_plans.py). tests/wp9_acceptance.py compares boxes, figures (place, height, facing_deg within 1 degree) and camera keys. Regenerate it with python tests/wp9_acceptance.py --write-expected after the gold changes, and read the difference before keeping it.",
+ "scene": "SC10",
+ "label": "shot 80",
+ "description": "camera A, far back along the table: the two women raise the hand nearest the camera, like a woman and her reflection; Eli small and deep in the middle",
+ "framing_critical": true,
+ "level": 2,
+ "location": "LOC-SAYE-KITCHEN",
+ "orientation": "reversed (as stored)",
+ "fps": 24,
+ "frames": 252,
+ "handle_frames": 18,
+ "resolution": [
+  1280,
+  536
+ ],
+ "facing_tolerance_deg": 20,
+ "depth_range_m": [
+  4.67,
+  9.11
+ ],
+ "stills": [
+  1,
+  19,
+  67,
+  127,
+  252
+ ],
+ "boxes": [
+  {
+   "name": "floor",
+   "loc": [
+    3.0,
+    1.8,
+    -0.05
+   ],
+   "size": [
+    6.0,
+    3.6,
+    0.1
+   ],
+   "rgb": [
+    0.55,
+    0.55,
+    0.55
+   ]
+  },
+  {
+   "name": "wall_north",
+   "loc": [
+    3.0,
+    3.65,
+    1.25
+   ],
+   "size": [
+    6.2,
+    0.1,
+    2.5
+   ],
+   "rgb": [
+    0.8,
+    0.8,
+    0.76
+   ]
+  },
+  {
+   "name": "wall_east",
+   "loc": [
+    6.05,
+    1.8,
+    1.25
+   ],
+   "size": [
+    0.1,
+    3.6,
+    2.5
+   ],
+   "rgb": [
+    0.8,
+    0.8,
+    0.76
+   ]
+  },
+  {
+   "name": "wall_south",
+   "loc": [
+    3.0,
+    -0.05,
+    1.25
+   ],
+   "size": [
+    6.2,
+    0.1,
+    2.5
+   ],
+   "rgb": [
+    0.8,
+    0.8,
+    0.76
+   ]
+  },
+  {
+   "name": "TABLE",
+   "loc": [
+    2.8,
+    1.8,
+    0.375
+   ],
+   "size": [
+    1.8,
+    0.9,
+    0.75
+   ],
+   "rgb": [
+    0.55,
+    0.4,
+    0.25
+   ]
+  },
+  {
+   "name": "COUNTER",
+   "loc": [
+    3.0,
+    0.3,
+    0.45
+   ],
+   "size": [
+    3.0,
+    0.6,
+    0.9
+   ],
+   "rgb": [
+    0.6,
+    0.62,
+    0.65
+   ]
+  },
+  {
+   "name": "WINDOW",
+   "loc": [
+    2.8,
+    0.05,
+    1.5
+   ],
+   "size": [
+    1.4,
+    0.1,
+    1.0
+   ],
+   "rgb": [
+    0.7,
+    0.85,
+    0.95
+   ]
+  },
+  {
+   "name": "FRIDGE",
+   "loc": [
+    5.7,
+    2.9,
+    0.9
+   ],
+   "size": [
+    0.6,
+    0.7,
+    1.8
+   ],
+   "rgb": [
+    0.95,
+    0.95,
+    0.95
+   ]
+  },
+  {
+   "name": "HALL_DOOR",
+   "loc": [
+    0.6,
+    3.55,
+    1.0
+   ],
+   "size": [
+    0.9,
+    0.1,
+    2.0
+   ],
+   "rgb": [
+    0.1,
+    0.1,
+    0.11
+   ]
+  },
+  {
+   "name": "MINT",
+   "loc": [
+    2.8,
+    0.1,
+    1.1
+   ],
+   "size": [
+    0.15,
+    0.15,
+    0.2
+   ],
+   "rgb": [
+    0.2,
+    0.7,
+    0.3
+   ]
+  },
+  {
+   "name": "FLASK",
+   "loc": [
+    3.6,
+    0.35,
+    1.025
+   ],
+   "size": [
+    0.09,
+    0.09,
+    0.25
+   ],
+   "rgb": [
+    0.6,
+    0.62,
+    0.65
+   ]
+  },
+  {
+   "name": "PHONE",
+   "loc": [
+    3.3,
+    0.35,
+    0.905
+   ],
+   "size": [
+    0.08,
+    0.16,
+    0.01
+   ],
+   "rgb": [
+    0.1,
+    0.1,
+    0.11
+   ]
+  },
+  {
+   "name": "LAMP",
+   "loc": [
+    3.2,
+    1.8,
+    0.925
+   ],
+   "size": [
+    0.15,
+    0.15,
+    0.35
+   ],
+   "rgb": [
+    1.0,
+    0.85,
+    0.5
+   ]
+  },
+  {
+   "name": "CASE",
+   "loc": [
+    2.2,
+    0.35,
+    0.975
+   ],
+   "size": [
+    0.45,
+    0.3,
+    0.15
+   ],
+   "rgb": [
+    0.1,
+    0.1,
+    0.11
+   ]
+  },
+  {
+   "name": "JUDE",
+   "loc": [
+    2.6,
+    1.8,
+    0.875
+   ],
+   "size": [
+    1.85,
+    0.45,
+    0.25
+   ],
+   "rgb": [
+    0.8,
+    0.2,
+    0.2
+   ]
+  }
+ ],
+ "figures": [
+  {
+   "name": "SAYE",
+   "loc": [
+    2.8,
+    1.05,
+    0.0
+   ],
+   "height": 1.65,
+   "facing_deg": 180.0,
+   "rgb": [
+    0.25,
+    0.65,
+    0.3
+   ]
+  },
+  {
+   "name": "IONA",
+   "loc": [
+    2.8,
+    2.55,
+    0.0
+   ],
+   "height": 1.68,
+   "facing_deg": 0.0,
+   "rgb": [
+    0.2,
+    0.4,
+    0.8
+   ]
+  },
+  {
+   "name": "ELI",
+   "loc": [
+    5.1,
+    2.0,
+    0.0
+   ],
+   "height": 1.78,
+   "facing_deg": 292.44,
+   "rgb": [
+    0.9,
+    0.55,
+    0.2
+   ]
+  }
+ ],
+ "camera": {
+  "lens_mm": 85.0,
+  "sensor_mm": 36.0,
+  "focus_on": "IONA",
+  "focus": "moderate",
+  "setup": "SC10-SU01",
+  "keys": [
+   [
+    1,
+    [
+     -3.5,
+     1.8,
+     1.45
+    ],
+    [
+     2.8,
+     1.8,
+     1.4
+    ]
+   ]
+  ]
+ },
+ "plan_view": {
+  "direction": "top",
+  "center": [
+   1.25,
+   1.8,
+   0.0
+  ],
+  "size_m": 10.45
+ },
+ "moments": [
+  [
+   19,
+   "Saye looks up from Jude to Iona and speaks",
+   "l.421-434"
+  ],
+  [
+   67,
+   "Iona raises the hand nearest the camera; Saye raises hers to the same height; both hold",
+   "l.421-434"
+  ],
+  [
+   127,
+   "the two short lines pass between them; neither hand comes down",
+   "l.421-434"
+  ]
+ ],
+ "clash_exclusions": [
+  {
+   "set": "TABLE",
+   "stand_ins": [
+    "JUDE"
+   ]
+  }
+ ],
+ "derived_facings": {
+  "SAYE": [
+   [
+    1,
+    180.0
+   ],
+   [
+    19,
+    180.0
+   ],
+   [
+    67,
+    180.0
+   ],
+   [
+    127,
+    180.0
+   ],
+   [
+    252,
+    180.0
+   ]
+  ],
+  "IONA": [
+   [
+    1,
+    0.0
+   ],
+   [
+    19,
+    0.0
+   ],
+   [
+    67,
+    0.0
+   ],
+   [
+    127,
+    0.0
+   ],
+   [
+    252,
+    0.0
+   ]
+  ],
+  "ELI": [
+   [
+    1,
+    292.44
+   ],
+   [
+    19,
+    292.44
+   ],
+   [
+    67,
+    292.44
+   ],
+   [
+    127,
+    292.44
+   ],
+   [
+    252,
+    292.44
+   ]
+  ]
+ },
+ "notes": [
+  "left out with the wild wall they stand in: BACK_DOOR",
+  "Jude's lying stand-in overlaps the set-plan object LAMP by 0.15 metres; the blocking check cannot see it, because a lying body is a box of the set. Move one of them in the records"
+ ]
+}
