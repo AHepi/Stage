@@ -1,0 +1,549 @@
+{
+ "shot": "CATCH_SC23_SH09_chest_opens",
+ "fps": 24,
+ "frames": 96,
+ "resolution": [
+  640,
+  360
+ ],
+ "depth_range_m": [
+  0.3,
+  5
+ ],
+ "stills": [
+  1,
+  30,
+  60,
+  96
+ ],
+ "pivots": [
+  {
+   "name": "FIGURE",
+   "loc": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "hinge_L",
+   "loc": [
+    -0.32,
+    -0.26,
+    1.55
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "hinge_R",
+   "loc": [
+    0.32,
+    -0.26,
+    1.55
+   ],
+   "parent": "FIGURE"
+  }
+ ],
+ "boxes": [
+  {
+   "name": "recess_floor",
+   "loc": [
+    0,
+    0,
+    -0.05
+   ],
+   "size": [
+    4,
+    4,
+    0.1
+   ],
+   "rgb": [
+    0.35,
+    0.35,
+    0.38
+   ]
+  },
+  {
+   "name": "recess_back_wall",
+   "loc": [
+    0,
+    0.9,
+    1.5
+   ],
+   "size": [
+    4,
+    0.2,
+    3
+   ],
+   "rgb": [
+    0.25,
+    0.25,
+    0.28
+   ]
+  },
+  {
+   "name": "fire_shutter",
+   "loc": [
+    -1.9,
+    0,
+    1.2
+   ],
+   "size": [
+    0.1,
+    1.6,
+    2.4
+   ],
+   "rgb": [
+    0.5,
+    0.2,
+    0.1
+   ]
+  },
+  {
+   "name": "fig_legs",
+   "loc": [
+    0,
+    0,
+    0.55
+   ],
+   "size": [
+    0.55,
+    0.35,
+    1.1
+   ],
+   "rgb": [
+    0.05,
+    0.05,
+    0.06
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "fig_chest_back_plate",
+   "loc": [
+    0,
+    0.2,
+    1.55
+   ],
+   "size": [
+    0.6,
+    0.1,
+    0.9
+   ],
+   "rgb": [
+    0.12,
+    0.12,
+    0.13
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "fig_shoulders",
+   "loc": [
+    0,
+    0,
+    2.1
+   ],
+   "size": [
+    0.95,
+    0.45,
+    0.25
+   ],
+   "rgb": [
+    0.05,
+    0.05,
+    0.06
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "fig_head_low",
+   "loc": [
+    0,
+    -0.02,
+    2.28
+   ],
+   "size": [
+    0.3,
+    0.32,
+    0.22
+   ],
+   "rgb": [
+    0.05,
+    0.05,
+    0.06
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "fig_pale_strip",
+   "loc": [
+    0,
+    -0.19,
+    2.28
+   ],
+   "size": [
+    0.22,
+    0.01,
+    0.05
+   ],
+   "rgb": [
+    0.92,
+    0.92,
+    0.85
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "fig_arm_L",
+   "loc": [
+    -0.6,
+    0,
+    1.45
+   ],
+   "size": [
+    0.18,
+    0.2,
+    1.1
+   ],
+   "rgb": [
+    0.05,
+    0.05,
+    0.06
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "fig_arm_R",
+   "loc": [
+    0.6,
+    0,
+    1.45
+   ],
+   "size": [
+    0.18,
+    0.2,
+    1.1
+   ],
+   "rgb": [
+    0.05,
+    0.05,
+    0.06
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "door_L",
+   "loc": [
+    0.16,
+    -0.02,
+    0
+   ],
+   "size": [
+    0.32,
+    0.04,
+    0.9
+   ],
+   "rgb": [
+    0.07,
+    0.07,
+    0.08
+   ],
+   "parent": "hinge_L"
+  },
+  {
+   "name": "door_R",
+   "loc": [
+    -0.16,
+    -0.02,
+    0
+   ],
+   "size": [
+    0.32,
+    0.04,
+    0.9
+   ],
+   "rgb": [
+    0.07,
+    0.07,
+    0.08
+   ],
+   "parent": "hinge_R"
+  },
+  {
+   "name": "VESSEL",
+   "loc": [
+    0,
+    -0.02,
+    1.55
+   ],
+   "size": [
+    0.14,
+    0.14,
+    0.45
+   ],
+   "rgb": [
+    0.1,
+    0.3,
+    0.35
+   ],
+   "parent": "FIGURE"
+  },
+  {
+   "name": "vessel_mount_tubes",
+   "loc": [
+    0,
+    0.1,
+    1.85
+   ],
+   "size": [
+    0.08,
+    0.2,
+    0.12
+   ],
+   "rgb": [
+    0.3,
+    0.3,
+    0.3
+   ],
+   "parent": "FIGURE"
+  }
+ ],
+ "figures": [
+  {
+   "name": "IONA",
+   "loc": [
+    -0.22,
+    -1.25,
+    0
+   ],
+   "height": 1.68,
+   "facing_deg": 180,
+   "rgb": [
+    0.2,
+    0.4,
+    0.8
+   ]
+  }
+ ],
+ "animate": [
+  {
+   "object": "hinge_L",
+   "keys": [
+    [
+     1,
+     [
+      -0.32,
+      -0.26,
+      1.55
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    [
+     30,
+     [
+      -0.32,
+      -0.26,
+      1.55
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    [
+     66,
+     [
+      -0.32,
+      -0.26,
+      1.55
+     ],
+     [
+      0,
+      0,
+      -105
+     ]
+    ]
+   ]
+  },
+  {
+   "object": "hinge_R",
+   "keys": [
+    [
+     1,
+     [
+      0.32,
+      -0.26,
+      1.55
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    [
+     34,
+     [
+      0.32,
+      -0.26,
+      1.55
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    [
+     70,
+     [
+      0.32,
+      -0.26,
+      1.55
+     ],
+     [
+      0,
+      0,
+      105
+     ]
+    ]
+   ]
+  },
+  {
+   "object": "IONA",
+   "keys": [
+    [
+     1,
+     [
+      -0.22,
+      -1.25,
+      0
+     ],
+     [
+      0,
+      0,
+      180
+     ]
+    ],
+    [
+     40,
+     [
+      -0.22,
+      -1.25,
+      0
+     ],
+     [
+      0,
+      0,
+      180
+     ]
+    ],
+    [
+     60,
+     [
+      -0.25,
+      -1.45,
+      0
+     ],
+     [
+      0,
+      0,
+      180
+     ]
+    ]
+   ]
+  }
+ ],
+ "camera": {
+  "lens_mm": 40,
+  "sensor_mm": 36,
+  "fstop": 2.8,
+  "focus_on": "VESSEL",
+  "keys": [
+   [
+    1,
+    [
+     0.25,
+     -2.4,
+     1.7
+    ],
+    [
+     0.0,
+     0,
+     1.9
+    ],
+    35
+   ],
+   [
+    60,
+    [
+     0.2,
+     -2.2,
+     1.65
+    ],
+    [
+     0.0,
+     0,
+     1.6
+    ],
+    35
+   ],
+   [
+    96,
+    [
+     0.12,
+     -1.95,
+     1.6
+    ],
+    [
+     0.0,
+     -0.1,
+     1.55
+    ],
+    50
+   ]
+  ]
+ },
+ "plan_view": {
+  "direction": "top",
+  "center": [
+   0,
+   -0.8,
+   0
+  ],
+  "size_m": 5
+ },
+ "beats": [
+  [
+   1,
+   "Hand flat on its own chest; pale strip in top of frame",
+   "It puts its hand flat against its own chest."
+  ],
+  [
+   8,
+   "Latches release one by one (sound only)",
+   "Latches let go, one after another, down the front of it."
+  ],
+  [
+   30,
+   "Left door starts to swing; right follows at 34",
+   "The chest swings open."
+  ],
+  [
+   40,
+   "Iona steps back 20 cm (to frame 60)",
+   "Iona steps back."
+  ],
+  [
+   96,
+   "Vessel centred between open doors",
+   "hanging in the mount a glass VESSEL of dark water about as long as her forearm."
+  ]
+ ]
+}

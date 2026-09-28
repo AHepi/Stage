@@ -1,0 +1,445 @@
+{
+ "shot": "CATCH_SC06_SH16_inversion_reveal",
+ "fps": 24,
+ "frames": 36,
+ "resolution": [
+  640,
+  360
+ ],
+ "depth_range_m": [
+  0.3,
+  6
+ ],
+ "pivots": [
+  {
+   "name": "CAGE",
+   "loc": [
+    0,
+    0,
+    5.0
+   ]
+  }
+ ],
+ "boxes": [
+  {
+   "name": "wall_W",
+   "loc": [
+    -1.3,
+    0,
+    10
+   ],
+   "size": [
+    0.2,
+    2.8,
+    30
+   ],
+   "rgb": [
+    0.45,
+    0.35,
+    0.3
+   ]
+  },
+  {
+   "name": "wall_N",
+   "loc": [
+    0,
+    1.3,
+    10
+   ],
+   "size": [
+    2.8,
+    0.2,
+    30
+   ],
+   "rgb": [
+    0.45,
+    0.35,
+    0.3
+   ]
+  },
+  {
+   "name": "wall_E_below_opening",
+   "loc": [
+    1.3,
+    0,
+    3.5
+   ],
+   "size": [
+    0.2,
+    2.8,
+    11
+   ],
+   "rgb": [
+    0.45,
+    0.35,
+    0.3
+   ]
+  },
+  {
+   "name": "wall_E_above_opening",
+   "loc": [
+    1.3,
+    0,
+    17.6
+   ],
+   "size": [
+    0.2,
+    2.8,
+    12.8
+   ],
+   "rgb": [
+    0.45,
+    0.35,
+    0.3
+   ]
+  },
+  {
+   "name": "sill",
+   "loc": [
+    1.35,
+    0,
+    9.0
+   ],
+   "size": [
+    0.3,
+    2.0,
+    0.1
+   ],
+   "rgb": [
+    0.95,
+    0.95,
+    0.95
+   ]
+  },
+  {
+   "name": "passage_floor",
+   "loc": [
+    3.0,
+    0,
+    8.95
+   ],
+   "size": [
+    3.0,
+    3.0,
+    0.1
+   ],
+   "rgb": [
+    0.55,
+    0.55,
+    0.55
+   ]
+  },
+  {
+   "name": "cage_floor_now_on_top",
+   "loc": [
+    0,
+    0,
+    0
+   ],
+   "size": [
+    2.0,
+    2.0,
+    0.06
+   ],
+   "rgb": [
+    0.3,
+    0.3,
+    0.32
+   ],
+   "parent": "CAGE"
+  },
+  {
+   "name": "cage_roof_now_below",
+   "loc": [
+    0,
+    0,
+    -2.3
+   ],
+   "size": [
+    2.0,
+    2.0,
+    0.06
+   ],
+   "rgb": [
+    0.3,
+    0.3,
+    0.32
+   ],
+   "parent": "CAGE"
+  },
+  {
+   "name": "control_box",
+   "loc": [
+    -0.9,
+    0.9,
+    -0.4
+   ],
+   "size": [
+    0.15,
+    0.2,
+    0.3
+   ],
+   "rgb": [
+    0.2,
+    0.25,
+    0.6
+   ],
+   "parent": "CAGE"
+  },
+  {
+   "name": "yellow_stripe",
+   "loc": [
+    0,
+    1.19,
+    2.0
+   ],
+   "size": [
+    2.6,
+    0.02,
+    0.25
+   ],
+   "rgb": [
+    1.0,
+    0.85,
+    0.0
+   ]
+  }
+ ],
+ "figures": [
+  {
+   "name": "JUDE",
+   "loc": [
+    -0.9,
+    0.0,
+    3.05
+   ],
+   "height": 1.82,
+   "rgb": [
+    0.7,
+    0.2,
+    0.2
+   ]
+  },
+  {
+   "name": "ELI",
+   "loc": [
+    -0.5,
+    0.3,
+    2.8
+   ],
+   "height": 1.8,
+   "rgb": [
+    0.8,
+    0.5,
+    0.2
+   ]
+  },
+  {
+   "name": "IONA",
+   "loc": [
+    -0.1,
+    -0.4,
+    2.9
+   ],
+   "height": 1.68,
+   "rgb": [
+    0.2,
+    0.4,
+    0.8
+   ]
+  }
+ ],
+ "animate": [
+  {
+   "object": "CAGE",
+   "keys": [
+    [
+     1,
+     [
+      0,
+      0,
+      5.0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    [
+     36,
+     [
+      0,
+      0,
+      6.4
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ]
+   ]
+  },
+  {
+   "object": "IONA",
+   "keys": [
+    [
+     1,
+     [
+      -0.1,
+      -0.4,
+      2.9
+     ],
+     [
+      0,
+      0,
+      90
+     ]
+    ],
+    [
+     36,
+     [
+      -0.1,
+      -0.4,
+      4.3
+     ],
+     [
+      0,
+      0,
+      90
+     ]
+    ]
+   ]
+  },
+  {
+   "object": "ELI",
+   "keys": [
+    [
+     1,
+     [
+      -0.5,
+      0.3,
+      2.8
+     ],
+     [
+      0,
+      20,
+      90
+     ]
+    ],
+    [
+     36,
+     [
+      -0.5,
+      0.3,
+      4.2
+     ],
+     [
+      0,
+      20,
+      90
+     ]
+    ]
+   ]
+  },
+  {
+   "object": "JUDE",
+   "keys": [
+    [
+     1,
+     [
+      -0.9,
+      0.0,
+      3.05
+     ],
+     [
+      0,
+      90,
+      0
+     ]
+    ],
+    [
+     36,
+     [
+      -0.9,
+      0.0,
+      4.45
+     ],
+     [
+      0,
+      90,
+      0
+     ]
+    ]
+   ]
+  }
+ ],
+ "camera": {
+  "lens_mm": 24,
+  "sensor_mm": 36,
+  "keys": [
+   [
+    1,
+    [
+     0.7,
+     -0.9,
+     3.2
+    ],
+    [
+     -0.1,
+     -0.4,
+     3.9
+    ]
+   ],
+   [
+    36,
+    [
+     0.7,
+     -0.9,
+     4.6
+    ],
+    [
+     -0.1,
+     -0.4,
+     5.4
+    ]
+   ]
+  ]
+ },
+ "plan_view": {
+  "direction": "side",
+  "center": [
+   0,
+   0,
+   5
+  ],
+  "size_m": 10,
+  "hide": [
+   "wall_N"
+  ]
+ },
+ "stills": [
+  1,
+  18,
+  36
+ ],
+ "beats": [
+  [
+   1,
+   "Eyes open; grid now at top of frame, band below her boots",
+   "The floor grid is above her and she is holding it from underneath."
+  ],
+  [
+   36,
+   "Cage still rising, slowing",
+   "The cage is going UP."
+  ],
+  [
+   36,
+   "Jude across Eli's arms, gate open; next shot (plan_push_sill) picks up the rise at 9.0 m",
+   "Jude lies across Eli's arms. The gate has sprung open."
+  ]
+ ],
+ "note": "All three stand-ins are keyed on the same frames as the cage so they ride with it; checked with check_blocking.py."
+}

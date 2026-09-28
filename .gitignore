@@ -1,0 +1,7 @@
+# Your own stories and breakdowns stay on your computer (never uploaded by git)
+My stories/*
+!My stories/.keep
+My breakdowns/*
+!My breakdowns/.keep
+__pycache__/
+*.pyc
