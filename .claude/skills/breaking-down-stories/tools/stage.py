@@ -50,8 +50,9 @@ from stage_tools.record_format import SKILL_FOLDER, load_skill_data  # noqa: E40
 COMMAND_MODULES = [
     "stage_tools.project_files",      # new, status, apply, pack, unpack (WP2)
     "stage_tools.read_story",         # read, lines, selftest (WP3)
-    "stage_tools.check_records",      # check, build, impact, questions (WP4)
-    "stage_tools.adopt_folder",       # adopt (WP4)
+    "stage_tools.check_records",      # check (WP4b)
+    "stage_tools.derive_fields",      # build (WP4a)
+    "stage_tools.adopt_folder",       # adopt, impact, questions (WP4f)
     "stage_tools.make_handout",       # next, handout (WP5)
     "stage_tools.make_exports",       # export (WP6)
     "stage_tools.estimate",           # estimate (WP7)
@@ -67,8 +68,8 @@ COMMAND_MODULES = [
 PLANNED_COMMANDS = {
     "new": "project_files", "status": "project_files", "apply": "project_files", "pack": "project_files",
     "unpack": "project_files", "read": "read_story", "lines": "read_story", "selftest": "read_story",
-    "adopt": "adopt_folder", "check": "check_records", "build": "check_records", "impact": "check_records",
-    "questions": "check_records", "next": "make_handout", "handout": "make_handout", "export": "make_exports",
+    "adopt": "adopt_folder", "check": "check_records", "build": "derive_fields", "impact": "adopt_folder",
+    "questions": "adopt_folder", "next": "make_handout", "handout": "make_handout", "export": "make_exports",
     "estimate": "estimate", "compile": "compile_prompts", "graphics": "make_text_graphics",
     "refresh-models": "refresh_models", "previs": "make_previs_plans", "build-kit": "build_kit",
     "lib": "build_kit", "import-json": "build_kit", "replay": "build_kit",
@@ -94,7 +95,7 @@ def load_command_table():
     """Import every module of COMMAND_MODULES that exists and let it register its commands."""
     table = CommandTable()
     broken = {}
-    for module_name in COMMAND_MODULES:
+    for module_name in dict.fromkeys(COMMAND_MODULES):  # a module listed twice registers once
         try:
             module = importlib.import_module(module_name)
         except ModuleNotFoundError as error:

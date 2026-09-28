@@ -18,11 +18,21 @@ points and for a STATE's starting line; the chapter's lines for CHAPTER first_li
 scenes; the whole story otherwise. With only an excerpt of the story (the scene 10 fixture), a quote or a line
 outside the excerpt is skipped as "not in the excerpt", never reported as a problem.
 
-Pre-issued blocks (ID-06), written by make_handout.py into manifest.json:
-    manifest["issued"]["U-07-SC10"] = {"BEAT": ["SC10-B01", "SC10-B30"], "SHOT": ["SC10-SH010", "SC10-SH400"]}
+Pre-issued blocks (ID-06), written by make_handout.py into manifest.json when it builds a unit's handout:
+    manifest["issued"]["U-07-SC10"] = {"BEAT": ["SC10-B01", "SC10-B30"],
+                                       "SHOT": [["SC10-SH010", "SC10-SH400"], ["SC10-SH990", "SC10-SH999"]]}
 Each value is one [first, last] pair or a list of pairs. An ID is inside when it has the same letters before
 its last number and that number lies between the pair's numbers (so an insert such as SH155 is inside). The
-types are record types, plus VALUE for the values a SCENE declares.
+types are record types, plus VALUE for the values a SCENE declares and SHOT for the shots a SHOTLIST declares.
+On stored files (check) only the records of a scene (beats, parts, moves, setups, shots, cuts, values) are
+checked, and only against the blocks of their own type and scene, so records code makes (scenes, choices) are
+never ID-06; on an inbox (apply) every new record whose type has a block is checked. Card and black shots
+(990-999) must be in a block too.
+
+What counts as a reference (ID-02): the IDs of every id, id_list, id_range, because_list, reference_list and
+story-point value, of every ID-kind first part and sub-part, and the ID after "eye:", "seated:", "kneeling:"
+(SHOT height), "from_end_of:" (SHOT start) and "insert:" (BEAT landing_face). A PREVIS ID in a SHOT time_slice or
+a CUT shared_geometry is never ID-02: code creates that stub with status planned (5.4 rule 2).
 
 Standard library only.
 """
@@ -52,6 +62,13 @@ NUMBER_AT_END = re.compile(r"^(.*?)(\d+)$")
 WORD = re.compile(r"[A-Za-z0-9]+(?:'[A-Za-z0-9]+)*")
 DOUBLE_QUOTED_SPEECH = re.compile(r'["“]([^"“”]*)["”]')
 LEFT_OUT_LISTED = 8
+# Fields whose PREVIS ID code turns into a stub with status planned when it does not exist (SHOT time_slice, CUT
+# shared_geometry; 5.4 rule 2), so the reference is never ID-02.
+PREVIS_STUB_FIELDS = ("time_slice", "shared_geometry")
+# Fields that name an ID after a word and a colon (5.5): SHOT height "eye:CH-IONA", SHOT start "from_end_of:
+# SC10-SH140", BEAT landing_face "insert:PR-FLASK". ID-02 checks the ID after the colon.
+PREFIXED_ID_FIELDS = {("SHOT", "height"): ("eye", "seated", "kneeling"), ("SHOT", "start"): ("from_end_of",),
+                      ("BEAT", "landing_face"): ("insert",)}
 
 
 # ---------------------------------------------------------------- shared helpers
@@ -117,8 +134,12 @@ def left_out_skip(run, check_id, scenes):
     ordered = sorted(scenes, key=lambda identifier: (len(identifier), identifier))
     shown = ", ".join(ordered[:LEFT_OUT_LISTED]) + (f" and {len(ordered) - LEFT_OUT_LISTED} more"
                                                     if len(ordered) > LEFT_OUT_LISTED else "")
-    run.skip(check_id, f"references into {shown}: not in the excerpt (no records of those scenes here, and they "
-                       "are outside the project's scope or the story given), so they were not checked")
+    if run.story is None or run.story.excerpt:
+        why = ("not in the excerpt (no records of those scenes here, and they are outside the project's scope or the "
+               "story given)")
+    else:
+        why = "outside the project's scope (no records of those scenes here)"
+    run.skip(check_id, f"references into {shown}: {why}, so they were not checked")
 
 
 # ---------------------------------------------------------------- IDs: what exists
@@ -244,6 +265,11 @@ def references(run):
                 entry = sub_part_definition(definition, sub_key)
                 if entry and entry.get("kind") in ID_KINDS and not is_empty_word(sub_value):
                     pieces.extend(identifier_pieces(sub_value, entry.get("kind")))
+        prefixes = PREFIXED_ID_FIELDS.get((effective_type(run, record), name))
+        if prefixes:
+            match = re.match(r"^(?:%s)\s*:\s*(\S+)$" % "|".join(prefixes), value)
+            if match:
+                pieces.append((match.group(1), "id"))
         for identifier, how in pieces:
             identifier = identifier.strip()
             if identifier and not is_empty_word(identifier):
@@ -264,6 +290,16 @@ def project_digits(run):
     if run.story is not None and run.story.story_map.get("scene_id_digits"):
         return int(run.story.story_map["scene_id_digits"])
     return None
+
+
+def constant_value(run, name, default):
+    """A number of rules/constants.json by name (its "value"), from either of its two tables; default if absent."""
+    constants = run.constants or {}
+    for table in (constants.get("constants") or {}, (constants.get("from_blueprint_text") or {}).get("constants") or {}):
+        entry = table.get(name)
+        if isinstance(entry, dict) and "value" in entry:
+            return entry["value"]
+    return default
 
 
 def split_number(identifier):
@@ -343,6 +379,9 @@ def check_id_02(run):
             continue
         if not looks_like_identifier(run, identifier):
             continue
+        if field_name in PREVIS_STUB_FIELDS and identifier.startswith("PV-"):
+            # code creates the named PREVIS stub (status planned) when it does not exist yet (5.5, step 8)
+            continue
         exists, target = identifier_exists(run, identifier)
         if exists:
             if target is not None and run.is_omitted(target) and target.key != record.key:
@@ -379,14 +418,10 @@ def check_id_02(run):
                 plain="has a shot number out of the usual steps of ten")
 def check_id_03(run):
     problems = []
-    end_first = 990
-    constants = (run.constants or {}).get("from_blueprint_text", {}).get("constants", {})
-    if isinstance(constants.get("end_card_numbers"), dict):
-        value = constants["end_card_numbers"].get("value")
-        if isinstance(value, list) and value:
-            end_first = int(value[0])
-        elif isinstance(value, (int, float)):
-            end_first = int(value)
+    end_cards = constant_value(run, "end_card_numbers", [990, 999])
+    end_first = int(end_cards[0] if isinstance(end_cards, list) and end_cards else end_cards)
+    end_last = int(end_cards[-1] if isinstance(end_cards, list) and end_cards else 999)
+    step = int(constant_value(run, "shot_number_step", 10))
     by_scene = {}
     for shot in run.records("SHOT"):
         by_scene.setdefault(scene_of(shot.identifier), {})[shot.identifier] = shot
@@ -406,27 +441,30 @@ def check_id_03(run):
             number = numbers[identifier]
             record = shots.get(identifier) or listed.get(scene, {}).get(identifier)
             field = None if identifier in shots else "item"
+            # a SHOT record is named by its own ID; a list item by the list, so the item's ID is said again
+            subject = "" if identifier in shots else f"{identifier} "
             kind = normalise_word(shots[identifier].get("kind") or "") if identifier in shots else ""
             if number == 0:
-                problems.append(run.problem("W", "ID-03", record, field, f"{identifier} is numbered 000",
-                                            "Fix: shots start at 010 and go in tens"))
+                problems.append(run.problem("W", "ID-03", record, field, f"{subject}is numbered 000",
+                                            f"Fix: shots start at {step:03d} and go in steps of {step}"))
                 continue
-            if number < end_first and number % 10:
-                base = number - number % 10
+            if number < end_first and number % step:
+                base = number - number % step
                 if base not in present:
                     problems.append(run.problem("W", "ID-03", record, field,
-                                                f"{identifier} is not in tens and no shot {base:03d} comes before it, "
-                                                "so it is not an insert between two shots",
-                                                "Fix: use the next free number in tens from the issued block"))
+                                                f"{subject}is not in steps of {step} and no shot {base:03d} comes "
+                                                "before it, so it is not an insert between two shots",
+                                                f"Fix: use the next free number in steps of {step} from the issued "
+                                                "block"))
             if kind in ("card", "black") and number < end_first:
                 problems.append(run.problem("W", "ID-03", record, field,
-                                            f"{identifier} is a {kind} shot numbered below {end_first}",
-                                            f"Fix: number cards and black from {end_first} to 999"))
+                                            f"{subject}is a {kind} shot numbered below {end_first}",
+                                            f"Fix: number cards and black from {end_first} to {end_last}"))
             if kind and kind not in ("card", "black") and number >= end_first:
                 problems.append(run.problem("W", "ID-03", record, field,
-                                            f"{identifier} is a {kind} shot numbered {end_first} or above; those "
+                                            f"{subject}is a {kind} shot numbered {end_first} or above; those "
                                             "numbers are for end cards and black",
-                                            "Fix: give it a number in tens below 990"))
+                                            f"Fix: give it a number in steps of {step} below {end_first}"))
     return problems
 
 
@@ -497,7 +535,7 @@ def check_id_05(run):
         return []
     if not missing and not extra:
         return []
-    headings = len(story_scenes) if not run.story.excerpt else len(story_scenes)
+    headings = len(story_scenes)
     parts = []
     if missing:
         parts.append("no SCENE record for " + ", ".join(missing[:10]) + (" and more" if len(missing) > 10 else ""))
@@ -505,8 +543,9 @@ def check_id_05(run):
         parts.append("no heading in the story for " + ", ".join(extra[:10]) + (" and more" if len(extra) > 10 else ""))
     file_name = next((record_file.name for record_file in run.record_files
                       if any(record.type_name == "SCENE" for record in record_file.records)), "04 Scene list.md")
+    held = f"{len(records)} scene" + ("" if len(records) == 1 else "s")
     return [Problem("E", "ID-05", quote_for_message(file_name), None,
-                    f"holds {len(records)} scenes, but the story has {headings} scene headings: " + "; ".join(parts),
+                    f"holds {held}, but the story has {headings} scene headings: " + "; ".join(parts),
                     "Fix: run stage.py read again before the scene list is fixed, or mark a dropped scene omitted "
                     "(IDs never shift)", file_name=file_name)]
 
@@ -560,7 +599,9 @@ def check_id_06(run):
         return []
     problems = []
     for key, record in run.index.items():
-        if not key[1] or run.is_omitted(record):
+        # On stored files only a scene's own records are checked: code also makes records of other kinds (choices
+        # by new and read) that no handout issued; apply checks every new record of an inbox.
+        if not key[1] or run.is_omitted(record) or scene_of(key[1]) is None:
             continue
         wanted = outside_blocks(key[1], key[0], blocks)
         if wanted:
@@ -578,7 +619,7 @@ def check_id_06(run):
 
 @register_check("ID-07", level="E", build=1,
                 title="SHOT not in its scene's SHOTLIST; at Standard and Detailed, a list item without its SHOT",
-                plain="has a shot missing from the shot list, or a listed shot not written yet")
+                plain="is missing from its shot list, or lists a shot that is not written yet")
 def check_id_07(run):
     problems = []
     definition = run.schema.field("SHOTLIST", "item") or {}
@@ -623,7 +664,7 @@ def check_id_07(run):
 
 @register_check("ID-08", level="E", build=1,
                 title="SHOT's beats, role or size differ from its list item without a changed list",
-                plain="has a shot that differs from its line in the shot list")
+                plain="differs from its line in the shot list")
 def check_id_08(run):
     problems = []
     definition = run.schema.field("SHOTLIST", "item") or {}
@@ -658,7 +699,7 @@ def check_id_08(run):
 
 
 @register_check("ID-09", level="E", build=1, title="Scene ID width differs from scene_id_digits",
-                plain="has a scene number of the wrong width")
+                plain="writes a scene number with the wrong number of digits")
 def check_id_09(run):
     digits = project_digits(run)
     if digits is None:
@@ -849,8 +890,9 @@ def check_cite_01(run):
             if outside:
                 shown = ", ".join(plain_range(*pair) for pair in outside)
                 where = scene_words(identifier) if kind == "scene" else f"chapter {identifier}"
+                noun = "line" if len(outside) == 1 and outside[0][0] == outside[0][1] else "lines"
                 problems.append(run.problem("E", "CITE-01", reference.record, reference.field_name,
-                                            f"points to line {shown}, outside {where}'s lines ({plain_range(first, last)})",
+                                            f"points to {noun} {shown}, outside {where}'s lines ({plain_range(first, last)})",
                                             f"Fix: cite lines of {where} only (the numbered story shows them)",
                                             line_number=reference.line_number, file_name=reference.record_file.name))
             continue
@@ -863,8 +905,9 @@ def check_cite_01(run):
             if story.excerpt:
                 not_in_excerpt = True
                 continue
+            noun = "line" if pair[0] == pair[1] else "lines"
             problems.append(run.problem("E", "CITE-01", reference.record, reference.field_name,
-                                        f"points to line {plain_range(*pair)}, outside the story's lines "
+                                        f"points to {noun} {plain_range(*pair)}, outside the story's lines "
                                         f"({plain_range(story.first, story.last)})",
                                         "Fix: cite a line that exists in the numbered story",
                                         line_number=reference.line_number, file_name=reference.record_file.name))
@@ -1179,7 +1222,7 @@ def contains_run(haystack, needle):
 
 
 @register_check("CITE-06", level="E", build=1, title="Prose SPEECH with origin story not found word for word",
-                plain="has a speech whose words are not found word for word in the story")
+                plain="gives spoken words that are not found word for word in the story")
 def check_cite_06(run):
     speeches = [record for record in run.records("SPEECH") if normalise_word(record.get("origin") or "") == "story"]
     if not speeches:
@@ -1222,7 +1265,7 @@ def cue_name(text):
 
 
 @register_check("CITE-07", level="E", build=2, title="A name in a story-derived field that matches no alias",
-                plain="uses a name the story does not use for that character")
+                plain="is missing a name the story uses for this character")
 def check_cite_07(run):
     if not run.speeches:
         return []

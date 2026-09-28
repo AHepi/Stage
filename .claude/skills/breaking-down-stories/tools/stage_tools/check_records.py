@@ -17,18 +17,21 @@ Standard library only.
 HOW A FAMILY MODULE REGISTERS ITS CHECKS (for the builders of the other check families)
 ======================================================================================
 
-1. Write the module in stage_tools/, for example stage_tools/checks_coverage_time_state.py, and add nothing
-   anywhere else: CHECK_FAMILY_MODULES below already lists every planned family module, and a module that is
-   not there yet is skipped (its checks are reported as "not in this copy of the tools").
+1. Write the module in stage_tools/ under the name listed below, and add nothing anywhere else:
+   CHECK_FAMILY_MODULES (below the imports) already lists every planned family module, and a module that is
+   not there yet is skipped (its checks are reported as "not in this copy of the tools yet"). check_records
+   imports each module when stage.py starts (and when run_checks runs), so importing it registers its checks.
+   A family module that fails to import is reported as "Could not load ..." and every other family still runs.
 
        stage_tools.checks_form                  FORM-01 to FORM-13 (WP2; registered here by an adapter)
        stage_tools.checks_ids_citations         ID-01 to ID-09, CITE-01 to CITE-07 (WP4b)
-       stage_tools.checks_coverage_time_state   COVER, TIME and STATE
+       stage_tools.checks_coverage_time_state   COVER, TIME and STATE (WP4c)
        stage_tools.checks_sides_geometry        SIDE and GEOM (WP4a)
-       stage_tools.checks_craft_reasons_words   CRAFT, INFO, REASON and WORDS
-       stage_tools.checks_plan_generation_film  PLAN, GEN and FILM
+       stage_tools.checks_craft_reasons_words   CRAFT, INFO, REASON and WORDS (WP4d)
+       stage_tools.checks_plan_generation_film  PLAN, GEN and FILM (WP4e)
 
-2. In the module, register one function per check ID with the decorator register_check:
+2. In the module, register one function per check ID of 7.2 with the decorator register_check (import it with a
+   relative import, so the module registers with this very registry):
 
        from .check_records import register_check, scene_of
 
@@ -44,19 +47,27 @@ HOW A FAMILY MODULE REGISTERS ITS CHECKS (for the builders of the other check fa
                                            "Fix: raise screen_time to 14 or move SC10-D12 to the next shot."))
            return problems
 
+   - The ID is 7.2's ("FAMILY-NN"); registering an ID twice keeps the last function.
    - level is the level of 7.2 ("E", "W", "N", or "E/W" when the check can print either).
-   - build is 1 or 2 (7.2's Build column).
+   - build is 1 or 2 (7.2's Build column). A build-2 check may be a stub that calls run.skip(...) and returns [].
    - title is 7.2's "Check" column, for maintainers.
    - plain says what is wrong in plain words for the plain part of 13 Health check. It follows a record's plain
-     name ("Scene 10, shot 150 <plain>."), so it starts with a verb and never holds a code, an ID or an
+     name ("Scene 10, shot 150: <plain>."), so it starts with a verb and never holds a code, an ID or an
      abbreviation (WORDS-04): "has a shot shorter than the time its speech and pauses need".
-   - The function takes one CheckRun (below) and returns a list of record_format.Problem lines. Build each line
-     with run.problem(...), which fills in the file and line of the record's first copy. A check may return
-     plain strings too, but then the report cannot place them in a file.
-   - When a check cannot run (no story, a scene not in the excerpt), call run.skip(check_id, "why") and
-     return what it could check. A skip is not a problem line: it is listed separately ("Skipped: ...").
-   - A check must never change records. Tidy fixes are made by the runner (FORM-13) before the checks run.
-   - A check only reads; run.cache is a dict for sharing work between checks of one run.
+   - The function takes one CheckRun (below) and returns a list of record_format.Problem lines in 7.2's format
+     (level, check ID, record, field, what is wrong, then the allowed values or the fix). Build each line with
+     run.problem(...), which fills in the file and line of the record's first copy (pass line_number= and
+     file_name= to point at one field line). A check may return plain strings too, but then the report cannot
+     place them in a file or a scene.
+   - When a check cannot run (no story, a scene not in the excerpt), call run.skip(check_id, "why") and return
+     what it could check. A skip is not a problem line: it is listed separately ("Skipped ID: why"). Use the
+     words "story not present" when the story is missing (run.story_missing does) and "not in the excerpt" for
+     references outside the excerpt of the story given (the scene 10 fixture), as the tests look for them.
+   - A check never changes records. Tidy fixes are made by the runner (FORM-13) before the checks run.
+   - A check only reads; run.cache is a dict for sharing work between the checks of one run (for example
+     derive_fields.breakdown_for_run(run) keeps its derived fields there).
+   - A check that raises an exception is reported as "stopped with a fault in the tools" and the other checks
+     still run, so one fault never hides every other problem.
 
 3. What a check reads (CheckRun):
 
@@ -75,47 +86,70 @@ HOW A FAMILY MODULE REGISTERS ITS CHECKS (for the builders of the other check fa
                                                scene's own deeper depth into account
        run.step                                the step checked (an int), or None for --all
        run.scene                               the scene given with --scene, or None
+       run.film                                True with --film
        run.scope_scenes                        the scenes in PROJECT.scope, or None when the scope is all
        run.in_scope(ID or record)              True when it belongs to no scene or to a scene being checked
+       run.scene_left_out("SC13")              True for a scene with no records here that lies outside the
+                                               project's scope or the excerpt given: skip references into it
        run.scene_ids()                         the SCENE records' IDs, in file order
        run.scene_range("SC10")                 (first, last) lines of a scene: its SCENE record, else the story
        run.chapter_range("CP01")               (first, last) lines of a chapter
-       run.story                               StorySource or None (the numbered story; see the class)
+       run.story                               StorySource or None: .numbered (read_story.NumberedStory: line(n),
+                                               find_quote, check_quote, resolve_lines, resolve_line, scenes),
+                                               .speeches, .story_map (story map.json), .excerpt, .holds(a, b)
        run.story_missing("CITE-02")            True (and one skip line) when no story is present
        run.speeches                            {speech ID: speeches.json entry}, or {} when not present
-       run.manifest                            the project's manifest.json, or {} (for example the batches)
+       run.manifest                            the project's manifest.json, or {} (batches, issued blocks ...)
        run.batch_shots("SC10")                 during step 8: the set of listed shot IDs whose batches were
                                                written so far; None means "check every list item" (use it for
                                                ID-07 and COVER-02 to COVER-04, 7.2)
        run.form_context                        checks_form.FormContext for the same files (conditions, choices)
-       run.problem(level, check_id, record, field, what, fix="", line_number=None)
+       run.locked_baseline                     {(TYPE, ID): Record} as the checker last saw each locked record
+                                               ("For machines - do not edit/locked records.json")
+       run.problem(level, check_id, record, field, what, fix="", line_number=None, file_name=None)
        run.skip(check_id, why)
-       scene_of("SC10-SH150") -> "SC10"        (module function)
+       scene_of("SC10-SH150") -> "SC10"        (module function; same_scene("SC6", "SC06") is True)
 
-   The runner drops problem lines of records outside the checked scenes (PROJECT.scope and --scene), removes
-   exact duplicates, and orders them by check, then file, then line.
+   The runner removes exact duplicates, orders the lines by check (7.2's order), then file, then line, and
+   leaves out the lines of records outside PROJECT.scope. With --scene it keeps only the lines of that scene's
+   records and scene files; the other lines are counted ("left out") and shown by check --all.
 
 4. Checks that must also run on an inbox before apply merges it: register them with
    project_files.register_apply_check(function(project, inbox, current_files, context)) at import time of the
-   family module. check_records imports every family module when stage.py starts, so apply sees them.
+   family module; the function returns Problem lines and apply refuses the whole inbox on any E line.
+   check_records imports every family module when stage.py starts, so apply sees them. (checks_ids_citations
+   registers ID-01, ID-04 and ID-06 this way.)
 
 5. Other modules may add a section to the plain part of 13 Health check (quality scores, the three scenes to
-   read) with register_report_section(function(project, result) -> list of plain lines, or []).
+   read) with register_report_section(function(project, result) -> list of plain lines, or []). The lines go
+   after "Not checked this time" and before "Details by file"; start the section with a "## " heading.
+
+6. To run checks from code (tests, adopt, replay): run_checks(record_files, schema, words, constants,
+   story=StorySource.from_file(path) or StorySource.from_project(folder) or None, manifest=..., step=...,
+   scene=..., film=..., check_ids=[...]) returns a CheckResult (problems, skipped, tidy_notes, checks_run,
+   crashed, counts, errors).
 
 WHAT THE CHECK COMMAND DOES
 ===========================
 check [--step N] [--scene SCnn] [--film] [--all] [--story <path>]
-- --step N runs the checks steps.json lists for step N; FORM-05 then asks only for fields filled by step N or
-  earlier. --all (and no option at all) runs every registered check and asks for every field. --film runs the
-  FILM checks and TIME-07 (step 9). --scene keeps only the problems of that scene's records and files.
+- --step N runs the checks steps.json lists for step N (step 10 lists "all checks"); FORM-05 then asks only for
+  fields filled by step N or earlier. --all (and no option at all) runs every registered check and asks for
+  every field. --film runs the FILM checks and the rest of step 9's list. --scene keeps only the problems of that
+  scene's records and scene files.
 - --story <path> reads the story (or a Stage excerpt) from that file for the CITE checks, instead of the
   project's story map.json and speeches.json. Without any story the CITE checks say "skipped: story not present".
-- Tidy fixes (FORM-13) are made in the record files and logged; the old files go to history/.
+- Tidy fixes (FORM-13) are made in the record files and logged (a numbered entry in 00 Start here, a line in
+  log.jsonl); the old files go to history/.
 - 13 Health check.md gets a new plain part (first line "In short: ..."), its REVIEW and FINDING records are
   kept, and the checker's lines are written below the divider. --all also sets PROJECT.checker_last_run.
-- manifest.json keeps the IDs of omitted records (omitted_ids, for ID-04) and the last check (last_check).
+- manifest.json keeps the IDs of omitted records (omitted_ids, for ID-04), the last check (last_check) and fresh
+  fingerprints; "For machines - do not edit/locked records.json" keeps each locked record as the checker last saw
+  it (FORM-11 on stored files: a locked value changed by hand is an error on the next check).
+- Exit (7.3): 0 when no error line was printed; 1 when error lines were printed (the AI fixes only those, at most
+  3 rounds); 2 when the check could not run (a missing story file, a bad step or scene), with one plain line.
 """
 
+import dataclasses
 import datetime
 import importlib
 import json
@@ -125,7 +159,8 @@ from pathlib import Path
 
 from .record_format import (DEPTH_RANK, DIVIDER_LINE, EndLine, Problem, Record, TextBlock, count_levels,
                             load_json, merge_copies, normalise_word, parse_file, parse_line_numbers,
-                            parse_quote_anchor, render_file, split_item, split_list, write_file)
+                            parse_quote_anchor, parse_text, record_lines, render_file, split_item, split_list,
+                            write_file)
 from .project_files import (MACHINE_FOLDER, START_HERE, Project, StageStop, history_run_folder, keep_in_history,
                             today)
 
@@ -150,6 +185,10 @@ CHECK_FAMILY_MODULES = [
 
 FAMILY_ORDER = ["FORM", "ID", "CITE", "COVER", "TIME", "STATE", "SIDE", "GEOM", "CRAFT", "INFO", "REASON", "WORDS",
                 "PLAN", "GEN", "FILM"]
+# The ending code writes after a story point once it is resolved to a beat: SC24 "She deletes the way home." = SC24-B03
+RESOLVED_ENDING = re.compile(r'("[^"]*"|“[^”]*”)\s*=\s*SC\d{2,3}[A-Z]?-B\d{2,3}')
+# Checks steps.json lists that another command runs (7.2: previs has its own checks in render_previs.py).
+CHECKS_OF_OTHER_COMMANDS = {"PREVIS": "stage.py previs --render"}
 
 
 # ---------------------------------------------------------------- the registry
@@ -202,14 +241,21 @@ def register_report_section(function):
 
 
 def load_check_families():
-    """Import every family module that exists, so that its checks (and apply checks) are registered."""
+    """Import every family module that exists, so that its checks (and apply checks) are registered.
+
+    The modules are imported inside this package (whatever its name), so the checks register with this very
+    registry. A missing module is listed in "missing"; one that fails to import is listed in "broken" with its
+    error, and every other family still runs."""
     if _FAMILIES_LOADED["done"]:
         return _FAMILIES_LOADED
-    for module_name in CHECK_FAMILY_MODULES:
+    package = __package__ or "stage_tools"
+    for module_name in dict.fromkeys(CHECK_FAMILY_MODULES):
+        short_name = module_name.rsplit(".", 1)[-1]
+        full_name = f"{package}.{short_name}"
         try:
-            importlib.import_module(module_name)
+            importlib.import_module(full_name)
         except ModuleNotFoundError as error:
-            if error.name == module_name:
+            if error.name in (full_name, module_name):
                 _FAMILIES_LOADED["missing"].append(module_name)
                 continue
             _FAMILIES_LOADED["broken"][module_name] = f"{type(error).__name__}: {error}"
@@ -259,10 +305,45 @@ def register_form_checks():
     for check_id, function in checks_form.FORM_CHECKS.items():
         title, level, plain = FORM_PLAIN[check_id]
 
-        def adapter(run, form_function=function):
+        def adapter(run, form_function=function, form_check_id=check_id):
+            if form_check_id == "FORM-11" and run.locked_baseline:
+                return form_11_against_baseline(run, form_function)
             return form_function(run.record_files, run.form_context)
         adapter.__module__ = checks_form.__name__
         register_function(check_id, adapter, level, 1, title, plain, "FORM")
+
+
+def form_11_against_baseline(run, form_function):
+    """FORM-11 on stored files: each locked record, merged across its files (G10), is compared with the copy the
+    checker kept when it last saw it locked ("locked records.json"), so a hand edit of a locked value is caught.
+    (apply compares an inbox with the stored files instead.) Each line is then placed at the file and line of the
+    copy that holds the changed field."""
+    from .record_format import FieldLine, RecordFile
+
+    def comparable(record):
+        # code adds the beat a story point resolves to (' = SC10-B07', code_state, 5.6); that is not a change
+        copy = Record(type_name=record.type_name, identifier=record.identifier, title=record.title)
+        copy.body = [FieldLine(name=line.name, value=RESOLVED_ENDING.sub(r"\1", line.value), written_name=line.name)
+                     for line in record.fields]
+        return copy
+
+    merged_file = RecordFile(name="the merged records")
+    merged_file.segments = [comparable(record) for key, record in run.index.items() if key in run.locked_baseline]
+    baseline = {key: comparable(record) for key, record in run.locked_baseline.items()}
+    context = dataclasses.replace(run.form_context, current_records=baseline)
+    placed = []
+    for problem in form_function([merged_file], context):
+        record = run.record(getattr(problem, "record", None))
+        field_name = getattr(problem, "field_name", None)
+        found = run.field_lines(record.key, field_name) if record is not None and field_name else []
+        if found:
+            record_file, _, line = found[0]
+            file_name, line_number = record_file.name, line.line_number
+        else:
+            file_name, line_number, _ = run.location(record if record is not None else problem.record)
+        placed.append(Problem(problem.level, problem.check_id, problem.record, field_name, problem.what, problem.fix,
+                              file_name=file_name, line_number=line_number))
+    return placed
 
 
 register_form_checks()
@@ -284,11 +365,13 @@ def scene_of_problem(problem):
     scene = scene_of(record.strip('"'))
     if scene:
         return scene
-    file_name = getattr(problem, "file_name", None) or ""
-    match = SCENE_FILE_NUMBER.match(file_name)
-    if match:
-        return "SC" + match.group(1)
-    return None
+    return scene_of_file_name(getattr(problem, "file_name", None))
+
+
+def scene_of_file_name(file_name):
+    """The scene a scene file belongs to ("11 Scenes/Scene 10 - Saye's kitchen.md" -> "SC10"), or None."""
+    match = SCENE_FILE_NUMBER.match(file_name or "")
+    return "SC" + match.group(1) if match else None
 
 
 def same_scene(first, second):
@@ -427,8 +510,9 @@ class CheckRun:
     """Everything a check reads (see the note at the top of this file)."""
 
     def __init__(self, record_files, schema, words, constants, story=None, manifest=None, step=None, scene=None,
-                 film=False, project=None, form_context=None):
+                 film=False, project=None, form_context=None, locked_baseline=None):
         self.record_files = list(record_files)
+        self.locked_baseline = locked_baseline or {}
         self.schema = schema
         self.words = words or {}
         self.constants = constants or {}
@@ -559,11 +643,14 @@ class CheckRun:
             return self.cache[key]
         result = None
         scene = self.record(scene_identifier)
-        value = scene.get("lines") if scene is not None and scene.type_name == "SCENE" else None
-        if value:
-            numbers = parse_line_numbers(value)
+        is_scene = scene is not None and scene.type_name == "SCENE"
+        value = scene.get("lines") if is_scene else None
+        for written in (value, scene.get("from_lines") if is_scene else None):
+            # a prose scene's lines are worked out from its source passage (from_lines) until code stores them
+            numbers = parse_line_numbers(written) if written else None
             if numbers:
                 result = (numbers[0][0], numbers[-1][1])
+                break
         if result is None and self.story is not None:
             result = self.story.scene_range(scene_identifier)
         if result is None and value and self.story is not None and parse_quote_anchor(value):
@@ -602,9 +689,7 @@ class CheckRun:
         if self.step is None or self.step != 8:
             return None
         batches = (self.manifest.get("batches") or {}).get(scene_identifier) or {}
-        if batches and all((entry or {}).get("received") is not None
-                           and (entry or {}).get("received", 0) >= (entry or {}).get("expected", 0)
-                           for entry in batches.values()):
+        if batches and all(batch_complete(entry) for entry in batches.values()):
             return None
         listed = self._listed_shots(scene_identifier)
         ranges = [(entry.get("first"), entry.get("last")) for entry in batches.values()
@@ -658,6 +743,13 @@ class CheckRun:
             self.skipped.append(entry)
 
 
+def batch_complete(entry):
+    """True when a batch's expected and received shot counts are both known and every expected shot came in."""
+    entry = entry or {}
+    received, expected = entry.get("received"), entry.get("expected")
+    return isinstance(received, int) and isinstance(expected, int) and received >= expected
+
+
 def shot_number(identifier):
     match = re.search(r"-SH(\d+)$", identifier or "")
     return int(match.group(1)) if match else -1
@@ -688,6 +780,8 @@ class CheckResult:
     families_broken: dict = dataclass_field(default_factory=dict)
     crashed: dict = dataclass_field(default_factory=dict)
     changed_files: list = dataclass_field(default_factory=list)
+    all_problems: list = dataclass_field(default_factory=list)
+    left_out_by_scene: int = 0
     run: object = None
 
     @property
@@ -723,11 +817,16 @@ def select_checks(step=None, film=False, check_ids=None):
 
 
 def run_checks(record_files, schema, words, constants, story=None, manifest=None, step=None, scene=None,
-               film=False, check_ids=None, tidy=False, project=None):
+               film=False, check_ids=None, tidy=False, project=None, locked_baseline=None):
     """Run the chosen checks on parsed record files and return a CheckResult.
 
-    tidy=True makes the FORM-13 tidy fixes in the records first (the caller writes the changed files); the
-    FORM-13 lines are the fixes made. The other checks then read the tidied records.
+    step: the step checked (FORM-05 asks only for fields filled by then; the checks steps.json lists for it run),
+    or None for every check. film: add the whole-film checks. check_ids: run exactly these IDs instead.
+    scene: report only the problems of that scene's records and scene files (the others are counted in
+    left_out_by_scene). tidy=True makes the FORM-13 tidy fixes in the records first (the caller writes the
+    changed files); the FORM-13 lines are the fixes made, and the other checks read the tidied records.
+    locked_baseline: {(TYPE, ID): Record} as the checker last saw each locked record (FORM-11 on stored files).
+    The problems of records outside PROJECT.scope are always left out.
     """
     from .checks_form import FORM_CHECKS, FormContext, apply_tidy_fixes
     result = CheckResult()
@@ -746,7 +845,7 @@ def run_checks(record_files, schema, words, constants, story=None, manifest=None
                                 if render_file(record_file, schema) != before[record_file.name]]
         form_context = FormContext.for_records(schema, words, record_files, step=step)
     run = CheckRun(record_files, schema, words, constants, story=story, manifest=manifest, step=step, scene=scene,
-                   film=film, project=project, form_context=form_context)
+                   film=film, project=project, form_context=form_context, locked_baseline=locked_baseline)
     result.run = run
     problems = []
     for definition in definitions:
@@ -762,23 +861,32 @@ def run_checks(record_files, schema, words, constants, story=None, manifest=None
         problems.extend(found)
     order = {definition.check_id: index for index, definition in enumerate(ordered_definitions())}
     file_order = {record_file.name: index for index, record_file in enumerate(record_files)}
-    kept = []
+    distinct = []
     seen = set()
     for problem in problems:
-        text = str(problem)
-        if text in seen:
+        line = str(problem)
+        if line not in seen:
+            seen.add(line)
+            distinct.append(problem)
+    distinct.sort(key=lambda problem: (order.get(getattr(problem, "check_id", ""), len(order)),
+                                       file_order.get(getattr(problem, "file_name", None), len(file_order)),
+                                       getattr(problem, "line_number", None) or 0))
+    result.all_problems = distinct
+    kept = []
+    for problem in distinct:
+        problem_scene = scene_of_problem(problem)
+        if not run.scene_checked(problem_scene):
             continue
-        seen.add(text)
-        if not run.scene_checked(scene_of_problem(problem)):
+        if scene is not None and problem_scene is None:
+            result.left_out_by_scene += 1
             continue
         kept.append(problem)
-    kept.sort(key=lambda problem: (order.get(getattr(problem, "check_id", ""), len(order)),
-                                   file_order.get(getattr(problem, "file_name", None), len(file_order)),
-                                   getattr(problem, "line_number", None) or 0))
     result.problems = kept
     result.skipped = list(run.skipped)
     for check_id in missing:
-        result.skipped.append((check_id, "not in this copy of the tools yet"))
+        other_command = CHECKS_OF_OTHER_COMMANDS.get(check_id.split("-")[0])
+        result.skipped.append((check_id, f"run by {other_command}, not by check" if other_command
+                               else "not in this copy of the tools yet"))
     for check_id, reason in result.crashed.items():
         result.skipped.append((check_id, f"the check stopped with an error ({reason}); report this line"))
     return result
@@ -834,7 +942,10 @@ def plain_name_of(label, run=None):
                 index = int(number) - 1
                 letter = chr(ord("A") + index) if 0 <= index < 26 else number
                 return f"{scene_words}, camera {letter}"
-            words = f"{scene_words}, {SUFFIX_WORDS[kind]} {plain_number(number)}"
+            # shots keep their three digits ("shot 010", as every view and message says them, 5.3); the rest are
+            # counted plainly ("beat 7", "speech 11")
+            shown = number if kind in ("SH", "C") else plain_number(number)
+            words = f"{scene_words}, {SUFFIX_WORDS[kind]} {shown}"
             if clip:
                 words += f", clip {clip}"
             return words
@@ -884,13 +995,29 @@ def plain_problem_line(problem, run):
     file_name = re.sub(r"\.md$", "", getattr(problem, "file_name", None) or "")
     name = plain_name_of(record, run)
     if record.startswith('"') and not record.startswith('"#'):
-        where = name
-    elif file_name:
-        where = f"{file_name}, {name}"
+        where = name  # a whole file ("04 Scene list")
+    elif scene_of(record.strip('"')) or not file_name:
+        where = name  # a scene's record says where it is: "Scene 10, shot 150"
     else:
-        where = name
+        where = f"{name}, in {file_name}"
     where = where[:1].upper() + where[1:]
     return f"- {where}: {plain}."
+
+
+def plain_problem_lines(problems, run):
+    """The plain lines for a list of problems: the same plain line once, with how many times it was found, and at
+    most PLAIN_LINES_LISTED lines; the rest are counted."""
+    counted = {}
+    for problem in problems:
+        line = plain_problem_line(problem, run)
+        counted[line] = counted.get(line, 0) + 1
+    lines = []
+    for line, count in list(counted.items())[:PLAIN_LINES_LISTED]:
+        lines.append(line if count == 1 else f"{line[:-1]} ({count} times).")
+    hidden = sum(list(counted.values())[PLAIN_LINES_LISTED:])
+    if hidden:
+        lines.append(f"- And {hidden} more, listed below the line for the AI.")
+    return lines
 
 
 def plural(count, word, plural_word=None):
@@ -920,27 +1047,44 @@ def open_questions(run):
     return count
 
 
+ADD_ON_STEP_WORDS = {12: "the storyboards", 13: "the grey previews", 14: "the prompts for AI video",
+                     15: "the edit and finishing", 16: "resuming after a problem"}
+
+
+def scene_in_words(scene):
+    """SC10 -> "scene 10"; SC06A -> "scene 6A"."""
+    match = re.match(r"^SC0*(\d+)([A-Z]?)$", scene or "")
+    return f"scene {match.group(1)}{match.group(2)}" if match else "one scene"
+
+
 def what_was_checked(step, scene, film, all_checks):
+    """What a check covered, in the user's words: 'the checks for step 8 of 12, scene 10 only'."""
     parts = []
     if step is not None:
-        parts.append(f"the checks for step {step + 1} of 12" if isinstance(step, int) and step <= 11 else f"step {step}")
+        if isinstance(step, int) and step <= 11:
+            parts.append(f"the checks for step {step + 1} of 12")
+        else:
+            parts.append(f"the checks for {ADD_ON_STEP_WORDS.get(step, 'this step')}")
     if film:
         parts.append("the whole film")
     if not parts:
         parts.append("everything")
     if scene:
-        parts.append(f"scene {plain_number(scene[2:]) if scene[2:].isdigit() else scene[2:]} only")
+        parts.append(f"{scene_in_words(scene)} only")
     return ", ".join(parts)
 
 
 def health_check_plain_part(project, result, step, scene, film, all_checks, story):
-    """The plain part of 13 Health check.md, first line 'In short: ...' (step 10, 13.3). Plain words only."""
+    """The plain part of 13 Health check.md (step 10, 13.3). Its first line is 'In short: ...'; then At a glance
+    (what was checked, the scope on a partial scope), what to fix first, warnings, the small fixes made, what could
+    not be checked, the sections other modules add (quality scores, the three scenes to read) and the details by
+    file. Plain words only: no check IDs, record IDs or abbreviations (WORDS-04)."""
     run = result.run
-    lines = [in_short_line(result, open_questions(run)), "", f"# {HEALTH_CHECK_TITLE}", ""]
+    lines = [in_short_line(result, open_questions(run)), "", f"# {HEALTH_CHECK_TITLE}", "", "## At a glance", ""]
     stamp = datetime.datetime.now()
     lines.append(f"Checked: {what_was_checked(step, scene, film, all_checks)}, on "
                  f"{stamp.day} {stamp.strftime('%B %Y')} at {stamp.strftime('%H:%M')}.")
-    scene_ids = [identifier for identifier in run.scene_ids()]
+    scene_ids = run.scene_ids()
     total = len(scene_ids)
     if story is not None and story.scene_count():
         total = max(total, story.scene_count())
@@ -950,26 +1094,24 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
             lines.append(f"Scope: {in_scope} of {total} scenes.")
     if story is None:
         lines.append("The story's own words were not compared: the numbered story is not in this folder yet.")
+    if result.left_out_by_scene:
+        lines.append(f"{plural(result.left_out_by_scene, 'line')} about the whole-film files "
+                     f"{'was' if result.left_out_by_scene == 1 else 'were'} left out, because this check looked at "
+                     f"{scene_in_words(scene)} only.")
     lines.append("")
     errors = [problem for problem in result.problems if getattr(problem, "level", "") == "E"]
     warnings = [problem for problem in result.problems if getattr(problem, "level", "") == "W"]
     lines.append("## What to fix first")
     lines.append("")
     if errors:
-        for problem in errors[:PLAIN_LINES_LISTED]:
-            lines.append(plain_problem_line(problem, run))
-        if len(errors) > PLAIN_LINES_LISTED:
-            lines.append(f"- And {len(errors) - PLAIN_LINES_LISTED} more, listed below the line for the AI.")
+        lines.extend(plain_problem_lines(errors, run))
     else:
         lines.append("Nothing: no problem was found.")
     lines.append("")
     lines.append("## Warnings")
     lines.append("")
     if warnings:
-        for problem in warnings[:PLAIN_LINES_LISTED]:
-            lines.append(plain_problem_line(problem, run))
-        if len(warnings) > PLAIN_LINES_LISTED:
-            lines.append(f"- And {len(warnings) - PLAIN_LINES_LISTED} more, listed below the line for the AI.")
+        lines.extend(plain_problem_lines(warnings, run))
     else:
         lines.append("None.")
     lines.append("")
@@ -985,12 +1127,16 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
         lines.append("")
         lines.append("## Not checked this time")
         lines.append("")
+        if result.crashed:
+            lines.append(f"{plural(len(result.crashed), 'check')} stopped with a fault in the tools, so what "
+                         f"{'it' if len(result.crashed) == 1 else 'they'} would find is not known; the lines for the "
+                         "AI below say which.")
         lines.append(f"{plural(len(result.skipped), 'check')} could not run in full; the reasons are below the line "
-                     "for the AI. Nothing is wrong because of this.")
+                     "for the AI.")
     for section in REPORT_SECTIONS:
         try:
             extra = section(project, result) or []
-        except Exception:
+        except Exception:  # a report section must never stop the report
             extra = []
         if extra:
             lines.append("")
@@ -1004,6 +1150,9 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
         counts = by_file.setdefault(name, {"E": 0, "W": 0, "N": 0})
         counts[getattr(problem, "level", "N")] = counts.get(getattr(problem, "level", "N"), 0) + 1
     checked_files = [re.sub(r"\.md$", "", record_file.name) for record_file in run.record_files]
+    if scene is not None:
+        checked_files = [name for name in checked_files
+                         if name in by_file or same_scene(scene_of_file_name(name + ".md"), scene)]
     for name in checked_files + sorted(set(by_file) - set(checked_files)):
         counts = by_file.get(name)
         if not counts or not (counts["E"] or counts["W"]):
@@ -1023,8 +1172,11 @@ def checker_lines_block(result, command_line):
     """The checker's own lines, below the divider: for the AI, with IDs and codes."""
     lines = ["## The checker's lines", "", f"Command: {command_line}"]
     counts = result.counts
-    lines.append(f"Counts: {counts.get('E', 0)} errors, {counts.get('W', 0)} warnings, {counts.get('N', 0)} notes; "
-                 f"{len(result.checks_run)} checks run.")
+    lines.append(f"Counts: {plural(counts.get('E', 0), 'error')}, {plural(counts.get('W', 0), 'warning')}, "
+                 f"{plural(counts.get('N', 0), 'note')}; {plural(len(result.checks_run), 'check')} run.")
+    if result.left_out_by_scene:
+        lines.append(f"Left out: {plural(result.left_out_by_scene, 'line')} about records of no scene (whole-film "
+                     "files); check --all shows them.")
     if result.problems:
         lines.append("")
         lines.extend(str(problem) for problem in result.problems)
@@ -1060,10 +1212,87 @@ def write_health_check(project, result, step, scene, film, all_checks, story, co
     return path
 
 
+# ---------------------------------------------------------------- the locked records the checker last saw (FORM-11)
+
+# "For machines - do not edit/locked records.json": {"TYPE ID": [the record's lines]} for every locked record, as the
+# checker last saw it (the merged copy, one line per field). Kept apart from manifest.json, which every command
+# reads, because it holds whole records; pack carries it, so a lock survives a move between apps.
+LOCKED_RECORDS_FILE = "locked records.json"
+
+
+def baseline_name(key):
+    return f"{key[0]} {key[1]}" if key[1] else key[0]
+
+
+def read_locked_records(project_folder):
+    """The stored lines of each locked record ({"TYPE ID": [lines]}), or {} when the checker has not run yet."""
+    path = Path(project_folder) / MACHINE_FOLDER / LOCKED_RECORDS_FILE
+    if not path.is_file():
+        return {}
+    try:
+        with open(path, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, ValueError):
+        return {}
+    return data.get("records", {}) if isinstance(data, dict) else {}
+
+
+def write_locked_records(project_folder, records):
+    folder = Path(project_folder) / MACHINE_FOLDER
+    folder.mkdir(parents=True, exist_ok=True)
+    temporary = folder / (LOCKED_RECORDS_FILE + ".part")
+    with open(temporary, "w", encoding="utf-8") as handle:
+        json.dump({"about": "Each locked record as the checker last saw it (FORM-11). Written by stage.py check; "
+                            "never edit.", "records": records}, handle, indent=0, ensure_ascii=False)
+        handle.write("\n")
+    temporary.replace(folder / LOCKED_RECORDS_FILE)
+
+
+def forget_locked_records(project_folder):
+    """Remove the checker's copies of the locked records, so the next check takes new ones. For code that rewrites
+    locked values itself (adopt turns quote anchors into line numbers); nothing else should call it."""
+    path = Path(project_folder) / MACHINE_FOLDER / LOCKED_RECORDS_FILE
+    if path.is_file():
+        path.unlink()
+
+
+def locked_baseline_from_lines(stored, schema):
+    """{(TYPE, ID): Record} from the stored lines of each locked record. {} when there is none yet."""
+    blocks = ["\n".join(lines) for lines in (stored or {}).values() if isinstance(lines, list) and lines]
+    if not blocks:
+        return {}
+    record_file = parse_text("\n\n".join(blocks) + "\n", "locked records", schema)
+    return {record.key: record for record in record_file.records if record.known_type}
+
+
+def next_locked_records(result, old, schema):
+    """The locked records to keep after a check.
+
+    A locked record the check found unchanged (no FORM-11 error) is kept as it is now; one with a FORM-11 error
+    keeps its old copy, so the error stays until the value is put back or a choice changes it. When FORM-11 did
+    not run (a step whose checks leave it out), the old copies stay and only newly locked records are added.
+    Records no longer locked are dropped (unlocking goes through a choice the user answers)."""
+    old = dict(old or {})
+    form_11_ran = "FORM-11" in result.checks_run
+    flagged = {getattr(problem, "record", None) for problem in result.all_problems
+               if getattr(problem, "check_id", "") == "FORM-11" and getattr(problem, "level", "") == "E"}
+    kept = {}
+    for key, record in result.run.index.items():
+        if normalise_word(record.get("locked") or "") != "yes":
+            continue
+        name = baseline_name(key)
+        if name in old and (not form_11_ran or record.label in flagged):
+            kept[name] = old[name]
+        else:
+            kept[name] = record_lines(record, schema, canonical=True)
+    return kept
+
+
 # ---------------------------------------------------------------- the command
 
 def add_check_arguments(parser):
-    parser.add_argument("--step", help="check as at the end of this step (0 to 11): only fields filled by then")
+    parser.add_argument("--step", help="check as at the end of this step (0 to 16; step 8 is 'shot details'): only "
+                                       "the checks of that step, and only fields filled by then")
     parser.add_argument("--scene", help="report only this scene's records, for example SC10")
     parser.add_argument("--film", action="store_true", help="run the whole-film checks (step 9)")
     parser.add_argument("--all", action="store_true", help="run every check and ask for every field (the default)")
@@ -1075,7 +1304,7 @@ def read_step(text):
         return None
     value = str(text).strip()
     if not re.fullmatch(r"\d{1,2}", value) or int(value) > 16:
-        raise StageStop(f'The step "{text}" is not a step number. Give a number from 0 to 11, as --step 8.')
+        raise StageStop(f'The step "{text}" is not a step number. Give a number from 0 to 16, as --step 8.')
     return int(value)
 
 
@@ -1106,20 +1335,29 @@ def command_line_of(arguments):
 
 
 def printable_lines(result):
-    """The lines check prints: every error and warning, the first notes and skips, then a count of the rest."""
+    """The lines check prints: every error and warning, every check that stopped with a fault, the first notes and
+    skips, then a count of the rest."""
     lines = [str(problem) for problem in result.problems if getattr(problem, "level", "") in ("E", "W")]
     notes = [str(problem) for problem in result.problems if getattr(problem, "level", "") == "N"]
     lines.extend(notes[:NOTE_LINES_PRINTED])
     if len(notes) > NOTE_LINES_PRINTED:
         lines.append(f"And {len(notes) - NOTE_LINES_PRINTED} more notes, listed in {HEALTH_CHECK_FILE}.")
-    skipped = [f"Skipped {check_id}: {why}" for check_id, why in result.skipped]
+    for check_id, reason in result.crashed.items():
+        lines.append(f"The check {check_id} stopped with a fault in the tools ({reason}); its problems are not known. "
+                     "Report this line.")
+    skipped = [f"Skipped {check_id}: {why}" for check_id, why in result.skipped if check_id not in result.crashed]
     lines.extend(skipped[:SKIP_LINES_PRINTED])
     if len(skipped) > SKIP_LINES_PRINTED:
         lines.append(f"And {len(skipped) - SKIP_LINES_PRINTED} more skipped, listed in {HEALTH_CHECK_FILE}.")
+    if result.left_out_by_scene:
+        lines.append(f"Left out: {plural(result.left_out_by_scene, 'line')} about whole-film records (this check "
+                     "covers one scene; check --all shows them).")
     return lines
 
 
-def update_manifest_after_check(project, result, command_line):
+def update_manifest_after_check(project, result, command_line, record_files):
+    """The manifest after a check: the IDs of omitted records (ID-04), the last check and fresh fingerprints of the
+    record files (the tidy fixes changed some); then the locked records as the checker saw them (FORM-11)."""
     manifest = project.read_manifest()
     omitted = list(manifest.get("omitted_ids") or [])
     for key, record in result.run.index.items():
@@ -1130,12 +1368,15 @@ def update_manifest_after_check(project, result, command_line):
     manifest["last_check"] = {"time": datetime.datetime.now().isoformat(timespec="seconds"), "command": command_line,
                               "errors": counts.get("E", 0), "warnings": counts.get("W", 0),
                               "notes": counts.get("N", 0), "tidy_fixes": len(result.tidy_notes)}
+    project.refresh_manifest(manifest, record_files)
     project.write_manifest(manifest)
+    write_locked_records(project.folder, next_locked_records(result, read_locked_records(project.folder),
+                                                             project.schema))
 
 
-def set_checker_last_run(project, history_folder):
+def set_checker_last_run(project, keep_old_copy):
     """--all: PROJECT.checker_last_run gets today's date (00 Start here shows it). Returns True if it changed.
-    history_folder() gives the history folder for this run; the old file is kept there first."""
+    keep_old_copy(path, name) keeps the file's old version in history/ first (once per run)."""
     path = project.folder / START_HERE
     if not path.is_file():
         return False
@@ -1143,19 +1384,25 @@ def set_checker_last_run(project, history_folder):
     record = next((record for record in record_file.records if record.type_name == "PROJECT"), None)
     if record is None or record.get("checker_last_run") == today():
         return False
-    keep_in_history(history_folder(), path, START_HERE)
+    keep_old_copy(path, START_HERE)
     record.set_field("checker_last_run", today(), project.schema)
     write_file(record_file, path, project.schema)
     return True
 
 
 def run_check(context):
-    """check [--step N] [--scene SCnn] [--film] [--all] [--story <path>]: run the checks on the project."""
+    """check [--step N] [--scene SCnn] [--film] [--all] [--story <path>]: run the checks on the project.
+
+    Exit (7.3): 0 when no error line was printed, 1 when error lines were printed; a missing story file, a bad
+    step or scene stops with exit 2 (StageStop) before anything is written."""
     arguments = context.arguments
     step = read_step(getattr(arguments, "step", None))
     scene = read_scene(getattr(arguments, "scene", None))
     film = bool(getattr(arguments, "film", False))
     all_checks = bool(getattr(arguments, "all", False)) or (step is None and not film)
+    if getattr(arguments, "all", False) and step is not None:
+        raise StageStop("Give either --all or --step N, not both: --all runs every check, --step N the checks of "
+                        "one step.")
     project = Project(context.project, context.schema, context.words)
     story_path = getattr(arguments, "story", None)
     if story_path:
@@ -1168,27 +1415,32 @@ def run_check(context):
     with project.lock():
         record_files = project.load_record_files()
         manifest = project.read_manifest()
+        baseline = locked_baseline_from_lines(read_locked_records(project.folder), context.schema)
         result = run_checks(record_files, context.schema, context.words, context.constants, story=story,
-                            manifest=manifest, step=step, scene=scene, film=film, tidy=True, project=project)
+                            manifest=manifest, step=step, scene=scene, film=film, tidy=True, project=project,
+                            locked_baseline=baseline)
         written = []
         history = []
+        kept_names = set()
 
-        def history_folder():
+        def keep_old_copy(path, name):
+            if name in kept_names:
+                return
             if not history:
                 history.append(history_run_folder(project))
-            return history[0]
+            keep_in_history(history[0], path, name)
+            kept_names.add(name)
 
         for record_file in record_files:
             if record_file.name not in result.changed_files:
                 continue
-            keep_in_history(history_folder(), project.folder / record_file.name, record_file.name)
+            keep_old_copy(project.folder / record_file.name, record_file.name)
             write_file(record_file, project.folder / record_file.name, context.schema)
             written.append(record_file.name)
         changed_project = False
         if all_checks and step is None and scene is None and not film:
-            changed_project = set_checker_last_run(project, history_folder)
+            changed_project = set_checker_last_run(project, keep_old_copy)
         write_health_check(project, result, step, scene, film, all_checks, story, command_line)
-        update_manifest_after_check(project, result, command_line)
         counts = result.counts
         if written:
             names = ", ".join(re.sub(r"\.md$", "", name) for name in written)
@@ -1198,10 +1450,13 @@ def run_check(context):
         elif changed_project:
             project.add_log_entry(f"Checked everything: {plural(counts.get('E', 0), 'problem')}, "
                                   f"{plural(counts.get('W', 0), 'warning')}.")
+        update_manifest_after_check(project, result, command_line, project.load_record_files())
     for line in printable_lines(result):
         context.say(line)
+    if not result.checks_run and not result.checks_not_present:
+        context.say("No check of the checker is listed for this step in steps.json, so nothing was checked.")
     for module_name, reason in result.families_broken.items():
-        context.say(f"Could not load {module_name}: {reason}")
+        context.say(f"Could not load {module_name}: {reason}. Its checks did not run; report this line.")
     context.say(in_short_line(result, open_questions(result.run)))
     context.say(f"Written: {HEALTH_CHECK_FILE}" + (f"; tidied: {', '.join(written)}" if written else ""))
     context.summary = (f"{counts.get('E', 0)} errors, {counts.get('W', 0)} warnings, {counts.get('N', 0)} notes, "
@@ -1210,7 +1465,7 @@ def run_check(context):
 
 
 def register_commands(table):
-    """stage.py's command table: check. (build, impact and questions are planned for this slot; a builder who
-    writes them registers them from their own module, listed in stage.py's COMMAND_MODULES.)"""
+    """stage.py's command table: check. (build is registered by derive_fields.py, and adopt, impact and
+    questions by adopt_folder.py, each from its own module listed in stage.py's COMMAND_MODULES.)"""
     load_check_families()
     table.add("check", "Run the checks and write 13 Health check", run_check, add_check_arguments)

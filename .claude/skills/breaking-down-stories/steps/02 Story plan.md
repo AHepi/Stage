@@ -8,11 +8,11 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Write the film-level plan every later choice rests on. For prose it also decides which chapters and strands survive, the format, the scope of the scene work, and the step outline (the book's scenes in screen order).
+Write the film-level plan every later choice rests on; for prose also which chapters and strands survive, the format, the scope of the scene work, and the step outline (the book's scenes in screen order).
 
 ## When it runs
 
-Once, after the scene list or the chapter list. It never reads the whole text at once.
+Once, after the scene or chapter list, never reading the whole text at once.
 
 ## Inputs
 
@@ -22,11 +22,11 @@ Once, after the scene list or the chapter list. It never reads the whole text at
 ## Outputs
 
 - `05 Story plan.md`: PLAN, SEQUENCE, PLANT, and FACT (at Standard only for facts in suspense, mystery or dramatic irony, about `fact_records_typical` in a film; at Detailed every fact). Prose adds CHAPTER digests, STRAND and CARDINAL.
-- `04 Scene list.md`: the plan fields on each SCENE (`event`, `sequence`, `scene_intensity`, `whose_scene`, `story_day`, `rhythm_class`, `tone`, `tone_undercurrent`, `tags`; code writes `target_duration_s`). Prose: the SCENE records of the step outline.
+- `04 Scene list.md`: the plan fields on each SCENE (procedure, and `sequence`; code writes `target_duration_s`). Prose: the SCENE records of the step outline.
 - `06 World and style.md`: prose only, RULE records of kind `device` (letters, refrains).
 - `01 Choices.md`: a second climax reading when two are defensible; prose, the plan choice.
 
-No beat or shot exists yet, so every moment inside a scene is a **story point**: the scene ID and a quote anchor, `SC24 "She deletes the way home."` (G5). Code resolves it to a beat at step 7.
+No beat or shot exists yet, so a moment inside a scene is a **story point**: the scene ID and a quote anchor, `SC24 "She deletes the way home."` (G5), resolved to a beat by code at step 7.
 
 ## Card parts to open
 
@@ -37,14 +37,14 @@ No beat or shot exists yet, so every moment inside a scene is a **story point**:
 
 **Screenplay.**
 
-1. **Event units** (U-02-SC01..SC10 and on, `event_unit_scenes` scenes each). For each scene write `event` (one past-tense sentence naming the deed, no psychology; D2 §3.4), `scene_intensity` (across the whole film; exactly one 10 or one 10 range, on the climax; card 01 question 5), `whose_scene`, `story_day` (`D1`, `N1`), `rhythm_class` (read only by the estimate, never a design target), `tone` and `tone_undercurrent` (D10 §2.1 values), and `tags` (they choose which situation cards step 7 opens).
-2. **Film unit** (U-02-FILM). Read only the event lines with short quoted evidence, and write:
+1. **Event units** (U-02-SC01..SC10 and on). For each scene write `event` (one past-tense sentence naming the deed, no psychology; D2 §3.4), `scene_intensity` (across the whole film; exactly one 10 or one 10 range, on the climax; card 01 question 5), `whose_scene`, `story_day` (`D1`, `N1`), `rhythm_class` (read only by the estimate, never a design target), `tone` and `tone_undercurrent` (D10 §2.1 values), and `tags` (they choose which situation cards step 7 opens).
+2. **Film unit** (U-02-FILM). Read only the event lines, with short quoted evidence, and write:
    - PLAN: `logline`, `theme_question`, `core_value` (`name | positive: | negative:`), `core_opposition` (two nouns), `crisis` (a story point), `climax` (a scene or range), `act` items, `peak` items (a reason for any peak away from the climax; PLAN-03), `pov_plan`, `genre`, `tone_home`, `tone_range`, `tone_mix_rule`.
    - SEQUENCE records, one list for the whole film, and each scene's `sequence`.
    - PLANT records with `planted_at` and `paid_off_at` as story points; shots link to them at step 8.
    - FACT records for what the audience and each character know, from when, with `element` naming what would give the fact away in frame.
    - If two climax readings are defensible, write both into one CHOICE for the big choices (The Catch's default: climax `SC26..SC27`, crisis `SC24 "She deletes the way home."`, K12; D16 §8.6).
-3. **Compression unit** (U-02-COMPRESS), only when the user set a shorter target: CARDINAL records by the deletion test, then the compression plan in D2 R10's order (trim, merge, fold, then cut a strand), written as SCENE `keep` and `merged_into` and PLAN `op` items. Never rewrite a line of the story.
+3. **Compression unit** (U-02-COMPRESS), only for a shorter target: CARDINAL records by the deletion test, then the compression plan in D2 R10's order (trim, merge, fold, then cut a strand) as SCENE `keep` and `merged_into` and PLAN `op` items; never rewrite a line of the story.
 
 **Prose.**
 
@@ -61,12 +61,12 @@ No beat or shot exists yet, so every moment inside a scene is a **story point**:
 
 ## IDs you will be given
 
-The handout gives blocks for `SQ01` on, `PL-01` on, `FT-01` on, and for prose `ST-01`, `CF-01` and the step outline's scene IDs (`SC01` to `SC48` for The Long Places' plan A; 3 digits above `scene_ids_three_digits_above` scenes). Use them in order; never skip or reuse one.
+The handout (in chat, you, in order) gives `SQ01`, `PL-01`, `FT-01` on, and for prose `ST-01`, `CF-01` and the step outline's scene IDs (`SC01` to `SC48` for The Long Places' plan A; 3 digits above `scene_ids_three_digits_above` scenes). Use them in order, never reusing one.
 
 ## Batch and chunk rules
 
-- Screenplay: one event unit per `event_unit_scenes` scenes (3 for The Catch), 1 film unit, and the compression unit only when needed.
-- Prose: one digest unit per chapter (14), 1 whole-book unit, about 6 outline units.
+- Screenplay: one event unit per `event_unit_scenes` scenes (The Catch: 3 units), 1 film unit, and the compression unit only when needed.
+- Prose: one digest unit per chapter, 1 whole-book unit, about 6 outline units.
 
 ## Self-check
 
@@ -78,7 +78,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 4. Is every scene in exactly one sequence (COVER-06)?
 5. Does every plant have a payoff (PLAN-02), and every peak away from the climax a reason?
 6. Is every story point's quote found once in its scene?
-7. Prose: is every cardinal event in a kept scene, are step targets within `step_outline_tolerance` of the runtime target, and is the scope set?
+7. Prose: is every cardinal event in a kept scene, every step target within `step_outline_tolerance` of the runtime target, and the scope set?
 8. Does `check --step 2` exit 0?
 
 ## The report
@@ -100,7 +100,7 @@ Next: I'll settle where and when the story happens, and the film's style.
 
 Screenplay: none here; a second climax reading goes to the big choices.
 
-Prose: checkpoint P, "how the book becomes a film". It blocks. The plans stand side by side, each with "what the audience loses". Default for The Long Places: plan A, and chapter I first as a trial, which sets `PROJECT.scope` to chapter I's scenes (5 of 48). The device rules are small choices. From then on checks, the film pass, estimates and exports cover only the scenes in scope; the health check says "Scope: 5 of 48 scenes", and "go on to chapter II" widens it. The message (`reference/07`; print your own computed counts):
+Prose: checkpoint P, "how the book becomes a film"; it blocks. The plans stand side by side, each with what the audience loses. Default for The Long Places: plan A, with chapter I first as a trial, which sets `PROJECT.scope` to its scenes (5 of 48); the device rules are small choices. Checks, the film pass, estimates and exports then cover only the scenes in scope ("Scope: 5 of 48 scenes"); "go on to chapter II" widens it. The message (`reference/07`; your own counts):
 
 ```
 Done: step 3 of 12, planning the whole book (14 chapters, 49,152 words).
@@ -127,23 +127,23 @@ Next: characters, places and things for what the plan keeps.
 
 ## How to redo
 
-- "Redo the story plan" rewrites the unlocked plan records and lists the scenes that cite changed sequences or plants.
-- "Make it 20 minutes" runs the compression unit again; cut scenes become `omitted`, never renumbered.
+- "Redo the story plan" rewrites unlocked plan records and lists scenes citing changed sequences or plants.
+- "Make it 20 minutes" runs the compression unit again; cut scenes become `omitted`, keeping their numbers.
 
 ## If you cannot run code
 
 Every line reference is a quote anchor: story points are a scene ID and an exact quote of at least `quote_anchor_words_min` words, found once in that scene; `from_lines` and CARDINAL `lines` are anchor pairs. Never add the ` = SC24-B05` ending; code writes it later.
 
 1. Steps 0 to 2 share one chat (`08 Steps 00-02 - start, reading, plan.md`).
-2. Save each event unit as SCENE records holding only the plan fields, in `04 Scene list - plan, scenes 01-10.md`, `- plan, scenes 11-20.md` and so on; `adopt` merges them with the scene list by ID (G10). The film unit saves `05 Story plan.md`.
-3. Prose: save each digest as `05 Story plan - chapter I.md` and so on; the whole-book unit adds `05 Story plan.md`. The estimate for each plan is rough and labelled so, never a total you added up (D13 R4).
-4. Each copy box: "Save as:" above it; plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+2. Save each event unit's SCENE plan fields as `04 Scene list - plan, scenes 01-10.md` and so on (merged by ID, G10). The film unit saves `05 Story plan.md`, and a climax CHOICE (`status: open` until the big choices) as `01 Choices - story plan.md`.
+3. Prose: each digest saves `05 Story plan - chapter I.md` again, whole; each outline unit saves `04 Scene list - chapters I-III.md`; the whole-book unit saves `05 Story plan.md` and the plan choice in `01 Choices - story plan.md`, each plan's estimate rough and labelled so (D13 R4). After checkpoint P, save the choice file again with the answers, and `00 Start here.md`. From step 3 on, attach `05 Story plan` without the chapter files.
+4. Each copy box: "Save as:" above it; plain part, divider, records, a `---` line, the checks-in-words table (`reference/06` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 5. Report, then the resume line:
 
 ```
 Save as: 05 Story plan.md   (save only if the box ends with the END line)
-To continue later: new chat in this project; attach 00 Start here, 01 Choices,
-04 Scene list and its plan files, 05 Story plan, 09 Steps 03-06 - world, people,
+To continue later: new chat in this project; attach 00 Start here, 01 Choices and
+its files, 04 Scene list and its plan files, 05 Story plan, 09 Steps 03-06 - world, people,
 continuity, film rules and your story; type: Continue my breakdown.
 Next is world and style.
 ```

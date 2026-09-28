@@ -1,0 +1,17 @@
+{
+ "about": "The WP12a gold places everyone at the table from the scene's start, yet beat 1 (shots 010 and 020) happens at the back door, as its own staging line, dial (beat 1 at 2.3 metres) and shots say. This proposed fix for WP12b puts the start at the door and brings the four in with floor-plan moves at the cut to shot 030 (beat 2). wp4a_derive_acceptance.py applies it to a temporary copy only while the gold still has the old start lines.",
+ "file": "01 The Catch - scene 10.md",
+ "replace_in_record": [
+  {"record": "SCENE SC10", "find": "- start: CH-SAYE | at: SAYE_MARK | faces: CH-IONA | posture: standing", "replace": "- start: CH-SAYE | at: SAYE_DOOR | faces: [-1.0, 0.9] | posture: standing"},
+  {"record": "SCENE SC10", "find": "- start: CH-IONA | at: IONA_MARK | faces: CH-SAYE | posture: standing", "replace": "- start: CH-IONA | at: [-0.7, 1.25] | faces: [0.25, 0.9] | posture: standing"},
+  {"record": "SCENE SC10", "find": "- start: CH-ELI | at: ELI_MARK | faces: CH-SAYE | posture: standing", "replace": "- start: CH-ELI | at: [-0.7, 0.6] | faces: [0.25, 0.9] | posture: standing"},
+  {"record": "SCENE SC10", "find": "- start: CH-JUDE | at: [2.6, 1.8] | faces: [1.0, 1.8] | posture: lying", "replace": "- start: CH-JUDE | at: [-0.7, 0.93] | faces: [0.25, 0.9] | posture: standing"}
+ ],
+ "insert_before": "SETUP SC10-SU01",
+ "records": [
+  "### MOVE SC10-M07 Saye lets them in\n- beat: SC10-B02\n- who: CH-SAYE\n- from: SAYE_DOOR\n- to: SAYE_MARK\n- via: none\n- start_s: 0\n- dur_s: 0\n- faces: CH-IONA\n- posture: standing\n- why: she lets them in and takes her place at the table; the cut from the step to the table leaves out the walk\n- origin: inferred\n- status: approved\n- locked: yes\n",
+  "### MOVE SC10-M08 Iona comes in\n- beat: SC10-B02\n- who: CH-IONA\n- from: [-0.7, 1.25]\n- to: IONA_MARK\n- via: none\n- start_s: 0\n- dur_s: 0\n- faces: CH-SAYE\n- posture: standing\n- why: she brings Jude in and takes the lamp to the table's far side; the cut leaves out the walk\n- origin: inferred\n- status: approved\n- locked: yes\n",
+  "### MOVE SC10-M09 Eli comes in\n- beat: SC10-B02\n- who: CH-ELI\n- from: [-0.7, 0.6]\n- to: ELI_MARK\n- via: none\n- start_s: 0\n- dur_s: 0\n- faces: CH-SAYE\n- posture: standing\n- why: he stays as far from Saye as the room allows, by the fridge; the cut leaves out the walk\n- origin: inferred\n- status: approved\n- locked: yes\n",
+  "### MOVE SC10-M10 Jude is laid on the table\n- beat: SC10-B02\n- who: CH-JUDE\n- from: [-0.7, 0.93]\n- to: [2.6, 1.8]\n- via: none\n- start_s: 0\n- dur_s: 0\n- faces: [1.0, 1.8]\n- posture: lying\n- why: they lay him on the table for Saye to treat; the cut leaves out the carrying\n- origin: inferred\n- status: approved\n- locked: yes\n"
+ ]
+}

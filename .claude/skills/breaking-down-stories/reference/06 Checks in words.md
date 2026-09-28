@@ -55,7 +55,7 @@ A check with nothing to look at is written `PASS (no beats or shots in this file
 
 ## Part 2: in a check chat (20 checks, then questions)
 
-At the end of each group of scenes the resume line sends the user to a new chat in the same Gem or Project with that group's saved files, the story, `02 Whole-film summary`, `10 Film rules` and `05 Checks in words` (in two messages when they pass the app's file limit), and the message "Check my group of scenes." Quote this part's task first: "Check the attached group against the story and return 13 Health check." Without the story, ask for it.
+At the end of each group of scenes (after its last batch of shots) the resume line sends the user to a new chat in the same Gem or Project with that group's saved files, the story, `02 Whole-film summary`, `10 Film rules`, `05 Checks in words` and the last saved `13 Health check` file, if any (in two messages when they pass the app's file limit), and the message "Check my group of scenes." Quote this part's task first: "Check the attached group against the story and return 13 Health check." Without the story, ask for it.
 
 | Check | How to check it in words |
 |---|---|
@@ -84,7 +84,7 @@ At the end of each group of scenes the resume line sends the user to a new chat 
 
 **Then the questions,** once the user reaches those steps. Step 9: with the sound off, does each turn picture tell its beat? Could a stranger say what each scene is about from its turn pictures and purposes? Is there a symbol not in the story, a scene with more than `plant_inserts_per_scene_max` plant inserts, music under an unsaid line, a light cue on the line that states the point, a rhyme the story does not support? Does any shot feel like a different film? Step 10: the questions and scores of `reference/05 Quality rubric.md`. Answer each yes or no against the story, quoting the record and the line (D7 R3).
 
-**What the check chat returns:** `13 Health check.md` in one copy box, "Save as: 13 Health check.md" above it: the plain part ("In short: 2 things need you, 5 findings to fix", then what to fix first, one line each), the divider, one REVIEW per scene of the group (`RV-SC07` ...) with its answers (and its scores once the user has reached step 10), one FINDING per failed check or "no" answer (`record`, `rule`, `evidence`, `fix`, `source: review`, `status: open`), and the END line. The next working chat attaches it, fixes those findings first, and marks each `fixed`.
+**What the check chat returns:** one copy box with "Save as: 13 Health check - group 3.md" (the group's number) above it: the plain part ("In short: 2 things need you, 5 findings to fix", then what to fix first, one line each), the divider, one REVIEW per scene of the group (`RV-SC07` ...) with its answers (and its scores once the user has reached step 10), one FINDING per failed check or "no" answer (`record`, `rule`, `evidence`, `fix`, `source: review`, `status: open`), numbered on from the highest finding number in the attached health-check file, and the END line. `adopt` merges the group files by ID. The next working chat attaches it, fixes those findings first, and marks each `fixed`.
 
 ## Part 3: the real check
 
@@ -107,3 +107,39 @@ Copied from `rules/constants.json`, which wins if they ever differ.
 | `plant_inserts_per_scene_max` | 2 |
 | `shot_number_step`, `end_card_numbers` | 10; 990 to 999 |
 | `issued_blocks` | beats 1 to 30, shots 10 to 400, per scene |
+
+## Numbers the step files name
+
+Without code there is no `rules/constants.json`; the step files name these numbers, and their values are here. Copied from `rules/constants.json` and `rules/limits.json`, which win if they ever differ.
+
+| Name | Value |
+|---|---|
+| `batch_size` | 12 shots a reply; 18 once the code self-test passes (in chat: 12) |
+| `repair_rounds_max` | 3 rounds |
+| `event_unit_scenes`, `continuity_unit_scenes` | 10 scenes; 5 scenes |
+| `chapter_digest_words_max`, `outline_chapters_per_unit` | 350 words; 2 to 3 chapters |
+| `step_outline_tolerance`, `fact_records_typical` | a tenth of the runtime target; about 5 to 15 facts |
+| `short_runtime_max_s` | 2400 s (40 minutes): under it `short`, otherwise `feature` |
+| `scene_ids_three_digits_above`, `speech_ids_three_digits_above` | 99 scenes; 99 speeches in a scene |
+| `style_words_count` | 8 to 15 style words |
+| `minor_characters_per_unit`, `places_per_unit` | 4; 2 |
+| `lineup_columns_differ_min` | 3 of the six lineup columns |
+| `fixed_description_words` | principals 25 to 40 words; minor characters 20 to 30 |
+| `voice_description_words` | 30 to 50 words |
+| `motif_spines_max`, `sound_motif_max`, `body_motif_max` | a short 3 to 5, a feature 5 to 8 spine motifs; 1 sound motif; 1 body motif |
+| `loud_sets_max` | a short 2, a feature 3 |
+| `previs_plan_level_min` | 2 |
+| `checkpoint_b_items_max`, `checkpoint_b_marked_items` | 7 items; 3 marked |
+| `whole_film_summary_words_max` | 6000 words |
+| `extreme_close_up_film_max`, `push_in_scene_share_max` | a short 3, a feature 6; push-ins in at most a quarter of the scenes |
+| `look_block_sentences`, `look_block_words_max` | 2 to 3 sentences; 60 words |
+| `colour_monotony_run`, `device_budget_short` | 3 groups of scenes; in a short at most 2 each of cut to black, true silence and freeze |
+| `beat_intensity_5_per_part_max`, `departments_changing_at_main_turn_max` | 2; 2 |
+| `scene_split_non_blank_lines`, `scene_split_beats` | 70 lines; 14 beats |
+| `stations_needed_above_beats`, `stations_per_scene` | 8 beats; 2 to 4 stations |
+| `hold_needs_still_s`, `main_actions_per_seconds` | 2.0 s; one main action per 4 s |
+| `film_strip_tokens_per_unit_max` | 20000 tokens |
+| `question_batch_size`, `question_sample_share`, `scenes_to_read`, `acceptance_items_max` | 40 questions; a tenth; 3 scenes; 3 things |
+| `model_facts_max_age_days`, `handles_s` | 30 days; 0.75 s at each end |
+| `cheap_test_above_usd_per_take`, `takes_stop_per_route`, `takes_stop_per_shot`, `spend_check_share` | 2 dollars; 4 failed takes; 10 failed takes; half |
+| `chat_usage_handover_share` | 0.8 of the chat's usage |

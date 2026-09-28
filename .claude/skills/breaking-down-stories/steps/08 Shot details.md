@@ -37,7 +37,7 @@ For each list item in order, write one SHOT at the project's depth, in reason-fi
 1. **Copy** the item's shot ID, `beats` and `role`, and keep its `size` (ID-08); add `lines`.
 2. **Reasons.** `purpose`: one sentence naming the change the audience must get. `because`: the IDs that justify it (the kinds allowed: card 14); a turn shot cites its turn beat (REASON-05), a saved choice its RC (REASON-06); `default` only on a normal shot with no departure.
 3. **Camera.** `kind`, `setup`, `frame`, `size`, `angle`, `height`, `lens_mm`, `focus`, `focus_on`, one `move` (CRAFT-06) with its `move_reason`.
-4. **People.** One `subject` item per person in frame: `at` and `faces` only where no set plan exists (with one, code projects them); `does` as visible behaviour, never emotion words (WORDS-01); `tactic`, `energy`, `display`, `still` (required on any moment of `hold_needs_still_s` or more; CRAFT-26), `eyeline` with `dwell_s`, `travel`, and `must_not` for a look saved for a later beat.
+4. **People.** One `subject` item per person in frame: `at` and `faces` only where no set plan exists (with one, code projects them); `does` as visible behaviour, never emotion words (WORDS-01); `tactic`, `energy`, `display`, `still` (required on any moment of `hold_needs_still_s` or more; CRAFT-26), `eyeline` with `dwell_s`, `travel`, and `must_not` for a glance saved for a later beat.
 5. **Sound and things.** `hear` items (each speech heard, `speaker: on_screen` or `off_screen`); `thing` items with `emphasis`, and `plant:` or `payoff:` on the item that plants or pays off a PLANT; `text`; `keep_hidden` (the FACT it protects and how), `must_show`, `must_not_show`; `light` only when it differs from the look; `effect`, `room_sound`, `silence`, `music`, `needs_description`.
 6. **Time.** `screen_time` at or above the provisional floor (TIME-01): shot 150's floor is 13.8 seconds (Saye's and Iona's speech, 11.8, plus 2.0 owed after the turn at beat 7), so it runs 15. Timed `moment` items inside it, no more main actions than `main_actions_per_seconds` allows; `end`; `cut_out_on`.
 7. **Making.** `held: yes` where the meaning depends on not cutting (turn shots count as held); `previs_level`, `storyboard`, `framing_critical`, `route`, `flip` (`never` on a sided insert such as a ring; SIDE-03), `content_flags`, `policy_route`, `cost_class`, `reuse_of`; `pov_break` when the shot leaves the whose-scene character's place or knowledge.
@@ -89,7 +89,8 @@ Example: shot 150 holds Iona's face for 15 seconds, from the first chew through
 Made: 11 Scenes/Scene 10 - Saye's kitchen (every shot written in full).
   Checked: no errors; 2 warnings to show you with the next group (in 13 Health check).
 Needs you: nothing.
-Next: scene 11, the treatment floor, which starts group 4.
+Next: scene 11, the treatment floor, which starts group 4 (in a chat app,
+  first the check of group 3).
 ```
 
 ## Checkpoint
@@ -107,14 +108,14 @@ Every line reference is a quote anchor: `lines` is an anchor pair (`- lines: "Io
 1. Each `hear` item also carries the speech's exact words: `- hear: SC10-D11 | speaker: on_screen | words: "Not mint."` (CITE-04).
 2. Work out each floor in words to set `screen_time`: each speech's words divided by its voice's `pace_wps`, plus `speech_floor_extra_s` per speech, plus the pause owed (at least `turn_reaction_min_s` after a turn). Never write the floor into a record.
 3. Save each batch in one copy box, `11 Scenes/Scene 10 - Saye's kitchen - shots 130-200.md`: the records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line counting this file's records (`END OF FILE | Scene 10 shots 130-200 | 8 records`). Print "Checked in words: 14 of 14 passed" (or only the failures).
-4. A reply cut off (no END line) or short of the list's IDs: when the user types **continue**, send only the missing records, from the start of the last complete one, then the END line (`reference/07`, "When something goes wrong").
-5. Report, then the resume line; at a sequence's end it first names the check chat, as in step 7:
+4. A box with no END line is never saved. When the user types **continue**, send its complete records again as their own file (`... - shots 130-160.md`), then, in the next reply, the rest from the start of the cut record (`... - shots 170-200.md`), each with its END line. A box short of the list's IDs: send only the missing records, then the END line (step 16).
+5. Report, then the resume line. After a group's last batch it names the check chat first: "Next: a check. New chat in this project; attach the files of scenes 7 to 10, your story, 02 Whole-film summary, 10 Film rules, 05 Checks in words and your last 13 Health check file; type: Check my group of scenes." Otherwise:
 
 ```
-Save as: 11 Scenes/Scene 10 - Saye's kitchen - shots 130-200.md   (save only if the box ends with the END line)
+Save as: 11 Scenes/Scene 10 - Saye's kitchen - shots 010-120.md   (save only if the box ends with the END line)
 To continue later: new chat in this project; attach 00 Start here, 02 Whole-film summary,
 10 Film rules, 10 Steps 07-08 - scenes and shots, your story, Scene 10 - Saye's kitchen
-and its shot files; type: Continue my breakdown. Next is scene 11.
+and its shot files; type: Continue my breakdown. Next is scene 10, shots 130 to 200.
 ```
 
 **One-line task, again:** Expand one batch of the approved one-line list into full shot records, reasons before camera values, one record per list item, with a cut record only where the join is not a plain cut.

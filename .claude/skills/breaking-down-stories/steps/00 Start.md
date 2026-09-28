@@ -8,16 +8,15 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Make the project, test the app, settle rights, and show the user what they will get. The user sees one finished shot from their own story before any question (principle 7: example first, one question, a default for it).
+Make the project, test the app, settle rights, and show the user one finished shot from their own story before any question (principle 7: example first, one question, a default).
 
 ## When it runs
 
-Once, first: when the user says "Break down my story." (or anything that means it) and no project exists for this story. "Start again" runs it again and makes a new project beside the old one.
+Once, first, when the user says "Break down my story." (or means it) and no project exists for this story; "Start again" runs it again beside the old project.
 
 ## Inputs
 
-- The story file: in `My stories/` in Claude Code and Cowork; attached in chat apps.
-- The app you are running in.
+The story file (in `My stories/` in Claude Code and Cowork; attached in chat apps) and the app you are running in.
 
 ## Outputs
 
@@ -30,50 +29,54 @@ Once, first: when the user says "Break down my story." (or anything that means i
 
 ## Card parts to open
 
-At every depth: card 24, part "The rights question". Open nothing else at this step.
+At every depth: card 24, part "The rights question".
 
 ## Procedure
 
-1. **Hidden self-test.** Never shown to the user; it tells code how much one reply can safely hold (D1 §2.4, §5.3).
-   - On a code surface run `stage.py new "<story file>"`; it makes the project folder and its first files.
-   - Run `stage.py selftest --prepare`. It counts the story's lines, checks that code can make and re-read a ZIP, gives you the shot IDs of a scene the story does not use (constant `selftest_scene`) and a SHOT template.
-   - Unit U-00-SELFTEST: write `selftest_records` full SHOT records, one for each ID you were given, then the END line, in one reply, into `For machines - do not edit/inbox/U-00-SELFTEST.md`. Make each a plain invented test shot (a lamp on a table). Write every record in full (G11).
-   - Run `stage.py selftest --score`. It sets `batch_size` (the larger value of the constant `batch_size` if every record and the END line pass the FORM checks, otherwise the default), `code_execution` and `surface` on PROJECT, then deletes the test records. Never type these three values yourself.
-2. **Find one strong turn** (unit U-00-START). Read only as much of the story as you need to find one moment where a scene turns, and write one finished shot line from it: the scene and shot, the size, what the camera does, what we see, one quoted line, the seconds, and a "Why" that quotes the story. Every word inside double quotes must be the story's own (G12). The line is an example for the welcome, not a record.
-3. **Welcome the user** with the message in "The report": the example first, then how the work goes, then the depth stated, not asked, then one question: rights.
-4. **Pass on the answers.** On a code surface write, into `For machines - do not edit/inbox/U-00-START.md`, `### CHOICE CHOICE-001` with `- answer: a` (or `- answer: defaults`), and run `stage.py apply`. Apply sets the choice's status and date and writes what its `sets` lines name: PROJECT `rights`, and RT-001 `subject`, `clearance` and `holder`. Never write `status`, `date` or `locked` yourself on a code surface. CHOICE-002 and CHOICE-003 are small choices, defaulted unless the user says "quick", "detailed" or that the privacy setting is off; pass those on the same way.
-5. **Not mine, no permission.** Then CHOICE-001 option d sets `rights: study_only`: the work goes on for private study, every export is marked "Private study, not for publication", and generation packs refuse public-release batches (GEN-14; card 24). Say: "Then I'll plan it for your private study only. Every file will say 'Private study, not for publication', and I won't make video prompts for public release."
-6. **Check.** Run `stage.py check --step 0`. It asks only for fields whose `filled_by_step` is 0 (FORM-05). Fix only the lines it prints, at most `repair_rounds_max` rounds (C5 R13); then ask the user one plain question instead of trying again.
+1. **Hidden self-test**, never shown to the user: how much one reply can safely hold (D1 §2.4, §5.3).
+   - First try to run Python. If you can, and you find this skill's `tools/stage.py` (on ChatGPT, after unpacking `07 Tools.zip`), you are on a code surface: go on below. Otherwise follow "If you cannot run code".
+   - Run `stage.py new "<story file>"`; it makes the project folder and its first files, with CHOICE-001 to CHOICE-003.
+   - Run `stage.py selftest --prepare`. It checks the story and the ZIP maker and writes the handout `U-00-SELFTEST.md`: test shot IDs in a scene the story does not use (`selftest_scene`), rules and a SHOT template.
+   - Unit U-00-SELFTEST: follow that handout. Write `selftest_records` full SHOT records and the END line, in one reply, into `For machines - do not edit/inbox/U-00-SELFTEST.md`, every record in full (G11).
+   - Run `stage.py selftest --score`. It sets PROJECT `batch_size` (the larger value if every record and the END line pass, else the default), `code_execution` and `surface`, and deletes the test records; never type these three yourself.
+2. **Find one strong turn** (unit U-00-START). Read only enough of the story to find one moment where a scene turns, and write one finished shot line from it (scene and shot, size, what the camera does, what we see, one quoted line, the seconds, a "Why" that quotes the story), every quoted word the story's own (G12). It is an example for the welcome, not a record.
+3. **Welcome the user** with the message in "The report": the example, how the work goes, the depth stated (not asked), and one question, rights.
+4. **Pass on the answers.** On a code surface write into `For machines - do not edit/inbox/U-00-START.md`:
+   - `### CHOICE CHOICE-001` with `- answer: a` (or `- answer: defaults`), its four `PROJECT.rights` `sets` lines repeated (an inbox field replaces all its lines), and one `sets` line for each of RT-001's `subject`, `clearance` and `holder` under the chosen option (`- sets: RT-001.subject | value: source | when: a`);
+   - `### RIGHTS RT-001 The story` with `- evidence: the user said: It's mine`.
+
+   Run `stage.py apply`. It sets the choice's status and date, writes what the chosen `sets` lines name, and makes `22 Rights and credits.md`. Never write `status`, `date` or `locked` yourself on a code surface. CHOICE-002 and CHOICE-003 are small choices, defaulted unless the user says "quick", "detailed" or that the privacy setting is off; pass those on the same way.
+5. **Not mine, no permission.** Option d sets `rights: study_only`: private study only, every export marked "Private study, not for publication", no public-release packs (GEN-14; card 24). Say: "Then I'll plan it for your private study only. Every file will say 'Private study, not for publication', and I won't make video prompts for public release."
+6. **Check.** Run `stage.py check --step 0` (it asks only for fields filled by step 0; FORM-05). Fix only the lines it prints, at most `repair_rounds_max` rounds (C5 R13), then ask one plain question.
 
 ## Record template
 
-`templates/00 Start here.md` (PROJECT), `templates/01 Choices.md` (CHOICE), `templates/22 Rights and credits.md` (RIGHTS). The self-test's SHOT template comes from `selftest --prepare` and follows the SHOT part of `templates/11 Scene.md`.
+`templates/00 Start here.md` (PROJECT), `templates/01 Choices.md` (CHOICE), `templates/22 Rights and credits.md` (RIGHTS). The self-test's SHOT template is in its handout.
 
 ## IDs you will be given
 
-- Self-test shots: `SC99-SH010` to `SC99-SH200` in tens (`SC999-SH010` onward when the project uses 3-digit scene IDs).
+- Self-test shots: from its handout (`SC99-SH010` to `SC99-SH200`).
 - `CHOICE-001`, `CHOICE-002`, `CHOICE-003` and `RT-001`.
 - The project ID, 3 to 8 capitals from the title (`CATCH`, `LONG`), made by `new`. Copy every ID; never make one up.
 
 ## Batch and chunk rules
 
-No chunking. The self-test is one reply of `selftest_records` records; the start unit is one reply. Nothing at this step reads the whole story.
+None: the self-test and the start unit are one reply each; nothing reads the whole story.
 
 ## Self-check
 
 Answer each question yes or no from what you just wrote; each "no" is a fix before you report.
 
-1. Does PROJECT hold `rights`, `depth`, `training_off`, `surface`, `code_execution` and `batch_size`?
-2. Are CHOICE-001 to CHOICE-003 answered or defaulted?
-3. Does `check --step 0` exit 0?
-4. Is every word inside double quotes in the example shot the story's own?
-5. Is the example a turn, and does its "Why" quote the story instead of naming a feeling?
-6. Did the welcome ask exactly one question, and state the depth instead of asking it?
-7. Is everything the user reads free of codes, IDs and abbreviations (WORDS-04)?
+1. Does PROJECT hold `rights`, `depth`, `training_off`, `surface`, `code_execution` and `batch_size`, and are CHOICE-001 to CHOICE-003 answered or defaulted?
+2. Does `check --step 0` exit 0?
+3. Is every word inside double quotes in the example shot the story's own?
+4. Is the example a turn, and does its "Why" quote the story instead of naming a feeling?
+5. Did the welcome ask exactly one question, and state the depth instead of asking it?
+6. Is everything the user reads free of codes, IDs and abbreviations (WORDS-04)?
 
 ## The report
 
-The welcome is this step's first report. Fill it from the user's own story; this is The Catch (message shapes: `reference/07 Report and message formats.md`):
+The welcome, filled from the user's own story (The Catch here; `reference/07 Report and message formats.md`):
 
 ```
 Hello. I'll turn The Catch into a scene-by-scene plan for making it as a film,
@@ -110,29 +113,28 @@ Next: I'll read the whole story, number its lines and show you the scene list.
 
 ## Checkpoint
 
-The rights question. It blocks: nothing else runs until it is answered or defaulted.
+The rights question, worded as in the welcome. It blocks: nothing else runs until it is answered or defaulted.
 
-- Wording: "Is this story yours, or do you have permission to adapt it? [It's mine]"
-- Options: a, it's mine (`mine`); b, I have permission (`permission`); c, it is in the public domain (`public_domain`); d, it is not mine and I have no permission, so private study only (`study_only`).
+- Options: a, it's mine (`mine`); b, I have permission (`permission`); c, public domain (`public_domain`); d, not mine and no permission: private study only (`study_only`).
 - Default: a, "It's mine". "defaults" accepts it.
 - If the user is unsure, say in one line what each answer allows (card 24); never give legal advice beyond the card.
 
 ## How to redo
 
-- "Start again" makes a new project ("The Catch 2"); the old one is kept, never overwritten.
+- "Start again": a new project ("The Catch 2"); the old one is kept.
 - "Quick", "Standard" or "Detailed" at any time answers CHOICE-002 again; nothing is thrown away.
 - A new rights answer ("I got permission") answers CHOICE-001 again; run `stage.py impact RT-001` and tell the user in one line what it changes (exports and packs).
 
 ## If you cannot run code
 
-Your self-test found no code (Gemini, or any app without it). Every line reference is a quote anchor from here on: a short exact quotation of the story instead of a line number (G5), because there is no numbered story.
+No code here (Gemini, or any app without it), so there is no numbered story: from now on every line reference is a quote anchor, a short exact quotation of the story (G5).
 
 1. **Self-test in words.** In your first reply quote the story's first line and its last line exactly ("= THE CATCH" and "= THE END"). If you cannot, the app did not read the whole file: ask the user to paste the missing part (`reference/07`, "When something goes wrong"). Then `batch_size: 12`, `code_execution: no`, `surface: gemini` (or `other`).
 2. Find the turn, write the example shot and send the welcome exactly as above.
 3. After the answer, write three files, each in its own copy box with "Save as:" above it: `00 Start here.md`, `01 Choices.md`, `22 Rights and credits.md`. Each box holds the plain part (for `00 Start here`, the template's six sections, with "Checked by the checker: never"), the divider line, the records, then the checks-in-words table and the END line.
-4. In chat you also write the fields the templates mark "in a chat without code you write it": PROJECT `title` (from the first title-page line), `source_file`, `source_fingerprint: none`, `source_kind`, `source_format`, `language`, `surface`, `code_execution`, `batch_size`, `schema_version`, `checker_last_run: never`, `model_facts_date: none`; every record's `status` and `locked`; each CHOICE's `status` and `date`. Because the choices are answered or defaulted, also write the values they set: PROJECT `rights`, `depth`, `training_off`; RT-001 `subject`, `clearance`, `holder`.
-5. Run the mechanical checks of `reference/06 Checks in words.md` part 1 on each file. Put the table after a `---` line below the last record and before the END line; rows about beats and shots say "PASS (no beats or shots in this file)". Print one line: "Checked in words: 14 of 14 passed" (or only the failures).
-6. Tell the user once: make a folder named "The Catch - breakdown" and save each box into it under its "Save as" name.
+4. Write CHOICE-001 to CHOICE-003 whole: options (rights as in "Checkpoint"; depth a standard, b quick, c detailed; privacy a not confirmed, b off), one `sets` line per option, `answer`, `status`, `date`. Write every field the templates mark "in a chat without code you write it" (PROJECT `title` from the first title-page line, `source_fingerprint: none`, `checker_last_run: never`), every record's `status` and `locked`, and what the choices set: PROJECT `rights`, `depth`, `training_off`; RT-001 `subject`, `clearance`, `holder`.
+5. Run the checks of `reference/06 Checks in words.md` part 1 on each file; the table goes after a `---` line below the last record, before the END line, and rows about beats and shots say "PASS (no beats or shots in this file)". Print one line: "Checked in words: 14 of 14 passed" (or only the failures).
+6. Tell the user once: make a folder "The Catch - breakdown" and save each box in it under its "Save as" name.
 7. End with the four-part report, then:
 
 ```

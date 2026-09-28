@@ -113,17 +113,17 @@ Every line reference is a quote anchor: `evidence` items, RULE start and end lin
 ```
 
 1. Harvest the locale cues yourself from the attached story: search it for place words, signs, vehicles, money and institutions, and quote each exactly.
-2. Write `06 World and style.md` in one copy box with "Save as:" above it, and the new CHOICE and SETVALUE records in a second box saved as `01 Choices - world and style.md` (`adopt` merges it with `01 Choices.md` by ID, G10). Leave the user's fields `open` in STYLE `medium`, WORLD `place` and `period` and RULE `era` until the big choices are answered; step 5's chat writes them then.
+2. Write `06 World and style.md` in one copy box with "Save as:" above it, and the new CHOICE and SETVALUE records in a second box saved as `01 Choices - world and style.md` (`adopt` merges it with `01 Choices.md` by ID, G10). Leave the user's fields `open` in STYLE `medium`, WORLD `place` and `period` and RULE `era` until the big choices are answered; step 5's chat writes them then. PROJECT `prompt_words` waits for the next save of `00 Start here`.
 3. Write each CHOICE's `status: open` and each record's `status` and `locked`.
 4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 5. Report as above, then the resume line:
 
 ```
 Save as: 06 World and style.md, 01 Choices - world and style.md   (save only boxes that end with the END line)
-To continue later: new chat in this project; attach 00 Start here, 01 Choices and its
-world and style file, 04 Scene list and its plan files, 05 Story plan, 06 World and style,
-09 Steps 03-06 - world, people, continuity, film rules and your story;
-type: Continue my breakdown. Next is characters, places and things.
+To continue later: new chat in this project; attach, in two messages, 00 Start here,
+01 Choices and its files, 04 Scene list and its plan files, 05 Story plan, 06 World and
+style, 09 Steps 03-06 - world, people, continuity, film rules and your story;
+type with the second: Continue my breakdown. Next is characters, places and things.
 ```
 
 **One-line task, again:** Decide once where and when the story happens, the film's style, and the rules of the story's world, turning every choice the story leaves open into a choice for the user with a default and a reason.

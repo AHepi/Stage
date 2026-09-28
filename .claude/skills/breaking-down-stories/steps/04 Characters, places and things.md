@@ -116,10 +116,11 @@ Every line reference is a quote anchor: `evidence` items, `gesture` lines, PROP 
 
 ```
 Save as: 07 Characters and voices - Saye.md   (save only if the box ends with the END line)
-To continue later: new chat in this project; attach 00 Start here, 05 Story plan,
+To continue later: new chat in this project; attach, in two messages if they are
+more than 10 files, 00 Start here, 04 Scene list and its plan files, 05 Story plan,
 06 World and style, 07 Characters and voices and its files, 08 Places and things and
 its files, 09 Steps 03-06 - world, people, continuity, film rules and your story;
-type: Continue my breakdown. Next is Iona.
+type with the last: Continue my breakdown. Next is Iona.
 ```
 
 **One-line task, again:** Design everything the film shows more than once (the characters and their voices, the places with their set plans, the things, the text in picture, the motifs and the cameras inside the story), each resting on quoted lines.

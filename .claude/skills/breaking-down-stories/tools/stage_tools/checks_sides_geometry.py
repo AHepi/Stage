@@ -17,11 +17,13 @@ Each is registered with check_records.register_check (see the note at the top of
 Standard library only.
 """
 
+import math
 import re
 
 from .check_records import register_check
-from .derive_fields import (FACING_ROUND, PLACEMENT_WORDS, SIZE_LADDER, apparent_side, breakdown_for_run,
-                            camera_for, constant, element_name, element_of, eras, eyeline_sides, feature_hidden,
+from .derive_fields import (FACING_ROUND, PLACEMENT_WORDS, SIZE_LADDER, apparent_side, breakdown_for_run, number_of,
+                            camera_for, constant, element_name, element_of, eras, eras_unresolved, eyeline_sides,
+                            feature_hidden,
                             feature_nouns, focus_subject, is_insert_or_card, is_single, mirror_state_at,
                             normalise_word, person_name, plan_for_shot, point_of, projected_placement,
                             scene_location, scene_mirror_states, scene_of, scene_staging, set_plan,
@@ -38,6 +40,9 @@ SIDE_PHRASE = re.compile(r"\b(own\s+)?(left|right)(?:\s+(?:hand|arm|side|shoulde
 TURNING_WORDS = re.compile(r"\b(turns?|turning|turned|comes back|goes back|back the way|the other way|round)\b",
                            re.IGNORECASE)
 STORY_ACTION_TYPES = ("action", None)
+# Words after "wound" or "sling" that show a verb ("a scarf wound round her neck"), not a one-sided feature.
+NOUNS_THAT_ARE_ALSO_VERBS = ("wound", "sling")
+NOT_A_NOUN_AFTER = r"(?:round|around|into|up|about|tight|tightly|through|over|across)\b"
 
 
 # ---------------------------------------------------------------- shared helpers
@@ -163,7 +168,10 @@ def check_side_01(run):
             for item in items:
                 covered |= feature_nouns(item.first)
             for noun in ONE_SIDED_NOUNS:
-                if re.search(rf"\b{noun}s?\b", state_line) and not re.search(rf"\bboth\s+(\w+\s+)?{noun}s\b", state_line):
+                verb_guard = rf"(?!\s+{NOT_A_NOUN_AFTER})" if noun in NOUNS_THAT_ARE_ALSO_VERBS else ""
+                if not re.search(rf"\b{noun}s?\b{verb_guard}", state_line):
+                    continue
+                if not re.search(rf"\bboth\s+(\w+\s+)?{noun}s\b", state_line):
                     if noun not in covered and noun + "s" not in covered:
                         problems.append(run.problem(
                             "E", "SIDE-01", record, "state_line",
@@ -173,7 +181,7 @@ def check_side_01(run):
 
 
 @register_check("SIDE-02", level="E", build=1, title="Image-side words in a state line or fixed description",
-                plain="uses picture-side words (frame left, screen right) where only own sides belong")
+                plain="names a side of the picture where only the body's own side belongs")
 def check_side_02(run):
     rule = (run.words or {}).get("image_side_words", {})
     phrases = sorted(rule.get("phrases", []), key=len, reverse=True)
@@ -217,7 +225,7 @@ def sided_detail_of_insert(breakdown, shot):
 
 
 @register_check("SIDE-03", level="E", build=1, title="A sided insert with flip other than never",
-                plain="is a close insert of a one-sided detail that could be flipped, which would move it to the wrong side")
+                plain="is a close insert of a one-sided detail that could be flipped, which would put it on the wrong side")
 def check_side_03(run):
     breakdown = breakdown_of(run)
     problems = []
@@ -304,9 +312,13 @@ def story_side_statements(breakdown, scene_identifier):
 def check_side_04(run):
     breakdown = breakdown_of(run)
     problems = []
+    if eras_unresolved(breakdown):
+        run.skip("SIDE-04", "the mirror rule's era lines are not in the story given, so the sides a viewer sees are "
+                            "not known yet")
+        return problems
+    if breakdown.story is None:
+        run.skip("SIDE-04", "the story's own statements of sides need the story (the shots' words were checked)")
     for scene_identifier in breakdown.scene_identifiers():
-        if breakdown.story is None:
-            run.skip("SIDE-04", "the story's own statements of sides need the story (the shots' words were checked)")
         for line, element, feature, kind, side in story_side_statements(breakdown, scene_identifier):
             state = state_of_reference(breakdown, element, line)
             own = next((own for name, own, _ in sided_features(breakdown, element, line) if name == feature), None)
@@ -360,6 +372,10 @@ def check_side_04(run):
 def check_side_05(run):
     breakdown = breakdown_of(run)
     problems = []
+    if eras_unresolved(breakdown):
+        run.skip("SIDE-05", "the mirror rule's era lines are not in the story given, so the mirrored scenes are not "
+                            "known yet")
+        return problems
     if not eras(breakdown):
         return problems
     mirrored_scenes = {}
@@ -420,7 +436,7 @@ def same_person_consecutive(breakdown, scene_identifier):
             continue
         focus_first = element_of(earlier.get("focus_on") or "")
         focus_second = element_of(later.get("focus_on") or "")
-        if element_of(first.item if hasattr(first, "item") else first.first) != focus_first:
+        if element_of(first.first) != focus_first:
             continue
         if element_of(second.first) != focus_second or focus_first != focus_second:
             continue
@@ -454,7 +470,6 @@ def angle_between_setups(breakdown, earlier, later, person):
     if length(one) < 1e-9 or length(two) < 1e-9:
         return None
     cosine = max(-1.0, min(1.0, dot(one, two) / (length(one) * length(two))))
-    import math
     return math.degrees(math.acos(cosine))
 
 
@@ -487,7 +502,8 @@ def check_geom_02(run):
 @register_check("GEOM-03", level="W", build=2, title="The camera crosses the line inside a part without a declared crossing",
                 plain="crosses the line between two people inside one part, which flips who is on which side")
 def check_geom_03(run):
-    run.skip("GEOM-03", "a check of the second build (7.2); derive_fields.axis_sides already gives each setup's side")
+    run.skip("GEOM-03", "planned for the second build: the side of the line each camera stands on is worked out "
+                        "by build, but crossings inside a part are not checked yet")
     return []
 
 
@@ -691,7 +707,7 @@ def matched_height(first_shot, second_shot, first_person, second_person):
 @register_check("GEOM-08", level="W", build=1,
                 title="Paired singles within one part differ in size, lens or height with no turn beat between them "
                       "and no why",
-                plain="gives one person a closer or different single than the other in the same stretch, with no reason")
+                plain="gives one person a closer or different single than the other in the same part of the scene, with no reason")
 def check_geom_08(run):
     breakdown = breakdown_of(run)
     problems = []
@@ -700,7 +716,7 @@ def check_geom_08(run):
             differences = []
             if normalise_word(first.get("size") or "") != normalise_word(second.get("size") or ""):
                 differences.append(f"size {first.get('size')} against {second.get('size')}")
-            if (first.get("lens_mm") or "") != (second.get("lens_mm") or ""):
+            if number_of(first.get("lens_mm")) != number_of(second.get("lens_mm")):
                 differences.append(f"lens {first.get('lens_mm')} against {second.get('lens_mm')} mm")
             if not matched_height(first, second, looker, other):
                 differences.append(f"height {first.get('height')} against {second.get('height')}")

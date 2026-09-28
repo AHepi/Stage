@@ -879,6 +879,49 @@
     "unit": "FACT records",
     "source": "blueprint 5.5 FACT",
     "meaning": "About how many FACT records a film has at standard depth (suspense, mystery and dramatic irony only); a guide, never a check."
+   },
+   "page_eighths_line_model": {
+    "value": {
+     "action_characters_per_line": 61,
+     "dialogue_characters_per_line": 35,
+     "lines_per_page": 55,
+     "eighths_per_page": 8,
+     "minimum_eighths": 1
+    },
+    "unit": "characters per line, lines per page, eighths",
+    "meaning": "The scene's length on the page in eighths (blueprint 5.6 labels and counts, SCENE eighths): each story line wrapped at the action or dialogue width, blank lines kept, rounded up to the next eighth, never under one eighth. An estimate: only a formatted page gives true eighths.",
+    "source": "blueprint 5.6; A3 §5.2 (the line-count model: 61 characters per action line, 35 per dialogue line, 55 lines per page; very short scenes are at least 1/8)",
+    "added_by": "WP4a"
+   },
+   "previs_stub_level": {
+    "value": 3,
+    "unit": "previs level",
+    "meaning": "The level of a PREVIS stub code creates when a shot names a time_slice or a cut names shared_geometry (PV-SC06-MASTER-V01, level 3).",
+    "source": "blueprint 3 step 8 outputs",
+    "added_by": "WP4a"
+   },
+   "frame_placement_bands": {
+    "value": {
+     "centre_half_width": 0.2,
+     "third_outer": 0.6,
+     "out_of_frame": 1.1
+    },
+    "unit": "share of the frame's half width, from the centre (0) to either edge (1)",
+    "meaning": "Where a projected subject counts as at the centre, a third or an edge of the frame (SHOT subject at, derived with a set plan; GEOM-06), and beyond which it is out of frame.",
+    "source": "blueprint 5.6 geometry (frame placement projected from the set plan) [judgement, tune in test]",
+    "judgement": true,
+    "added_by": "WP4a"
+   },
+   "projection_body": {
+    "value": {
+     "eye_height_share": 0.93,
+     "height_fallback_m": 1.7
+    },
+    "unit": "share of standing height; metres",
+    "meaning": "A person's eye point for projection, as a share of their height_m, and the height used when a CHARACTER gives none (5.6 geometry, size check).",
+    "source": "blueprint 5.6 geometry [judgement, tune in test]",
+    "judgement": true,
+    "added_by": "WP4a"
    }
   }
  }

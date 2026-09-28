@@ -9,18 +9,27 @@ What this file does, in plain words:
 - works out clip lengths (screen time plus handles, rounded up to a length the model allows), whether a shot
   is a held take, and where a shot that is not held may be split;
 - works out labels and counts: the crew label ("10Q"), words per speech and per character, speaking counts,
-  the coverage map, the scene's label and its length from its shots;
+  the coverage map, the scene's label, its length from its shots and on the page (eighths, A3's line-count
+  model), whether the script already marks each beat, and what a shot shows first (dominant, at Standard);
 - works out the mirror world: each scene's era and frame handedness (with the line where it switches), each
-  element's mirror state (mirrored when its state's handedness differs from the frame's), each place's
-  orientation, each shot's mirror route (8.5) and its finishing operations;
+  element's mirror state (mirrored when its state's handedness differs from the frame's; open while the era
+  lines are not in the story given), each place's orientation, each shot's mirror route (8.5) and its
+  finishing operations;
 - works out sides: the image side and the prompt side of every sided feature in frame, and which own hand is
   the hand nearest the camera;
 - works out geometry where a set plan exists: frame placement and facing of every person, projected from the
-  marks, the scene's start, the floor-plan moves and the setup; the eyeline side of every single; the size
-  check from lens and distance; the face height; the frame side of the look's main light;
+  marks, the scene's start, the floor-plan moves and the setup (with the facing Blender uses); the eyeline side
+  of every single; the size check from lens and distance; the face height; the frame side of the look's main
+  light; the side of the line each setup stands on;
 - resolves every story point to the beat whose lines hold its quote, and can store that beat (code_state);
-- registers the command build, which works all of this out and writes it to
-  "For machines - do not edit/derived fields.json".
+- lists the grey preview jobs (PREVIS stubs, status planned) that time slices and shared geometry name;
+- registers the command build, which works all of this out, stores the story points' beats, makes the stubs
+  the checker accepts, and writes "For machines - do not edit/derived fields.json".
+
+Other modules use: Breakdown (from_project, from_paths, breakdown_for_run for a check run), time_floor,
+provisional_floor, clip_plan, held_take, scene_era, era_at, mirror_state_at, shot_mirror_states, mirror_route,
+image_sides, eyeline_sides, projected_placement, size_check, face_heights, lip_sync, main_light_side,
+story_points, scene_eighths, script_marked, dominant_of, derive_shot, derive_scene, derive_all.
 
 Numbers come from rules/constants.json by name. The few layout numbers that are judgement (where a third of
 the frame ends) are named below with a note.
@@ -34,9 +43,8 @@ import re
 from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
-from .record_format import (DIVIDER_LINE, load_json, load_skill_data, merge_copies, normalise_word, parse_file,
-                            parse_line_numbers, parse_quote_anchor, parse_story_point, sort_key_for_identifier,
-                            split_item, split_list, split_outside_quotes)
+from .record_format import (load_json, load_skill_data, merge_copies, normalise_word, parse_file, parse_line_numbers,
+                            parse_story_point, sort_key_for_identifier, split_item, split_list, split_outside_quotes)
 
 MACHINE_FOLDER = "For machines - do not edit"
 DERIVED_FILE = "derived fields.json"
@@ -54,15 +62,12 @@ STORY_POINT_KINDS = ("story_point", "story_point_list", "scene_or_story_point")
 SIZE_LADDER = ["extreme_wide", "wide", "medium_wide", "medium", "medium_close_up", "close_up", "extreme_close_up"]
 # Where a subject sits across the frame, from left to right (5.5 SHOT subject at).
 PLACEMENT_WORDS = ["left_edge", "left_third", "centre", "right_third", "right_edge"]
-# Judgement, not in constants.json: the frame runs from -1 (left edge) to +1 (right edge); inside 0.2 of the
-# middle is the centre, from 0.2 to 0.6 a third, beyond 0.6 an edge; beyond 1.1 the subject is out of frame.
-CENTRE_HALF_WIDTH = 0.2
-THIRD_OUTER = 0.6
-OUT_OF_FRAME = 1.1
-# Judgement: a subject's point for placement is at eye height, this share of standing height.
-EYE_HEIGHT_SHARE = 0.93
-# Judgement: height used for a person whose CHARACTER record gives no height_m.
-FALLBACK_HEIGHT_M = 1.7
+# The frame runs from -1 (left edge) to +1 (right edge). Where the centre, the thirds and the edges fall, and where a
+# subject is out of frame, come from the constant frame_placement_bands; these are its values when it is missing.
+FRAME_PLACEMENT_BANDS = {"centre_half_width": 0.2, "third_outer": 0.6, "out_of_frame": 1.1}
+# A person's eye point is at this share of their height, and a person with no height_m counts this tall: the constant
+# projection_body; these are its values when it is missing.
+PROJECTION_BODY = {"eye_height_share": 0.93, "height_fallback_m": 1.7}
 # Crew labels use capital letters from A, skipping I and O (5.3).
 LABEL_LETTERS = [letter for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if letter not in "IO"]
 # The facing words a subject can have in a frame, in the order they go round the subject.
@@ -183,7 +188,7 @@ class Breakdown:
     """
 
     def __init__(self, record_files, schema=None, words=None, constants=None, story=None, speeches=None,
-                 models=None, project_folder=None):
+                 models=None, project_folder=None, story_map=None):
         if schema is None or words is None or constants is None:
             loaded_schema, loaded_words, loaded_constants = load_skill_data()
             schema = schema or loaded_schema
@@ -198,6 +203,7 @@ class Breakdown:
         for (type_name, identifier), record in self.index.items():
             self.by_identifier.setdefault(identifier or type_name, record)
         self.story = story
+        self.story_map = story_map or {}
         self.speeches = dict(speeches or {})
         self.models = models
         self.project_folder = Path(project_folder) if project_folder else None
@@ -214,6 +220,7 @@ class Breakdown:
         project = Project(project_folder, schema, words)
         record_files = project.load_record_files()
         story = None
+        story_map = None
         speeches = {}
         machine = Path(project_folder) / MACHINE_FOLDER
         try:
@@ -221,14 +228,14 @@ class Breakdown:
             story_map = load_story_map(project_folder)
             if story_map:
                 story = NumberedStory.from_story_map(story_map)
-        except Exception:
-            story = None
+        except (ImportError, OSError, ValueError, KeyError):
+            story, story_map = None, None
         speeches_path = machine / SPEECHES_FILE
         if speeches_path.is_file():
             with open(speeches_path, encoding="utf-8") as handle:
                 speeches = speeches_from_json(json.load(handle))
         return cls(record_files, schema, words, constants, story=story, speeches=speeches,
-                   models=load_video_models(), project_folder=project_folder)
+                   models=load_video_models(), project_folder=project_folder, story_map=story_map)
 
     @classmethod
     def from_paths(cls, paths, story_path=None, schema=None, words=None, constants=None, models=None):
@@ -246,7 +253,9 @@ class Breakdown:
         """Read a story file (or a test excerpt with its header) and use its numbered lines and speeches."""
         from .read_story import NumberedStory, load_story_file, read_story_lines, story_map_of
         reading = read_story_lines(load_story_file(story_path), self.constants)
-        self.story = NumberedStory.from_story_map(story_map_of(reading))
+        self.story_map = story_map_of(reading)
+        self.story = NumberedStory.from_story_map(self.story_map)
+        self.speeches = {}
         for speech in reading.speeches:
             self.speeches[speech.identifier] = speech_entry(speech.to_json())
         self._cache.clear()
@@ -427,7 +436,8 @@ def breakdown_for_run(run):
     project = getattr(run, "project", None)
     folder = getattr(project, "folder", None) if project is not None else None
     breakdown = Breakdown(run.record_files, run.schema, run.words, run.constants, story=numbered,
-                          speeches=speeches, models=load_video_models(), project_folder=folder)
+                          speeches=speeches, models=load_video_models(), project_folder=folder,
+                          story_map=getattr(source, "story_map", None) if source is not None else None)
     if isinstance(cache, dict):
         cache["derive_fields.breakdown"] = breakdown
     return breakdown
@@ -468,6 +478,7 @@ class TimeFloor:
     unknown_speeches: list = dataclass_field(default_factory=list)
     provisional: bool = False
     extra_per_speech_s: float = 0.5
+    shared_speeches: list = dataclass_field(default_factory=list)  # (speech ID, other list items sharing its beat)
 
     @property
     def complete(self):
@@ -517,6 +528,10 @@ class TimeFloor:
         line = f"floor {seconds_text(self.floor)} s ({'; '.join(parts)})"
         if self.unknown_speeches:
             line += "; words unknown for " + ", ".join(self.unknown_speeches)
+        if self.shared_speeches:
+            line += "; " + "; ".join(
+                f"{speech} may be heard in {', '.join(others)} instead (a shared beat), which lowers this floor"
+                for speech, others in self.shared_speeches)
         return line
 
     def short_reason(self):
@@ -666,6 +681,7 @@ def provisional_floor(breakdown, scene_identifier, shot_identifier):
     speech_parts = []
     unknown = []
     pause_parts = []
+    shared = []
     beats_here = split_list(item.get("beats") or "")
     for beat_identifier in beats_here:
         beat = breakdown.record(beat_identifier, "BEAT")
@@ -684,6 +700,8 @@ def provisional_floor(breakdown, scene_identifier, shot_identifier):
                                   for quote in quoted_strings(by_shot[identifier].get("shows")))]
                 if quoting and shot_identifier not in quoting:
                     continue
+                if not quoting:
+                    shared.append((entry["id"], [identifier for identifier in sharing if identifier != shot_identifier]))
             part = speech_part(breakdown, entry["id"])
             if part is None:
                 unknown.append(entry["id"])
@@ -697,6 +715,7 @@ def provisional_floor(breakdown, scene_identifier, shot_identifier):
     result = TimeFloor(shot_identifier, round_seconds(speech_floor + pause_owed), round_seconds(speech_floor), 0.0,
                        round_seconds(pause_owed), speech_parts, [], pause_parts, unknown, provisional=True)
     result.extra_per_speech_s = constant(breakdown.constants, "speech_floor_extra_s", 0.5)
+    result.shared_speeches = shared
     return result
 
 
@@ -918,6 +937,69 @@ def coverage_map(breakdown, scene_identifier):
     return {"lines": lines, "beats": beats, "speeches": speeches}
 
 
+def speech_word_counts(breakdown, scene_identifier):
+    """{speech ID: words} for every speech of the scene (derived SPEECH word_count; screenplay speeches too)."""
+    return {entry["id"]: int(entry.get("words") or 0) for entry in breakdown.speeches_of_scene(scene_identifier)
+            if entry}
+
+
+# Line types of the numbered story that a formatted page sets at the narrow dialogue width.
+DIALOGUE_WIDTH_TYPES = ("cue", "dialogue", "parenthetical")
+
+
+def scene_eighths(breakdown, scene_identifier):
+    """(eighths, how) of a scene's length on the page, by A3 §5.2's line-count model (page_eighths_line_model):
+    each line of the numbered story wrapped at the action or dialogue width, blank lines kept, pages of
+    lines_per_page lines, rounded up to the next eighth and never under minimum_eighths. Only a formatted page gives
+    true eighths, so this is an estimate. (None, why) when the story's lines are not present."""
+    model = constant(breakdown.constants, "page_eighths_line_model", None)
+    scope = breakdown.scene_range(scene_identifier)
+    story = breakdown.story
+    if not model or scope is None or story is None or not (story.first <= scope[0] and scope[1] <= story.last):
+        return None, "needs the scene's story lines and the page line model"
+    page_lines = 0
+    for number in range(scope[0], scope[1] + 1):
+        text = story.line(number).strip()
+        if not text:
+            page_lines += 1
+            continue
+        text = text.lstrip("#>= ").strip()
+        width = (model["dialogue_characters_per_line"] if story.type_of(number) in DIALOGUE_WIDTH_TYPES
+                 else model["action_characters_per_line"])
+        page_lines += max(1, math.ceil(len(text) / width))
+    eighths = math.ceil(page_lines * model["eighths_per_page"] / model["lines_per_page"] - 1e-9)
+    eighths = max(model.get("minimum_eighths", 1), eighths)
+    per_page = model["eighths_per_page"]
+    pages, rest = divmod(eighths, per_page)
+    if not pages:
+        plain = f"{rest}/{per_page} of a page"
+    elif not rest:
+        plain = f"{pages} page{'s' if pages != 1 else ''}"
+    else:
+        plain = f"{pages} {rest}/{per_page} pages"
+    return eighths, f"{plain} ({page_lines} page lines, an estimate from the line count)"
+
+
+def script_marked(breakdown, beat):
+    """(yes or no, what marks it): a beat is marked by the script when its lines hold a capitalised sound, emphasis
+    or text token, or a light, colour or darkness word that stage.py read found (derived BEAT script_marked;
+    CRAFT-10 and added_emphasis_per_beat_max read it). None when the story map is not present."""
+    scenes = (breakdown.story_map or {}).get("scenes") or []
+    scene_identifier = scene_of(beat.identifier)
+    scene = next((entry for entry in scenes if entry.get("id") == scene_identifier), None)
+    if scene is None:
+        return None, "needs the story map that stage.py read writes"
+    lines = set(breakdown.lines_of(beat))
+    marks = []
+    for token in scene.get("capitalised_words") or []:
+        if token.get("line") in lines and token.get("class") in ("sound", "emphasis", "text"):
+            marks.append(f'{token["class"]} "{token["text"]}" (line {token["line"]})')
+    for entry in scene.get("light_lines") or []:
+        if entry.get("line") in lines:
+            marks.append(f'light words {", ".join(entry.get("words") or [])} (line {entry["line"]})')
+    return ("yes" if marks else "no"), "; ".join(marks)
+
+
 # ---------------------------------------------------------------- the mirror world: eras and frames (5.6, K03)
 
 @dataclass
@@ -965,6 +1047,7 @@ def eras(breakdown):
     if key in breakdown._cache:
         return breakdown._cache[key]
     found = []
+    unresolved = []
     rule = mirror_rule(breakdown)
     for item in breakdown.items(rule, "era") if rule is not None else []:
         first = breakdown.line_reference(item.get("from"))
@@ -978,12 +1061,21 @@ def eras(breakdown):
                 resolved = breakdown.story.resolve_lines(last_value)
                 last = resolved[1] if resolved else None
         if first is None or last is None:
+            unresolved.append(normalise_word(item.first or "") or "?")
             continue
         found.append(Era(normalise_word(item.first or ""), first, last,
                          normalise_word(item.get("frame") or "original")))
     found.sort(key=lambda era: era.first)
     breakdown._cache[key] = found
+    breakdown._cache[("eras_unresolved",)] = unresolved
     return found
+
+
+def eras_unresolved(breakdown):
+    """The mirror rule's eras whose lines could not be found (quote anchors outside the story given, or no story).
+    While any is unresolved, mirror states are 'open': code does not guess which elements are mirrored."""
+    eras(breakdown)
+    return breakdown._cache.get(("eras_unresolved",), [])
 
 
 def era_at(breakdown, line):
@@ -1108,7 +1200,10 @@ def handedness_of(state):
 
 
 def mirror_state_at(breakdown, reference, line):
-    """mirrored when the element's state handedness differs from the frame's at that line, else normal (5.6)."""
+    """mirrored when the element's state handedness differs from the frame's at that line, else normal (5.6);
+    open while the mirror rule's era lines cannot be found."""
+    if eras_unresolved(breakdown):
+        return "open"
     if not eras(breakdown):
         return "normal"
     state = state_of_reference(breakdown, reference, line)
@@ -1155,6 +1250,9 @@ def shot_mirror_states(breakdown, shot):
 
 def elements_present(breakdown, scene_identifier):
     """Every element present in a scene: its characters and place, and every element its shots show."""
+    key = ("elements_present", scene_identifier)
+    if key in breakdown._cache:
+        return breakdown._cache[key]
     found = []
     scene = breakdown.record(scene_identifier, "SCENE")
     if scene is not None:
@@ -1170,6 +1268,7 @@ def elements_present(breakdown, scene_identifier):
     for element in found:
         if element and element not in unique:
             unique.append(element)
+    breakdown._cache[key] = unique
     return unique
 
 
@@ -1237,6 +1336,8 @@ def element_orientations(breakdown, element):
 
 def location_orientation(breakdown, location):
     """single when the place is seen in one mirror state only, both otherwise (derived LOCATION orientation)."""
+    if eras_unresolved(breakdown):
+        return "open"
     seen = element_orientations(breakdown, location)
     return "single" if len(seen) <= 1 else "both"
 
@@ -1369,7 +1470,8 @@ def plan_for_shot(breakdown, shot):
     if stored is None:
         return None
     line = shot_first_line(breakdown, shot)
-    needed = "reversed" if mirror_state_at(breakdown, location, line) == "mirrored" else "original"
+    state = mirror_state_at(breakdown, location, line)
+    needed = stored.orientation if state == "open" else ("reversed" if state == "mirrored" else "original")
     if needed == stored.orientation:
         return stored
     return SetPlan(stored.location, stored.width, stored.depth, stored.height, needed, stored.marks,
@@ -1472,16 +1574,30 @@ def camera_for(breakdown, shot, plan=None):
     return Camera(setup.identifier, position, look_at, lens, frame_ratio(breakdown), float(sensor))
 
 
-def placement_word(u):
+def placement_bands(breakdown):
+    bands = dict(FRAME_PLACEMENT_BANDS)
+    bands.update(constant(breakdown.constants, "frame_placement_bands", {}) or {})
+    return bands
+
+
+def body_numbers(breakdown):
+    numbers = dict(PROJECTION_BODY)
+    numbers.update(constant(breakdown.constants, "projection_body", {}) or {})
+    return numbers
+
+
+def placement_word(u, bands=None):
+    """left_edge, left_third, centre, right_third or right_edge for a place across the frame (-1 to +1)."""
     if u is None:
         return None
-    if u < -THIRD_OUTER:
+    bands = bands or FRAME_PLACEMENT_BANDS
+    if u < -bands["third_outer"]:
         return "left_edge"
-    if u < -CENTRE_HALF_WIDTH:
+    if u < -bands["centre_half_width"]:
         return "left_third"
-    if u <= CENTRE_HALF_WIDTH:
+    if u <= bands["centre_half_width"]:
         return "centre"
-    if u <= THIRD_OUTER:
+    if u <= bands["third_outer"]:
         return "right_third"
     return "right_edge"
 
@@ -1653,7 +1769,9 @@ def scene_staging(breakdown, scene_identifier):
 
 def character_height(breakdown, character):
     record = breakdown.record(element_of(character), "CHARACTER")
-    return number_of(record.get("height_m")) if record is not None and record.get("height_m") else FALLBACK_HEIGHT_M
+    if record is not None and number_of(record.get("height_m")):
+        return number_of(record.get("height_m"))
+    return body_numbers(breakdown)["height_fallback_m"]
 
 
 def body_height(breakdown, character, posture):
@@ -1671,7 +1789,7 @@ def eye_point(breakdown, plan, character, point, posture):
     if posture == "lying":
         surface = plan.surface_under(point) if plan is not None else None
         return (point[0], point[1], (surface or 0.0) + 0.15)
-    return (point[0], point[1], body_height(breakdown, character, posture) * EYE_HEIGHT_SHARE)
+    return (point[0], point[1], body_height(breakdown, character, posture) * body_numbers(breakdown)["eye_height_share"])
 
 
 def target_point(breakdown, staging, plan, reference, moment):
@@ -1709,6 +1827,8 @@ class Placement:
     in_frame: bool
     posture: str
     moving: bool
+    heading_deg: float = None     # the facing direction on the plan, in the orientation this shot needs
+    facing_deg: float = None      # the same as Blender's facing: (heading + 90) mod 360 (5.6)
 
 
 def subject_items(breakdown, shot):
@@ -1740,11 +1860,17 @@ def projected_placement(breakdown, shot):
             seen_point = plan.place(eye_point(breakdown, plan, element, point, posture))
             u, _, depth = camera.project(seen_point)
             target = target_point(breakdown, staging, plan, faces, moment)
-            facing = None
-            if target is not None and posture != "lying":
-                facing = facing_word(camera, vector(plan.place(point), plan.place(target)))
-            samples.append(Placement(moment, seen_point, placement_word(u), facing, depth, u,
-                                     u is not None and abs(u) <= OUT_OF_FRAME, posture, moving))
+            facing = heading = None
+            if target is not None:
+                direction = vector(plan.place(point), plan.place(target))
+                if length(direction) > 1e-9:
+                    heading = round(plan_heading_deg(direction), 1)
+                if posture != "lying":
+                    facing = facing_word(camera, direction)
+            bands = placement_bands(breakdown)
+            samples.append(Placement(moment, seen_point, placement_word(u, bands), facing, depth, u,
+                                     u is not None and abs(u) <= bands["out_of_frame"], posture, moving, heading,
+                                     round(blender_facing_deg(heading), 1) if heading is not None else None))
         if samples:
             result[element] = samples
     breakdown._cache[key] = result
@@ -1809,6 +1935,31 @@ def focus_subject(breakdown, shot):
         if element_of(item.first).startswith("CH-"):
             return item
     return None
+
+
+def dominant_of(breakdown, shot):
+    """What is seen first in the shot (SHOT dominant): the AI's own words at Detailed depth; at Standard, derived from
+    focus_on (the sharp subject), then the first subject, then the first thing; a turn shot's dominant is the face
+    of that subject (5.5 picture group)."""
+    written = shot.get("dominant")
+    if written and normalise_word(written) not in ("none", "auto"):
+        return {"dominant": written, "from": "written"}
+    role = normalise_word(shot.get("role") or "")
+    focus = shot.get("focus_on")
+    chosen, source = None, None
+    if focus and normalise_word(focus) != "none":
+        chosen, source = element_of(focus), "focus_on"
+    elif subject_items(breakdown, shot):
+        chosen, source = element_of(subject_items(breakdown, shot)[0].first), "the first subject"
+    else:
+        things = [item.first for item in breakdown.items(shot, "thing") if item.first]
+        if things:
+            chosen, source = element_of(things[0]), "the first thing"
+    if chosen is None:
+        return {"dominant": None, "from": "nothing in frame to name"}
+    name = element_name(breakdown, chosen)
+    words = f"{name}'s face" if role == "turn" and chosen.startswith("CH-") else name
+    return {"dominant": chosen, "words": words, "from": source + (" (a turn shot: the face)" if role == "turn" else "")}
 
 
 @dataclass
@@ -1955,7 +2106,7 @@ def main_light_side(breakdown, shot):
     if u is None:
         side = camera.side_of_direction(vector(camera.position, plan.place(point)))
         return "behind the camera, " + ("frame_right" if side > 0 else "frame_left")
-    if abs(u) <= CENTRE_HALF_WIDTH:
+    if abs(u) <= placement_bands(breakdown)["centre_half_width"]:
         return "centre"
     return "frame_right" if u > 0 else "frame_left"
 
@@ -2007,7 +2158,10 @@ def other_side(side):
 
 
 def apparent_side(own, mirror_state):
-    """The side a viewer reads on the picture: the own side, swapped when the element is mirrored (5.6)."""
+    """The side a viewer reads on the picture: the own side, swapped when the element is mirrored (5.6); open while
+    the element's mirror state is open."""
+    if mirror_state == "open":
+        return "open"
     return other_side(own) if mirror_state == "mirrored" else own
 
 
@@ -2066,6 +2220,13 @@ def flipped_after(route):
     return route in ("flip_all", "flip_with_mirrored_references")
 
 
+def prompt_is_flipped(route, mirror_state):
+    """True when an element's prompt describes a picture that is flipped later: every element on routes a and b;
+    on the plate route (c) the mirrored elements, generated in world orientation in the plate that is then flipped,
+    while the normal people are added to it unflipped (8.5)."""
+    return flipped_after(route) or (route == "plate" and mirror_state == "mirrored")
+
+
 def subject_sides(breakdown, shot, item, route=None):
     """For one subject: its facing, mirror state, both hands (apparent side, place in the picture, place in the
     prompt) and every sided feature in the same terms; also which own hand is nearest the camera."""
@@ -2074,8 +2235,9 @@ def subject_sides(breakdown, shot, item, route=None):
     mirror = mirror_state_at(breakdown, item.first, line)
     facing = facing_in_shot(breakdown, shot, item)
     route = route if route is not None else mirror_route(breakdown, shot).route
-    prompt_facing = turned_facing(facing) if flipped_after(route) else facing
-    prompt_mirror = ("normal" if mirror == "mirrored" else "mirrored") if flipped_after(route) else mirror
+    flipped = prompt_is_flipped(route, mirror)
+    prompt_facing = turned_facing(facing) if flipped else facing
+    prompt_mirror = ("normal" if mirror == "mirrored" else "mirrored") if flipped else mirror
 
     def describe(own):
         apparent = apparent_side(own, mirror)
@@ -2162,7 +2324,8 @@ class MirrorRoute:
                 "reasons": self.reasons}
 
 
-ROUTE_LETTERS = {"plate": "c", "direct": "e", "flip_with_mirrored_references": "b", "flip_all": "a", "none": "none"}
+ROUTE_LETTERS = {"plate": "c", "direct": "e", "flip_with_mirrored_references": "b", "flip_all": "a", "none": "none",
+                 "open": "open"}
 
 
 def mirror_route(breakdown, shot):
@@ -2179,9 +2342,16 @@ def mirror_route(breakdown, shot):
     location = scene_location(breakdown, scene_of(shot.identifier)) if kind not in ("card", "black") else None
     location_state = states.get(location, {}).get("mirror_state") if location else None
     route = None
-    if not eras(breakdown) or kind in ("card", "black"):
+    if kind in ("card", "black"):
         route = "none"
-        reasons.append("nothing in frame is mirrored" if kind not in ("card", "black") else "a card or black: no place in frame")
+        reasons.append("a card or black: no place in frame")
+    elif eras_unresolved(breakdown):
+        route = "open"
+        reasons.append("the mirror rule's era lines were not found in the story given ("
+                       + ", ".join(eras_unresolved(breakdown)) + "), so which elements are mirrored is not known yet")
+    elif not eras(breakdown):
+        route = "none"
+        reasons.append("nothing in frame is mirrored")
     else:
         mirrored = [element for element, entry in states.items() if entry["mirror_state"] == "mirrored"]
         people = [element for element in states if element.startswith("CH-")]
@@ -2233,13 +2403,13 @@ def mirror_route(breakdown, shot):
 
 
 def post_operations(breakdown, shot):
-    """Finishing operations the shot needs from its mirror route: flip after routes a and b, composite for a text
-    graphic (8.5, 8.7)."""
+    """Finishing operations the shot needs from its mirror route (8.5, 8.7): flip after routes a and b; composite
+    for a text graphic, and for the plate route, whose normal people are added to the flipped plate."""
     route = mirror_route(breakdown, shot)
     found = []
     if flipped_after(route.route):
         found.append("flip")
-    if route.text_graphic:
+    if route.text_graphic or route.route == "plate":
         found.append("composite")
     return found
 
@@ -2404,6 +2574,79 @@ def store_story_point_beats(breakdown, project_folder=None, schema=None):
     return changed_values, [record_file.name for record_file in changed_files]
 
 
+# ---------------------------------------------------------------- previs stubs (step 8, 5.4 rule 2)
+
+PREVIS_IDENTIFIER = re.compile(r"^PV-(.+)-V\d{2}$")
+PREVIS_FILE = "19 Grey previews/Grey preview jobs.md"
+
+
+def previs_stubs_needed(breakdown):
+    """[(previs ID, what it is for, the record that names it)] for every PREVIS a SHOT time_slice or a CUT
+    shared_geometry names that no PREVIS record holds yet: code creates these as stubs with status planned (step 8)."""
+    existing = {record.identifier for record in breakdown.records_of("PREVIS", include_omitted=True)}
+    found = []
+    named = []
+    for shot in breakdown.records_of("SHOT"):
+        for item in breakdown.items(shot, "time_slice"):
+            named.append((item.first, shot.identifier))
+    for cut in breakdown.records_of("CUT"):
+        value = cut.get("shared_geometry")
+        if value and normalise_word(value) != "none":
+            named.append((value.strip(), cut.identifier))
+    for identifier, source in named:
+        match = PREVIS_IDENTIFIER.match(identifier or "")
+        if not match or identifier in existing or any(entry[0] == identifier for entry in found):
+            continue
+        found.append((identifier, match.group(1), source))
+    return found
+
+
+def checker_accepts_previs_stubs(schema, words):
+    """True when FORM-05 leaves a PREVIS stub (status planned) alone. Until it does, a stub would switch the grey
+    preview add-on on and the checker would ask the AI for fields only add-on B fills, so build lists the stubs in
+    derived fields.json instead of writing them (ID-02 already accepts the names they would hold)."""
+    try:
+        from .checks_form import FormContext, check_form_05
+        from .record_format import add_record, make_record, new_record_file
+    except ImportError:
+        return False
+    record_file = new_record_file(PREVIS_FILE, ["# Grey previews"], "Grey preview jobs")
+    add_record(record_file, make_record("PREVIS", "PV-SC01-MASTER-V01", fields=[
+        ("for", "SC01-MASTER"), ("level", 3), ("status", "planned"), ("locked", "no")]), schema)
+    context = FormContext.for_records(schema, words, [record_file], step=None)
+    return not any("PV-SC01-MASTER-V01" in str(problem) for problem in check_form_05([record_file], context))
+
+
+def create_previs_stubs(breakdown, project_folder):
+    """Add the PREVIS stubs a project needs to its grey preview jobs file (keeping the old file in history).
+    Returns the IDs created (none while the checker would still ask for their add-on fields)."""
+    needed = previs_stubs_needed(breakdown)
+    if not needed or not checker_accepts_previs_stubs(breakdown.schema, breakdown.words):
+        return []
+    from .project_files import Project, history_run_folder, keep_in_history
+    from .record_format import add_record, ensure_end_line, make_record, new_record_file, write_file
+    project = Project(project_folder, breakdown.schema, breakdown.words)
+    record_files = project.load_record_files()
+    file_name = next((name for name in [project.target_file_for(make_record("PREVIS", needed[0][0]), record_files)]
+                      if name), PREVIS_FILE)
+    path = Path(project_folder) / file_name
+    record_file = next((existing for existing in record_files if existing.name == file_name), None)
+    if record_file is None:
+        record_file = new_record_file(file_name, ["# Grey previews", "",
+                                                  "The grey preview jobs: one for each shot, master or place "
+                                                  "that gets a grey 3D preview."], "Grey preview jobs")
+    else:
+        keep_in_history(history_run_folder(project), path, file_name)
+    level = constant(breakdown.constants, "previs_stub_level", 3)
+    for identifier, target, _ in needed:
+        add_record(record_file, make_record("PREVIS", identifier, fields=[
+            ("for", target), ("level", level), ("status", "planned"), ("locked", "no")]),
+            breakdown.schema, project.type_order_for(file_name))
+    ensure_end_line(record_file, "Grey preview jobs")
+    write_file(record_file, path, breakdown.schema)
+    return [identifier for identifier, _, _ in needed]
+
+
 # ---------------------------------------------------------------- everything for one shot, scene, project
 
 def shot_mirror_state_text(breakdown, shot):
@@ -2418,6 +2661,7 @@ def derive_shot(breakdown, shot, model=None):
     check = size_check(breakdown, shot)
     placements = projected_placement(breakdown, shot)
     heights = face_heights(breakdown, shot)
+    plan = plan_for_shot(breakdown, shot)
     return {
         "label": crew_label(shot.identifier),
         "min_screen_time_s": floor.floor,
@@ -2436,8 +2680,12 @@ def derive_shot(breakdown, shot, model=None):
         "eyeline_sides": eyeline_sides(breakdown, shot),
         "projected_placement": {element: [{"moment_s": round(sample.moment, 2), "at": sample.at,
                                            "faces": sample.faces, "depth_m": round(sample.depth, 3) if sample.depth else None,
-                                           "in_frame": sample.in_frame} for sample in samples]
+                                           "in_frame": sample.in_frame, "posture": sample.posture,
+                                           "plan_point": [round(value, 3) for value in sample.point],
+                                           "facing_deg": sample.facing_deg} for sample in samples]
                                 for element, samples in placements.items()},
+        "plan_orientation": plan.orientation if plan is not None else None,
+        "dominant": dominant_of(breakdown, shot),
         "size_check": check.size if check else None,
         "size_check_detail": check.as_dict() if check else None,
         "face_height": {element: round(value, 3) for element, value in heights.items()},
@@ -2450,20 +2698,27 @@ def derive_scene(breakdown, scene_identifier):
     """Every code-derived field of one SCENE, and its list items' provisional floors."""
     era = scene_era(breakdown, scene_identifier)
     items = list_items(breakdown, scene_identifier)
+    eighths, eighths_how = scene_eighths(breakdown, scene_identifier)
+    provisional = {identifier: provisional_floor(breakdown, scene_identifier, identifier) for identifier, _ in items}
     return {
         "label": scene_label(breakdown, scene_identifier),
         "era": era.era if era else None,
         "frame_handedness": era.frame if era else "original",
         "switch_at": era.switch_at if era else None,
+        "era_after_switch": era.next_era if era else None,
         "states_in_play": states_in_play(breakdown, scene_identifier),
         "mirror_states": scene_mirror_states(breakdown, scene_identifier),
         "duration_est_s": scene_duration(breakdown, scene_identifier),
-        "eighths": None,
+        "eighths": eighths,
+        "eighths_how": eighths_how,
         "speaking": speaking_counts(breakdown, scene_identifier),
+        "speech_words": speech_word_counts(breakdown, scene_identifier),
         "coverage": coverage_map(breakdown, scene_identifier),
         "axis_sides": axis_sides(breakdown, scene_identifier),
-        "provisional_floors": {identifier: provisional_floor(breakdown, scene_identifier, identifier).floor
-                               for identifier, _ in items},
+        "script_marked_beats": {beat.identifier: script_marked(breakdown, beat)[0]
+                                for beat in breakdown.beats_of(scene_identifier)},
+        "provisional_floors": {identifier: floor.floor for identifier, floor in provisional.items()},
+        "provisional_floor_reasons": {identifier: floor.reasons() for identifier, floor in provisional.items()},
     }
 
 
@@ -2481,6 +2736,8 @@ def derive_all(breakdown, scenes=None):
         until = state_until(breakdown, state)
         result["states"][state.identifier] = {"until": f"{until[0]} | line: {until[1]}" if until[0] else None}
     result["story_points"] = [point.as_dict() for point in story_points(breakdown)]
+    result["previs_stubs_needed"] = [{"previs": identifier, "for": target, "named_by": source}
+                                     for identifier, target, source in previs_stubs_needed(breakdown)]
     return result
 
 
@@ -2498,16 +2755,24 @@ def run_build(context):
     if getattr(context.arguments, "story", None):
         breakdown.attach_story_file(context.arguments.story)
     changed_values, changed_files = store_story_point_beats(breakdown, project_folder)
-    if changed_values:
+    stubs = create_previs_stubs(breakdown, project_folder)
+    if stubs:
+        context.say(f"Made {len(stubs)} grey preview job{'s' if len(stubs) != 1 else ''} to fill in later: "
+                    + ", ".join(stubs) + ".")
+    if changed_values or stubs:
         breakdown = Breakdown.from_project(project_folder, context.schema, context.words, context.constants)
         if getattr(context.arguments, "story", None):
             breakdown.attach_story_file(context.arguments.story)
+        from .project_files import Project
+        entry = []
+        if changed_values:
+            entry.append(f"Worked out the beat of {changed_values} story point{'s' if changed_values != 1 else ''}")
+        if stubs:
+            entry.append(f"made {len(stubs)} grey preview job{'s' if len(stubs) != 1 else ''} to fill in later")
         try:
-            from .project_files import Project
-            Project(project_folder, context.schema, context.words).add_log_entry(
-                f"Worked out the beat of {changed_values} story point{'s' if changed_values != 1 else ''}.")
-        except Exception:
-            pass
+            Project(project_folder, context.schema, context.words).add_log_entry("; ".join(entry).capitalize() + ".")
+        except (OSError, ValueError) as error:
+            context.say(f"The log in 00 Start here could not be written ({error}); the story points were saved.")
     scenes = [context.arguments.scene] if getattr(context.arguments, "scene", None) else None
     data = derive_all(breakdown, scenes)
     data["about"] = ("Worked out by stage.py build from the record files; never edit it. It is made again on "
@@ -2555,6 +2820,6 @@ for _function in (time_floor, provisional_floor, clip_plan, held_take, scene_era
                   size_check, face_heights, lip_sync, main_light_side, image_sides, mirror_route, post_operations,
                   story_points, derive_shot, derive_scene, derive_all, scene_duration, scene_label, coverage_map,
                   speaking_counts, focus_subject, facing_in_shot, plan_for_shot, camera_for, scene_staging,
-                  axis_sides):
+                  axis_sides, scene_eighths, script_marked, speech_word_counts, dominant_of, eras_unresolved):
     setattr(Breakdown, _function.__name__, _function)
 del _function

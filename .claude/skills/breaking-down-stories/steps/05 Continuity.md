@@ -8,11 +8,11 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Know the state of every changeable element in every scene, with the line that changed it, and every side. Then close the first half of the work with checkpoint B, the big choices, and write the whole-film summary every scene unit reads.
+Know the state of every changeable element in every scene, with the line that changed it, and every side. Then close the first half of the work with the big choices (checkpoint B), and write the whole-film summary every scene unit reads.
 
 ## When it runs
 
-Once, after characters, places and things: in units of scenes, in story order, then the big choices, then the summary.
+After characters, places and things: units of scenes in story order, then the big choices, then the summary.
 
 ## Inputs
 
@@ -119,7 +119,7 @@ Print your own computed counts. On a code surface pass each answer on as `### CH
 
 ## How to redo
 
-- "Redo continuity from scene 12": the units from scene 12 run again; states before it stand.
+- "Redo continuity from scene 12": units from scene 12 run again; earlier states stand.
 - A new side or injury found later is a new STATE; `stage.py impact` lists the shots that show the element.
 - A big choice changed later ("make it 16:9") is answered again; the AI lists what it affects in plain words first and asks once if it is costly.
 
@@ -127,17 +127,18 @@ Print your own computed counts. On a code surface pass each answer on as `### CH
 
 Every line reference is a quote anchor: `from` and `cause` quote the story exactly, at least `quote_anchor_words_min` words, found once in the whole story (`- from: SC10 | line: "fully dressed at four in the morning"`, `- cause: "fully dressed at four in the morning" | quote: "fully dressed at four in the morning"`).
 
-1. Save each unit's STATE records in one copy box: `09 Continuity.md` first, then `09 Continuity - scenes 06-10.md` and so on; `adopt` merges them by ID (G10).
-2. After the big-choices answers, write in copy boxes: `01 Choices.md` again, whole, with every choice's `status` (`answered` or `defaulted`), `answer` and `date`; `06 World and style.md` again, whole, with the answered values in place of `open` (STYLE `medium`, WORLD `place` and `period`, RULE `era`) and any other file whose values an answer changed; then unit U-05-SUMMARY, `02 Whole-film summary.md`: the scene list with events, sequences and plan fields, fixed descriptions, state lines, voices, the `movement` field and status lines, FACT and PLANT lines and world rules, without set plans, at most `whole_film_summary_words_max` words. Tell the user which earlier choice files to delete. Leave `locked` as saved; `adopt` sets the locks from the answered choices.
+1. Save each unit's STATE records in one copy box: `09 Continuity.md` first, then `09 Continuity - scenes 06-10.md` and so on (merged by ID, G10).
+2. After the big-choices answers, write in copy boxes: `01 Choices.md` again, whole, with every choice's `status` (`answered` or `defaulted`), `answer` and `date`; `00 Start here.md` again, whole, with "Big choices so far" and the PROJECT values the answers set (`frame_shape`) or earlier steps filled (`genre`, `tone_home`, `tone_range`, `prompt_words`); `06 World and style.md` again, whole, with the answered values in place of `open` (STYLE `medium`, WORLD `place` and `period`, RULE `era`) and any other file whose values an answer changed; then unit U-05-SUMMARY, `02 Whole-film summary.md`: the scene list with events, sequences and plan fields, fixed descriptions, state lines, voices, the `movement` field and status lines, FACT and PLANT lines and world rules, without set plans, at most `whole_film_summary_words_max` words. Tell the user which earlier choice files to delete. Leave `locked` as saved; `adopt` sets the locks from the answered choices.
 3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line:
 
 ```
 Save as: 02 Whole-film summary.md   (save only if the box ends with the END line)
-To continue later: new chat in this project; attach 00 Start here, 01 Choices,
-02 Whole-film summary, 05 Story plan, 06 World and style, 07 Characters and voices,
-08 Places and things, 09 Steps 03-06 - world, people, continuity, film rules and your story;
-type: Continue my breakdown. Next is the film's rules.
+To continue later: new chat in this project; attach, in two messages if they are
+more than 10 files, 00 Start here, 01 Choices, 02 Whole-film summary, 05 Story plan,
+06 World and style, 07 Characters and voices and 08 Places and things with their files,
+09 Steps 03-06 - world, people, continuity, film rules and your story;
+type with the last: Continue my breakdown. Next is the film's rules.
 ```
 
 **One-line task, again:** Record the state of every changeable person, thing and place in every scene, each change with the line that causes it and every side in its own terms, then put the big choices to the user.

@@ -107,7 +107,7 @@ None here. The user approved the choices that drive these rules at the big choic
 Every line reference is a quote anchor: every story point (`break`, `closest`, `light_cue`, `rupture_plan`, the ladder's rungs) is a scene ID and an exact quote of at least `quote_anchor_words_min` words, found once in that scene. Never add the ` = SC10-B07` ending; code writes it after step 7.
 
 1. Save the three units' records as `10 Film rules.md`, then `10 Film rules - looks.md` and `10 Film rules - colour, sound and ladder.md`; `adopt` merges them by ID (G10). Save the voice choice, a small choice written `status: defaulted`, as `01 Choices - film rules.md`, and write its default (`voice_policy: designed_only`) in SOUNDPLAN.
-2. Write each record's `status: approved` and `locked: yes`: film rules are locked on writing.
+2. Write each record's `status: approved` and `locked: yes`: film rules are locked on writing. Save `00 Start here.md` again, whole, with PROJECT `fps` and the log line.
 3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line for the first scene chat:
 
@@ -115,7 +115,7 @@ Every line reference is a quote anchor: every story point (`break`, `closest`, `
 Save as: 10 Film rules.md   (save only if the box ends with the END line)
 To continue later: new chat in this project; attach 00 Start here, 02 Whole-film summary,
 10 Film rules and its files, 10 Steps 07-08 - scenes and shots and your story, and
-08 Places and things when the scene's place has a floor plan;
+08 Places and things (with its files) when the scene's place has a floor plan;
 type: Continue my breakdown. Next is scene 1.
 ```
 

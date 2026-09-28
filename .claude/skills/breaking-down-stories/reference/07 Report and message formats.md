@@ -24,7 +24,7 @@ To continue later: new chat in this project; attach 00 Start here, 02 Whole-film
 floor; type: Continue my breakdown. Next is scene 12.
 ```
 
-At the end of a group of scenes the next step is the check: "Next: a check. New chat in this project; attach the files of scenes 7 to 10, your story, 02 Whole-film summary, 10 Film rules and 05 Checks in words; type: Check my group of scenes."
+In a chat app, after a group's last batch of shots the next step is the check: "Next: a check. New chat in this project; attach the files of scenes 7 to 10, your story, 02 Whole-film summary, 10 Film rules, 05 Checks in words and your last 13 Health check file; type: Check my group of scenes." A resume line that names more files than the app takes at once (Gemini: 10) says "attach, in two messages" and "type with the second".
 
 ## The welcome
 
@@ -69,7 +69,15 @@ The scene list. One question. Reply "defaults", or answer it.
 Next: I'll plan the whole story: its turns, its climax and its groups of scenes.
 ```
 
-For a book there is no question: "Done: step 2 of 12. I found 14 chapters, 49,152 words; I'll plan the whole book next."
+For a book there is no question:
+
+```
+Done: step 2 of 12, reading the story.
+Example: chapter I, "The Lamps Are Old", opens with a letter.
+Made: 03 Story - numbered, 05 Story plan. I found 14 chapters, 49,152 words.
+Needs you: nothing.
+Next: a short summary of each chapter, then three ways the book could become a film.
+```
 
 ## How the book becomes a film
 
@@ -93,8 +101,8 @@ At most `checkpoint_b_items_max` numbered items, in this order: the climax; styl
 
 ```
 Done: steps 4 to 6 of 12 (world and style; characters, places and things; continuity).
-Example: Saye's fixed description now reads "Dr Saye, a slight, upright woman in her
-  fifties, ...". It goes word for word into every picture prompt with her.
+Example: Saye's fixed description now reads "Dr Saye, a slim, upright woman in her
+  late fifties, ...". It goes word for word into every picture prompt with her.
 
 The big choices. Reply "defaults", or answer by number.
 *1. The climax: the crossing beside the ship (scenes 26 and 27).        [26-27]
@@ -131,11 +139,11 @@ Done: group 3, scenes 7 to 10 (step 8 of 12). 58 shots, about 4 minutes.
 Example: shot 150 is the turn of scene 10: Iona's close-up held 15 seconds.
 Made: 11 Scenes/Scene 07 to Scene 10. Checked: no problems. One added detail changes
   a scene, to keep or cut: Iona sets the lamp down (scene 10). 6 small additions kept.
-Scene 10 - Saye's kitchen - 20 shots and a title card - about 1 min 36 s
- shot 150  15 s   the turn: close-up, Iona chews, stops, chews once more; "Not mint."
- (the other 19 shots are listed in the scene file)
-Needs you: nothing. I'm carrying on with group 4; tell me anything you want changed.
-Next: scene 11.
+Scene 10 - Saye's kitchen - 20 shots and a title card - about 1 minute 53 seconds
+ shot 150, 15 seconds: the turn: close-up, Iona chews, stops, chews once more; "Not mint."
+ (the other 19 shots and the title card are in the scene file)
+Needs you: nothing. I'm carrying on; tell me anything you want changed.
+Next: writing the shots of scenes 7 to 10 in full, then group 4.
 ```
 
 ## The finished check
@@ -182,7 +190,7 @@ The user types only the word in bold.
 
 ## What the user can type
 
-Break down my story. · Continue my breakdown. · Where are we? · Why shot 150? · Change ... · Go deeper on scene 13 · Quick / Standard / Detailed · Redo step 6 · Stop here · Check · continue · next · defaults · stop after each group · Make storyboards · Make grey previews (Claude Code on your computer only) · Get it ready for AI video · Plan the edit. Their own words work too.
+Break down my story. · Continue my breakdown. · Where are we? · Why shot 150? · Change ... · Go deeper on scene 13 · Quick / Standard / Detailed · Redo step 6 · Stop here · Check · continue · next · defaults · stop after each group · Make storyboards · Make grey previews (Claude Code on your computer only) · Get it ready for AI video · Plan the edit. Their own words work too. In a new chat, as a resume line says: Check my group of scenes. · Run the film pass on these scenes. · Check my breakdown.
 
 ## 00 Start here
 
