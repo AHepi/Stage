@@ -122,14 +122,15 @@ class TestRun:
         """The one plain summary line for this test."""
         word = "PASS" if self.passed else "FAIL"
         name = self.path.name
+        took = f"{self.seconds:.1f} s" if self.seconds < 10 else f"{self.seconds:.0f} s"
         if self.problem:
-            return f"{word}  {name}: {self.problem} ({self.seconds:.0f} s)"
+            return f"{word}  {name}: {self.problem} ({took})"
         groups = f"{self.groups_passed} group{'s' if self.groups_passed != 1 else ''} passed"
         if self.groups_failed:
             groups += f", {self.groups_failed} failed"
         if self.skipped:
             groups += f", {self.skipped} said skipped"
-        text = f"{word}  {name}: {groups} ({self.seconds:.0f} s)"
+        text = f"{word}  {name}: {groups} ({took})"
         if not self.passed and self.first_failure:
             text += f"; first failure: {shorten(self.first_failure, 220)}"
         return text

@@ -3122,7 +3122,13 @@ def score_selftest(context, project, record_file, project_record, identifiers, i
         context.say(f"... and {len(errors) - 10} more error lines.")
     context.say(f"Set on the project: surface {surface}, code runs here, batches of {size} shots. The test shots "
                 "were deleted (a copy is in history).")
-    context.say("Next: the welcome message with the rights question (choice 1).")
+    rights_choice = next((record for record_file in project.load_record_files() for record in record_file.records
+                          if record.type_name == "CHOICE" and record.identifier == "CHOICE-001"), None)
+    rights_status = normalise_word((rights_choice.get("status") if rights_choice is not None else None) or "open")
+    if rights_status in ("answered", "defaulted"):
+        context.say("Next: stage.py next (the rights question is already answered).")
+    else:
+        context.say("Next: the welcome message with the rights question (choice 1).")
     context.summary = f"self-test scored: batch {size}"
     return 0
 

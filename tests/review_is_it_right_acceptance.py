@@ -526,6 +526,8 @@ CRASH_EDITS = [
      "### SHOT SC10-SH010X "),
     ("a shot ID one digit short (ID-03)", "### SHOT SC10-SH020 ", "### SHOT SC10-SH02 "),
     ("a setup ID with a character outside the ID letters (CRAFT-07)", "### SETUP SC10-SU01 ", "### SETUP Zoë-SC10-SU01 "),
+    ("a project with no frame shape (compile)", "- frame_shape: 2.39\n", ""),
+    ("characters with no tier (compile)", "- tier: principal\n", ""),
 ]
 
 

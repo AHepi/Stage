@@ -266,7 +266,7 @@ def check_gold(whole_story):
     generation.use_model_facts(None)
     skipped = dict(result.skipped)
     whole = [check_id for check_id in ("FILM-01", "FILM-12", "PLAN-04") if "not in the excerpt" in skipped.get(check_id, "")]
-    facts = [check_id for check_id in ("GEN-10",) if "work package 8" in skipped.get(check_id, "")]
+    facts = [check_id for check_id in ("GEN-10",) if "model facts" in skipped.get(check_id, "")]
     packs = [check_id for check_id in ("GEN-01", "GEN-04", "GEN-12") if "no compiled prompts" in skipped.get(check_id, "")]
     report(len(whole) == 3 and facts and len(packs) == 3,
            "gold: the whole-film checks skip as 'not in the excerpt'; with the adapter files hidden GEN-10 waits "
@@ -318,7 +318,7 @@ def check_clean_pack():
         without_adapter_files()
         result = run_own(files, story, project=project, check_ids=gen)
         generation.use_model_facts(None)
-        waiting = sorted(check_id for check_id, why in result.skipped if "work package 8" in why)
+        waiting = sorted(check_id for check_id, why in result.skipped if "model facts" in why)
         report(waiting == sorted(NEEDS_FACTS) and not own_lines(result),
                "without adapters/*.json the GEN checks that need model facts skip and say so; the others still read "
                "the pack", ", ".join(waiting))
