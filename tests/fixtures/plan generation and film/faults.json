@@ -1,0 +1,814 @@
+{
+ "about": "One faulty fixture (or more) per PLAN, GEN and FILM check of blueprint 7.2, made by tests/wp4e_acceptance.py from a temporary copy of the WP12a gold (examples/01 and 02) and of the clean compiled pack 'compiled pack SC10.json', with the stand-in model facts 'stand-in model facts.json'. 'edits' change named records ('find' in the record, its first occurrence replaced), or add records after a named one ('file' is 'scene' or 'context'). 'pack_edits' change the pack: 'append' text to a clip's prompt, 'replace' [find, replace] in it, 'set' clip keys, 'add_clip', 'split_clip' (the clip compiled twice), 'pack_set' pack keys. 'pack': 'none' runs with no compiled pack. 'story': 'none' runs with no story; otherwise the scene 10 excerpt is the story. The test expects a line of 7.2's form (level, check ID, record, field, what is wrong, then 'Fix:') on the record and field named, holding 'holds', placed in a file and line. 'build': 2 marks the faults of build-2 checks.",
+ "faults": [
+  {
+   "check": "PLAN-01",
+   "about": "the story plan names two climaxes",
+   "level": "E",
+   "record": "PLAN",
+   "field": "climax",
+   "holds": "names 2 climaxes",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PLAN",
+     "find": "- climax: SC26..SC27",
+     "replace": "- climax: SC10, SC26..SC27"
+    }
+   ]
+  },
+  {
+   "check": "PLAN-01",
+   "about": "scene 10 has scene intensity 10 away from the climax",
+   "level": "E",
+   "record": "SC10",
+   "field": "scene_intensity",
+   "holds": "outside the climax",
+   "edits": [
+    {
+     "file": "context",
+     "record": "SCENE SC10",
+     "find": "- scene_intensity: 6",
+     "replace": "- scene_intensity: 10"
+    }
+   ]
+  },
+  {
+   "check": "PLAN-01",
+   "about": "the climax is scene 10, whose intensity is 6",
+   "level": "E",
+   "record": "PLAN",
+   "field": "climax",
+   "holds": "holds no scene of intensity 10",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PLAN",
+     "find": "- climax: SC26..SC27",
+     "replace": "- climax: SC10"
+    }
+   ]
+  },
+  {
+   "check": "PLAN-02",
+   "about": "the mint is planted and never paid off",
+   "level": "E",
+   "record": "PL-08",
+   "field": "paid_off_at",
+   "holds": "never paid off",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PLANT PL-08",
+     "find": "- paid_off_at: SC10 \"Her face changes.\" = SC10-B07",
+     "replace": "- paid_off_at: none"
+    }
+   ]
+  },
+  {
+   "check": "PLAN-02",
+   "about": "the mint's payoff is written before its plant",
+   "level": "E",
+   "record": "PL-08",
+   "field": "paid_off_at",
+   "holds": "comes before its plant",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PLANT PL-08",
+     "find": "- planted_at: SC10 \"A pot of mint on the windowsill\" = SC10-B02",
+     "replace": "- planted_at: SC10 \"Her face changes.\" = SC10-B07"
+    },
+    {
+     "file": "context",
+     "record": "PLANT PL-08",
+     "find": "- paid_off_at: SC10 \"Her face changes.\" = SC10-B07",
+     "replace": "- paid_off_at: SC10 \"A pot of mint on the windowsill\" = SC10-B02"
+    }
+   ]
+  },
+  {
+   "check": "PLAN-03",
+   "about": "the tightest size peaks in scene 13, away from the climax, with no reason",
+   "level": "W",
+   "record": "PLAN",
+   "field": "peak",
+   "holds": "tightest_size peaks in SC13",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PLAN",
+     "find": "- peak: tightest_size | scene: SC13 | reason: the confession's turn lands inside Iona; the climax is played wide and still, in counterpoint",
+     "replace": "- peak: tightest_size | scene: SC13"
+    }
+   ]
+  },
+  {
+   "check": "PLAN-04",
+   "about": "the whole film is scene 10 (110 s planned) against a 60 s target",
+   "level": "W",
+   "record": "CATCH",
+   "field": "runtime_target_s",
+   "holds": "over the runtime target of 60 s",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PROJECT CATCH",
+     "find": "- runtime_target_s: as_written",
+     "replace": "- runtime_target_s: 60"
+    },
+    {
+     "file": "context",
+     "record": "PROJECT CATCH",
+     "find": "- scope: SC10",
+     "replace": "- scope: all"
+    }
+   ]
+  },
+  {
+   "check": "PLAN-05",
+   "about": "scene 10 carries a strand the plan cuts",
+   "level": "E",
+   "record": "SC10",
+   "field": "strands",
+   "holds": "ST-01 is a strand the plan cuts",
+   "edits": [
+    {
+     "file": "context",
+     "add_after_record": "FACT FT-01",
+     "text": "### STRAND ST-01 The ship's crew\n- name: the ship's crew\n- chapters: none\n- carries: none\n- feeds: nothing that stays\n- decision: cut\n- reason: a test strand\n- seconds: 0\n- status: draft\n- locked: no\n"
+    },
+    {
+     "file": "context",
+     "record": "SCENE SC10",
+     "find": "- sequence: SQ03",
+     "replace": "- sequence: SQ03\n- strands: ST-01"
+    }
+   ]
+  },
+  {
+   "check": "GEN-01",
+   "about": "the Kling prompt is longer than 2,500 characters",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "prompt",
+   "holds": "over kling-3.0-omni's limit of 2500",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "append": " Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room. Her eyes go past the woman to the far end of the room."
+    }
+   ]
+  },
+  {
+   "check": "GEN-02",
+   "about": "a 17 s clip on Kling, which makes 3 to 15 s",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "length_s",
+   "holds": "17 s is not a clip length kling-3.0-omni allows",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "set": {
+      "length_s": 17
+     }
+    }
+   ]
+  },
+  {
+   "check": "GEN-02",
+   "about": "a 720p clip on Kling, which makes 1080p",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "resolution",
+   "holds": "720p is not a resolution",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "set": {
+      "resolution": "720p"
+     }
+    }
+   ]
+  },
+  {
+   "check": "GEN-03",
+   "about": "shot 170's two speeches in a 4 s clip",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "hear",
+   "holds": "more than the 4 s clip holds",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "set": {
+      "length_s": 4
+     }
+    }
+   ]
+  },
+  {
+   "check": "GEN-04",
+   "about": "Iona's fixed description reworded by one word",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "subject",
+   "holds": "CH-IONA's fixed description",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "replace": [
+      "deep-set grey-green eyes",
+      "deep-set green eyes"
+     ]
+    }
+   ]
+  },
+  {
+   "check": "GEN-04",
+   "about": "the look block left out of shot 200's prompt",
+   "level": "E",
+   "record": "SC10-SH200.1",
+   "field": "look",
+   "holds": "LK-SAYE-KITCHEN-NIGHT's look block",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH200.1",
+     "replace": [
+      "A bare, tidy kitchen before dawn, lit only by one small warm lamp low on the table. ",
+      ""
+     ]
+    }
+   ]
+  },
+  {
+   "check": "GEN-05",
+   "about": "a start picture is attached and the prompt still describes Iona's clothes",
+   "level": "E",
+   "record": "SC10-SH150.1",
+   "field": "prompt",
+   "holds": "re-describes CH-IONA.S02's state line",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH150.1",
+     "append": " She wears a faded mid-blue work shirt with its right sleeve torn away at the shoulder."
+    }
+   ]
+  },
+  {
+   "check": "GEN-06",
+   "about": "the title card's words asked of the model",
+   "level": "E",
+   "record": "SC10-SH990.1",
+   "field": "text",
+   "holds": "TX-TITLE-CATCH",
+   "edits": [],
+   "pack_edits": [
+    {
+     "add_clip": {
+      "clip": "SC10-SH990.1",
+      "shot": "SC10-SH990",
+      "model": "veo-3.1",
+      "length_s": 6,
+      "resolution": "720p",
+      "inputs": {
+       "start_picture": null
+      },
+      "prompt": "White letters on black spell THE CATCH. The camera does not move. No background music."
+     }
+    }
+   ]
+  },
+  {
+   "check": "GEN-06",
+   "about": "a sign that reads, asked of the model",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "prompt",
+   "holds": "readable or backwards text",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "append": " A sign on the fridge reads BACK SOON."
+    }
+   ]
+  },
+  {
+   "check": "GEN-07",
+   "about": "a visible thing negated in the prompt",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "prompt",
+   "holds": "negates a visible thing",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "append": " There are no pictures on the walls."
+    }
+   ]
+  },
+  {
+   "check": "GEN-08",
+   "about": "shot 200's dialogue sent to a model that makes no sound",
+   "level": "E",
+   "record": "SC10-SH200.1",
+   "field": "prompt",
+   "holds": "runway-gen-4.5, a model that makes no sound",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH200.1",
+     "set": {
+      "model": "runway-gen-4.5"
+     }
+    }
+   ]
+  },
+  {
+   "check": "GEN-09",
+   "about": "Veo's line written in quotation marks",
+   "level": "E",
+   "record": "SC10-SH200.1",
+   "field": "hear",
+   "holds": "with quotation marks",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH200.1",
+     "replace": [
+      "the woman says: Nobody leave this room.",
+      "the woman says: \"Nobody leave this room.\""
+     ]
+    }
+   ]
+  },
+  {
+   "check": "GEN-09",
+   "about": "Kling's line written without its colon and quotation marks",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "hear",
+   "holds": "without quotation marks",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "replace": [
+      "Iona (flat, direct): \"Who are you calling?\"",
+      "Iona, flat and direct, asks Who are you calling? quietly"
+     ]
+    }
+   ]
+  },
+  {
+   "check": "GEN-10",
+   "about": "the turn shot 150 compiled as two chained clips",
+   "level": "E",
+   "record": "SC10-SH150.2",
+   "field": "held",
+   "holds": "a held take",
+   "edits": [],
+   "pack_edits": [
+    {
+     "split_clip": "SC10-SH150.1"
+    }
+   ]
+  },
+  {
+   "check": "GEN-10",
+   "about": "the held wide 190 made 40 s long, longer than any model allows",
+   "level": "E",
+   "record": "SC10-SH190",
+   "field": "screen_time",
+   "holds": "longer than any model allows",
+   "edits": [
+    {
+     "file": "scene",
+     "record": "SHOT SC10-SH190",
+     "find": "- screen_time: 9",
+     "replace": "- screen_time: 40"
+    }
+   ],
+   "pack": "none"
+  },
+  {
+   "check": "GEN-11",
+   "about": "a pack marked paid on model facts from January",
+   "level": "E",
+   "record": "SC10",
+   "field": "model_facts_date",
+   "holds": "days old on a paid pack",
+   "edits": [],
+   "pack_edits": [
+    {
+     "pack_set": {
+      "paid": true,
+      "model_facts_date": "2026-01-01"
+     }
+    }
+   ]
+  },
+  {
+   "check": "GEN-12",
+   "about": "'torch' in a prompt",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "prompt",
+   "holds": "'torch'",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "append": " A torch lies on the counter."
+    }
+   ]
+  },
+  {
+   "check": "GEN-13",
+   "about": "both women's lines on screen in one clip of the reflection two-shot",
+   "level": "W",
+   "record": "SC10-SH080.1",
+   "field": "hear",
+   "holds": "2 speakers talking on screen",
+   "edits": [],
+   "pack_edits": [
+    {
+     "add_clip": {
+      "clip": "SC10-SH080.1",
+      "shot": "SC10-SH080",
+      "model": "seedance-2.5",
+      "length_s": 11,
+      "resolution": "720p",
+      "shape": "21:9",
+      "inputs": {
+       "start_picture": "PIC-SC10-SH080-START-01"
+      },
+      "prompt": "0-3s: the woman on the right says, level: Hold up your right hand. 3-6s: both women raise the hand nearest the camera. 6-8s: the woman on the right says: That is your left. 8-11s: the woman on the left says: It's my right. The camera does not move. The room's low hum. No background music."
+     }
+    }
+   ]
+  },
+  {
+   "check": "GEN-14",
+   "about": "study-only rights with a festival release planned",
+   "level": "E",
+   "record": "CATCH",
+   "field": "intended_use",
+   "holds": "the rights are study_only",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PROJECT CATCH",
+     "find": "- rights: mine",
+     "replace": "- rights: study_only\n- intended_use: festival"
+    }
+   ],
+   "pack": "none"
+  },
+  {
+   "check": "GEN-15",
+   "about": "the shot's purpose carried into its prompt",
+   "level": "E",
+   "record": "SC10-SH170.1",
+   "field": "prompt",
+   "holds": "the shot's purpose",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH170.1",
+     "append": " The answer lands on Iona's face."
+    }
+   ]
+  },
+  {
+   "check": "GEN-15",
+   "about": "a record ID in the prompt",
+   "level": "E",
+   "record": "SC10-SH200.1",
+   "field": "prompt",
+   "holds": "SC10-B11",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH200.1",
+     "append": " This is SC10-B11."
+    }
+   ]
+  },
+  {
+   "check": "GEN-16",
+   "about": "a take over 2 dollars with no cheaper test first",
+   "level": "W",
+   "record": "TK-SC10-SH150.1-T01",
+   "field": "cost_usd",
+   "holds": "no cheaper test take first",
+   "edits": [
+    {
+     "file": "scene",
+     "add_after_record": "SHOT SC10-SH990",
+     "text": "### TAKE TK-SC10-SH150.1-T01 First take\n- clip: SC10-SH150.1\n- model: seedance-2.5 (2026-09-27)\n- cost_usd: 7.8\n- kept: no\n- status: draft\n- locked: no\n"
+    }
+   ],
+   "pack": "none",
+   "build": 2
+  },
+  {
+   "check": "GEN-17",
+   "about": "five named sounds in one prompt",
+   "level": "W",
+   "record": "SC10-SH150.1",
+   "field": "effect",
+   "holds": "names 5 sounds",
+   "edits": [],
+   "pack_edits": [
+    {
+     "clip": "SC10-SH150.1",
+     "set": {
+      "sounds": [
+       "her chewing",
+       "the room's low hum",
+       "the fridge",
+       "a car outside",
+       "the lamp's buzz"
+      ]
+     }
+    }
+   ],
+   "build": 2
+  },
+  {
+   "check": "FILM-01",
+   "about": "with the whole film here, scene 10 spends the film's tightest size and longest hold before the climax",
+   "level": "W",
+   "record": "SC10-SH150",
+   "field": "size",
+   "holds": "the film's tightest size",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PROJECT CATCH",
+     "find": "- scope: SC10",
+     "replace": "- scope: all"
+    }
+   ],
+   "story": "none"
+  },
+  {
+   "check": "FILM-02",
+   "about": "the mint's payoff rhymes, but shot 150 is framed unlike shot 030",
+   "level": "W",
+   "record": "SC10-SH150",
+   "field": "lens_mm",
+   "holds": "differs from the plant shot SC10-SH030's 35",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PLANT PL-08",
+     "find": "- rhyme: no",
+     "replace": "- rhyme: yes | framing: the high corner again"
+    }
+   ]
+  },
+  {
+   "check": "FILM-03",
+   "about": "shot 150 on Iona at extreme close-up before scene 13",
+   "level": "E",
+   "record": "SC10-SH150",
+   "field": "size",
+   "holds": "closer than close_up",
+   "edits": [
+    {
+     "file": "scene",
+     "record": "SHOT SC10-SH150",
+     "find": "- size: close_up",
+     "replace": "- size: extreme_close_up"
+    }
+   ]
+  },
+  {
+   "check": "FILM-03",
+   "about": "shot 200 looks up at Saye, whose rule never takes a low angle",
+   "level": "E",
+   "record": "SC10-SH200",
+   "field": "angle",
+   "holds": "never list of camera rule CR-SAYE",
+   "edits": [
+    {
+     "file": "scene",
+     "record": "SHOT SC10-SH200",
+     "find": "- angle: eye_level",
+     "replace": "- angle: low"
+    }
+   ]
+  },
+  {
+   "check": "FILM-04",
+   "about": "three groups of scenes in a row with the same brightness, saturation and temperature",
+   "level": "W",
+   "record": "VS-SQ03",
+   "field": "frame_value",
+   "holds": "repeats across 3 groups",
+   "edits": [
+    {
+     "file": "context",
+     "add_after_record": "SEQUENCE SQ03",
+     "text": "### SEQUENCE SQ01 The passage\n- title: the passage\n- scenes: SC01..SC03\n- value_change: a test row\n- status: draft\n- locked: no\n\n### SEQUENCE SQ02 The street\n- title: the street\n- scenes: SC04..SC06\n- value_change: a test row\n- status: draft\n- locked: no\n"
+    },
+    {
+     "file": "context",
+     "add_after_record": "VISUAL VS-SQ03",
+     "text": "### VISUAL VS-SQ01 The passage\n- sequence: SQ01\n- frame_value: 2\n- saturation: 2\n- temperature: cool\n- status: draft\n- locked: no\n\n### VISUAL VS-SQ02 The street\n- sequence: SQ02\n- frame_value: 2\n- saturation: 2\n- temperature: cool\n- status: draft\n- locked: no\n"
+    }
+   ]
+  },
+  {
+   "check": "FILM-05",
+   "about": "three components peak at the fire in scene 24",
+   "level": "W",
+   "record": "PLAN",
+   "field": "peak",
+   "holds": "SC24 raises 3 components",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PLAN",
+     "find": "- peak: longest_hold | scene: SC30",
+     "replace": "- peak: loudest_sound | scene: SC24 | reason: a test\n- peak: longest_hold | scene: SC30"
+    }
+   ],
+   "build": 2
+  },
+  {
+   "check": "FILM-06",
+   "about": "three shots in a row of Saye from camera C, medium close-up, level, static, with no why",
+   "level": "W",
+   "record": "SC10-SH166",
+   "field": "setup",
+   "holds": "for 3 shots in a row",
+   "edits": [
+    {
+     "file": "scene",
+     "add_after_record": "SHOT SC10-SH160",
+     "text": "### SHOT SC10-SH163 Saye again\n- beats: SC10-B09\n- lines: 468\n- setup: SC10-SU03\n- frame: single\n- size: medium_close_up\n- angle: eye_level\n- focus_on: CH-SAYE\n- move: static\n- subject: CH-SAYE.S01 | at: centre | faces: camera | does: holds the phone\n- screen_time: 2\n- status: draft\n- locked: no\n\n### SHOT SC10-SH166 Saye again\n- beats: SC10-B09\n- lines: 468\n- setup: SC10-SU03\n- frame: single\n- size: medium_close_up\n- angle: eye_level\n- focus_on: CH-SAYE\n- move: static\n- subject: CH-SAYE.S01 | at: centre | faces: camera | does: holds the phone\n- screen_time: 2\n- status: draft\n- locked: no\n"
+    }
+   ]
+  },
+  {
+   "check": "FILM-07",
+   "about": "after a scene of intensity 8, the next scene's shots are no longer",
+   "level": "W",
+   "record": "SC11",
+   "field": "target_asl_s",
+   "holds": "is not longer than SC10's 5 s",
+   "edits": [
+    {
+     "file": "context",
+     "record": "SCENE SC10",
+     "find": "- scene_intensity: 6",
+     "replace": "- scene_intensity: 8"
+    },
+    {
+     "file": "context",
+     "record": "PROJECT CATCH",
+     "find": "- scope: SC10",
+     "replace": "- scope: all"
+    },
+    {
+     "file": "context",
+     "add_after_record": "SCENE SC10",
+     "text": "### SCENE SC11 The street again\n- sequence: SQ03\n- scene_intensity: 5\n- target_asl_s: 4\n- keep: keep\n- status: draft\n- locked: no\n"
+    }
+   ],
+   "story": "none",
+   "build": 2
+  },
+  {
+   "check": "FILM-08",
+   "about": "saved choice 1 allows one use, and shot 180 spends a second",
+   "level": "E",
+   "record": "SC10-SH180",
+   "field": "frame_detail",
+   "holds": "2nd use of saved choice RC-01",
+   "edits": [
+    {
+     "file": "context",
+     "record": "RESERVE RC-01",
+     "find": "- max_uses: 2",
+     "replace": "- max_uses: 1"
+    },
+    {
+     "file": "scene",
+     "record": "SHOT SC10-SH180",
+     "find": "- size: medium_wide",
+     "replace": "- frame_detail: symmetrical_profile\n- size: medium_wide"
+    }
+   ]
+  },
+  {
+   "check": "FILM-08",
+   "about": "saved choice 1 spent on camera C, outside its places",
+   "level": "E",
+   "record": "SC10-SH050",
+   "field": "frame_detail",
+   "holds": "outside its places",
+   "edits": [
+    {
+     "file": "scene",
+     "record": "SHOT SC10-SH050",
+     "find": "- size: medium_close_up",
+     "replace": "- frame_detail: symmetrical_profile\n- size: medium_close_up"
+    }
+   ]
+  },
+  {
+   "check": "FILM-09",
+   "about": "music under the mint, whose meaning is left unsaid",
+   "level": "W",
+   "record": "SC10-SH150",
+   "field": "music",
+   "holds": "left unsaid",
+   "edits": [
+    {
+     "file": "scene",
+     "record": "SHOT SC10-SH150",
+     "find": "- music: none",
+     "replace": "- music: MU-01"
+    }
+   ],
+   "build": 2
+  },
+  {
+   "check": "FILM-10",
+   "about": "two sound motifs, where a film holds one",
+   "level": "W",
+   "record": "MO-PUMP",
+   "field": "channel",
+   "holds": "2 sound motifs",
+   "edits": [
+    {
+     "file": "context",
+     "add_after_record": "MOTIF MO-FLASK",
+     "text": "### MOTIF MO-HUM The hum\n- meaning: a test motif\n- rank: supporting\n- channel: sound\n- appearance: SC10 | role: plant | emphasis: 1\n- signature: none\n- status: draft\n- locked: no\n\n### MOTIF MO-PUMP The pump\n- meaning: a test motif\n- rank: supporting\n- channel: sound\n- appearance: SC10 | role: plant | emphasis: 1\n- signature: none\n- status: draft\n- locked: no\n"
+    }
+   ]
+  },
+  {
+   "check": "FILM-11",
+   "about": "three loud places in a short, which holds two",
+   "level": "W",
+   "record": "LOC-TUNNEL",
+   "field": "loudness",
+   "holds": "3 loud places in a short",
+   "edits": [
+    {
+     "file": "context",
+     "add_after_record": "LOCATION LOC-SAYE-KITCHEN",
+     "text": "### LOCATION LOC-ALLEY The alley\n- loudness: loud\n- status: draft\n- locked: no\n\n### LOCATION LOC-TUNNEL The tunnel\n- loudness: loud\n- status: draft\n- locked: no\n"
+    }
+   ]
+  },
+  {
+   "check": "FILM-12",
+   "about": "scene 10 played in a tone outside the film's range",
+   "level": "W",
+   "record": "SC10",
+   "field": "tone",
+   "holds": "comic_light is outside the film's tone range",
+   "edits": [
+    {
+     "file": "context",
+     "record": "SCENE SC10",
+     "find": "- tone: tense",
+     "replace": "- tone: comic_light"
+    }
+   ]
+  },
+  {
+   "check": "FILM-12",
+   "about": "with the whole film here, every scene carries an undercurrent",
+   "level": "W",
+   "record": "PLAN",
+   "field": "tone_home",
+   "holds": "over a third of the film",
+   "edits": [
+    {
+     "file": "context",
+     "record": "PROJECT CATCH",
+     "find": "- scope: SC10",
+     "replace": "- scope: all"
+    }
+   ],
+   "story": "none"
+  }
+ ]
+}

@@ -1,0 +1,67 @@
+{
+ "about": "A clean compiled pack for scene 10 of the gold, written by hand in the pack shape that checks_plan_generation_film.py reads (For machines - do not edit/prompts/). It gives no GEN line with the stand-in model facts; the faults in faults.json edit a copy.",
+ "scene": "SC10",
+ "compiled_on": "2026-09-28",
+ "model_facts_date": "2026-09-27",
+ "paid": false,
+ "release": "private",
+ "clips": [
+  {
+   "clip": "SC10-SH150.1",
+   "shot": "SC10-SH150",
+   "model": "seedance-2.5",
+   "length_s": 17,
+   "resolution": "720p",
+   "shape": "21:9",
+   "inputs": {
+    "start_picture": "PIC-SC10-SH150-START-01",
+    "end_picture": null,
+    "references": [],
+    "guide_video": null
+   },
+   "prompt": "0-4s: The woman chews slowly, her eyes on the other woman just right of the lens. A woman's voice from beside the camera, level: What does it taste of? 4-6s: she stops chewing, a small frown, then she chews once more, slowly. 6-8s: she says, unsteady: Not mint. 8-15s: she listens and does not speak; she swallows once; her eyes stay where they are. The same voice, level and dry: Nothing has happened to the mint. Nothing has happened to the street signs either. Her head, hands and torso stay still; only her mouth moves. The camera does not move. End state: still, mouth closed. Her chewing, close, then stopping. The room's low hum. No background music.",
+   "negative": null,
+   "sounds": [
+    "her chewing",
+    "the room's low hum"
+   ]
+  },
+  {
+   "clip": "SC10-SH170.1",
+   "shot": "SC10-SH170",
+   "model": "kling-3.0-omni",
+   "length_s": 8,
+   "resolution": "1080p",
+   "shape": "16:9",
+   "inputs": {
+    "start_picture": null,
+    "end_picture": null,
+    "references": [],
+    "guide_video": null
+   },
+   "prompt": "A bare, tidy kitchen before dawn, lit only by one small warm lamp low on the table. A faint cool blue shows in the window over the counter. Pale walls, a white fridge, pale wood and steel; the corners fall into soft shadow while every face stays readable. Photographic, clinical and plain. Iona, a lean, strong woman in her late thirties, with a long face and a straight, strong jaw, dark brown hair in a low knot with loose strands at the temples, straight low dark eyebrows, deep-set grey-green eyes. She wears a faded mid-blue work shirt with its right sleeve torn away at the shoulder, dark grey canvas trousers, scuffed brown boots; her right palm raw, dried blood on both hands; a plain gold ring on her left hand. She stands in the centre of the frame, facing the camera, her eyes just off the lens. Medium close-up at her eye height, static shot; the camera does not move. At the 0th second she asks it straight. Iona (flat, direct): \"Who are you calling?\" At the 3rd second a woman's voice answers from beside the camera; she is not visible. Woman off screen (level, calm): \"The hospital. Then the police.\" Her eyes go past the woman to the far end of the room. Her torso stays still. The room's low hum. No background music.",
+   "negative": "blur, distort, and low quality, subtitles, captions",
+   "sounds": [
+    "the room's low hum"
+   ]
+  },
+  {
+   "clip": "SC10-SH200.1",
+   "shot": "SC10-SH200",
+   "model": "veo-3.1",
+   "length_s": 6,
+   "resolution": "720p",
+   "inputs": {
+    "start_picture": null,
+    "end_picture": null,
+    "references": [],
+    "guide_video": null
+   },
+   "prompt": "A bare, tidy kitchen before dawn, lit only by one small warm lamp low on the table. A faint cool blue shows in the window over the counter. Pale walls, a white fridge, pale wood and steel; the corners fall into soft shadow while every face stays readable. Photographic, clinical and plain. Dr Saye, a slim, upright woman in her late fifties, short neat grey hair, a long lined face, thin straight brows, level grey eyes, a light grey cardigan buttoned to the collar over a white blouse. She wears dark grey trousers and flat black shoes, a stethoscope round her neck, a plain gold ring on her left hand. She stands on the left third of the image, facing left, a lit phone at her side. Medium shot at her eye height, static shot; the camera does not move. In a voice that is low, level and dry, the woman says: Nobody leave this room. She holds still afterwards; her whole body stays still. The room's low hum. No background music.",
+   "negative": null,
+   "sounds": [
+    "the room's low hum"
+   ]
+  }
+ ]
+}

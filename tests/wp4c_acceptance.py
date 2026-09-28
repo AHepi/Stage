@@ -236,8 +236,10 @@ def check_faults():
     fired = {}
     try:
         for fault in faults:
-            needs_story = fault.get("story") != "none"
-            if needs_story and not EXCERPT.is_file():
+            if fault.get("needs_story") and not EXCERPT.is_file():
+                info(f"{fault['check']} ({fault['about']}): skipped: story not present")
+                continue
+            if fault.get("story_edits") and not EXCERPT.is_file():
                 info(f"{fault['check']} ({fault['about']}): skipped: story not present")
                 continue
             result = run_fault(fault, temporary)
@@ -272,10 +274,13 @@ def check_faults():
         shutil.rmtree(temporary, ignore_errors=True)
     build_one = [check_id for check_id in LEVELS_7_2 if check_id not in BUILD_TWO]
     missing = [check_id for check_id in build_one if check_id not in fired]
-    if EXCERPT.is_file():
-        report(not missing, "every build-1 COVER, TIME and STATE check fires on at least one faulty fixture",
-               f"missing: {', '.join(missing)}" if missing else
-               f"{sum(len(found) for found in fired.values())} faulty fixtures fired for {len(fired)} checks")
+    if not EXCERPT.is_file():
+        missing = [check_id for check_id in missing
+                   if not all(fault.get("needs_story") for fault in faults if fault["check"] == check_id)]
+    report(not missing, "every build-1 COVER, TIME and STATE check fires on at least one faulty fixture"
+           + ("" if EXCERPT.is_file() else " that can be seen without the story"),
+           f"missing: {', '.join(missing)}" if missing else
+           f"{sum(len(found) for found in fired.values())} faulty fixtures fired for {len(fired)} checks")
 
 
 def without_later_shots(texts, first_later):

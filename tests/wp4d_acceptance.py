@@ -215,13 +215,14 @@ def main():
             if definition.module != family.__name__:
                 wrong.append(f"{check_id} is registered by {definition.module}")
             codes = family.abbreviations_in_text(definition.plain, WORDS)
-            if codes or not definition.plain or definition.plain[0].isupper():
-                wrong.append(f"{check_id}'s plain sentence {definition.plain!r} ({codes})")
+            retired = family.retired_words_in_text(definition.plain, WORDS)
+            if codes or retired or not definition.plain or definition.plain[0].isupper():
+                wrong.append(f"{check_id}'s plain sentence {definition.plain!r} ({codes} {retired})")
         assert not wrong, wrong
         top = MODULE.read_text(encoding="utf-8").split('"""')[1]
         assert "CRAFT" in top and "REASON" in top and "Standard library only" in top, "the module's top note"
         return f"{len(found)} checks ({len(family_ids(1))} build 1, {len(family_ids(2))} build 2), each with 7.2's " \
-               "level and build and a plain sentence with no code"
+               "level and build and a plain sentence with no code, abbreviation or retired word"
 
     with tempfile.TemporaryDirectory(prefix="wp4d-") as temporary:
         temporary = Path(temporary)
@@ -329,9 +330,7 @@ def main():
         @group("reasons: mood-only reasons and reasons that fit any film are rejected (words.json); anchored "
                "reasons pass")
         def reasons():
-            if story is None:
-                raise Skip("skipped: story not present (quotes cannot be looked up)")
-            source = check_records.StorySource.from_file(str(story), CONSTANTS)
+            source = check_records.StorySource.from_file(str(story), CONSTANTS) if story else None
             run = check_records.CheckRun(parsed(gold_paths), SCHEMA, WORDS, CONSTANTS, story=source)
             rejected_as_any_film = [
                 "The camera holds so the moment can land.",
@@ -340,6 +339,8 @@ def main():
             ]
             rejected_as_mood = [
                 "To build tension before the reveal.",
+                "The lamp is low to emphasise, and the room stays wide.",
+                "To emphasise her isolation.",
                 "Moody, cinematic framing on Iona.",
                 "The lamp is low to emphasise.",
                 "For drama, the flask stays in frame.",
@@ -347,7 +348,6 @@ def main():
             ]
             mood_only_feeling = ["It feels lonely and tense."]
             passing = [
-                '"Her face changes." puts the turn inside her mouth.',
                 "The flask is what Saye looks at longest.",
                 "Held for SC10-B07, where the value turns.",
                 "The lamp on the table lights both women alike.",
@@ -367,13 +367,17 @@ def main():
             for text in passing:
                 if family.mood_only_phrases_in_reason(text, WORDS) or not family.reason_is_anchored(run, text, "SC10"):
                     wrong.append(f"good reason rejected: {text}")
-            assert not family.reason_is_anchored(run, 'The frame "is not in this story at all" here.', "SC10"), \
-                "a quote the scene does not hold was taken as an anchor"
+            if source is not None:
+                if not family.reason_is_anchored(run, '"Her face changes." puts the turn inside her mouth.', "SC10"):
+                    wrong.append("a quote from the scene was not taken as an anchor")
+                if family.reason_is_anchored(run, 'The frame "is not in this story at all" here.', "SC10"):
+                    wrong.append("a quote the scene does not hold was taken as an anchor")
             assert not wrong, wrong
             phrases = WORDS["mood_only_phrases"]["phrases"]
             return (f"{len(rejected_as_any_film)} any-film and {len(rejected_as_mood) + len(mood_only_feeling)} "
                     f"mood-only reasons rejected, {len(passing)} anchored reasons passed (words.json lists "
-                    f"{len(phrases)} mood-only phrases)")
+                    f"{len(phrases)} mood-only phrases)" + ("" if source else "; quotes not looked up: story not "
+                                                                               "present"))
 
         @group("text helpers for other modules: retired words and abbreviations in user-facing text")
         def text_helpers():

@@ -1,0 +1,105 @@
+{
+ "about": "STAND-IN model facts for tests/wp4e_acceptance.py only, in the shape of blueprint 8.2, until work package 8 writes adapters/video_models.json. Values are copied from blueprint 8.2 (kling-3.0-omni, seedance-2.5, veo-3.1) and C3 L02 and L28 (runway-gen-4.5: 2-10 s, 720p, no sound). Never read by the tools outside the test.",
+ "stand_in": true,
+ "checked_on": "2026-09-27",
+ "models": {
+  "kling-3.0-omni": {
+   "aliases": [
+    "Kling O3",
+    "Kling 3.0 Omni"
+   ],
+   "length_s": {
+    "min": 3,
+    "max": 15,
+    "step": 1
+   },
+   "resolution": [
+    "1080p"
+   ],
+   "shapes": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inputs": {
+    "start_picture": true,
+    "end_picture": true,
+    "references_max": 7
+   },
+   "audio": "native",
+   "silent_option": true,
+   "negative_field": "negative_prompt",
+   "negative_default": "blur, distort, and low quality",
+   "speaker": "{who} ({delivery}): \"{line}\"",
+   "prompt_limit": {
+    "characters": 2500
+   }
+  },
+  "seedance-2.5": {
+   "length_s": {
+    "min": 4,
+    "max": 30,
+    "step": 1
+   },
+   "resolution": [
+    "480p",
+    "720p"
+   ],
+   "shapes": [
+    "21:9",
+    "16:9",
+    "9:16"
+   ],
+   "inputs": {
+    "start_picture": true,
+    "end_picture": true,
+    "references_max": 30
+   },
+   "audio": "native, switchable",
+   "negative_field": null,
+   "time_marker": "{t0}-{t1}s:",
+   "end_state": "End state:"
+  },
+  "veo-3.1": {
+   "length_s": {
+    "allowed": [
+     4,
+     6,
+     8
+    ],
+    "forced_8_when": [
+     "1080p",
+     "4k",
+     "references"
+    ]
+   },
+   "inputs": {
+    "start_picture": true,
+    "end_picture": true,
+    "references_max": 3
+   },
+   "audio": "native",
+   "speaker": "{description} says: {line}",
+   "speaker_quotes": false,
+   "prompt_limit": {
+    "tokens": 1024
+   }
+  },
+  "runway-gen-4.5": {
+   "length_s": {
+    "min": 2,
+    "max": 10,
+    "step": 1
+   },
+   "resolution": [
+    "720p"
+   ],
+   "audio": "none"
+  }
+ },
+ "retired": {
+  "sora-2": [
+   "veo-3.1"
+  ]
+ }
+}

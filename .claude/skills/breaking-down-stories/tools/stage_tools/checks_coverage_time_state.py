@@ -31,7 +31,7 @@ Standard library only.
 
 import math
 import re
-from dataclasses import dataclass, field as dataclass_field
+from dataclasses import dataclass
 
 from .check_records import register_check, same_scene, scene_of
 from .derive_fields import (breakdown_for_run, constant, element_of, elements_present, focus_subject,
@@ -64,7 +64,8 @@ COLOUR_WORDS = {"red", "green", "blue", "yellow", "orange", "white", "black", "g
 # Word endings taken off a sound word before it is looked for in the records ("TICKS" is found in "ticking").
 SOUND_WORD_ENDINGS = ("ing", "es", "ed", "s")
 SOUND_STEM_LENGTH_MIN = 3
-CUE_FIELDS_OF_LOOK = ("look_block", "palette", "accent_allowed", "main_light", "neutral_white", "stays_dark")
+# The LOOK fields whose words can keep a thing's colour (COVER-08).
+LOOK_COLOUR_FIELDS = ("look_block", "palette", "accent_allowed", "main_light", "neutral_white", "stays_dark")
 
 
 # ---------------------------------------------------------------- shared helpers
@@ -107,16 +108,14 @@ def kept_scenes(run):
     return sorted(scenes, key=lambda scene: scene_key(scene.identifier))
 
 
-def place_of(run, record, field_name, first_part=None, value_holds=None):
-    """(file name, line number) of a record's field line: the one whose first part (or value) matches, else the
-    first; (None, None) when the field is not written, so the problem sits on the record's heading."""
+def place_of(run, record, field_name, first_part=None):
+    """(file name, line number) of a record's field line (the item whose first part matches, when one is given);
+    (None, None) when the field is not written, so the problem sits on the record's heading."""
     if record is None or not hasattr(record, "key"):
         return None, None
     found = run.field_lines(record.key, field_name)
     for record_file, _, line in found:
         if first_part is not None and (split_item(line.value).first or "").strip() != first_part:
-            continue
-        if value_holds is not None and value_holds not in line.value:
             continue
         return record_file.name, line.line_number
     return None, None
@@ -143,12 +142,11 @@ def report(run, level, check_id, record, field_name, what, fix, place=(None, Non
 
 
 def numbers_text(numbers):
-    """Line numbers as ranges: '413-414, 420'. Numbers next to each other in the story (blank lines between do
-    not break a run) are given by the caller already grouped."""
+    """(first, last) pairs of line numbers as words: '413-414, 420'."""
     return ", ".join(f"{first}-{last}" if first != last else str(first) for first, last in numbers)
 
 
-def story_line_groups(numbered, wanted, counted):
+def story_line_groups(wanted, counted):
     """The wanted story lines grouped into runs that no counted, unwanted line interrupts (blank lines between two
     wanted lines do not break a run)."""
     groups = []
@@ -288,7 +286,6 @@ class CoverUnit:
     lines: set
     heard: set
     readable: bool = True
-    is_list_item: bool = False
 
 
 def uses_list_items(run, breakdown, scene):
@@ -332,7 +329,7 @@ def coverage_units(run, breakdown, scene):
                 lines |= beat_lines
                 readable = readable and beat_readable
             heard = {speech["id"] for speech in speeches if speech["line"] in lines}
-            units.append(CoverUnit(identifier, None, beats, lines, heard, readable, True))
+            units.append(CoverUnit(identifier, None, beats, lines, heard, readable))
     run.cache[key] = (units, from_list)
     return units, from_list
 
@@ -404,7 +401,7 @@ def check_cover_01(run):
             continue
         counted = counted_lines(run, span)
         missing = {number for number in counted if number not in covered}
-        for first, last in story_line_groups(run.story.numbered, missing, counted):
+        for first, last in story_line_groups(missing, counted):
             before = [beat for end, beat in sorted(endings) if end < first]
             neighbour = f" ({before[-1]} ends before {'it' if first == last else 'them'})" if before else ""
             problems.append(report(
@@ -447,7 +444,7 @@ def check_cover_02(run):
             covered |= unit.lines
         missing = required - covered
         kind = what_covers(from_list)
-        for first, last in story_line_groups(run.story.numbered, missing, counted):
+        for first, last in story_line_groups(missing, counted):
             showing_before = [unit.identifier for unit in units if unit.lines and max(unit.lines) < first]
             neighbour = (f" ({showing_before[-1]} shows the lines before {'it' if first == last else 'them'})"
                          if showing_before and not from_list else "")
@@ -838,7 +835,7 @@ def colours_kept(breakdown, scene, look):
     under every light): the look's text, and the fixed descriptions and state lines of what is present."""
     texts = []
     if look is not None:
-        texts += [look.get(name) or "" for name in CUE_FIELDS_OF_LOOK]
+        texts += [look.get(name) or "" for name in LOOK_COLOUR_FIELDS]
     for element in elements_present(breakdown, scene.identifier):
         record = breakdown.record(element)
         if record is not None:
@@ -894,15 +891,20 @@ def check_cover_08(run):
                 open_words.append(word)
             if not open_words:
                 continue
-            look_name = look.identifier if look is not None else "the scene's look"
-            shown_by = (f"; {showing[0].identifier}, which shows it, has light as_look and no light_cue"
-                        if showing else "")
+            look_name = look.identifier if look is not None else "a LOOK for this place and time (none yet)"
+            reasons = [f"no light_cue of {look.identifier} at it" if look is not None else "the scene has no LOOK"]
+            if any(word in DARKNESS_WORDS for word in open_words):
+                reasons.append("no stays_dark")
+            if any(word in COLOUR_WORDS for word in open_words):
+                reasons.append("no description here keeps the colour")
+            if showing:
+                reasons.append(f"{showing[0].identifier}, which shows it, has light as_look and no light_cue")
             sentence = sentence_holding(run.story.numbered.line(line), open_words)
             where = f"{scene.identifier} \"{sentence}\"" if sentence else f"line {line}"
             problems.append(report(
                 run, "W", "COVER-08", scene, "look",
-                f"line {line} writes light ({', '.join(open_words)}) that nothing covers: no light_cue of {look_name} "
-                f"at it, no stays_dark{shown_by}",
+                f"line {line} writes light, colour or darkness ({', '.join(open_words)}) that nothing covers: "
+                + "; ".join(reasons),
                 f"Fix: add a light_cue at {where} to {look_name}, or write the light on the shot that shows it (light "
                 "or light_cue).", place_of(run, scene, "look")))
     return problems
@@ -1630,11 +1632,10 @@ def shot_span(breakdown, shot):
     return (key, None), (key, None)
 
 
-def position_words(breakdown, position, state=None):
-    if state is not None:
-        scene_identifier, line = state_from(breakdown, state)
-        return f"{scene_identifier} line {line}" if line is not None else f"the start of {scene_identifier}"
-    return "?"
+def state_start_words(breakdown, state):
+    """Where a state starts, in words: 'SC10 line 408', or 'the start of SC10' when no line is known."""
+    scene_identifier, line = state_from(breakdown, state)
+    return f"{scene_identifier} line {line}" if line is not None else f"the start of {scene_identifier}"
 
 
 def shot_lines_words(first, last):
@@ -1671,12 +1672,12 @@ def check_state_01(run):
                         if compare_positions(start, last) == 1:
                             problems.append(report(run, "E", "STATE-01", shot, field_name,
                                                    f"{reference} is not valid here: it starts at "
-                                                   f"{position_words(breakdown, start, state)}, after this shot "
+                                                   f"{state_start_words(breakdown, state)}, after this shot "
                                                    f"({shot_lines_words(first, last)})", fix, place))
                         elif end is not None and compare_positions(end, first) in (-1, 0):
                             problems.append(report(run, "E", "STATE-01", shot, field_name,
                                                    f"{reference} is not valid here: {following.identifier} replaces "
-                                                   f"it from {position_words(breakdown, end, following)}, at or before "
+                                                   f"it from {state_start_words(breakdown, following)}, at or before "
                                                    f"the start of this shot ({shot_lines_words(first, last)})", fix,
                                                    place))
                     elif ELEMENT_REFERENCE.match(reference):
@@ -1693,7 +1694,7 @@ def check_state_01(run):
                             problems.append(report(run, "E", "STATE-01", shot, field_name,
                                                    f"{reference} has no state valid here: its first state, "
                                                    f"{states[0].identifier}, starts at "
-                                                   f"{position_words(breakdown, None, states[0])}, after this shot",
+                                                   f"{state_start_words(breakdown, states[0])}, after this shot",
                                                    f"Fix: add a state of {reference} from {scene.identifier}, or move "
                                                    f"{states[0].identifier}'s from earlier.", place))
     return problems
@@ -1731,7 +1732,7 @@ def check_state_02(run):
                                        "state origin: invented).", place_of(run, state, "from")))
             continue
         if run.story_missing("STATE-02"):
-            return problems
+            continue  # a missing cause is still reported for the other states
         item = split_item(cause)
         line, why_not = cause_line(run, item.first)
         if line is None:

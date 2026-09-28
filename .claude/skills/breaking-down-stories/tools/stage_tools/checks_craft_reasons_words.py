@@ -32,7 +32,7 @@ Standard library only.
 """
 
 import re
-from dataclasses import dataclass, field as dataclass_field
+from dataclasses import dataclass
 
 from .check_records import register_check, same_scene, scene_of
 from .derive_fields import (SIZE_LADDER, breakdown_for_run, constant, count_words, element_of, number_of,
@@ -109,6 +109,10 @@ COMMON_CAPITALISED = {
     "august", "september", "october", "november", "december", "christmas", "easter", "god", "i", "dr", "mr", "mrs",
     "ms", "the", "a", "an",
 }
+# Words that may open the object of "to emphasise" without being it ("to emphasise her isolation" has no object
+# beyond a feeling word; "to emphasise the distance" has one).
+OBJECT_DETERMINERS = {"the", "a", "an", "her", "his", "their", "its", "this", "that", "these", "those", "our", "my",
+                      "your", "how", "just", "further", "more", "even"}
 BRAND_SYMBOLS = re.compile("[™®©]")
 DETERMINERS = re.compile(r"^(the|a|an|her|his|their|its|our|my|your|one|some)\s+", re.I)
 POSSESSIVE_START = re.compile(r"^[A-Z][A-Za-z]*(?:'s|’s)\s+")
@@ -149,7 +153,8 @@ def word_of(value):
 
 
 def is_empty(value):
-    return value is None or normalise_word(value) in EMPTY_WORDS
+    """True for a missing value and for none, open, auto and default (G7), in any case."""
+    return value is None or value.strip().lower() in EMPTY_WORDS
 
 
 def by_identifier(records):
@@ -161,15 +166,21 @@ def definition_of(run, type_name, field_name):
 
 
 def items(run, record, field_name):
-    """Every item of a repeatable field (or one sub-parts value) as record_format.Item, leaving out none."""
+    """Every item of a repeatable field (or one sub-parts value) as record_format.Item, leaving out none; worked out
+    once per record and field in a run."""
     if record is None:
         return []
+    key = ("craft_items", id(record), field_name)
+    cached = run.cache.get(key)
+    if cached is not None and cached[0] is record:
+        return cached[1]
     definition = definition_of(run, record.type_name, field_name)
     found = []
     for value in record.get_all(field_name):
         if normalise_word(value) in ("none", ""):
             continue
         found.append(split_item(value, definition))
+    run.cache[key] = (record, found)
     return found
 
 
@@ -208,19 +219,45 @@ def problem_at(run, level, check_id, record, field_name, what, fix, containing=N
     return run.problem(level, check_id, record, field_name, what, fix, line_number=line_number, file_name=file_name)
 
 
+def records_of(run, type_name):
+    """The merged records of a type (omitted ones left out), in ID order; worked out once per run."""
+    key = ("craft_records", type_name)
+    if key not in run.cache:
+        run.cache[key] = by_identifier(run.records(type_name))
+    return run.cache[key]
+
+
+def scene_key(scene):
+    """SC10 and SC010 name the same scene (the width is ID-09's business)."""
+    return re.sub(r"^SC0*", "SC", scene or "")
+
+
 def scene_identifiers(run):
     """Every scene with records here, in story order."""
-    found = set(run.scene_ids())
-    for type_name in ("SHOT", "BEAT", "SHOTLIST", "PART"):
-        for record in run.records(type_name):
-            scene = scene_of(record.identifier)
-            if scene:
-                found.add(scene)
-    return sorted(found, key=sort_key_for_identifier)
+    key = "craft_scene_identifiers"
+    if key not in run.cache:
+        found = set(run.scene_ids())
+        for type_name in ("SHOT", "BEAT", "SHOTLIST", "PART"):
+            for record in records_of(run, type_name):
+                scene = scene_of(record.identifier)
+                if scene:
+                    found.add(scene)
+        run.cache[key] = sorted(found, key=sort_key_for_identifier)
+    return run.cache[key]
 
 
 def of_scene(run, type_name, scene):
-    return by_identifier([record for record in run.records(type_name) if same_scene(scene_of(record.identifier), scene)])
+    """The records of one type that belong to a scene, in ID order."""
+    key = ("craft_of_scene", type_name)
+    groups = run.cache.get(key)
+    if groups is None:
+        groups = {}
+        for record in records_of(run, type_name):
+            owner = scene_of(record.identifier)
+            if owner:
+                groups.setdefault(scene_key(owner), []).append(record)
+        run.cache[key] = groups
+    return groups.get(scene_key(scene), [])
 
 
 def beats_of(run, scene):
@@ -265,10 +302,6 @@ def whole_number(value, default=None):
     return default if number is None else number
 
 
-def plural(count, word, plural_word=None):
-    return f"{count} {word if count == 1 else (plural_word or word + 's')}"
-
-
 def names_list(identifiers):
     return ", ".join(identifiers)
 
@@ -289,7 +322,6 @@ class ShotView:
     subjects: list
     record: object = None
     list_record: object = None
-    extra: dict = dataclass_field(default_factory=dict)
 
     @property
     def written(self):
@@ -369,11 +401,6 @@ def shots_on_beat(run, scene, beat_identifier, written_only=False):
 def last_beat_position(view, positions):
     known = [positions[beat] for beat in view.beats if beat in positions]
     return max(known) if known else None
-
-
-def first_beat_position(view, positions):
-    known = [positions[beat] for beat in view.beats if beat in positions]
-    return min(known) if known else None
 
 
 # ---------------------------------------------------------------- what is in a shot
@@ -540,7 +567,7 @@ def all_element_names(run):
     if key not in run.cache:
         elements = []
         for type_name in ("CHARACTER", "PROP", "LOCATION", "MOTIF", "TEXT", "CAMERA"):
-            elements += [record.identifier for record in run.records(type_name) if record.identifier]
+            elements += [record.identifier for record in records_of(run, type_name) if record.identifier]
         run.cache[key] = names_of_elements(run, elements)
     return run.cache[key]
 
@@ -552,10 +579,6 @@ def named_element_in(text, names):
         if re.search(r"(?<![a-z0-9])" + re.escape(name) + r"(?:s|es)?(?![a-z0-9])", lowered):
             return name
     return None
-
-
-def story_holds(run, first, last):
-    return run.story is not None and run.story.holds(first, last)
 
 
 def quote_found(run, quote, scope):
@@ -607,10 +630,6 @@ def reason_anchor(run, text, scene=None):
     return Anchor(False)
 
 
-def mood_rule(run):
-    return (run.words or {}).get("mood_only_phrases", {})
-
-
 def mood_phrases_in(words, text):
     """The mood-only phrases of words.json a reason holds (REASON-04): every listed phrase, and 'to emphasise' only
     with no object after it (at the end, or followed only by a feeling word)."""
@@ -623,9 +642,9 @@ def mood_phrases_in(words, text):
         lowered_phrase = phrase.lower()
         for match in re.finditer(r"(?<![a-z])" + re.escape(lowered_phrase) + r"(?![a-z])", lowered):
             if lowered_phrase in conditional:
-                after = re.sub(r"[^a-z ]", " ", lowered[match.end():]).split()
-                if after and after[0] not in feeling_words and after[0] not in ("the", "a", "an") or \
-                        (len(after) > 1 and after[0] in ("the", "a", "an") and after[1] not in feeling_words):
+                clause = re.split(r"[.;:,!?()]", lowered[match.end():], maxsplit=1)[0]
+                after = [word for word in re.findall(r"[a-z']+", clause) if word not in OBJECT_DETERMINERS]
+                if after and after[0] not in feeling_words:
                     continue
             if phrase not in found:
                 found.append(phrase)
@@ -816,7 +835,7 @@ def moves_named_in(shot, run):
                 plain="moves the camera in more than one way in one shot")
 def check_craft_06(run):
     problems = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         moves = moves_named_in(shot, run)
         scene = scene_of(shot.identifier)
         positions = beat_positions(run, scene)
@@ -858,7 +877,7 @@ def lens_family_for(run, scene):
 
 
 def lens_exception_covers(run, lens, targets):
-    for exception in run.records("LENS"):
+    for exception in records_of(run, "LENS"):
         if number_of(exception.get("mm")) != lens:
             continue
         places = set(id_list(exception, "only_in"))
@@ -872,7 +891,7 @@ def lens_exception_covers(run, lens, targets):
 def check_craft_07(run):
     problems = []
     for type_name in ("SETUP", "SHOT"):
-        for record in by_identifier(run.records(type_name)):
+        for record in records_of(run, type_name):
             lens = number_of(record.get("lens_mm"))
             if lens is None:
                 continue
@@ -906,7 +925,7 @@ def plant_limit(run, plant):
                 plain="makes a plant louder than a plant may be, which gives the payoff away")
 def check_craft_08(run):
     problems = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         for item in thing_items(run, shot):
             plant_identifier = item.get("plant")
             emphasis = thing_emphasis(item)
@@ -921,7 +940,7 @@ def check_craft_08(run):
                     f"{'plot-event ' if plot_event else ''}plant is at most emphasis {limit}",
                     f"Fix: lower the plant to emphasis {limit}; the payoff is where it gets loud (K11, B4 R6).",
                     containing=plant_identifier.strip()))
-    for plant in by_identifier(run.records("PLANT")):
+    for plant in records_of(run, "PLANT"):
         emphasis = number_of(plant.get("plant_emphasis"))
         limit, plot_event = plant_limit(run, plant)
         if emphasis is not None and emphasis > limit:
@@ -994,7 +1013,7 @@ def check_craft_09(run):
                     f"motif reaches emphasis 3 at most {per_motif} time in the film",
                     "Fix: keep emphasis 3 for the motif's one payoff and lower this use to 2 (B4).",
                     containing=motif))
-    for motif in by_identifier(run.records("MOTIF")):
+    for motif in records_of(run, "MOTIF"):
         loud = [item for item in items(run, motif, "appearance") if (whole_number(item.get("emphasis"), 0) or 0) >= 3]
         if len(loud) > per_motif:
             problems.append(problem_at(
@@ -1145,7 +1164,7 @@ def shots_using(run, reserve):
         return []
     field_name, value = matched
     found = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         if field_name == "subject" or field_name == "display":
             values = [word_of(item.get(field_name)) for item in items(run, shot, "subject")]
         else:
@@ -1216,16 +1235,16 @@ def banned_uses(run, banned):
     """[(record, field, value)] of every place a banned choice is used: a SHOT's word fields, a CUT's type, a
     SCENE's time treatment (a banned 'low angle' also matches angle: low)."""
     found = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         for field_name in ("move", "angle", "size", "frame", "frame_detail", "focus", "silence"):
             value = word_of(shot.get(field_name))
             if value and (value == banned or f"{value}_{field_name}" == banned):
                 found.append((shot, field_name, value))
-    for cut in by_identifier(run.records("CUT")):
+    for cut in records_of(run, "CUT"):
         value = word_of(cut.get("type"))
         if value and value == banned:
             found.append((cut, "type", value))
-    for scene in by_identifier(run.records("SCENE")):
+    for scene in records_of(run, "SCENE"):
         value = word_of(scene.get("time_treatment"))
         if value and value == banned:
             found.append((scene, "time_treatment", value))
@@ -1238,7 +1257,7 @@ def banned_uses(run, banned):
 def check_craft_11(run):
     problems = []
     covered_moves = set()
-    for reserve in by_identifier(run.records("RESERVE")):
+    for reserve in records_of(run, "RESERVE"):
         matched = reserve_match(run, reserve)
         if matched is None:
             continue
@@ -1296,7 +1315,7 @@ def check_craft_11(run):
                     f"{matched[1]} spends {reserve.identifier} on {names_list(sorted(never_on & on))}, which it is "
                     "never used on",
                     f"Fix: change this shot; {reserve.identifier} is never_on {names_list(sorted(never_on))}."))
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         move = word_of(shot.get("move"))
         if move in MOVES_ONLY_WHEN_SAVED and ("move", move) not in covered_moves:
             problems.append(problem_at(
@@ -1444,7 +1463,7 @@ def check_craft_12(run):
                       "motion or sound")
 def check_craft_13(run):
     problems = []
-    for cut in by_identifier(run.records("CUT")):
+    for cut in records_of(run, "CUT"):
         device = word_of(cut.get("type"))
         if device in JOINS_THE_STORY_MUST_WRITE and not story_writes_device(run, cut, device):
             problems.append(problem_at(
@@ -1556,7 +1575,7 @@ def acting_characters(run, shot):
 def check_craft_15(run):
     problems = []
     most = int(constant_of(run, "acting_characters_per_clip_max", 3))
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         acting = acting_characters(run, shot)
         if len(acting) > most:
             problems.append(problem_at(
@@ -1593,13 +1612,13 @@ def check_craft_16(run):
     if reason is None:
         return []
     problems = []
-    for scene in by_identifier(run.records("SCENE")):
+    for scene in records_of(run, "SCENE"):
         if word_of(scene.get("time_treatment")) == "slow_motion":
             problems.append(problem_at(
                 run, "E", "CRAFT-16", scene, "time_treatment",
                 f"slow_motion is banned by the camera system ({reason})",
                 "Fix: use overlapping_slices or held_real_time, built from real-time pieces (K30)."))
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         texts = [("moment", item.get("shows") or "") for item in items(run, shot, "moment")]
         texts += [(name, shot.get(name) or "") for name in ("gen_note", "physics_note")]
         texts += [("subject", item.get("does") or "") for item in items(run, shot, "subject")]
@@ -1661,7 +1680,8 @@ def check_craft_18(run):
                                              for name, charge in charges.items())
                     problems.append(problem_at(
                         run, "E", "CRAFT-18", beat, "charge",
-                        f"the {turn_of(beat)} changes no value's sign and reaches no value's close ({before_words})",
+                        f"the {turn_of(beat).replace('_', ' ')} changes no value's sign and reaches no value's close "
+                        f"({before_words})",
                         "Fix: show the change of charge this turn makes (a sign change or a value reaching its "
                         "close), or set turn: none (McKee's sign test, A2)."))
             for name, charge in charges.items():
@@ -1677,7 +1697,7 @@ def beat_signals(run, scene, beat, previous_dial, dial, views):
     if item is not None and previous_item is not None:
         size, before = word_of(item.get("size")), word_of(previous_item.get("size"))
         if size and before and size != before:
-            signals["size"] = f"size {size_words(before)} to {size_words(size)}"
+            signals["size"] = f"{size_words(before)} to {size_words(size)}"
     if item is not None:
         light, sound = item.get("light"), item.get("sound")
         if light and not is_empty(light) and word_of(light) != "as_look":
@@ -1687,7 +1707,8 @@ def beat_signals(run, scene, beat, previous_dial, dial, views):
         if sound and not is_empty(sound) and word_of(sound) != "room_sound":
             signals["sound"] = f"dial sound {sound}"
     for view in views:
-        if not view.written or view.is_card:
+        # a shot's own changes count on the beat it starts on, so a shot over two beats is not counted twice
+        if not view.written or view.is_card or (view.beats and view.beats[0] != beat.identifier):
             continue
         shot = view.record
         for field_name, what in shot_light_sound_changes(run, shot):
@@ -1726,11 +1747,13 @@ def check_craft_19(run):
             previous = beat.identifier if beat.identifier in dial else previous
             if len(signals) > most:
                 evidence = "; ".join(f"{name}: {what}" for name, what in signals.items())
+                target = record if record is not None else beat
                 problems.append(problem_at(
-                    run, "W", "CRAFT-19", beat, None,
-                    f"{len(signals)} of size, light, sound, camera move and colour change on this beat ({evidence}); "
-                    f"the most is {most}",
-                    "Fix: keep the one or two changes the beat needs and hold the rest (B3 R7)."))
+                    run, "W", "CRAFT-19", target, "dial" if record is not None else None,
+                    f"{beat.identifier} changes {len(signals)} of size, light, sound, camera move and colour at once "
+                    f"({evidence}); the most is {most}",
+                    "Fix: keep the one or two changes the beat needs and hold the rest (B3 R7).",
+                    containing=beat.identifier))
         main = main_turn_of(run, scene)
         if record is None or main is None:
             continue
@@ -1788,6 +1811,7 @@ def check_craft_20(run):
     problems = []
     differ = int(constant_of(run, "lineup_columns_differ_min", 3))
     share_limit = len(LINEUP_COLUMNS) - differ + 1
+    # file order: the character written second is the one reported
     principals = [record for record in run.records("CHARACTER") if word_of(record.get("tier")) == "principal"]
     lineups = [(record, lineup_of(run, record)) for record in principals]
     lineups = [(record, lineup) for record, lineup in lineups if lineup]
@@ -1806,7 +1830,8 @@ def check_craft_20(run):
 
 
 def flagged_speeches(run, scene, flag):
-    """{speech ID or None: beat} for every BEAT flag of a kind; None when the flag names no line."""
+    """[(beat, speech ID or None)] for every BEAT flag of a kind (melodrama, monologue); None when the flag names no
+    line."""
     found = []
     for beat in beats_of(run, scene):
         for item in items(run, beat, "flag"):
@@ -1930,10 +1955,13 @@ def check_craft_23(run):
             continue
         if any(word_of(item.get("speaker")) in ("off_screen", "hidden") for item in heard):
             continue
-        record = scene_record(run, scene) or shots[0]
-        problems.append(run.problem(
-            "W", "CRAFT-23", record, "",
-            f"is a dialogue scene, and none of its {len(heard)} heard speeches is heard off screen",
+        record = scene_record(run, scene)
+        speakers = speakers_in_scene(run, scene)
+        problems.append(problem_at(
+            run, "W", "CRAFT-23", record if record is not None else shots[0],
+            "speaking" if record is not None else "hear",
+            f"makes it a dialogue scene ({len(speakers)} speakers), and none of its {len(heard)} heard speeches is "
+            "heard off screen",
             "Fix: land at least one line on the listener (speaker: off_screen), where the reaction is the story "
             "(A1 R1, A1 R2)."))
     return problems
@@ -1974,7 +2002,7 @@ def at_or_tighter(size, limit):
 def check_craft_25(run):
     problems = []
     limit = constant_of(run, "display_3_needs_why_at_or_tighter", "close_up")
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         if not at_or_tighter(shot.get("size"), limit) or shot.get("why"):
             continue
         for item in items(run, shot, "subject"):
@@ -2001,7 +2029,7 @@ def moment_seconds(item):
 def check_craft_26(run):
     problems = []
     hold = constant_of(run, "hold_needs_still_s", 2.0)
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         long_moments = [item for item in items(run, shot, "moment") if (moment_seconds(item) or 0) >= hold]
         held_pause = False
         for beat_identifier in id_list(shot, "beats"):
@@ -2055,7 +2083,7 @@ def fact_reveal(run, fact):
                 plain="shows the thing that gives a secret away before the story reveals it")
 def check_info_01(run):
     problems = []
-    for fact in by_identifier(run.records("FACT")):
+    for fact in records_of(run, "FACT"):
         reveal = fact_reveal(run, fact)
         elements = [element_of(piece) for piece in id_list(fact, "element")]
         if reveal is None or not elements:
@@ -2131,7 +2159,7 @@ def reveal_shot(run, fact, reveal):
                 plain="reveals a secret in a shot the scene does not treat as one it depends on")
 def check_info_02(run):
     problems = []
-    for fact in by_identifier(run.records("FACT")):
+    for fact in records_of(run, "FACT"):
         reveal = fact_reveal(run, fact)
         if reveal is None:
             continue
@@ -2215,7 +2243,7 @@ def departures(run, shot):
                 plain="does not say what the shot is for, or which part of the story it serves")
 def check_reason_01(run):
     problems = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         purpose = shot.get("purpose")
         if not purpose or is_empty(purpose):
             problems.append(problem_at(
@@ -2253,7 +2281,7 @@ def check_reason_01(run):
                 plain="leaves the film's baseline (angle, height, lens, move, focus, light or sound) without saying why")
 def check_reason_02(run):
     problems = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         if shot.get("why") and not is_empty(shot.get("why")):
             continue
         found = departures(run, shot)
@@ -2271,8 +2299,18 @@ def check_reason_02(run):
 
 
 def reason_texts(run, field_filter=None):
-    """[(record, field label, text, scene or None)] of every reason written in the records: every field named why,
-    every sub-part why, SCENE department_idea idea and scene_idea."""
+    """[(record, field label, text, scene or None, field line)] of every reason written in the records: every field
+    named why, every sub-part why, SCENE department_idea idea and scene_idea (worked out once per run)."""
+    key = "craft_reason_texts"
+    if key not in run.cache:
+        run.cache[key] = all_reason_texts(run)
+    found = run.cache[key]
+    if field_filter:
+        found = [entry for entry in found if field_filter(entry)]
+    return found
+
+
+def all_reason_texts(run):
     found = []
     for record_file in run.record_files:
         for record in record_file.records:
@@ -2290,15 +2328,14 @@ def reason_texts(run, field_filter=None):
                     found.append((record, "why", line.value, scene, line))
                 elif record.type_name == "SCENE" and line.name == "scene_idea":
                     found.append((record, "scene_idea", line.value, scene, line))
-                elif definition.get("kind") == "sub_parts" or definition.get("sub_parts"):
+                elif ("why:" in line.value or "idea:" in line.value) and (
+                        definition.get("kind") == "sub_parts" or definition.get("sub_parts")):
                     item = split_item(line.value, definition)
                     for key, value in item.parts:
                         if key == "why" or (record.type_name == "SCENE" and line.name == "department_idea"
                                             and key == "idea"):
                             if value and not is_empty(value):
                                 found.append((record, f"{line.name} {key}", value, scene, line))
-    if field_filter:
-        found = [entry for entry in found if field_filter(entry)]
     return found
 
 
@@ -2367,7 +2404,7 @@ def check_reason_04(run):
                 plain="is the turn shot but does not name the turn it shows")
 def check_reason_05(run):
     problems = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         if word_of(shot.get("role")) != "turn":
             continue
         turns = [identifier for identifier in because_identifiers(shot)
@@ -2388,7 +2425,7 @@ def check_reason_05(run):
                 plain="spends a saved choice without naming it")
 def check_reason_06(run):
     problems = []
-    for reserve in by_identifier(run.records("RESERVE")):
+    for reserve in records_of(run, "RESERVE"):
         for shot in shots_using(run, reserve):
             if reserve.identifier in because_identifiers(shot):
                 continue
@@ -2404,7 +2441,7 @@ def check_reason_06(run):
                 plain="changes a planned choice to suit a tool without saying what meaning it keeps")
 def check_reason_07(run):
     problems = []
-    for shot in by_identifier(run.records("SHOT")):
+    for shot in records_of(run, "SHOT"):
         for item in items(run, shot, "departure"):
             kept = item.get("meaning_kept")
             if kept and not is_empty(kept):
@@ -2511,7 +2548,7 @@ def emotion_words_in(words, text):
 def check_words_01(run):
     problems = []
     for type_name, field_name in (("SHOT", "subject"), ("BEAT", "task")):
-        for record in by_identifier(run.records(type_name)):
+        for record in records_of(run, type_name):
             for item in items(run, record, field_name):
                 found = emotion_words_in(run.words, item.get("does") or "")
                 if found:
@@ -2524,17 +2561,82 @@ def check_words_01(run):
     return problems
 
 
+_RETIRED_CACHE = {}
+
+
 def retired_entries(words, modes=("always",)):
-    return [entry for entry in (words or {}).get("retired", []) if entry.get("flag") in modes]
+    """The retired entries of words.json with the given flag modes (cached per word list)."""
+    key = ("entries", id(words), tuple(modes))
+    cached = _RETIRED_CACHE.get(key)
+    if cached is None or cached[0] is not words:
+        cached = (words, [entry for entry in (words or {}).get("retired", []) if entry.get("flag") in modes])
+        _RETIRED_CACHE[key] = cached
+    return list(cached[1])
 
 
 def retired_pattern(entry):
+    """The compiled pattern of one retired entry: its pattern, or its word and extra words as whole words."""
+    key = ("pattern", id(entry))
+    cached = _RETIRED_CACHE.get(key)
+    if cached is not None and cached[0] is entry:
+        return cached[1]
     flags = 0 if entry.get("case_sensitive") else re.IGNORECASE
     if entry.get("pattern"):
-        return re.compile(entry["pattern"], flags)
-    words = [entry.get("word", "")] + list(entry.get("extra_words") or [])
-    alternatives = "|".join(re.escape(word) for word in words if word)
-    return re.compile(r"(?<![A-Za-z0-9_])(?:" + alternatives + r")(?![A-Za-z0-9_])", flags)
+        pattern = re.compile(entry["pattern"], flags)
+    else:
+        words = [entry.get("word", "")] + list(entry.get("extra_words") or [])
+        alternatives = "|".join(re.escape(word) for word in words if word)
+        pattern = re.compile(r"(?<![A-Za-z0-9_])(?:" + alternatives + r")(?![A-Za-z0-9_])", flags)
+    _RETIRED_CACHE[key] = (entry, pattern)
+    return pattern
+
+
+class RetiredQuickLook:
+    """A quick first look for retired words: an entry is looked at closely only when the text holds the longest word
+    of one of its phrases, or matches its pattern (the few entries written as patterns)."""
+
+    def __init__(self, entries):
+        self.by_word = {}
+        self.patterned = []
+        for entry in entries:
+            if entry.get("pattern") or entry.get("extra_pattern"):
+                self.patterned.append((entry, re.compile("|".join(
+                    f"(?:{pattern})" for pattern in (entry.get("pattern"), entry.get("extra_pattern")) if pattern),
+                    re.IGNORECASE)))
+            if not entry.get("pattern"):
+                for phrase in [entry.get("word", "")] + list(entry.get("extra_words") or []):
+                    pieces = RETIRED_WORD_PIECE.findall(phrase.lower())
+                    if pieces:
+                        self.by_word.setdefault(max(pieces, key=len), []).append(entry)
+
+    def candidates(self, text):
+        """The entries worth looking at closely for this text, in words.json's order."""
+        tokens = set(RETIRED_WORD_PIECE.findall((text or "").lower()))
+        found = []
+        for token in tokens & self.by_word.keys():
+            found += self.by_word[token]
+        found += [entry for entry, pattern in self.patterned if pattern.search(text or "")]
+        unique = []
+        for entry in found:
+            if not any(entry is other for other in unique):
+                unique.append(entry)
+        return unique
+
+    def search(self, text):
+        return bool(self.candidates(text))
+
+
+RETIRED_WORD_PIECE = re.compile(r"[a-z0-9\u00b0']+")
+
+
+def any_retired_word(words, modes):
+    """The quick first look for the retired words of the given modes (cached per word list)."""
+    key = ("any", id(words), tuple(modes))
+    cached = _RETIRED_CACHE.get(key)
+    if cached is None or cached[0] is not words:
+        cached = (words, RetiredQuickLook(retired_entries(words, modes)))
+        _RETIRED_CACHE[key] = cached
+    return cached[1]
 
 
 def retired_words_in_text(text, words, modes=("always", "user_text"), field_path=None):
@@ -2543,11 +2645,11 @@ def retired_words_in_text(text, words, modes=("always", "user_text"), field_path
     that name that field. Other modules may call this on any user-facing text."""
     text = QUOTED.sub(" ", text or "")
     found = []
-    entries = retired_entries(words, modes)
+    entries = any_retired_word(words, tuple(modes)).candidates(text)
     if field_path:
         type_name, _, field_name = field_path.partition(".")
         base_field = field_name.split(" ")[0]
-        for entry in retired_entries(words, ("in_fields",)):
+        for entry in any_retired_word(words, ("in_fields",)).candidates(text):
             targets = entry.get("in_fields") or []
             if any(target in (f"{type_name}.{base_field}", f"*.{base_field}", type_name) for target in targets):
                 entries.append(entry)
@@ -2572,6 +2674,18 @@ def retired_words_in_text(text, words, modes=("always", "user_text"), field_path
                     seen.add(match.group(0).lower())
                     found.append((match.group(0), entry))
     return found
+
+
+def use_instead(words, entry, written):
+    """The word to write instead of a retired one: for words retired only in user text (checkpoint letters, v0,
+    greybox), the user's word from ai_word_and_user_word; otherwise the entry's own replacement."""
+    if entry.get("flag") == "user_text":
+        for pair in (words or {}).get("ai_word_and_user_word", []):
+            if (pair.get("ai") or "").lower() == written.lower():
+                return pair.get("user") or entry.get("use_instead") or ""
+        if written.lower() == "greybox":
+            return "grey previews"
+    return entry.get("use_instead") or ""
 
 
 def story_written_field(run, type_name, field_name):
@@ -2609,26 +2723,32 @@ def file_record_label(record_file):
                 plain="uses a word the word list has retired, where one plain word is used for each thing")
 def check_words_02(run):
     problems = []
+    quick_look = any_retired_word(run.words, ("always", "in_fields"))
+    # Above the divider WORDS-04 reports the abbreviations (MCU, CU, POV ...), so they are not reported twice here.
+    abbreviations = set((run.words or {}).get("abbreviations", {}).get("words", []))
     for record_file in run.record_files:
         for number, text in plain_part_lines(record_file):
             for written, entry in retired_words_in_text(text, run.words, ("always", "user_text")):
+                if written in abbreviations:
+                    continue
                 problems.append(run.problem(
                     "W", "WORDS-02", file_record_label(record_file), None,
                     f"holds the retired word {quote_for_message(written)} above the divider",
-                    f"Fix: write {quote_for_message(entry.get('use_instead') or '')} instead (5.7).",
+                    f"Fix: write the plain word instead: {use_instead(run.words, entry, written)} (5.7).",
                     line_number=number, file_name=record_file.name))
         for record in record_file.records:
             if not record.known_type or record.type_name in WORDS_02_SKIPPED_TYPES:
                 continue
             for line in record.fields:
-                if not line.value or story_written_field(run, record.type_name, line.name):
+                if not line.value or not quick_look.search(line.value) or \
+                        story_written_field(run, record.type_name, line.name):
                     continue
                 for written, entry in retired_words_in_text(line.value, run.words, ("always",),
                                                             f"{record.type_name}.{line.name}"):
                     problems.append(run.problem(
                         "W", "WORDS-02", record, line.name,
                         f"holds the retired word {quote_for_message(written)}",
-                        f"Fix: write {quote_for_message(entry.get('use_instead') or '')} instead (5.7).",
+                        f"Fix: write the plain word instead: {use_instead(run.words, entry, written)} (5.7).",
                         line_number=line.line_number, file_name=record_file.name))
     return problems
 
@@ -2702,7 +2822,7 @@ def named_references_in(run, text):
 def check_words_03(run):
     problems = []
     for type_name, field_names in PROMPT_FIELDS.items():
-        for record in by_identifier(run.records(type_name)):
+        for record in records_of(run, type_name):
             for field_name in field_names:
                 definition = definition_of(run, type_name, field_name)
                 for line_value in record.get_all(field_name):
@@ -2735,6 +2855,11 @@ def check_words_03(run):
 
 
 def abbreviation_patterns(words):
+    """[(word, compiled pattern)] of words.json's abbreviations, matched as written (cached per word list)."""
+    key = ("abbreviations", id(words))
+    cached = _RETIRED_CACHE.get(key)
+    if cached is not None and cached[0] is words:
+        return cached[1]
     rule = (words or {}).get("abbreviations", {})
     patterns = []
     for word in rule.get("words", []):
@@ -2743,6 +2868,7 @@ def abbreviation_patterns(words):
         else:
             pattern = r"(?<![A-Za-z0-9_.])" + re.escape(word) + r"(?![A-Za-z0-9_])"
         patterns.append((word, re.compile(pattern)))
+    _RETIRED_CACHE[key] = (words, patterns)
     return patterns
 
 
@@ -2801,7 +2927,7 @@ def expression_words_in(words, text):
                 plain="has a fixed description of the wrong length, or one that fixes an expression on the face")
 def check_words_05(run):
     problems = []
-    for character in by_identifier(run.records("CHARACTER")):
+    for character in records_of(run, "CHARACTER"):
         text = character.get("fixed_description")
         if not text or is_empty(text):
             continue
@@ -2814,7 +2940,7 @@ def check_words_05(run):
                 "Fix: " + ("add visible nouns (face, hair, build, clothes)" if count < allowed[0] else
                            "cut to the visible nouns a stranger needs to recognise them") + " (B5, C2, C5)."))
     for type_name in ("CHARACTER", "PROP"):
-        for record in by_identifier(run.records(type_name)):
+        for record in records_of(run, type_name):
             text = record.get("fixed_description")
             found = expression_words_in(run.words, text) if text else []
             if found:
