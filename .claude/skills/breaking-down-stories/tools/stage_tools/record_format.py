@@ -1333,6 +1333,25 @@ class ValueExaminer:
                 return value, found
         return value, []
 
+    def examine_element_list(self, value, definition, key):
+        """IDs, or (until step 4 designs the things) a story point standing for an element with no record yet (C23)."""
+        items = split_list(value)
+        if not items:
+            return value, [ValueIssue("FORM-04", "is empty", "Fix: write IDs separated by commas, or none")]
+        for item in items:
+            if parse_story_point(item):
+                _, found = self.examine_story_point(item, definition, key)
+                if found:
+                    return value, found
+                continue
+            _, found = self.examine_id(item, definition, key)
+            if any(issue.check_id == "FORM-04" for issue in found):
+                return value, [ValueIssue("FORM-04", f"{quote_for_message(item)} is neither an ID of "
+                                          f"{' or '.join(definition.get('id_types') or ['a record'])} nor a story point",
+                                          'Fix: write IDs (PR-RING, MO-MINT), or before step 4 a story point, as '
+                                          'SC10 "the flask"')]
+        return value, []
+
     def examine_scene_or_story_point(self, value, definition, key):
         text = value.strip()
         if self.schema.id_matches(text, ["SCENE"]):
@@ -1355,7 +1374,10 @@ class ValueExaminer:
                                           "Fix: write default alone, or only IDs and line references")]
             if BECAUSE_LINE_ITEM.match(item):
                 continue
-            _, found = self.examine_id(item, definition, key)
+            # one because kind everywhere (fix list C14): the kind's own list of story record types, whatever the
+            # field (SHOT because, a SCENE department idea's because ...)
+            kind_types = ((self.schema.data.get("kinds") or {}).get("because_list") or {}).get("id_types")
+            _, found = self.examine_id(item, definition, key, id_types=kind_types or definition.get("id_types"))
             if found:
                 if any(issue.check_id == "FORM-04" for issue in found):
                     return value, [ValueIssue("FORM-04", f"{quote_for_message(item)} is neither an ID of a story record nor a line reference",

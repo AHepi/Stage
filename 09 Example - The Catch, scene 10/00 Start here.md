@@ -2,7 +2,7 @@
 
 ## Where things stand
 
-Last saved: step 9 (writing the shots), scene 10, batch 2, on 2026-09-28.
+Last saved: step 9 of 12, writing the shots, scene 10, batch 2, on 2026-09-28.
 This breakdown covers 1 of 1 scene: 1 designed, 1 with their shots written (21 shots).
 Checked by the checker: 2026-09-28.
 5 small additions to the story kept; the list is in 01 Choices.
@@ -10,7 +10,7 @@ Waiting for you: nothing.
 
 ## Next step
 
-Next piece of work: step 10 of 12 (the film pass).
+Next piece of work: step 10 of 12, the film pass.
 In Claude Code or Claude desktop with this folder, type: Continue my breakdown.
 On the Claude website or in ChatGPT: start a new chat in this project, attach the newest save file, and type: Continue my breakdown.
 In Gemini or another chat app: start a new chat, attach the files the last reply named, and type: Continue my breakdown.

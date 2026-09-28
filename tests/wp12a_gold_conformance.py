@@ -267,7 +267,8 @@ def check_value(definition, value, where, problems, writer=None, repeat=False):
         return
     if value == "open" and writer in ("ai", "user", None):
         return
-    if value == "none" and (kind in ("text", "id_list", "text_list", "because_list", "reference_list", "story_point_list")
+    if value == "none" and (kind in ("text", "id_list", "text_list", "because_list", "reference_list", "story_point_list",
+                                     "element_list")
                             or repeat or "none" in values or "none" in also):
         return
     if value in also:
@@ -379,6 +380,14 @@ def check_value(definition, value, where, problems, writer=None, repeat=False):
                 continue
             if not is_identifier_of(item, definition.get("id_types") or ["*"]):
                 problems.append(f"{where}: {item!r} is not an ID of {', '.join(definition.get('id_types') or ['*'])} or a line")
+        return
+    if kind == "element_list":
+        # FACT element (fix list C23): IDs, or before step 4 a story point standing for an element with no record yet
+        for item in split_outside_quotes(value, ","):
+            item = item.strip()
+            if not (is_identifier_of(item, definition.get("id_types") or ["*"]) or check_story_point(item)):
+                problems.append(f"{where}: {item!r} is neither an ID of {', '.join(definition.get('id_types') or ['*'])} "
+                                "nor a story point")
         return
     if kind == "reference_list":
         for item in split_outside_quotes(value, ","):

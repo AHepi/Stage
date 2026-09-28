@@ -22,7 +22,7 @@ The story file (in `My stories/` in Claude Code and Cowork; attached in chat app
 
 | File | Records |
 |---|---|
-| `00 Start here.md` | PROJECT: `title`, `depth`, `training_off`, `rights`, `surface`, `code_execution`, `batch_size`, and code's housekeeping fields |
+| `00 Start here.md` | PROJECT, written by code here (in chat, by you): `title`, `depth`, `training_off`, `rights`, `surface`, `code_execution`, `batch_size`, and code's housekeeping fields |
 | `01 Choices.md` | CHOICE-001 rights (`asked: yes`); CHOICE-002 depth (`asked: no`, default standard); CHOICE-003 privacy setting (`asked: no`, default `not_confirmed`, answered when the user says the setting is off) |
 | `22 Rights and credits.md` | RIGHTS RT-001, the story's own rights record (`subject: source`, `clearance`, `holder` by role, never a name) |
 | `Original/` | the story exactly as given, and its fingerprint (code surfaces only) |
@@ -34,15 +34,15 @@ At every depth: card 24, part "The rights question".
 ## Procedure
 
 1. **Hidden self-test**, never shown to the user: how much one reply can safely hold (D1 §2.4, §5.3).
-   - First try to run Python. If you can, and you find this skill's `tools/stage.py` (on ChatGPT, after unpacking `07 Tools.zip`), you are on a code surface: go on below. Otherwise follow "If you cannot run code".
+   - First try to run Python. If you can, and you find this skill's `tools/stage.py` (on ChatGPT, in `breaking-down-stories/` of the unpacked `07 Tools.zip`), you are on a code surface: go on below. Otherwise follow "If you cannot run code".
    - Run `stage.py new "<story file>"`; it makes the project folder and its first files, with CHOICE-001 to CHOICE-003.
    - Run `stage.py selftest --prepare`. It checks the story and the ZIP maker and writes the handout `U-00-SELFTEST.md`: test shot IDs in a scene the story does not use (`selftest_scene`), rules and a SHOT template.
-   - Unit U-00-SELFTEST: follow that handout. Write `selftest_records` full SHOT records and the END line, in one reply, into `For machines - do not edit/inbox/U-00-SELFTEST.md`, every record in full (G11).
-   - Run `stage.py selftest --score`. It sets PROJECT `batch_size` (the larger value if every record and the END line pass, else the default), `code_execution` and `surface`, and deletes the test records; never type these three yourself.
+   - Unit U-00-SELFTEST: follow that handout. Write `selftest_records` full SHOT records and the END line, in one reply, into `For machines - do not edit/inbox/U-00-SELFTEST.md`, every record in full (G11), with every field the template marks required; one with nothing to hold is `none` (G7).
+   - Run `stage.py selftest --score --surface <this app>` (`claude_code`, `claude_cowork`, `claude_web` or `chatgpt`). It sets PROJECT `batch_size` (the larger value if every record and the END line pass, else the default), `code_execution` and `surface`, prints the error count, writes every error to a file and deletes the test records; never type these three fields yourself. A retry uses the same issued IDs.
 2. **Find one strong turn** (unit U-00-START). Read only enough of the story to find one moment where a scene turns, and write one finished shot line from it (scene and shot, size, what the camera does, what we see, one quoted line, the seconds, a "Why" that quotes the story), every quoted word the story's own (G12). It is an example for the welcome, not a record.
 3. **Welcome the user** with the message in "The report": the example, how the work goes, the depth stated (not asked), and one question, rights.
 4. **Pass on the answers.** On a code surface write into `For machines - do not edit/inbox/U-00-START.md`:
-   - `### CHOICE CHOICE-001` with `- answer: a` (or `- answer: defaults`), its four `PROJECT.rights` `sets` lines repeated (an inbox field replaces all its lines), and one `sets` line for each of RT-001's `subject`, `clearance` and `holder` under the chosen option (`- sets: RT-001.subject | value: source | when: a`);
+   - `### CHOICE CHOICE-001` with only `- answer: a` (or `- answer: defaults`). `new` already wrote its 16 `sets` lines (for each option, `PROJECT.rights` and RT-001's `subject`, `clearance` and `holder`). Leave them out: a field you send replaces all its stored lines, so sending some would delete the rest;
    - `### RIGHTS RT-001 The story` with `- evidence: the user said: It's mine`.
 
    Run `stage.py apply`. It sets the choice's status and date, writes what the chosen `sets` lines name, and makes `22 Rights and credits.md`. Never write `status`, `date` or `locked` yourself on a code surface. CHOICE-002 and CHOICE-003 are small choices, defaulted unless the user says "quick", "detailed" or that the privacy setting is off; pass those on the same way.

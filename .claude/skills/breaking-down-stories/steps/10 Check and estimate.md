@@ -31,7 +31,7 @@ At every depth: `reference/05 Quality rubric.md`, whole; card 21, part "Cost".
 ## Procedure
 
 1. **The book first.** Run `stage.py export book`. It is cheap, can be remade any time, and gives the user the three scenes as pages.
-2. **The whole check.** Run `stage.py check --all`: every field at the project's depth, every check. Tidy fixes are applied and logged (FORM-13); real problems are fixed, only the lines printed, at most `repair_rounds_max` rounds (C5 R13); then a trace to the earliest wrong record, or one plain question for the user.
+2. **The whole check.** Run `stage.py check --all`: every field at the project's depth, every check. Tidy fixes are applied and logged (FORM-13); real problems are fixed, only the lines printed, at most `repair_rounds_max` rounds (C5 R13); then a trace to the earliest wrong record, or one plain question for the user. TIME-03 only warns, past `scene_duration_tolerance_share`: code set each scene's target from the first estimate's word counts at step 2, not from its design.
 3. **The lint.** Run `stage.py compile --lint-only`: it routes every shot to its scene model and lints the prompt without writing any pack. Its GEN error count scores rubric criterion 9; a GEN error is fixed in the shot record, never in a prompt.
 4. **The estimate from the shots.** Run `stage.py estimate --version v1`. It works out runtime, shots, generated seconds, money at all three tiers and hours of review; never type a total (card 21, "Cost"). If the model facts are older than `model_facts_max_age_days`, it prints no money (GEN-11; D13 R7): with web access, run the refresh (`stage.py refresh-models --propose`, the user approves any price change, then `--apply`); without it, the report says the money waits for fresh prices.
 5. **The questions.** Run `stage.py questions --sample`. It writes yes/no questions for every turn shot, turn beat and must-keep shot, every shot that needs mirror, text or violence handling, and a seeded share (`question_sample_share`) of the rest, each citing the lines it can be checked against (C5 R11; D7 R3, R5): "Does Iona's face change before she says 'Not mint.' (lines 454 to 463)?"
@@ -84,7 +84,7 @@ Next: I'll finish the book, the spreadsheets, the captions and the timeline.
 
 ## Checkpoint
 
-The finished check. It waits for the answer; "defaults" accepts [no]. At most `acceptance_items_max` things to check, each with a default and often none (a film pass choice still open is one of them), and the three scenes with the 10-question review sheet of `05 How to read your breakdown`. A change the user asks for: `stage.py impact` on what it touches, say what it redoes in plain words, redo only that, then check again. Nothing else runs until it is answered or defaulted.
+The finished check. It waits for the answer; "defaults" accepts [no]. At most `acceptance_items_max` things to check, each with a default and often none (a film pass choice still open is one of them), and the three scenes with the 10-question review sheet of `05 How to read your breakdown`. A change the user asks for: `stage.py impact` on what it touches, say what it redoes in plain words, redo only that, then check again. Nothing else runs until it is answered or defaulted: apply any open choice's answer, then run `stage.py next --checkpoint-passed`.
 
 ## How to redo
 

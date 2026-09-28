@@ -1057,14 +1057,21 @@ def scene_total(run, breakdown, scene):
 
 
 @register_check("TIME-03", level="W", build=1,
-                title="Scene total outside ±10% of its target (run after the scene's last batch)",
+                title="Scene total outside its target by more than scene_duration_tolerance_share (a warning; run "
+                      "after the scene's last batch)",
                 plain="runs longer or shorter than its planned length allows")
 def check_time_03(run):
+    """A warning only (C8): the target is the first estimate, made from the words, not a design, so a scene may
+    differ from it by scene_duration_tolerance_share before the checker says so."""
     breakdown = breakdown_of(run)
     problems = []
-    tolerance = constant(run.constants, "scene_total_tolerance", None)
+    tolerance_name = "scene_duration_tolerance_share"
+    tolerance = constant(run.constants, tolerance_name, None)
     if tolerance is None:
-        run.skip("TIME-03", "scene_total_tolerance is missing from rules/constants.json")
+        tolerance_name = "scene_total_tolerance"
+        tolerance = constant(run.constants, tolerance_name, None)
+    if tolerance is None:
+        run.skip("TIME-03", "scene_duration_tolerance_share is missing from rules/constants.json")
         return problems
     without_target = []
     for scene in kept_scenes(run):
@@ -1085,7 +1092,7 @@ def check_time_03(run):
         problems.append(report(run, "W", "TIME-03", scene, "target_duration_s",
                                f"{seconds_words(target)}: the scene's {counted} total {seconds_text(round(total, 2))} s, "
                                f"{round(abs(share) * 100)}% {direction} its target (at most {round(tolerance * 100)}% "
-                               "either way, scene_total_tolerance)",
+                               f"either way, {tolerance_name}; the target is the first estimate, made from the words)",
                                "Fix: " + ("shorten or cut shots that carry least" if share > 0 else
                                           "hold the shots that need it longer") +
                                ", or ask the user to change the scene's planned length.",
@@ -1656,8 +1663,10 @@ def shot_lines_words(first, last):
 def check_state_01(run):
     """5.4 rule 4: subject and thing items name a state ID when the element has states, and the state must be
     valid there (its from at or before the shot, its until after). A shot is read as its lines: a state that holds
-    during any of them fits, so a shot that shows a change may name either state. An element with no states at
-    all is named directly (rule 4), and motifs and text are not elements."""
+    during any of them fits, so a shot that shows a change may name either state; a state replaced on the shot's
+    first line no longer holds there. An element with no states at all is named directly (rule 4), and motifs and
+    text are not elements. The same rule reads the one-line list's subjects at step 7 (a list item may name the
+    character instead of its state), so a list subject step 7 accepts is one step 8 accepts too (C10)."""
     breakdown = breakdown_of(run)
     problems = []
     for scene in kept_scenes(run):
@@ -1665,45 +1674,80 @@ def check_state_01(run):
             first, last = shot_span(breakdown, shot)
             for field_name in ("subject", "thing"):
                 for item in breakdown.items(shot, field_name):
-                    reference = (item.first or "").strip()
-                    place = place_of(run, shot, field_name, first_part=reference)
-                    if STATE_REFERENCE.match(reference):
-                        state = breakdown.record(reference, "STATE")
-                        if state is None:
-                            continue  # ID-02 reports a state that does not exist
-                        element = state.get("element") or element_of(reference)
-                        start, end, following = state_interval(breakdown, element, state)
-                        valid = state_at(breakdown, element, first)
-                        fix = f"Fix: name {valid.identifier}." if valid is not None and valid is not state else \
-                            f"Fix: name the state of {element} that holds here, or correct the states' from lines."
-                        if compare_positions(start, last) == 1:
-                            problems.append(report(run, "E", "STATE-01", shot, field_name,
-                                                   f"{reference} is not valid here: it starts at "
-                                                   f"{state_start_words(breakdown, state)}, after this shot "
-                                                   f"({shot_lines_words(first, last)})", fix, place))
-                        elif end is not None and compare_positions(end, first) in (-1, 0):
-                            problems.append(report(run, "E", "STATE-01", shot, field_name,
-                                                   f"{reference} is not valid here: {following.identifier} replaces "
-                                                   f"it from {state_start_words(breakdown, following)}, at or before "
-                                                   f"the start of this shot ({shot_lines_words(first, last)})", fix,
-                                                   place))
-                    elif ELEMENT_REFERENCE.match(reference):
-                        states = element_states(breakdown, reference)
-                        if not states:
-                            continue
-                        valid = state_at(breakdown, reference, first)
-                        if valid is not None:
-                            problems.append(report(run, "E", "STATE-01", shot, field_name,
-                                                   f"{reference} names the element, but it has states: the one valid "
-                                                   f"here ({shot_lines_words(first, last)}) is {valid.identifier}",
-                                                   f"Fix: write {valid.identifier}.", place))
-                        elif compare_positions(state_start(breakdown, states[0]), first) == 1:
-                            problems.append(report(run, "E", "STATE-01", shot, field_name,
-                                                   f"{reference} has no state valid here: its first state, "
-                                                   f"{states[0].identifier}, starts at "
-                                                   f"{state_start_words(breakdown, states[0])}, after this shot",
-                                                   f"Fix: add a state of {reference} from {scene.identifier}, or move "
-                                                   f"{states[0].identifier}'s from earlier.", place))
+                    problems.extend(state_reference_problems(run, breakdown, scene, shot, field_name,
+                                                             (item.first or "").strip(), first, last))
+        shot_list = run.record(f"{scene.identifier}-LIST")
+        if shot_list is None or shot_list.type_name != "SHOTLIST":
+            continue
+        definition = run.schema.field("SHOTLIST", "item")
+        for value in shot_list.get_all("item"):
+            item = split_item(value, definition)
+            first, last = list_item_span(run, breakdown, scene, item)
+            if first[1] is None:
+                continue
+            for reference in split_list(item.get("subject") or ""):
+                reference = reference.strip()
+                if not STATE_REFERENCE.match(reference):
+                    continue  # a list item may name the character; its shot names the state
+                problems.extend(state_reference_problems(run, breakdown, scene, shot_list, "item",
+                                                         reference, first, last, item_label=item.first))
+    return problems
+
+
+def list_item_span(run, breakdown, scene, item):
+    """(first, last) positions of a one-line list item: the lines of the beats it covers."""
+    numbers = []
+    for beat_identifier in split_list(item.get("beats") or ""):
+        beat = breakdown.record(beat_identifier.strip(), "BEAT")
+        if beat is not None:
+            numbers.extend(breakdown.lines_of(beat))
+    key = scene_key(scene.identifier)
+    if not numbers:
+        return (key, None), (key, None)
+    return (key, min(numbers)), (key, max(numbers))
+
+
+def state_reference_problems(run, breakdown, scene, record, field_name, reference, first, last, item_label=None):
+    """STATE-01's lines for one subject or thing reference of a shot (or of a list item) covering first..last."""
+    problems = []
+    where = f" (list item {item_label})" if item_label else ""
+    place = place_of(run, record, field_name, first_part=item_label or reference)
+    if STATE_REFERENCE.match(reference):
+        state = breakdown.record(reference, "STATE")
+        if state is None:
+            return problems  # ID-02 reports a state that does not exist
+        element = state.get("element") or element_of(reference)
+        start, end, following = state_interval(breakdown, element, state)
+        valid = state_at(breakdown, element, first)
+        fix = f"Fix: name {valid.identifier}." if valid is not None and valid is not state else \
+            f"Fix: name the state of {element} that holds here, or correct the states' from lines."
+        if compare_positions(start, last) == 1:
+            problems.append(report(run, "E", "STATE-01", record, field_name,
+                                   f"{reference}{where} is not valid here: it starts at "
+                                   f"{state_start_words(breakdown, state)}, after this shot "
+                                   f"({shot_lines_words(first, last)})", fix, place))
+        elif end is not None and compare_positions(end, first) in (-1, 0):
+            problems.append(report(run, "E", "STATE-01", record, field_name,
+                                   f"{reference}{where} is not valid here: {following.identifier} replaces "
+                                   f"it from {state_start_words(breakdown, following)}, at or before the start of "
+                                   f"this shot ({shot_lines_words(first, last)})", fix, place))
+    elif ELEMENT_REFERENCE.match(reference) and item_label is None:
+        states = element_states(breakdown, reference)
+        if not states:
+            return problems
+        valid = state_at(breakdown, reference, first)
+        if valid is not None:
+            problems.append(report(run, "E", "STATE-01", record, field_name,
+                                   f"{reference} names the element, but it has states: the one valid "
+                                   f"here ({shot_lines_words(first, last)}) is {valid.identifier}",
+                                   f"Fix: write {valid.identifier}.", place))
+        elif compare_positions(state_start(breakdown, states[0]), first) == 1:
+            problems.append(report(run, "E", "STATE-01", record, field_name,
+                                   f"{reference} has no state valid here: its first state, "
+                                   f"{states[0].identifier}, starts at "
+                                   f"{state_start_words(breakdown, states[0])}, after this shot",
+                                   f"Fix: add a state of {reference} from {scene.identifier}, or move "
+                                   f"{states[0].identifier}'s from earlier.", place))
     return problems
 
 

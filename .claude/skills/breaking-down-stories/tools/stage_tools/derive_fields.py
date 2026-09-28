@@ -1426,6 +1426,7 @@ class SetPlan:
     objects: dict
     wild_walls: str = ""
     turned: bool = False
+    mark_heights: dict = dataclass_field(default_factory=dict)
 
     def x(self, value):
         return self.width - value if self.turned else value
@@ -1473,10 +1474,13 @@ def set_plan(breakdown, location_identifier):
     size = point_of(location.get("size")) if location is not None else None
     if location is not None and size and len(size) >= 2:
         marks = {}
+        heights = {}
         for item in breakdown.items(location, "mark"):
             point = point_of(item.get("at"))
             if point:
                 marks[item.first] = point[:2]
+                if len(point) > 2:
+                    heights[item.first] = point[2]  # a vertical plan: the height the person stands at (C11)
         objects = {}
         for item in breakdown.items(location, "object"):
             point = point_of(item.get("at"))
@@ -1488,7 +1492,7 @@ def set_plan(breakdown, location_identifier):
             orientation = normalise_word(location.get("plan_orientation") or "original")
             result = SetPlan(location_identifier, size[0], size[1], size[2] if len(size) > 2 else 2.5,
                              orientation if orientation in ("original", "reversed") else "original",
-                             marks, objects, location.get("wild_walls") or "")
+                             marks, objects, location.get("wild_walls") or "", mark_heights=heights)
     breakdown._cache[key] = result
     return result
 
@@ -1507,7 +1511,7 @@ def plan_for_shot(breakdown, shot):
     if needed == stored.orientation:
         return stored
     return SetPlan(stored.location, stored.width, stored.depth, stored.height, needed, stored.marks,
-                   stored.objects, stored.wild_walls, turned=True)
+                   stored.objects, stored.wild_walls, turned=True, mark_heights=stored.mark_heights)
 
 
 def vector(a, b):
@@ -1687,20 +1691,26 @@ class SceneStaging:
             clock += seconds
         self.total = clock
         self.starts = {}
+        self.move_heights = {}
         scene = breakdown.record(scene_identifier, "SCENE")
         for item in breakdown.items(scene, "start") if scene is not None else []:
             self.starts[item.first] = {"at": self.point(item.get("at")), "faces": item.get("faces"),
-                                       "posture": normalise_word(item.get("posture") or "standing")}
+                                       "posture": normalise_word(item.get("posture") or "standing"),
+                                       "height": self.point_height(item.get("at"))}
         self.moves = []
         for move in breakdown.of_scene("MOVE", scene_identifier):
             beat = move.get("beat")
             anchor = self.beat_start(beat)
             begin = anchor + number_of(move.get("start_s"), 0.0)
             end = begin + number_of(move.get("dur_s"), 0.0)
-            path = [self.point(move.get("from")), self.point(move.get("via")), self.point(move.get("to"))]
+            ends = [move.get("from"), move.get("via"), move.get("to")]
+            path = [self.point(value) for value in ends]
+            heights = [self.point_height(value) for value, point in zip(ends, path) if point is not None]
             path = [point for point in path if point is not None]
-            self.moves.append(TimedMove(move.identifier, move.get("who"), beat, begin, end, path, move.get("faces"),
-                                        normalise_word(move.get("posture") or "standing")))
+            timed = TimedMove(move.identifier, move.get("who"), beat, begin, end, path, move.get("faces"),
+                              normalise_word(move.get("posture") or "standing"))
+            self.move_heights[move.identifier] = heights
+            self.moves.append(timed)
         self.moves.sort(key=lambda move: (move.start, sort_key_for_identifier(move.identifier)))
 
     def point(self, value):
@@ -1716,6 +1726,40 @@ class SceneStaging:
             if value in self.plan.objects:
                 return self.plan.objects[value]["at"]
         return None
+
+    def point_height(self, value):
+        """The height a mark or an [x, y, z] point stands at (a vertical set plan), or None for the floor (C11)."""
+        if not value or normalise_word(value) == "none":
+            return None
+        found = point_of(value)
+        if found:
+            return found[2] if len(found) > 2 else None
+        if self.plan is not None:
+            return self.plan.mark_heights.get(value)
+        return None
+
+    def height_at(self, character, moment):
+        """The height a person stands at, at a moment: their mark's or point's z, followed along their moves (the
+        floor, None, when the plan gives no height)."""
+        if not self.known(character):
+            return None
+        height = self.starts[character].get("height")
+        for move in self.moves:
+            if move.who != character or not move.path:
+                continue
+            heights = self.move_heights.get(move.identifier) or []
+            if move.end <= moment + 1e-9:
+                height = heights[-1] if heights and heights[-1] is not None else height
+            elif move.start < moment:
+                known = [value for value in heights if value is not None]
+                if len(heights) >= 2 and heights[0] is not None and heights[-1] is not None and move.end > move.start:
+                    share = (moment - move.start) / (move.end - move.start)
+                    height = heights[0] + (heights[-1] - heights[0]) * share
+                elif known:
+                    height = known[0]
+            else:
+                break
+        return height
 
     def beat_start(self, beat):
         """When a beat starts on screen: the start of the first shot that shows it (or the next beat's shot)."""
@@ -1816,12 +1860,14 @@ def body_height(breakdown, character, posture):
     return height
 
 
-def eye_point(breakdown, plan, character, point, posture):
-    """A person's eye point in 3D for projection."""
+def eye_point(breakdown, plan, character, point, posture, base=None):
+    """A person's eye point in 3D for projection. base is the height the person stands at (a mark's z on a
+    vertical set plan, C11); without it they stand on the floor, or lie on what is under them."""
     if posture == "lying":
         surface = plan.surface_under(point) if plan is not None else None
-        return (point[0], point[1], (surface or 0.0) + 0.15)
-    return (point[0], point[1], body_height(breakdown, character, posture) * body_numbers(breakdown)["eye_height_share"])
+        return (point[0], point[1], (base if base is not None else (surface or 0.0)) + 0.15)
+    eye = body_height(breakdown, character, posture) * body_numbers(breakdown)["eye_height_share"]
+    return (point[0], point[1], (base or 0.0) + eye)
 
 
 def target_point(breakdown, staging, plan, reference, moment):
@@ -1889,12 +1935,13 @@ def projected_placement(breakdown, shot):
             if state is None:
                 continue
             point, faces, posture, moving = state
-            seen_point = plan.place(eye_point(breakdown, plan, element, point, posture))
+            base = staging.height_at(element, moment)
+            seen_point = plan.place(eye_point(breakdown, plan, element, point, posture, base))
             u, _, depth = camera.project(seen_point)
             target = target_point(breakdown, staging, plan, faces, moment)
             facing = heading = None
             if target is not None:
-                direction = vector(plan.place(point), plan.place(target))
+                direction = vector(plan.place(point)[:2], plan.place(target)[:2])
                 if length(direction) > 1e-9:
                     heading = round(plan_heading_deg(direction), 1)
                 if posture != "lying":
@@ -2786,6 +2833,16 @@ def add_build_arguments(parser):
 def run_build(context):
     """stage.py build: work out every derived field, store each story point's beat, write derived fields.json."""
     project_folder = Path(context.project)
+    try:  # the fields code keeps that no other command fills (fix list C4, C5, C8)
+        from .fill_code_fields import fill_code_fields
+        from .project_files import Project
+        filled = fill_code_fields(Project(project_folder, context.schema, context.words))
+        if filled.summary():
+            context.say(filled.summary())
+        for note in filled.notes:
+            context.say(note)
+    except (OSError, ValueError, ImportError) as error:
+        context.say(f"The fields code keeps were not filled ({type(error).__name__}: {error}).")
     breakdown = Breakdown.from_project(project_folder, context.schema, context.words, context.constants)
     if getattr(context.arguments, "story", None):
         breakdown.attach_story_file(context.arguments.story)
@@ -2831,8 +2888,10 @@ def run_build(context):
     shots = len(data["shots"])
     resolved = sum(1 for point in data["story_points"] if point["status"] == "resolved")
     waiting = sum(1 for point in data["story_points"] if point["status"] in ("no_beats",))
-    context.say(f"Worked out {shots} shot{'s' if shots != 1 else ''} in {len(data['scenes'])} "
-                f"scene{'s' if len(data['scenes']) != 1 else ''}: time floors, clips, mirror routes, sides and sizes.")
+    scenes_with_shots = len({scene_of(identifier) for identifier in data["shots"]} - {None})
+    context.say(f"Worked out {shots} shot{'s' if shots != 1 else ''} in {scenes_with_shots} "
+                f"scene{'s' if scenes_with_shots != 1 else ''} (of {len(data['scenes'])}): time floors, clips, "
+                "mirror routes, sides and sizes.")
     context.say(f"Story points: {resolved} placed on their beats"
                 + (f", {waiting} waiting for their scene's beats" if waiting else "")
                 + (f"; {changed_values} beats written into {', '.join(changed_files)}" if changed_values else "") + ".")

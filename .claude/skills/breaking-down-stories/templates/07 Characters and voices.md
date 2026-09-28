@@ -58,7 +58,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - pitch: <standard: low, low_mid, mid, mid_high or high>
 - pace_wps: <standard: words per second; default 2.5>
 - accent: <standard: text>
-- path_sound: <standard, one line each: one word from the note> | treatment: <text>
+- path_sound: <standard, one line each: one word from the note; write none when there is nothing> | treatment: <text>
 - source: <standard, the user's answer, set through a choice: one word from the note; default designed>
 - consent: <add-on, AI video: an ID of RIGHTS (RT-001), or none>
 - tool: <add-on, AI video: text>

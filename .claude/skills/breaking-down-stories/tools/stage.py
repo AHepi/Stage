@@ -60,7 +60,8 @@ COMMAND_MODULES = [
     "stage_tools.make_text_graphics", # graphics (WP8)
     "stage_tools.refresh_models",     # refresh-models (WP8)
     "stage_tools.make_previs_plans",  # previs (WP9)
-    "stage_tools.build_kit",          # build-kit, lib, import-json, replay (WP13, WP14)
+    "stage_tools.build_kit",          # build-kit (WP13)
+    "stage_tools.library_and_replay", # lib, replay, import-json (fix list C2)
 ]
 
 # Every command of blueprint 7.1 and the module expected to provide it, for a plain message while a module
@@ -72,7 +73,7 @@ PLANNED_COMMANDS = {
     "questions": "adopt_folder", "next": "make_handout", "handout": "make_handout", "export": "make_exports",
     "estimate": "estimate", "compile": "compile_prompts", "graphics": "make_text_graphics",
     "refresh-models": "refresh_models", "previs": "make_previs_plans", "build-kit": "build_kit",
-    "lib": "build_kit", "import-json": "build_kit", "replay": "build_kit",
+    "lib": "library_and_replay", "import-json": "library_and_replay", "replay": "library_and_replay",
 }
 
 

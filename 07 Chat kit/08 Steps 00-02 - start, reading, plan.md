@@ -30,7 +30,7 @@ The story file (in `My stories/` in Claude Code and Cowork; attached in chat app
 
 | File | Records |
 |---|---|
-| `00 Start here.md` | PROJECT: `title`, `depth`, `training_off`, `rights`, `surface`, `code_execution`, `batch_size`, and code's housekeeping fields |
+| `00 Start here.md` | PROJECT, written by code here (in chat, by you): `title`, `depth`, `training_off`, `rights`, `surface`, `code_execution`, `batch_size`, and code's housekeeping fields |
 | `01 Choices.md` | CHOICE-001 rights (`asked: yes`); CHOICE-002 depth (`asked: no`, default standard); CHOICE-003 privacy setting (`asked: no`, default `not_confirmed`, answered when the user says the setting is off) |
 | `22 Rights and credits.md` | RIGHTS RT-001, the story's own rights record (`subject: source`, `clearance`, `holder` by role, never a name) |
 | `Original/` | the story exactly as given, and its fingerprint (code surfaces only) |
@@ -42,15 +42,15 @@ At every depth: card 24, part "The rights question".
 ## Procedure
 
 1. **Hidden self-test**, never shown to the user: how much one reply can safely hold (D1 §2.4, §5.3).
-   - First try to run Python. If you can, and you find this skill's `tools/stage.py` (on ChatGPT, after unpacking `07 Tools.zip`), you are on a code surface: go on below. Otherwise follow "If you cannot run code".
+   - First try to run Python. If you can, and you find this skill's `tools/stage.py` (on ChatGPT, in `breaking-down-stories/` of the unpacked `07 Tools.zip`), you are on a code surface: go on below. Otherwise follow "If you cannot run code".
    - Run `stage.py new "<story file>"`; it makes the project folder and its first files, with CHOICE-001 to CHOICE-003.
    - Run `stage.py selftest --prepare`. It checks the story and the ZIP maker and writes the handout `U-00-SELFTEST.md`: test shot IDs in a scene the story does not use (`selftest_scene`), rules and a SHOT template.
-   - Unit U-00-SELFTEST: follow that handout. Write `selftest_records` full SHOT records and the END line, in one reply, into `For machines - do not edit/inbox/U-00-SELFTEST.md`, every record in full (G11).
-   - Run `stage.py selftest --score`. It sets PROJECT `batch_size` (the larger value if every record and the END line pass, else the default), `code_execution` and `surface`, and deletes the test records; never type these three yourself.
+   - Unit U-00-SELFTEST: follow that handout. Write `selftest_records` full SHOT records and the END line, in one reply, into `For machines - do not edit/inbox/U-00-SELFTEST.md`, every record in full (G11), with every field the template marks required; one with nothing to hold is `none` (G7).
+   - Run `stage.py selftest --score --surface <this app>` (`claude_code`, `claude_cowork`, `claude_web` or `chatgpt`). It sets PROJECT `batch_size` (the larger value if every record and the END line pass, else the default), `code_execution` and `surface`, prints the error count, writes every error to a file and deletes the test records; never type these three fields yourself. A retry uses the same issued IDs.
 2. **Find one strong turn** (unit U-00-START). Read only enough of the story to find one moment where a scene turns, and write one finished shot line from it (scene and shot, size, what the camera does, what we see, one quoted line, the seconds, a "Why" that quotes the story), every quoted word the story's own (G12). It is an example for the welcome, not a record.
 3. **Welcome the user** with the message in "The report": the example, how the work goes, the depth stated (not asked), and one question, rights.
 4. **Pass on the answers.** On a code surface write into `For machines - do not edit/inbox/U-00-START.md`:
-   - `### CHOICE CHOICE-001` with `- answer: a` (or `- answer: defaults`), its four `PROJECT.rights` `sets` lines repeated (an inbox field replaces all its lines), and one `sets` line for each of RT-001's `subject`, `clearance` and `holder` under the chosen option (`- sets: RT-001.subject | value: source | when: a`);
+   - `### CHOICE CHOICE-001` with only `- answer: a` (or `- answer: defaults`). `new` already wrote its 16 `sets` lines (for each option, `PROJECT.rights` and RT-001's `subject`, `clearance` and `holder`). Leave them out: a field you send replaces all its stored lines, so sending some would delete the rest;
    - `### RIGHTS RT-001 The story` with `- evidence: the user said: It's mine`.
 
    Run `stage.py apply`. It sets the choice's status and date, writes what the chosen `sets` lines name, and makes `22 Rights and credits.md`. Never write `status`, `date` or `locked` yourself on a code surface. CHOICE-002 and CHOICE-003 are small choices, defaulted unless the user says "quick", "detailed" or that the privacy setting is off; pass those on the same way.
@@ -197,7 +197,7 @@ Once, after step 0: code reads the story and you confirm its odd lines, or, in c
 
 1. **Read.** Run `stage.py read`. It numbers the lines, splits scenes or chapters, extracts speeches, transitions and title lines, proposes alias merges (`DR SAYE` is `SAYE`), makes the first estimate and the choices of item 4, and writes the odd-lines report.
 2. **The placement rules** code applies, for you to confirm: title-page `= ` lines before the first heading are not shots, and the first gives `PROJECT.title` (The Catch, lines 1 to 6); a `> ` line before it is the first scene's `transition_in` (`> FADE IN:`, line 8); a `= ` line inside the film is a card shot (`= THE CATCH`, line 488: `SC10-SH990`); `= ` lines after the last transition are the last scene's end card (`= THE END`, line 1852: `SC30-SH990`). Prose: a chapter heading starts with a roman numeral or a number and a full stop, or "Chapter"; a first heading that is not one, followed by one that is, is the title (The Long Places, line 1; propose the clean title as a small choice); lines before the first chapter are front matter, listed as odd (line 3).
-3. **Odd lines** (unit U-01-ODDLINES). Read only the odd-lines report ("Lines to look at" in `04 Scene list`) and confirm or correct each line; write only corrections, as records in `For machines - do not edit/inbox/U-01-ODDLINES.md`, then run `stage.py apply`. A secondary heading such as `(ON THE TABLET)` is a presentation note (SCENE `presentation: on_screen` and `host`). A heading that may hold two scenes, or a title card inside the film, is a CHOICE with `asked: no`, defaulting to the script's own count (card 01, "Length"). Confirm or refuse each alias merge; an unmatched cue stays odd. Prose: write each CHAPTER's `first_line` and `last_line`, quoted exactly. A scanned PDF is refused with the fix: open it in Google Docs, save it as text. A thin source (a treatment) switches on authoring mode: later steps may write scenes, each `origin: invented`, approved by the user (card 02).
+3. **Odd lines** (unit U-01-ODDLINES). Read only the odd-lines report ("Lines to look at" in `04 Scene list`) and confirm or correct each line; write only corrections, as records in `For machines - do not edit/inbox/U-01-ODDLINES.md`, then run `stage.py apply`. A secondary heading such as `(ON THE TABLET)` is a presentation note (SCENE `presentation: on_screen`; its `host` is written at step 4 by the unit that writes the in-story cameras). A heading that may hold two scenes, or a title card inside the film, is a CHOICE with `asked: no`, defaulting to the script's own count (card 01, "Length"). Confirm or refuse each alias merge; an unmatched cue stays odd. Prose: write each CHAPTER's `first_line` and `last_line`, quoted exactly. A scanned PDF is refused with the fix: open it in Google Docs, save it as text. A thin source (a treatment) switches on authoring mode: later steps may write scenes, each `origin: invented`, approved by the user (card 02).
 4. **Choices.** `read` has written CHOICE-004, `format`, and the length choice (CHOICE-005 in The Catch), whose `sets` lines write `PROJECT.runtime_target_s` and `PROJECT.scope`. Never write them again.
 5. **Check.** Run `stage.py check --step 1`; fix only the lines it prints, at most `repair_rounds_max` rounds.
 6. **Checkpoint A** (below). Pass the answer on in an inbox file: `### CHOICE CHOICE-005` with `- answer: a` (or `- answer: defaults`); for a target, `- answer: b` and `### SETVALUE CHOICE-005-B` with `- target: PROJECT` and `- runtime_target_s: 1200`. Run `stage.py apply`; the scene IDs are then locked.
@@ -299,7 +299,7 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Write the film-level plan every later choice rests on; for prose also which chapters and strands survive, the format, the scope of the scene work, and the step outline (the book's scenes in screen order).
+Write the film-level plan every later choice rests on; for prose also which chapters and strands survive, the format, the scope, and the step outline (the book's scenes in screen order).
 
 ## When it runs
 
@@ -307,13 +307,12 @@ Once, after the scene or chapter list, never reading the whole text at once.
 
 ## Inputs
 
-- The numbered story, in slices: one unit's scenes or chapter at a time.
-- SCENE or CHAPTER records from step 1, and the answers to the length question.
+- The numbered story, one unit's scenes or chapter at a time; SCENE or CHAPTER records from step 1; the length answer.
 
 ## Outputs
 
 - `05 Story plan.md`: PLAN, SEQUENCE, PLANT, and FACT (at Standard only for facts in suspense, mystery or dramatic irony, about `fact_records_typical` in a film; at Detailed every fact). Prose adds CHAPTER digests, STRAND and CARDINAL.
-- `04 Scene list.md`: the plan fields on each SCENE (procedure, and `sequence`; code writes `target_duration_s`). Prose: the SCENE records of the step outline.
+- `04 Scene list.md`: the plan fields on each SCENE (procedure, and `sequence`). Prose: the SCENE records of the step outline.
 - `06 World and style.md`: prose only, RULE records of kind `device` (letters, refrains).
 - `01 Choices.md`: a second climax reading when two are defensible; prose, the plan choice.
 
@@ -332,8 +331,8 @@ No beat or shot exists yet, so a moment inside a scene is a **story point**: the
 2. **Film unit** (U-02-FILM). Read only the event lines, with short quoted evidence, and write:
    - PLAN: `logline`, `theme_question`, `core_value` (`name | positive: | negative:`), `core_opposition` (two nouns), `crisis` (a story point), `climax` (a scene or range), `act` items, `peak` items (a reason for any peak away from the climax; PLAN-03), `pov_plan`, `genre`, `tone_home`, `tone_range`, `tone_mix_rule`.
    - SEQUENCE records, one list for the whole film, and each scene's `sequence`.
-   - PLANT records with `planted_at` and `paid_off_at` as story points; shots link to them at step 8.
-   - FACT records for what the audience and each character know, from when, with `element` naming what would give the fact away in frame.
+   - PLANT records with `planted_at` and `paid_off_at` as story points.
+   - FACT records for what the audience and each character know, from when, with `element` naming what would give the fact away in frame: its ID if it has one, else a story point where it shows, never a stand-in; step 4 re-points it to the new ID.
    - If two climax readings are defensible, write both into one CHOICE for the big choices (The Catch's default: climax `SC26..SC27`, crisis `SC24 "She deletes the way home."`, K12; D16 §8.6).
 3. **Compression unit** (U-02-COMPRESS), only for a shorter target: CARDINAL records by the deletion test, then the compression plan in D2 R10's order (trim, merge, fold, then cut a strand) as SCENE `keep` and `merged_into` and PLAN `op` items; never rewrite a line of the story.
 
@@ -344,7 +343,7 @@ No beat or shot exists yet, so a moment inside a scene is a **story point**: the
 3. **Checkpoint P** (below).
 4. **Outline units** (U-02-OUTLINE-P1 on, `outline_chapters_per_unit` chapters each) write the chosen plan's SCENE records in screen order with the IDs the handout gives: `heading`, `int_ext`, `place_text`, `time_text`, and `from_lines`, or `origin: invented`; code works out `lines` from `from_lines`. Then PLAN, SEQUENCE, PLANT and FACT for the kept scenes.
 
-**Both.** Run `stage.py check --step 2`; fix only the lines it prints, at most `repair_rounds_max` rounds.
+**Both.** When the film unit is applied, code runs the first estimate itself: it fills each scene's `target_duration_s` and PLAN's `runtime_estimate`, `scene_budget` and `shot_budget`, and copies `genre`, `tone_home` and `tone_range` to PROJECT. Never type these. The targets come from word counts, not design, so TIME-03 later only warns. After each unit run `stage.py check --unit <unit>`, and after the last `stage.py check --step 2`; fix only the lines printed, at most `repair_rounds_max` rounds.
 
 ## Record template
 
@@ -391,7 +390,7 @@ Next: I'll settle where and when the story happens, and the film's style.
 
 Screenplay: none here; a second climax reading goes to the big choices.
 
-Prose: checkpoint P, "how the book becomes a film"; it blocks. The plans stand side by side, each with what the audience loses. Default for The Long Places: plan A, with chapter I first as a trial, which sets `PROJECT.scope` to its scenes (5 of 48); the device rules are small choices. Checks, the film pass, estimates and exports then cover only the scenes in scope ("Scope: 5 of 48 scenes"); "go on to chapter II" widens it. The message (`reference/07`; your own counts):
+Prose: checkpoint P, "how the book becomes a film"; it blocks. Default for The Long Places: plan A, with chapter I first as a trial, which sets `PROJECT.scope` to its scenes (5 of 48); the device rules are small choices. Checks, the film pass, estimates and exports then cover only the scenes in scope ("Scope: 5 of 48 scenes"); "go on to chapter II" widens it. The message (`reference/07`; your own counts):
 
 ```
 Done: step 3 of 12, planning the whole book (14 chapters, 49,152 words).

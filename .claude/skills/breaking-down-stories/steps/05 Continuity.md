@@ -8,7 +8,7 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Know the state of every changeable element in every scene, with the line that changed it, and every side. Then close the first half of the work with the big choices (checkpoint B), and write the whole-film summary every scene unit reads.
+Know every changeable element's state in every scene, with the line that changed it, and every side; then close the first half of the work with the big choices (checkpoint B) and the whole-film summary.
 
 ## When it runs
 
@@ -23,7 +23,7 @@ After characters, places and things: units of scenes in story order, then the bi
 
 - `09 Continuity.md`: STATE records (`CH-IONA.S02`, `PR-FLASK.S02`, `LOC-QUARANTINE.S02`): `element`, `from`, `cause`, `state_line` (words pasted after the fixed description in prompts), `changes`, `side` items in own terms, `handedness` (`original` or `reversed`, only under a mirror rule), `origin`.
 - `01 Choices.md`: small choices for sides the story does not confirm; the checkpoint answers.
-- After the big choices: `02 Whole-film summary.md` (code writes it; the AI in chat).
+- After the big choices: `02 Whole-film summary.md`, written by code (by the AI in chat): one line per record of files 04 to 09 with only the fields step 7 reads, at most `summary_words_max` words; when longer, code leaves out the least-needed record types first and says so.
 
 ## Card parts to open
 
@@ -34,7 +34,7 @@ After characters, places and things: units of scenes in story order, then the bi
 
 1. **Walk the lines** of the unit's scenes in order. At each scene's start copy the previous exit state into the entry, exactly; under `CONTINUOUS` it must match (STATE-03).
 2. **Add each change** as a new STATE with its `cause` line quoted (STATE-02) and `from` naming where it starts (`from: SC06 | line: 263`). Code works out `until` from the next state; never type it.
-3. **Write each state line** from visible nouns: what is worn, carried, torn, bloodied. No image-side words ("frame left") ever (SIDE-02); a sided feature goes in a `side` item with `own: left` or `own: right` and `plot: yes` when the story needs that side (SIDE-01).
+3. **Write each state line** from visible nouns: what is worn, carried, torn, bloodied. No image-side words ("frame left") ever (SIDE-02); a sided feature goes in a `side` item with `own: left` or `own: right` and `plot: yes` when the story needs that side (SIDE-01); with none, write `side: none`.
 4. **Apparent sides** (K03). A side the story states for an element that is mirrored on screen is an apparent side: record the own side and mark `origin: inferred`. The Catch, era b: "Saye's wedding ring. On her right hand." (line 436) is her own left:
 
    ```
@@ -50,7 +50,7 @@ After characters, places and things: units of scenes in story order, then the bi
    ```
 
 5. **Gaps.** A difference the story does not explain is recorded `origin: inferred` at first sight with the gap named in `changes`, or raised as a CHOICE. An unconfirmed side becomes a small choice for checkpoint B.
-6. **Check.** Run `stage.py check --step 5`; fix only the lines it prints, at most `repair_rounds_max` rounds.
+6. **Check.** Run `stage.py check --unit <unit>`, and after the last unit `stage.py check --step 5`; fix only the lines printed, at most `repair_rounds_max` rounds.
 7. **Checkpoint B** (below). Then the whole-film summary: code writes it; in chat the AI writes it as unit U-05-SUMMARY.
 
 ## Record template
@@ -79,7 +79,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-After each unit, a short report (Done, Example, Made, Needs you: nothing, Next). After the last unit the report is the big-choices message.
+After each unit, a short report; after the last, the big-choices message.
 
 ## Checkpoint
 
@@ -115,7 +115,7 @@ Next: I'll write the film's camera, light and sound rules from these answers,
 then design scene 1.
 ```
 
-Print your own computed counts. On a code surface pass each answer on as `### CHOICE CHOICE-NNN` with `- answer: <letter>` (or `- answer: defaults` for all) in the inbox, and run `stage.py apply`: the answers set their fields and SETVALUE lines and lock the step 2 to 5 records they name. Then code writes `02 Whole-film summary.md`.
+Print your own computed counts. On a code surface pass each answer on as `### CHOICE CHOICE-NNN` with `- answer: <letter>` (or `- answer: defaults` for all) in the inbox, and run `stage.py apply`: the answers set their fields and SETVALUE lines and lock the step 2 to 5 records they name. An answer for a record not yet made (music, for SOUNDPLAN) is kept and written when step 6 makes it. Then code writes `02 Whole-film summary.md`.
 
 ## How to redo
 

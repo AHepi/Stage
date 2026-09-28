@@ -1452,6 +1452,11 @@ def collect_cue_names(reading):
     return names
 
 
+# C16: a voice comes through a device only when the parenthetical names one of these (or radio, phone, intercom,
+# recording, an earpiece or "in her ear", matched below, and the cue extensions V.O., O.S. and RECORDED). Anything
+# else a character speaks "through" (a torch held in the teeth, a mask, a door) stays her own direct voice.
+DEVICE_SPEAKER_WORDS = ("speaker", "loudspeaker", "tannoy", "tablet", "screen")
+
 PATH_BY_WORDS = [
     (re.compile(r"\bhelmet\b", re.IGNORECASE), "helmet_inside", "the parenthetical names a helmet"),
     (re.compile(r"\b(in (her|his|their|my|your|its) ears?|earpiece|ear piece|in-ear)\b", re.IGNORECASE), "earpiece",
@@ -1462,9 +1467,9 @@ PATH_BY_WORDS = [
     (re.compile(r"\b(recorded|recording|on tape|playback|tape|video)\b", re.IGNORECASE), "recording",
      "the parenthetical names a recording"),
     (re.compile(r"\bthrough (the )?glass\b", re.IGNORECASE), "through_glass", "the parenthetical names glass"),
-    (re.compile(r"\b(through|over|from) (the |a )?(speaker|loudspeaker|tannoy|torch|tablet|device|monitor|screen|"
-                r"wrist|console|panel)\b|\bspeaker\b", re.IGNORECASE), "device_speaker",
-     "the parenthetical names a device"),
+    (re.compile(r"\b(through|over|from|on) (the |a |her |his |their )?(" + "|".join(DEVICE_SPEAKER_WORDS) + r")\b"
+                r"|\b(loud)?speaker\b", re.IGNORECASE), "device_speaker",
+     "the parenthetical names a device that plays the voice"),
     (re.compile(r"\b(thought|thinking|inner voice|in (her|his) head)\b", re.IGNORECASE), "thought",
      "the parenthetical says it is a thought"),
 ]
@@ -1578,7 +1583,8 @@ def read_scene(reading, scene, first_index, last_index, cue_names, characters, c
                                              "left out of the shots", kind))
     if scene.presentation_note:
         what = scene.presentation.replace("_", " ")
-        host_words = "; the device it is seen on is named at step 5" if scene.presentation in ("on_screen", "recording") else ""
+        host_words = ("; the device it is seen on is named at step 5 of 12, where the cameras inside the story are "
+                      "designed") if scene.presentation in ("on_screen", "recording") else ""
         scene.notes.append(f'The heading ends "({scene.presentation_note})": a presentation note, so presentation '
                            f"is {scene.presentation}{host_words} (A3 §4.3 step 3).")
         reading.odd_lines.append(OddLine(scene.heading_line, scene.heading_line, f"({scene.presentation_note})",
@@ -2956,7 +2962,12 @@ def add_selftest_arguments(parser):
     group.add_argument("--prepare", action="store_true", help="issue the test shot IDs and write the handout")
     group.add_argument("--score", action="store_true", help="score the AI's test shots and set the batch size")
     parser.add_argument("--surface", choices=["claude_code", "claude_cowork", "claude_web", "chatgpt", "gemini", "other"],
-                        help="the app this runs in (default: found from the environment)")
+                        help="with --score: the app this runs in, which the project records (default: found from the "
+                             "environment); for example selftest --score --surface claude_code")
+
+
+def plural_words(count, word):
+    return f"{count} {word}" if count == 1 else f"{count} {word}s"
 
 
 def zip_round_trip():
@@ -3001,6 +3012,71 @@ def shot_template(skill_folder):
     return "\n".join(lines[start:end]).rstrip()
 
 
+SELFTEST_ERRORS_FILE = "selftest errors.txt"
+# Conditions of SHOT fields as the self-test's invented scene meets them: a live, filmed shot in a room with no floor
+# plan, no glass, no fact to hide and no saved choice.
+SELFTEST_CONDITIONS = {"filmed_shot": True}
+SELFTEST_CONDITION_WORDS = {
+    "glass_in_frame": "a glass surface is in frame", "fact_element_before_reveal": "a secret's element is in frame "
+    "before its reveal", "reserved_choice": "a saved choice is used", "overlapping_slices": "the scene overlaps time "
+    "slices", "when_used": "the thing it records happens", "eyeline_set": "the item has an eyeline",
+    "subject_moves": "the person moves in the frame", "later_beat_saves_behaviour": "a later beat saves a behaviour",
+    "set_plan_exists": "the place has a floor plan",
+}
+
+
+def selftest_issued_ids(scene):
+    """The IDs a test shot may cite (C9): they need not exist, but each has the right form."""
+    return {"beats": [f"{scene}-B0{number}" for number in range(1, 6)],
+            "setups": [f"{scene}-SU0{number}" for number in range(1, 4)],
+            "speeches": [f"{scene}-D0{number}" for number in range(1, 5)],
+            "characters": ["CH-A", "CH-B"], "states": ["CH-A.S01", "CH-B.S01", "PR-CUP.S01"],
+            "things": ["PR-CUP", "PR-LAMP"], "lines": ["line:1", "line:2"]}
+
+
+def selftest_shot_template(schema, skill_folder, scene):
+    """The SHOT template of the self-test's handout (C9): every field in order, each marked required, required only
+    when something holds, or left out, for a live shot at standard depth in the invented scene."""
+    placeholders = {}
+    for line in shot_template(skill_folder).splitlines():
+        match = re.match(r"^- ([a-z_]+): (.*)$", line)
+        if match:
+            placeholders[match.group(1)] = match.group(2)
+    lines = [f"### SHOT {scene}-SH010 <a short plain title>"]
+    for definition in schema.record_types["SHOT"]["fields"]:
+        name = definition["name"]
+        writers = schema.writers(definition)
+        if definition.get("stored") is False or not writers or any(writer != "ai" for writer in writers):
+            continue
+        depth = definition.get("depth", "o")
+        if depth not in ("q", "s"):
+            continue
+        condition = definition.get("required_when")
+        placeholder = placeholders.get(name, "<value>")
+        if not condition or SELFTEST_CONDITIONS.get(condition):
+            mark = "REQUIRED"
+            if definition.get("repeat") or "none" in (definition.get("also_allowed") or []):
+                mark += "; write none when there is nothing"
+            if definition.get("repeat"):
+                mark += "; one line for each"
+        else:
+            mark = f"only when {SELFTEST_CONDITION_WORDS.get(condition, condition.replace('_', ' '))}; else leave it out"
+        parts = [entry for entry in definition.get("sub_parts") or [] if entry.get("depth") in ("q", "s")]
+        if parts:
+            needed = []
+            for entry in parts:
+                when = entry.get("required_when") or entry.get("required_when_not")
+                if not when:
+                    needed.append(entry["key"])
+                elif entry.get("required_when_not") == "set_plan_exists":
+                    needed.append(entry["key"])  # the invented room has no floor plan
+                else:
+                    needed.append(f"{entry['key']} (only when {SELFTEST_CONDITION_WORDS.get(when, when)})")
+            mark += "; every item needs these parts: " + ", ".join(needed)
+        lines.append(f"- {name}: {placeholder}   [{mark}]")
+    return "\n".join(lines)
+
+
 def run_selftest(context):
     project = Project(context.project, context.schema, context.words)
     record_file = parse_file(project.folder / START_HERE, START_HERE, project.schema)
@@ -3025,6 +3101,7 @@ def prepare_selftest(context, project, story_map, scene, identifiers, inbox):
     handout.parent.mkdir(parents=True, exist_ok=True)
     task = (f"Write {len(identifiers)} full SHOT records, {identifiers[0]} to {identifiers[-1]}, and the END line, "
             f"in one reply, to {MACHINE_FOLDER}/inbox/{SELFTEST_UNIT}.md.")
+    issued = selftest_issued_ids(scene)
     example = ""
     example_path = Path(context.skill_folder) / "examples" / "01 The Catch - scene 10.md"
     if example_path.is_file():
@@ -3041,12 +3118,16 @@ def prepare_selftest(context, project, story_map, scene, identifiers, inbox):
             f"1. Invent one simple scene: two people at a kitchen table at night. It is scene {scene[2:]}, which the "
             "story does not use.",
             f"2. Write exactly {len(identifiers)} SHOT records with these IDs, in this order: {', '.join(identifiers)}.",
-            "3. Fill every field the template marks quick or standard. Beats, setups and states may use IDs of that "
-            f"invented scene ({scene}-B01, {scene}-SU01, CH-A.S01); they need not exist.",
-            "4. Leave out status, locked and every field code works out.",
-            f"5. End the file with exactly this line: END OF FILE | Self-test shots | {len(identifiers)} records",
-            "6. Never shorten: no \"...\", no \"same as above\", no \"etc.\".", "", "## The SHOT template", "",
-            shot_template(context.skill_folder), ""]
+            "3. Fill every field the template below marks REQUIRED, with every part it names; write none in a "
+            "repeated field when there is nothing (no thing in frame: thing: none). Leave out the fields it marks "
+            "\"only when\" unless that holds.",
+            "4. Cite only these IDs (they need not exist, but copy them exactly): "
+            + "; ".join(f"{kind} {', '.join(values)}" for kind, values in issued.items()) + ".",
+            "5. Leave out status, locked and every field code works out.",
+            f"6. End the file with exactly this line: END OF FILE | Self-test shots | {len(identifiers)} records",
+            "7. Never shorten: no \"...\", no \"same as above\", no \"etc.\".", "",
+            "## The SHOT template, marked for this test", "",
+            selftest_shot_template(context.schema, context.skill_folder, scene), ""]
     if example:
         body += ["## A finished shot, for its form only", "", example, ""]
     body += [f"Your one-line task, again: {task}", ""]
@@ -3061,7 +3142,8 @@ def prepare_selftest(context, project, story_map, scene, identifiers, inbox):
     context.say(f"Issued {len(identifiers)} test shots, {identifiers[0]} to {identifiers[-1]}. Handout: "
                 f"{MACHINE_FOLDER}/handouts/{SELFTEST_UNIT}.md")
     context.say(f"Next: write the test shots to {MACHINE_FOLDER}/inbox/{SELFTEST_UNIT}.md in one reply, then run "
-                "stage.py selftest --score.")
+                "stage.py selftest --score --surface <this app: claude_code, claude_cowork, claude_web, chatgpt, gemini "
+                "or other>.")
     context.summary = f"self-test prepared: {identifiers[0]} to {identifiers[-1]}"
     return 0
 
@@ -3069,6 +3151,14 @@ def prepare_selftest(context, project, story_map, scene, identifiers, inbox):
 def score_selftest(context, project, record_file, project_record, identifiers, inbox):
     from .checks_form import INBOX_CHECKS, FormContext, run_form_checks
     if not inbox.is_file():
+        earlier = (project.read_manifest().get("selftest") or {})
+        if earlier.get("scored"):
+            raise StageStop(f"The test shots were scored on {earlier['scored'][:10]} ({earlier.get('records_complete', 0)} "
+                            f"of {earlier.get('records_expected', len(identifiers))} complete, batches of "
+                            f"{earlier.get('batch_size')}) and moved to history. To try again, write them again with the "
+                            f"same IDs, {identifiers[0]} to {identifiers[-1]}, to {MACHINE_FOLDER}/inbox/{SELFTEST_UNIT}.md "
+                            f"and run stage.py selftest --score --surface <this app>; the errors of the last try are in "
+                            f"{MACHINE_FOLDER}/{SELFTEST_ERRORS_FILE}.")
         raise StageStop(f"No test shots yet. Run stage.py selftest --prepare, write the test shots to "
                         f"{MACHINE_FOLDER}/inbox/{SELFTEST_UNIT}.md, then score them.")
     constants = context.constants
@@ -3107,19 +3197,33 @@ def score_selftest(context, project, record_file, project_record, identifiers, i
     manifest.setdefault("selftest", {}).update({"scored": now(), "records_complete": len(good),
                                                 "records_expected": len(identifiers), "end_line": end_ok,
                                                 "errors": len(errors), "batch_size": size, "surface": surface})
-    manifest.setdefault("units_done", []).append({"unit": SELFTEST_UNIT, "applied": now(), "records": len(parsed.records),
-                                                  "files": [START_HERE]})
+    done = manifest.setdefault("units_done", [])
+    earlier_entry = next((entry for entry in done if isinstance(entry, dict) and entry.get("unit") == SELFTEST_UNIT),
+                         None)
+    if earlier_entry is None:
+        done.append({"unit": SELFTEST_UNIT, "applied": now(), "records": len(parsed.records), "files": [START_HERE]})
+    else:  # a retry with the same issued IDs (C9): the unit stays done once, the new score counts
+        earlier_entry["applied_again"] = now()
+        earlier_entry["tries"] = int(earlier_entry.get("tries") or 1) + 1
+    manifest["selftest"]["errors_file"] = f"{MACHINE_FOLDER}/{SELFTEST_ERRORS_FILE}"
     project.write_manifest(project.refresh_manifest(manifest))
+    errors_path = project.machine_folder / SELFTEST_ERRORS_FILE
+    errors_path.write_text(f"Self-test scored {now()}: {len(errors)} error lines.\n" +
+                           "".join(str(problem) + "\n" for problem in errors), encoding="utf-8")
     project.add_log_entry(f"Checked this app: {len(good)} of {len(identifiers)} test shots came back complete, so "
                           f"shots are written {size} at a time.")
     context.say(f"Self-test: {len(good)} of {len(identifiers)} test shots complete; END line "
                 + ("right." if end_ok else "missing or wrong.")
                 + (f" Missing: {', '.join(missing[:5])}." if missing else "")
                 + (f" Not issued: {', '.join(unexpected[:5])}." if unexpected else ""))
+    context.say(f"{plural_words(len(errors), 'error line')}; every one is in {MACHINE_FOLDER}/{SELFTEST_ERRORS_FILE}.")
     for problem in errors[:10]:
         context.say(str(problem))
     if len(errors) > 10:
-        context.say(f"... and {len(errors) - 10} more error lines.")
+        context.say(f"... and {len(errors) - 10} more error lines in {MACHINE_FOLDER}/{SELFTEST_ERRORS_FILE}.")
+    if not passed:
+        context.say(f"To try again with the same IDs, write the test shots again to {MACHINE_FOLDER}/inbox/"
+                    f"{SELFTEST_UNIT}.md and run stage.py selftest --score --surface <this app>.")
     context.say(f"Set on the project: surface {surface}, code runs here, batches of {size} shots. The test shots "
                 "were deleted (a copy is in history).")
     rights_choice = next((record for record_file in project.load_record_files() for record in record_file.records
@@ -3147,5 +3251,5 @@ def register_commands(table):
               add_read_arguments)
     table.add("lines", "Every story line that mentions an element (a character, place, thing or words)", run_lines,
               add_lines_arguments)
-    table.add("selftest", "Test this app: --prepare issues the test shots, --score sets the batch size", run_selftest,
-              add_selftest_arguments)
+    table.add("selftest", "Test this app: --prepare issues the test shots; --score --surface <this app> scores them "
+              "and sets the batch size", run_selftest, add_selftest_arguments)

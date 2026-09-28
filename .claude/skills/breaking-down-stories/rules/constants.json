@@ -473,6 +473,13 @@
    "unit": "seconds",
    "meaning": "The longest screen time one shot may have before code refuses to plan clips for it (10 minutes). Longer values are almost certainly typing slips; the longest real single takes in feature films run a few minutes.",
    "source": "Code review A (fuzz test): an absurd screen time made clip planning run for over 10 minutes."
+  },
+  "scene_duration_tolerance_share": {
+   "value": 0.25,
+   "unit": "fraction",
+   "meaning": "A scene's total screen time may differ from its target_duration_s by at most this share before TIME-03 warns; wider than scene_total_tolerance because the target is the first estimate, made from word counts, not a design.",
+   "source": "C5 R27; widened after test run 01 (fix list C8)",
+   "judgement": true
   }
  },
  "from_blueprint_text": {
@@ -928,6 +935,27 @@
     "source": "blueprint 5.6 geometry [judgement, tune in test]",
     "judgement": true,
     "added_by": "WP4a"
+   },
+   "principal_speech_share": {
+    "value": 0.08,
+    "unit": "fraction of all speeches",
+    "meaning": "A character with at least this share of the story's speeches is a principal and gets a step 4 unit of their own.",
+    "source": "blueprint §3 step 4; fix list C22 (test run 01)",
+    "judgement": true
+   },
+   "principal_scene_share": {
+    "value": 0.25,
+    "unit": "fraction of all scenes",
+    "meaning": "A character present in at least this share of the scenes is a principal, even with few speeches.",
+    "source": "blueprint §3 step 4; fix list C22 (test run 01)",
+    "judgement": true
+   },
+   "summary_words_max": {
+    "value": 6000,
+    "unit": "words",
+    "meaning": "Most words in 02 Whole-film summary.md: one line per record with only the fields step 7 reads; the lowest-priority record types are left out first, and the file says so.",
+    "source": "blueprint §2.6; fix list C25 (test run 01)",
+    "judgement": true
    }
   }
  }

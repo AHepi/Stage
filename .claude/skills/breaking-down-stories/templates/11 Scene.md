@@ -47,9 +47,9 @@ Below this line: details for the AI and the checker. You never need to read them
 - reversal: <standard, when action_scene: IDs of BEAT (SC10-B07), separated by commas>
 - action_score: <standard, when action_scene: text; the block itself may sit in the plain part and be referred to here>
 - time_treatment: <standard, when action_scene: real_time_continuous, held_real_time, overlapping_slices, elliptical or slow_motion>
-- departure: <standard, one line each: an ID of CAMSYS or CAMRULE (CR-ELI) or RESERVE (RC-01) or LENS (LX-01) or LOOK (LK-SAYE-KITCHEN-NIGHT) or VISUAL (VS-SQ03) or SOUNDPLAN or LADDER or RULE (WR-MIRROR)> | what: <text> | why: <text>
-- additions: <standard, one line each: text> | changes_meaning: <yes or no>
-- lines_not_shown: <optional, one line each: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | why: <text>
+- departure: <standard, one line each: an ID of CAMSYS or CAMRULE (CR-ELI) or RESERVE (RC-01) or LENS (LX-01) or LOOK (LK-SAYE-KITCHEN-NIGHT) or VISUAL (VS-SQ03) or SOUNDPLAN or LADDER or RULE (WR-MIRROR); write none when there is nothing> | what: <text> | why: <text>
+- additions: <standard, one line each: text; write none when there is nothing> | changes_meaning: <yes or no>
+- lines_not_shown: <optional, one line each: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range); write none when there is nothing> | why: <text>
 - flags: <standard: any of nonevent, splintered, turn_too_soon, turn_too_late, continuity, separated by commas, or none>
 - note: <optional, one line each: text>
 
@@ -94,7 +94,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - unsaid: <standard, when turn_beat, always at detailed: an ID of CHARACTER (CH-IONA)> | thought: <text>
 - carrier: <standard, when turn_beat, always at detailed: an ID or text>
 - pause_after: <standard: none, short, medium, long or hold> | seconds: <seconds> | picture: <hold, push_in, cut or cut_wide> | sound: <text>
-- emphasis: <standard, one line each: an ID of MOTIF (MO-MINT) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or STATE (CH-IONA.S02)> | level: <a number from 0 to 3>
+- emphasis: <standard, one line each: an ID of MOTIF (MO-MINT) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or STATE (CH-IONA.S02); write none when there is nothing> | level: <a number from 0 to 3>
 - added_emphasis: <standard: 0 or 1> | what: <text>
 - change: <standard, when turn_beat: text>
 - distance: <detailed, one line each: IDs of CHARACTER (CH-IONA), separated by commas> | metres: <metres> | zone: <intimate, personal, social or public>
@@ -216,8 +216,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - frame_in_frame: <detailed: text, or none>
 - device: <detailed: text, or none>
 - glass: <standard, when glass_in_frame, one line each: text> | state: <clear, marked, reflecting, screen or broken_open> | camera: <through, along or angled>
-- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA)> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)>
-- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY)> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)>
+- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)>
+- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY); write none when there is nothing> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)>
 - text: <standard: IDs of TEXT (TX-GOODS-ONLY), separated by commas, or none>
 - keep_hidden: <standard, when fact_element_before_reveal, one line each: an ID of FACT (FT-03)> | how: <one word from the note>
 - must_show: <standard: IDs of CHARACTER (CH-IONA) or STATE (CH-IONA.S02) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or MOTIF (MO-MINT) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP), separated by commas, or none>
@@ -228,8 +228,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - light_cue: <standard: text> | when: <seconds> | why: <text>
 - dark: <detailed: text>
 - eye_light: <detailed: yes or no>
-- hear: <quick, one line each: an ID of SPEECH (SC10-D11)> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words">
-- effect: <standard, one line each: text> | at: <seconds> | sound_emphasis: <a number from 0 to 3>
+- hear: <quick, one line each: an ID of SPEECH (SC10-D11); write none when there is nothing> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words">
+- effect: <standard, one line each: text; write none when there is nothing> | at: <seconds> | sound_emphasis: <a number from 0 to 3>
 - room_sound: <standard: text, or as_place; default as_place>
 - silence: <standard: none, room_sound_only, drop_out or true_silence; default none>
 - music: <standard: an ID of MUSIC (MU-01), or none; default none>

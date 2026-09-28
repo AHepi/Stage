@@ -1468,6 +1468,28 @@
      ]
     },
     {
+     "id_pattern": "U-04-SILENT-P<n>",
+     "example": "U-04-SILENT-P1",
+     "scope": "minor_characters_per_unit characters who never speak (the people the reader found without speeches)",
+     "batch_rule": "one unit per minor_characters_per_unit characters who never speak, after the minor characters",
+     "writes": [
+      "CHARACTER",
+      "CHOICE"
+     ],
+     "surfaces": "all",
+     "cards": [
+      {
+       "card": "05",
+       "part": "whole"
+      },
+      {
+       "card": "24",
+       "part": "names_and_likeness"
+      }
+     ],
+     "note": "A reduced field set: voice: none and no speech line (both are required only of characters who speak); no VOICE record (fix list C22)."
+    },
+    {
      "id_pattern": "U-04-PLACES-P<n>",
      "example": "U-04-PLACES-P1",
      "scope": "places_per_unit places",
@@ -1490,12 +1512,14 @@
     {
      "id_pattern": "U-04-THINGS",
      "example": "U-04-THINGS",
-     "scope": "every thing, every text in picture and every in-story camera",
+     "scope": "every thing, every text in picture and every in-story camera; the host of each scene seen on a device (SCENE host); the FACT elements still written as story points, re-pointed to IDs",
      "batch_rule": "one unit",
      "writes": [
       "PROP",
       "TEXT",
-      "CAMERA"
+      "CAMERA",
+      "SCENE",
+      "FACT"
      ],
      "surfaces": "all",
      "cards": [
@@ -1507,7 +1531,8 @@
        "card": "17",
        "part": "whole"
       }
-     ]
+     ],
+     "note": "Writes SCENE host for the scenes the reader found seen on a device (fix list C21) and re-points FACT element story points to the IDs of the things now designed (fix list C23)."
     }
    ],
    "cards": {
@@ -2170,7 +2195,10 @@
     "TIME-08",
     "GEOM-05",
     "WORDS-01",
-    "WORDS-02"
+    "WORDS-02",
+    "STATE-01",
+    "REASON-03",
+    "REASON-04"
    ],
    "check_command": "check --step 7",
    "checkpoint": {
@@ -2192,7 +2220,7 @@
    "chat": null,
    "issued_ids": "beats SC10-B01..SC10-B30, parts, moves, setups, shots SC10-SH010..SC10-SH400 in tens (constant issued_blocks); speeches listed with their IDs and words",
    "quick_note": "at quick depth the one-line shot list is the final shot plan; COVER-02 to COVER-04 run on list items",
-   "checks_note": "At step 7 the shots are list items: COVER-02 to COVER-04 read list items (the list must cover every line, speech and beat), and ID-07's 'list item without its SHOT' half runs only from step 8, batch by batch (7.2)."
+   "checks_note": "STATE-01, REASON-03 and REASON-04 run at step 7 too, on the step-7 records (list subjects, MOVE and scene whys), with the same rules as at step 8 (fix list C10)."
   },
   {
    "step": 8,

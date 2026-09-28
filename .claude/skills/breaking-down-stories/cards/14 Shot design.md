@@ -4,7 +4,7 @@ Step 7 reads only "The one-line shot list"; step 8 reads only "Full shots"; chat
 
 ## The job
 
-Shot 150 of The Catch's scene 10 is its turn shot, a close-up held on Iona through "Not mint." and Saye's answer, because "Her face changes." (line 456) puts the turn inside her. Shots are the last thing written: from the turn pictures and the dial, turn shots first, then must-keep shots, then the rest (A2 Step 9). Step 7 hands on the one-line list fixing every shot's ID and count; step 8, one full SHOT per item, reasons before camera values.
+Shot 150 of The Catch's scene 10 is its turn shot, a close-up held on Iona through "Not mint." and Saye's answer, because "Her face changes." (line 456) puts the turn inside her. Shots are the last thing written, from the turn pictures and the dial (A2 Step 9). Step 7 hands on the one-line list (every shot's ID and count); step 8, one full SHOT per item.
 
 ## Questions in order
 
@@ -23,7 +23,7 @@ Example: `SC10-SH150 | beats: SC10-B07, SC10-B08 | role: turn | size: close_up |
 The **one-line shot list** (SHOTLIST `item`) fixes each shot's ID, beats, role, size, frame, subject, seconds and one line of what we see, before any detail. IDs come from the handout's issued block, in steps of `shot_number_step`; an insert takes a number between (SH155); end cards and black use `end_card_numbers` (ID-03, ID-06). At Quick depth these items are the final shots.
 
 Write them in this order (A2 Step 9):
-1. **Turn shots** (`role: turn`), one per turn, from the **turn pictures**, the one-sentence frames each turn must show, written at step 7 before any shot (CRAFT-04). The main turn gets the scene's most extreme framing and nothing tighter comes before it (A2 R4; CRAFT-03); a later turn gets its part's tightest size or a deliberate wide.
+1. **Turn shots** (`role: turn`), one per turn, from the **turn pictures**, the one-sentence frames each turn must show, written at step 7 before any shot (CRAFT-04). The main turn gets the most extreme framing the camera rules allow its subject, and nothing tighter comes before it (A2 R4; CRAFT-03); a `limit_before` cap may let earlier shots equal it (reference/04, rule 4). Through one fixed in-story camera, what the frame shows and the cuts carry the turn, not size (B1 §10.5, R22). A later turn gets its part's tightest size or a deliberate wide.
 2. **Must-keep shots** (`role: must_keep`): plants, reveals and the geography of a new place. A fact's reveal shot is a turn or must-keep shot (INFO-02); a new place gets who-is-where in its first one or two shots (A2 R29).
 3. **The rest**, until every beat and every line is covered (COVER-02 to COVER-04). A new beat changes the image; a repeated tactic keeps one setup (camera position); a beat with no words still gets its shot, in full view (A2 R1 to R3).
 
@@ -33,7 +33,7 @@ Rules for the list:
 - In dialogue, plan singles that need not match frame for frame, and keep the wide for the start and the turn (A3 §5.6); one staged wide can do the work of several singles (B3 §4.1).
 - Several people reacting at once share one frame (A2 R7).
 - Estimate seconds from the speech and pauses in the item's beats (A2 Step 9); a shot without dialogue starts from `non_dialogue_seconds_by_intensity` (A4 §6.1). Step 8 holds each full shot to its floor.
-- The main turn's shot is the scene's longest or its shortest (A4 P5; TIME-10), and the scene's total stays within `scene_total_tolerance` of its target (TIME-03).
+- The main turn's shot is the scene's longest or its shortest (A4 P5; TIME-10), and the scene's total stays near its target, which code set from the first estimate; TIME-03 warns past `scene_duration_tolerance_share`.
 
 ## Full shots
 
@@ -41,7 +41,7 @@ Example, from the turn shot: `purpose: Iona's body admits what her words denied;
 
 Write each SHOT reason first: `purpose`, `because`, `role`, then the camera.
 - `purpose`: one sentence saying what the audience must get; it names a change (A2 Step 9; REASON-01).
-- `because`: the IDs that justify the shot (beat, value, motif, plant, fact, character, rule, saved choice, look, state) or a `line:`. `default` only on a normal shot with no departure (REASON-01). A turn shot cites its turn beat (REASON-05); a saved choice (a rationed choice, RESERVE) cites its RC (REASON-06).
+- `because`: the ID of any story record that justifies the shot (scene, beat, value, character, state, place, prop, text, motif, rule, plan, camera rule, saved choice, look, fact, plant) or a `line:` reference; SCENE and SHOT take the same set. `default` only on a normal shot with no departure (REASON-01). A turn shot cites its turn beat (REASON-05); a saved choice (a rationed choice, RESERVE) cites its RC (REASON-06).
 - `why`: one sentence that quotes a line, names an object or action, or cites an ID, never a mood (REASON-03, REASON-04). Always on turn shots. Otherwise needed wherever a field departs from its default: `angle` eye_level; `height` the eye of the whose-scene character (the person whose point of view the scene holds) or of the subject; `lens_mm` the normal lens of CAMSYS; `move` static; `focus` moderate; `light` as_look; `room_sound` as_place; `silence` none; `music` none; `display` 1 in a close-up or tighter. `size` and `frame` never need one (REASON-02).
 - **The camera slots**, in order: size, angle and height, lens, focus, camera move, and frame shape only for footage inside the story (B1 §0; card 10). One camera move per shot (CRAFT-06).
 - **Behaviour, not emotion.** `does` holds visible behaviour, never emotion words (WORDS-01; A3 R2). A line that names a feeling ("Her face changes.") becomes two or three timed steps (D15 R1). **Display** is how openly a face shows: 1 contained, 2 visible, 3 open; the closer the shot, the lower the level, and `display: 3` at `display_3_needs_why_at_or_tighter` or tighter needs a `why` (D15 §2.2; CRAFT-25). `still` names what does not move, required on any hold of `hold_needs_still_s` or more (D15 R6; CRAFT-26). `eyeline` takes a `dwell_s`; `must_not` holds a look saved for a later beat (D15 R9, R10).
@@ -50,7 +50,7 @@ Write each SHOT reason first: `purpose`, `because`, `role`, then the camera.
 - `held: yes` where meaning depends on not cutting; turn shots count as held (GEN-10).
 - The film-level extreme close-up and push-in (the camera travelling toward the subject) are spent only where their RESERVE allows (FILM-08).
 - At the main turn at most `departments_changing_at_main_turn_max` departments change, named in `scene_idea` (B3 R7; B1 P11; CRAFT-19). Holding the baseline is a full **department idea**, the scene's one idea for camera, light, staging, sound or design (`holds_baseline`).
-- When rules disagree, the higher wins and the `why` names it: what the story states, readability, physical honesty, the film's systems and budgets, flaw handling, turn rules, emotion over continuity, conflict type, beat defaults, the baseline (A1 §6; B1 §11; B2 §7; reference/04).
+- When rules disagree, the higher wins and the `why` names it: the story, readability, physical honesty, systems and budgets, flaws, turns, emotion over continuity, conflict type, beat defaults, the baseline (A1 §6; B1 §11; B2 §7; reference/04).
 
 ## Translation menus with pitfalls
 
@@ -76,7 +76,6 @@ Tests: **any-film** (would this reason fit any film with this theme?), **mood-wo
 - God rays, lightning at a revelation, flickering hospital tubes, teal-and-orange (B2 §12).
 - Rain on glass, ticking clocks, wilting plants, empty chairs (B3 R24; B4 R25).
 - A sad cue under unspoken sadness; dissolves never written (A4 §7.6, §13, T5).
-- Glowing eyes and chrome on a creature (B5 §6).
 - **Default coverage**, the opposite failure: every scene wide, over-shoulders, singles, or one static frame repeated. Test: do all lists share one shape? Fix: design from the turn (B1 §14; FILM-06).
 Fix: the baseline, or this story's own line, object or action.
 
@@ -90,7 +89,7 @@ Fix: the baseline, or this story's own line, object or action.
 
 ### The Catch, scene 10 (tense, 20 shots and a title card)
 
-SH080, the reflection two-shot, both women in one frame (`RC-01`); SH090 and SH100, the ring inserts, edited stills with `flip: never` (K07); SH110, Eli twisting the cap deep in camera A's frame, with no rack focus between planes (B1 R14); SH130, Saye's hand toward the flask, Eli heard off screen; SH150, the turn; SH160, Saye's one look afterwards (A1 R19); SH190, the held wide through the wait, the second turn; SH200, "Nobody leave this room." (line 484); the cut `SC10-C200`, `type: cut_to_black`; SH990, the title card.
+SH080, the reflection two-shot, both women in one frame (`RC-01`); SH090 and SH100, the ring inserts, edited stills with `flip: never` (K07); SH150, the turn; SH160, Saye's one look afterwards (A1 R19); SH190, the held wide through the wait, the second turn; SH200, "Nobody leave this room." (line 484); the cut `SC10-C200`, `type: cut_to_black`; SH990, the title card.
 
 ### The Long Places, scene 5 (contemplative)
 
@@ -112,4 +111,4 @@ Works: one camera move and one action per clip, as timed steps with an end state
 
 ## Look up for more
 
-`stage.py lib B1 §0`, `B1 §11`, `§13`; `A2 Step 9`, `A2 §7` (R1 to R31); `A3 §5.6`, `R16`, `R22`; `A4 §6.1`, `§6.2`; `D15 §2.2`, `§3`; `C3 §4` to `§6`; `reference/04 Rule order.md`; K05, K07, K08 to K10.
+`stage.py lib B1 §0`, `B1 §11`, `§13`; `A2 Step 9`, `A2 §7` (R1 to R31); `A3 §5.6`, `R16`, `R22`; `A4 §6.1`; `D15 §2.2`, `§3`; K05, K07, K08 to K10.

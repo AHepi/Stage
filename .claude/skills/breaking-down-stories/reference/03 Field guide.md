@@ -47,9 +47,10 @@ So a shot record carries the line `- size: close_up`: the AI writes it at step 8
 | `file` | A file name or a path inside the project folder, as plain text. | `18 Storyboard/Scene 10 - shot 150 - frame 01.png` |
 | `text_list` | Names or short phrases separated by commas. | `IONA, IO` |
 | `sub_parts` | An item (G6): a first part (the item's main value, usually an ID) followed by named sub-parts, each ' \| key: value'. Sub-part keys come from the field's `sub_parts` list, in any order. A field whose `first_part` is null has no first part: its value starts with its first named sub-part. Positional (unnamed) sub-parts are never allowed. | `CH-IONA.S02 \| at: left_third \| faces: camera \| does: chews, stops, frowns` |
-| `because_list` | Items separated by commas: IDs of the record types in id_types (5.4 rule 3), line:NNN, or line: "<quote anchor>"; or the single word default, allowed only on a normal shot where REASON-02 finds no departure. A comma inside double quotes does not split the list. | `SC10-B07, SC10-V1, MO-MINT, CR-IONA, line:456` |
+| `because_list` | Items separated by commas: the ID of any story record (a scene, value, part, beat, speech, move, setup, sequence, plan, plant, fact, chapter, character, voice, place, thing, text, motif, in-story camera, state, world, style, rule, camera system, camera rule, saved choice, lens exception, look, visual plan, sound plan or ladder: the kind's id_types), line:NNN, or line: "<quote anchor>"; or the single word default, allowed only on a normal shot where REASON-02 finds no departure. The same set in every record (fix list C14). A comma inside double quotes does not split the list. | `SC10-B07, SC10-V1, MO-MINT, PR-FLASK, LOC-SAYE-KITCHEN, CR-IONA, line:456` |
 | `reference_list` | IDs and field paths separated by commas. A field path is <ID>.<field> (SC10-SU01.lens_mm); a singleton record and the project are named by their type (PLAN.crisis, PROJECT.frame_shape). | `PROJECT.frame_shape, WR-MIRROR, SC10-SU01.lens_mm` |
 | `scene_or_story_point` | A scene ID alone for the whole scene (SC26), or a story point (SC26 "She pushes gently away from the rail."); from step 7 a beat ID is also accepted, and code resolves a story point as for the kind story_point. A field's id_types may add other IDs (MOTIF appearance also takes a shot ID from step 8). | `SC26` |
+| `element_list` | IDs of the record types in id_types, separated by commas; until step 4 designs the things, a story point (SC10 "the flask") may stand for an element that has no record yet. From step 5 on every item must be an ID. | `PR-RING, MO-MINT` |
 
 ## Fields every record takes
 
@@ -118,7 +119,7 @@ A question for the user with a default; a small choice (asked: no) is grouped un
 | `locks` | Records locked when the choice is answered. | id_list; IDs of * | optional | ai | step 0 | `WR-MIRROR` |
 | `based_on` | Research references behind the choice. | text | standard | ai | step 0 | `K22; B3 Ex1` |
 | `status` | open, answered or defaulted. | open, answered, defaulted | quick | code_state; in a chat without code: ai | step 0 | `defaulted` |
-| `date` | When it was answered or defaulted. | date; also none | quick | code_state; in a chat without code: ai | step 0 | `2026-10-02` |
+| `date` | When it was answered or defaulted (an open choice has none). | date; also none | quick | code_state; in a chat without code: ai | step 0 | `2026-10-02` |
 
 Status values: open, answered, defaulted.
 
@@ -148,7 +149,7 @@ One scene: its list and plan fields live in 04 Scene list.md, its design fields 
 | `transition_in` | The join into the scene as the story writes it; a plain cut otherwise. | cut, cut_to_black, fade_in, fade_out, dissolve, smash_cut, match_cut, continuous | quick | story; in a chat without code: ai | step 1 | `cut` |
 | `transition_out` | The join out of the scene as the story writes it; a plain cut otherwise. | cut, cut_to_black, fade_in, fade_out, dissolve, smash_cut, match_cut, continuous | quick | story; in a chat without code: ai | step 1 | `cut_to_black` |
 | `presentation` | How the scene is shown. | normal, on_screen, recording, flashback, dream, montage, letter | quick | ai | step 1 | `normal` |
-| `host` | The device showing the scene when it is on a screen or a recording. | id; IDs of PROP, CAMERA; also none | quick | ai | step 1 | `PR-TABLET` |
+| `host` | The device showing the scene when it is on a screen or a recording; written at step 4 by the unit that designs the in-story cameras (fix list C21). | id; IDs of PROP, CAMERA; also none | quick | ai | step 4 | `PR-TABLET` |
 | `event` | What changes in the scene, one past-tense sentence with no psychology. | text | quick | ai | step 2 | `Saye proved to Iona with a mint leaf that the three of them had turned and the world had not, and kept them all in her kitchen.` |
 | `sequence` | The group of scenes it belongs to. | id; IDs of SEQUENCE | quick | ai | step 2 | `SQ03` |
 | `scene_intensity` | Pressure across the whole film, 1 to 10; exactly one 10 (or one 10 range) on the climax. | number; from 1 to 10 | quick | ai | step 2 | `7` |
@@ -178,7 +179,7 @@ One scene: its list and plan fields live in 04 Scene list.md, its design fields 
 | `staging` | One line placing everyone, with 2 to 4 named stations in a scene over 8 beats; 'staging assumed' when the story is silent. | text | standard | ai | step 7 | `Saye at the stove end, Iona across the table at her mark, Eli deep by the back door; stations: door, table, stove.` |
 | `start` | Where each character stands at the scene's start. | sub_parts; first part: id (CHARACTER); at: text; faces: text; posture: word (standing, seated, lying, kneeling); one line each | standard | ai | step 7 | `CH-IONA \| at: IONA_MARK \| faces: CH-SAYE \| posture: standing` |
 | `scene_idea` | The scene in one sentence as a director sees it, naming the at most two departments that change at the main turn. | text | standard | ai | step 7 | `A kitchen that is almost right; at the turn only the camera (the scene's closest frame) and the sound (room sound only) change.` |
-| `department_idea` | One idea for each department; holding the baseline is a full answer. | sub_parts; first part: word (camera, light, staging, sound, design); idea: text; holds_baseline: yes_no; because: id_list; one line each | standard | ai | step 7 | `light \| idea: Iona's lamp is the only warm source; it goes down on the table before the hands \| because: LK-SAYE-KITCHEN-NIGHT` |
+| `department_idea` | One idea for each department; holding the baseline is a full answer. | sub_parts; first part: word (camera, light, staging, sound, design); idea: text; holds_baseline: yes_no; because: because_list; one line each | standard | ai | step 7 | `light \| idea: Iona's lamp is the only warm source; it goes down on the table before the hands \| because: LK-SAYE-KITCHEN-NIGHT` |
 | `turn_picture` | The frame each turn must show, written as one sentence before any shot. | sub_parts; first part: id (BEAT); picture: text; one line each | quick | ai | step 7 | `SC10-B07 \| picture: Iona close, eyes on Saye just off the lens, her mouth stopped mid-chew` |
 | `dial` | Per beat, how close and how loud: planned size, distance and height, drawn toward the turn. | sub_parts; first part: id (BEAT); size: word (extreme_wide, wide, medium_wide, medium, medium_close_up, close_up, extreme_close_up, insert); distance_m: metres; height: text; light: text; sound: text; one line each | standard | ai | step 7 | `SC10-B07 \| size: close_up \| distance_m: 1.2 \| height: eye:CH-IONA \| light: as_look \| sound: room_sound` |
 | `coverage` | How the scene is covered. | designed, chained, master_and_coverage, oner | standard | ai | step 7 | `designed` |
@@ -325,7 +326,7 @@ One shot, written from its list item at standard and detailed, reason-first (pur
 | `beats` | The beats the shot shows. | id_list; IDs of BEAT | quick | ai | step 8 | `SC10-B07, SC10-B08` |
 | `lines` | The story lines the shot shows (a quote anchor pair in chat). | lines | quick | ai | step 8 | `454-466` |
 | `purpose` | What the audience must get from the shot, one sentence. | text | quick | ai | step 8 | `Iona's body admits what her words denied; Saye's proof lands on her face.` |
-| `because` | The records that justify the shot (5.4 rule 3), or default on a normal shot with no departure. | because_list; IDs of BEAT, VALUE, MOTIF, PLANT, FACT, CHARACTER, CAMRULE, RULE, RESERVE, LENS, LOOK, VISUAL, STATE; also default | quick | ai | step 8 | `SC10-B07, SC10-V1, MO-MINT, CR-IONA` |
+| `because` | The records that justify the shot (5.4 rule 3), or default on a normal shot with no departure. | because_list; IDs of SCENE, VALUE, PART, BEAT, SPEECH, MOVE, SETUP, SEQUENCE, PLAN, PLANT, FACT, CARDINAL, STRAND, CHAPTER, CHARACTER, VOICE, LOCATION, PROP, TEXT, MOTIF, CAMERA, STATE, WORLD, STYLE, RULE, CAMSYS, CAMRULE, RESERVE, LENS, LOOK, VISUAL, SOUNDPLAN, LADDER; also default | quick | ai | step 8 | `SC10-B07, SC10-V1, MO-MINT, CR-IONA` |
 | `role` | How much the scene depends on the shot. | turn, must_keep, normal | quick | ai | step 8 | `turn` |
 | `kind` | The kind of shot. | live, insert, pov, screen, card, black | quick | ai | step 8 | `live` |
 | `why` | The story reason for any value on the list in 5.4 rule 11 that departs from its default, or for any departure from the camera system; always on turn shots. One sentence quoting a line, naming an object or action, or citing an ID. | text | standard | ai | step 8 | `"Her face changes." puts the turn inside her mouth, so the scene's closest frame is spent here and held while Saye's proof lands off screen.` |
@@ -496,7 +497,7 @@ Who knows what, from when; element names what would give the fact away in frame.
 | Field | Meaning | Values | Depth | Writer | Filled at | Example |
 |---|---|---|---|---|---|---|
 | `what` | The fact. | text | standard | ai | step 2 | `the world is mirrored` |
-| `element` | What would give the fact away in frame. | id_list; IDs of CHARACTER, STATE, PROP, TEXT, MOTIF, LOCATION, CAMERA | standard | ai | step 2 | `PR-RING, MO-MINT` |
+| `element` | What would give the fact away in frame: IDs; before step 4 designs the things, a story point naming where it is seen, which step 4's things unit re-points to IDs (fix list C23). | element_list; IDs of CHARACTER, STATE, PROP, TEXT, MOTIF, LOCATION, CAMERA | standard | ai | step 2 | `PR-RING, MO-MINT` |
 | `audience_knows_from` | When the audience learns it, as a story point. | story_point | standard | ai | step 2 | `SC10 "Her face changes."` |
 | `known_by` | Each character who knows it, and from when. | sub_parts; first part: id (CHARACTER); from: story_point; one line each | standard | ai | step 2 | `CH-SAYE \| from: SC10 "Nothing has happened to the mint."` |
 | `mode` | How the fact works on the audience. | suspense, mystery, surprise, dramatic_irony | standard | ai | step 2 | `dramatic_irony` |
@@ -633,7 +634,7 @@ A person or being the film shows more than once, with the design every prompt ke
 | `one_image` | The one image that sums the character up. | text | detailed | ai | step 4 | `a hand flat on a steel rail` |
 | `expression` | The character's expression range, as movement, never bare emotion words. | text | detailed | ai | step 4 | `SC10-B07: jaw stops, brows draw together, eyes stay on Saye` |
 | `skin_light` | How their skin is lit and named in prompts, written when casting is chosen (B2 R24); added to the look block of every LOOK with contrast high or extreme. | text | add-on (C) | ai | add-on C (prompts for AI video) | `a soft fill from the lamp side keeps her face readable in the dark room` |
-| `voice` | Their voice. | id; IDs of VOICE | standard | ai | step 4 | `VO-SAYE` |
+| `voice` | Their voice (none for a character who never speaks). | id; IDs of VOICE; also none | standard | ai | step 4 | `VO-SAYE` |
 | `likeness_basis` | The source of face and voice: invented by default (a small choice at step 4). | invented, self_consented, performer_consented; default invented | quick | user | step 4 | `invented` |
 | `consent` | The consent record for a real face or voice. | id; IDs of RIGHTS; also none | add-on (C) | user | add-on C (prompts for AI video) | `none` |
 
@@ -714,6 +715,7 @@ Readable words inside the picture; never generated, always composited from a tex
 | `words` | The exact words. | text | quick | story (when text_in_story); ai (when otherwise); in a chat without code: ai | step 4 | `Goods only. No persons.` |
 | `on` | What the text is on (none for a title card or caption laid over black or over the picture). | id; IDs of PROP, LOCATION, CAMERA, CHARACTER; also none | quick | ai | step 4 | `PR-CAGE` |
 | `origin` | Whether the words are the story's or invented (needed by the words writer rule). | story, inferred, invented | quick | ai | step 4 | `story` |
+| `words_from` | Origin story: the story line that writes the words, with the exact words quoted when the line holds more than the text; code copies the words from it into words (not needed when words is already there, as in a project adopted from a chat). | sub_parts; first part: lines; quote: quote; one line each | quick | ai | step 4 | `608 \| quote: "CONTROL"` |
 | `reader` | Who reads it in the story. | id; IDs of CHARACTER; also none | standard | ai | step 4 | `CH-JUDE` |
 | `plot_critical` | The audience must read it. | yes_no | standard | ai | step 4 | `yes` |
 | `emphasis` | How loud it is, 0 to 3. | number; from 0 to 3 | standard | ai | step 4 | `2` |
@@ -1108,3 +1110,4 @@ The names used in "when" above.
 | `casting_chosen` | Casting (the appearance of the people who play the characters) has been chosen in add-on C. |
 | `music_policy_allows_cues` | SOUNDPLAN.music_policy is sparse or scored. |
 | `filmed_shot` | The SHOT kind is not card or black: a camera films it (a title card or black has no setup, height, lens or focus). |
+| `choice_settled` | CHOICE.status is answered or defaulted. |

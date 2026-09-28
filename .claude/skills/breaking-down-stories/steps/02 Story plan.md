@@ -8,7 +8,7 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Write the film-level plan every later choice rests on; for prose also which chapters and strands survive, the format, the scope of the scene work, and the step outline (the book's scenes in screen order).
+Write the film-level plan every later choice rests on; for prose also which chapters and strands survive, the format, the scope, and the step outline (the book's scenes in screen order).
 
 ## When it runs
 
@@ -16,13 +16,12 @@ Once, after the scene or chapter list, never reading the whole text at once.
 
 ## Inputs
 
-- The numbered story, in slices: one unit's scenes or chapter at a time.
-- SCENE or CHAPTER records from step 1, and the answers to the length question.
+- The numbered story, one unit's scenes or chapter at a time; SCENE or CHAPTER records from step 1; the length answer.
 
 ## Outputs
 
 - `05 Story plan.md`: PLAN, SEQUENCE, PLANT, and FACT (at Standard only for facts in suspense, mystery or dramatic irony, about `fact_records_typical` in a film; at Detailed every fact). Prose adds CHAPTER digests, STRAND and CARDINAL.
-- `04 Scene list.md`: the plan fields on each SCENE (procedure, and `sequence`; code writes `target_duration_s`). Prose: the SCENE records of the step outline.
+- `04 Scene list.md`: the plan fields on each SCENE (procedure, and `sequence`). Prose: the SCENE records of the step outline.
 - `06 World and style.md`: prose only, RULE records of kind `device` (letters, refrains).
 - `01 Choices.md`: a second climax reading when two are defensible; prose, the plan choice.
 
@@ -41,8 +40,8 @@ No beat or shot exists yet, so a moment inside a scene is a **story point**: the
 2. **Film unit** (U-02-FILM). Read only the event lines, with short quoted evidence, and write:
    - PLAN: `logline`, `theme_question`, `core_value` (`name | positive: | negative:`), `core_opposition` (two nouns), `crisis` (a story point), `climax` (a scene or range), `act` items, `peak` items (a reason for any peak away from the climax; PLAN-03), `pov_plan`, `genre`, `tone_home`, `tone_range`, `tone_mix_rule`.
    - SEQUENCE records, one list for the whole film, and each scene's `sequence`.
-   - PLANT records with `planted_at` and `paid_off_at` as story points; shots link to them at step 8.
-   - FACT records for what the audience and each character know, from when, with `element` naming what would give the fact away in frame.
+   - PLANT records with `planted_at` and `paid_off_at` as story points.
+   - FACT records for what the audience and each character know, from when, with `element` naming what would give the fact away in frame: its ID if it has one, else a story point where it shows, never a stand-in; step 4 re-points it to the new ID.
    - If two climax readings are defensible, write both into one CHOICE for the big choices (The Catch's default: climax `SC26..SC27`, crisis `SC24 "She deletes the way home."`, K12; D16 §8.6).
 3. **Compression unit** (U-02-COMPRESS), only for a shorter target: CARDINAL records by the deletion test, then the compression plan in D2 R10's order (trim, merge, fold, then cut a strand) as SCENE `keep` and `merged_into` and PLAN `op` items; never rewrite a line of the story.
 
@@ -53,7 +52,7 @@ No beat or shot exists yet, so a moment inside a scene is a **story point**: the
 3. **Checkpoint P** (below).
 4. **Outline units** (U-02-OUTLINE-P1 on, `outline_chapters_per_unit` chapters each) write the chosen plan's SCENE records in screen order with the IDs the handout gives: `heading`, `int_ext`, `place_text`, `time_text`, and `from_lines`, or `origin: invented`; code works out `lines` from `from_lines`. Then PLAN, SEQUENCE, PLANT and FACT for the kept scenes.
 
-**Both.** Run `stage.py check --step 2`; fix only the lines it prints, at most `repair_rounds_max` rounds.
+**Both.** When the film unit is applied, code runs the first estimate itself: it fills each scene's `target_duration_s` and PLAN's `runtime_estimate`, `scene_budget` and `shot_budget`, and copies `genre`, `tone_home` and `tone_range` to PROJECT. Never type these. The targets come from word counts, not design, so TIME-03 later only warns. After each unit run `stage.py check --unit <unit>`, and after the last `stage.py check --step 2`; fix only the lines printed, at most `repair_rounds_max` rounds.
 
 ## Record template
 
@@ -100,7 +99,7 @@ Next: I'll settle where and when the story happens, and the film's style.
 
 Screenplay: none here; a second climax reading goes to the big choices.
 
-Prose: checkpoint P, "how the book becomes a film"; it blocks. The plans stand side by side, each with what the audience loses. Default for The Long Places: plan A, with chapter I first as a trial, which sets `PROJECT.scope` to its scenes (5 of 48); the device rules are small choices. Checks, the film pass, estimates and exports then cover only the scenes in scope ("Scope: 5 of 48 scenes"); "go on to chapter II" widens it. The message (`reference/07`; your own counts):
+Prose: checkpoint P, "how the book becomes a film"; it blocks. Default for The Long Places: plan A, with chapter I first as a trial, which sets `PROJECT.scope` to its scenes (5 of 48); the device rules are small choices. Checks, the film pass, estimates and exports then cover only the scenes in scope ("Scope: 5 of 48 scenes"); "go on to chapter II" widens it. The message (`reference/07`; your own counts):
 
 ```
 Done: step 3 of 12, planning the whole book (14 chapters, 49,152 words).

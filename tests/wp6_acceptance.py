@@ -245,8 +245,8 @@ def plain_words(workspace, story):
     return "no retired word, abbreviation or code in the plain parts"
 
 
-@group("02 Whole-film summary: the records step 7 reads from files 04 to 09, without the floor plan, with its "
-       "divider and a right END count")
+@group("02 Whole-film summary: one line per record of files 04 to 09 with only the fields step 7 reads, without the "
+       "floor plan, with its divider, a right END count and at most summary_words_max words (fix list C25)")
 def whole_film_summary(workspace, story):
     from stage_tools.make_views import build_views
     project = make_gold_project(workspace / "summary", story)
@@ -259,16 +259,21 @@ def whole_film_summary(workspace, story):
     for needed in ("SCENE", "PLAN", "SEQUENCE", "PLANT", "FACT", "CHARACTER", "VOICE", "LOCATION", "PROP", "STATE"):
         assert needed in types, f"the summary has no {needed} record"
     assert not types & {"CAMSYS", "CAMRULE", "LOOK", "SHOT", "BEAT", "CHOICE"}, f"the summary holds {types}"
-    location = next(record for record in parsed.records if record.type_name == "LOCATION")
-    assert not (location.get("object") or location.get("mark") or location.get("size")), "the floor plan is in it"
-    scene = next(record for record in parsed.records if record.type_name == "SCENE")
-    assert scene.get("event") and not scene.get("dial"), "the scene copy is not its list and plan fields"
+    below = path.read_text(encoding="utf-8").split(DIVIDER_LINE, 1)[1]
+    record_lines = [line for line in below.splitlines() if line.startswith("### ")]
+    assert len(record_lines) == len(parsed.records), "a record takes more than one line"
+    assert not any(record.fields for record in parsed.records), "a record has field lines under its one line"
+    location = next(line for line in record_lines if line.startswith("### LOCATION "))
+    assert not re.search(r"\| (object|mark|size|origin_corner|wild_walls): ", location), "the floor plan is in it"
+    scene = next(line for line in record_lines if line.startswith("### SCENE "))
+    assert "| event: " in scene and "| dial: " not in scene, "the scene line is not its list and plan fields"
     end = parsed.end_line
     assert end is not None and end.count == len(parsed.records), "the END line's count is wrong"
     words = words_in(path.read_text(encoding="utf-8"))
-    limit = json.loads((SKILL / "rules" / "limits.json").read_text(encoding="utf-8"))["whole_film_summary_words_max"]["value"]
+    constants = json.loads((SKILL / "rules" / "constants.json").read_text(encoding="utf-8"))
+    limit = constants["from_blueprint_text"]["constants"]["summary_words_max"]["value"]
     assert words <= limit, f"{words} words, over {limit}"
-    return f"{len(parsed.records)} records, {words} words (at most {limit}), no floor plan"
+    return f"{len(parsed.records)} records, one line each, {words} words (at most {limit}), no floor plan"
 
 
 # ---------------------------------------------------------------- 2. the spreadsheets

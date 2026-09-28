@@ -34,7 +34,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - size: <standard, when set_plan_needed, always at detailed: [width, depth, height] in metres>
 - origin_corner: <standard, when set_plan_needed, always at detailed: text>
 - axes: <standard, when set_plan_needed, always at detailed: text>
-- wild_walls: <standard, when set_plan_needed, always at detailed: text>
+- wild_walls: <standard, when set_plan_needed, always at detailed: the compass names of the walls the camera may pass through (north, south, east or west, separated by commas), or none>
 - object: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres> | size: <[width, depth, height] in metres> | base: <metres> | material: <text> | meaning: <text> | furniture: <seat, bed or none>
 - mark: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
@@ -56,7 +56,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - fixed_description: <standard: text; what it is, what it looks like and its size; no state and no image sides>
 - real_size: <standard: [width, depth, height] in metres>
 - surface: <detailed: ordinary, matte_black, clear, shiny or very_bright>
-- side: <standard, one line each: text> | own: <left or right> | plot: <yes or no>
+- side: <standard, one line each: text; write none when there is nothing> | own: <left or right> | plot: <yes or no>
 - text: <standard: IDs of TEXT (TX-GOODS-ONLY), separated by commas, or none>
 - first_seen: <standard: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)>
 - motif: <standard: an ID of MOTIF (MO-MINT), or none>
@@ -72,9 +72,10 @@ Below this line: details for the AI and the checker. You never need to read them
 
 ### TEXT <TX- and capitals and hyphens, like TX-GOODS-ONLY> <a short plain title>
 - kind: <quick: one word from the note>
-- words: <quick, code copies it from the story when text_in_story; otherwise you write it; in a chat without code you write it: text>
+- words: <quick, code copies it from the story lines of words_from when origin is story; you write it when origin is inferred or invented: text>
 - on: <quick: an ID of PROP (PR-FLASK) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP) or CHARACTER (CH-IONA), or none>
 - origin: <quick: story, inferred or invented>
+- words_from: <quick, when text_in_story, one line each: the story line that writes the words (a line number, or a quote anchor in a chat without code)> | quote: <the exact words inside the line, when the line holds more than the text>
 - reader: <standard: an ID of CHARACTER (CH-IONA), or none>
 - plot_critical: <standard: yes or no>
 - emphasis: <standard: a number from 0 to 3>

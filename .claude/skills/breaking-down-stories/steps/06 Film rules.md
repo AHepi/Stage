@@ -27,7 +27,7 @@ PLAN (climax, crisis, peaks) and the SEQUENCE list; STYLE, WORLD and RULE; CHARA
 - LENS (`LX-01`): a lens exception and the setups or scenes it is allowed in.
 - LOOK per place and time (`LK-SAYE-KITCHEN-NIGHT`): the `look_block` pasted into prompts, `main_light` placed on a set-plan object or a compass wall, `contrast`, `fill`, `stays_dark`, `palette`, `accent_allowed`, `light_cue` items at story points.
 - VISUAL per sequence (`VS-SQ03`): the colour-script row and the visual-structure plan.
-- SOUNDPLAN: music policy from the big choices, the clip audio rule, `voice_policy`, `device_budget`, `rupture_plan`.
+- SOUNDPLAN: `voice_policy`, `device_budget`, `rupture_plan`. When it is first applied, code adds `music_policy` (the music answer, kept since step 3) and `clip_audio` (from the music and voice policies).
 - LADDER: each scene's main turn as a story point, with its planned size and hold.
 
 Also PROJECT `fps`, and a small choice in `01 Choices.md` for `voice_policy` (default `designed_only`).
@@ -46,13 +46,13 @@ Work in this order (card 09, questions in order). Every line cites a plan, chara
 1. **Climax and peaks first.** Read PLAN `climax` and each `peak`. Decide which component the climax spends and which the opening may spend (B2 §4.4); the film's tightest size and longest hold are never spent before the climax unless PLAN's peaks place them there with a reason, as for a climax in counterpoint (D16 R16; FILM-01).
 2. **Camera system** (U-06-CAMERA): the baseline (static, at the whose-scene character's eye height, the normal lens), the lens family, what is banned with its why, real-time playback, the time rule for expanded action (overlapping real-time slices, never slow motion; K20), and the one `break` (B1 §9). The Catch breaks once, in scene 26: `break: SC26 "She pushes gently away from the rail."`.
 3. **Character camera rules**, one per principal: what the camera does when they hold control and when they lose it, what it never does to them, and their closest size saved for one story point, with nothing closer before it (B1 §9.2). `CR-ELI`: `never: push_in`, `closest: close_up | at: SC13 "Now he looks at her."`, `limit_before: medium_close_up`.
-4. **Saved choices and lens exceptions.** Each RESERVE: `choice`, `match` (how code knows a use: `size = extreme_close_up`), `max_uses`, `allowed_in`, `never_on`, `because`; always the two film-level ones above (B1 P5; FILM-08). Each LENS names exactly where it is allowed (CRAFT-07).
+4. **Saved choices and lens exceptions.** Each RESERVE: `choice`, `match` (how code knows a use: `size = extreme_close_up`), `max_uses` (a number, `1_per_scene` or `share`), `allowed_in`, `never_on`, `because`; always the two film-level ones above (B1 P5; FILM-08). Each LENS names exactly where it is allowed (CRAFT-07); footage from an in-story camera (SHOT `kind: screen`) keeps its CAMERA's lens and needs no LENS.
 5. **Looks** (U-06-LOOKS), one per place and time in use: the main light placed in the room (`from:` a set-plan object or a wall), so code works out its frame side per shot and per era; hold light as the look unless a story source changes it; a `light_cue` only where the story causes one (card 11). The look block stays within `look_block_sentences` and `look_block_words_max`.
 6. **Colour script** (U-06-PLANS): one VISUAL row per sequence, peaks first, valleys lower, then the monotony test (no `colour_monotony_run` sequences alike without a reason; B2 §8.3).
 7. **Visual structure**: for each sequence, `space`, each `component` (hold, progress or contrast, with why) and any `counterpoint` (B3 §2.6).
-8. **Sound plan**: `music_policy` as answered; `device_budget` within `device_budget_short` for a short; the `rupture_plan` from the peaks; `voice_policy` as a small choice.
+8. **Sound plan**: `device_budget` within `device_budget_short` for a short; the `rupture_plan` from the peaks; `voice_policy` as a small choice. Never type `music_policy` (the user's, set only through the music choice) or `clip_audio` (code's): `apply` refuses both (FORM-10).
 9. **The ladder**: one `rung` per scene with a main turn, as a story point with size, hold and why. It escalates by size and hold together; other scenes' main turns land at close-up or on a deliberate wide (A2 R4, R31). The Catch: `rung: SC10 "Her face changes." | size: close_up | hold: long | why: ...`, leaving the tightest size for scene 13.
-10. **Check.** Run `stage.py check --step 6`; fix only the lines it prints, at most `repair_rounds_max` rounds.
+10. **Check.** Run `stage.py check --unit <unit>`, and after the last unit `stage.py check --step 6`; fix only the lines printed, at most `repair_rounds_max` rounds.
 
 ## Record template
 
@@ -106,7 +106,7 @@ None here. The user approved the choices that drive these rules at the big choic
 
 Every line reference is a quote anchor: every story point (`break`, `closest`, `light_cue`, `rupture_plan`, the ladder's rungs) is a scene ID and an exact quote of at least `quote_anchor_words_min` words, found once in that scene. Never add the ` = SC10-B07` ending; code writes it after step 7.
 
-1. Save the three units' records as `10 Film rules.md`, then `10 Film rules - looks.md` and `10 Film rules - colour, sound and ladder.md`; `adopt` merges them by ID (G10). Save the voice choice, a small choice written `status: defaulted`, as `01 Choices - film rules.md`, and write its default (`voice_policy: designed_only`) in SOUNDPLAN.
+1. Save the three units' records as `10 Film rules.md`, then `10 Film rules - looks.md` and `10 Film rules - colour, sound and ladder.md`; `adopt` merges them by ID (G10). Save the voice choice, a small choice written `status: defaulted`, as `01 Choices - film rules.md`, and write its default (`voice_policy: designed_only`) in SOUNDPLAN, with `music_policy` as answered at the big choices and `clip_audio: No music in any clip.`
 2. Write each record's `status: approved` and `locked: yes`: film rules are locked on writing. Save `00 Start here.md` again, whole, with PROJECT `fps` and the log line.
 3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line for the first scene chat:

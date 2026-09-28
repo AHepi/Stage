@@ -730,8 +730,14 @@ def build_example(repository, skill_folder, story=None, say=print):
     with tempfile.TemporaryDirectory(prefix="stage-example-") as temporary:
         project, scene_name = gold_project(Path(temporary) / "The Catch", skill_folder)
         record = Project(project)
+        # next works only from the units applied (fix list C3): the units the gold's records hold are listed as adopt
+        # lists them, so the example's next step is the film pass; its last saved unit stays the last batch
+        from .make_handout import record_units_found
+        record_units_found(project)
         manifest = record.read_manifest()
-        manifest["units_done"] = [{"unit": EXAMPLE_LAST_UNIT, "applied": today()}]
+        manifest["units_done"] = [entry for entry in manifest.get("units_done", [])
+                                  if entry.get("unit") != EXAMPLE_LAST_UNIT]
+        manifest["units_done"].append({"unit": EXAMPLE_LAST_UNIT, "applied": today()})
         record.write_manifest(manifest)
         code, lines = run_stage(["build"], project, stage_script)
         if code != 0:

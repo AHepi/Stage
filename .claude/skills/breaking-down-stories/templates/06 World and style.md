@@ -59,7 +59,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - statement: <quick: text>
 - governs: <quick: IDs of any record ID, separated by commas>
 - era: <quick, when mirror_rule, the user's answer, set through a choice, one line each: one word> | from: <line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | to: <line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | frame: <original or reversed>
-- exception: <standard, one line each: an ID of any record ID> | reads: <normal or mirrored> | why: <text>
+- exception: <standard, one line each: an ID of any record ID; write none when there is nothing> | reads: <normal or mirrored> | why: <text>
 - occurrences: <quick, when device_rule: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)>
 - policy: <quick, when device_rule: open_only, open_and_close, every_return, episode_cold_open or template_refrain>
 - template_setup: <quick, when device_rule: an ID of SHOT (SC10-SH150), or none>

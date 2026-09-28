@@ -40,7 +40,8 @@ from pathlib import Path
 from .project_files import (MACHINE_FOLDER, Project, StageStop, history_run_folder, keep_in_history, load_steps, now,
                             plural, unit_in_plain_words)
 from .record_format import (DIVIDER_LINE, SKILL_FOLDER, load_skill_data, merge_copies, normalise_word, parse_file,
-                            parse_line_numbers, sort_key_for_identifier, split_item, split_list, write_file)
+                            parse_line_numbers, parse_story_point, sort_key_for_identifier, split_item, split_list,
+                            write_file)
 
 HANDOUTS_FOLDER = "handouts"
 INBOX_FOLDER = "inbox"
@@ -490,7 +491,14 @@ class Workspace:
         return {}
 
     def units_done(self):
-        return {entry.get("unit") for entry in self.manifest.get("units_done", []) if entry.get("unit")}
+        """The units applied (a repair's name counts for its base unit: "U-02-FILM - fix 1" is U-02-FILM)."""
+        from .project_files import unit_of_inbox
+        done = set()
+        for entry in self.manifest.get("units_done", []):
+            name = entry.get("unit") if isinstance(entry, dict) else str(entry)
+            if name:
+                done.add(unit_of_inbox(name)[0] or name)
+        return done
 
     def plan(self):
         if self._plan is None:
@@ -537,11 +545,8 @@ class Unit:
             return name
         if self.kind == "code":
             step_name = step_user_name(steps, self.step)
-            return f"step {self.step + 1} of 12 ({step_name}), work that code does"
-        words = unit_in_plain_words(self.identifier, steps)
-        if self.step <= 11:
-            words = words.replace(f"step {self.step + 1} (", f"step {self.step + 1} of 12 (", 1)
-        return words
+            return f"step {self.step + 1} of 12, {step_name}, work that code does"
+        return unit_in_plain_words(self.identifier, steps)
 
 
 def step_user_name(steps, step):
@@ -608,13 +613,80 @@ def checkpoint_unit(checkpoint, identifier=None, blocks=True, **values):
                 kind="checkpoint", checkpoint=checkpoint, blocks=blocks, **values)
 
 
+def speech_and_scene_counts(workspace):
+    """({character: speeches}, {character: scenes present}, all speeches, all scenes) from the reader's counts (the
+    scene list's speaking and characters fields, else the story map). Empty when the story has no cues (prose)."""
+    speeches, present = {}, {}
+    scenes = workspace.records("SCENE")
+    for scene in scenes:
+        for value in scene.get_all("speaking"):
+            item = split_item(value)
+            character = (item.first or "").strip()
+            cues = item.get("cues")
+            if character:
+                speeches[character] = speeches.get(character, 0) + (int(cues) if cues and cues.isdigit() else 1)
+        for character in split_list(scene.get("characters") or ""):
+            if character.startswith("CH-"):
+                present[character] = present.get(character, 0) + 1
+    scene_count = len(scenes)
+    if not speeches and workspace.story_map:
+        for scene in workspace.story_map.get("scenes", []):
+            for entry in scene.get("speaking", []):
+                character = entry.get("character")
+                if character:
+                    speeches[character] = speeches.get(character, 0) + int(entry.get("cues") or 0)
+            for character in scene.get("characters", []):
+                present[character] = present.get(character, 0) + 1
+        scene_count = len(workspace.story_map.get("scenes", []))
+    return speeches, present, sum(speeches.values()), scene_count
+
+
+def silent_people(workspace):
+    """[(proposed character ID, name, scene, line)] for the people the reader found who never speak (the figure,
+    the guard ...): each gets a CHARACTER in a unit of its own kind (C22)."""
+    people = []
+    taken = set()
+    for entry in (workspace.story_map or {}).get("people_without_speeches", []) or []:
+        name = (entry.get("name") or "").strip()
+        if not name:
+            continue
+        words = [word for word in re.findall(r"[A-Z0-9]+", name.upper()) if word not in ("THE", "A", "AN")]
+        identifier = "CH-" + "-".join(words) if words else None
+        if not identifier or identifier in taken:
+            continue
+        taken.add(identifier)
+        people.append((identifier, name, entry.get("scene"), entry.get("line")))
+    return people
+
+
 def principal_characters(workspace):
-    """(principals, minor characters) for step 4's units: the tier written at step 4 when there is one; else a
-    character is a principal when some scene belongs to them (whose_scene) or, with no whose_scene yet, when they
-    speak in more than one scene."""
+    """(principals, minor speakers, characters who never speak) for step 4's units (C22).
+
+    With the reader's counts (a screenplay's cues), a character is a principal when their speeches are at least
+    principal_speech_share of all speeches, or they are present in at least principal_scene_share of the scenes;
+    the other speakers are minor characters, grouped; the people the reader found who never speak get units of
+    their own, with a reduced field set (no voice, no speech). The plan comes from the story's counts only, never
+    from the tiers the AI writes, so the units do not change once step 4 has started. Without counts (prose), the
+    tier written at step 4 decides, else whose_scene, else speaking in more than one scene."""
     characters = [record.identifier for record in workspace.records("CHARACTER") if record.identifier]
-    if not characters and workspace.story_map:
-        characters = [entry["id"] for entry in workspace.story_map.get("characters", []) if entry.get("id")]
+    if workspace.story_map:
+        for entry in workspace.story_map.get("characters", []):
+            if entry.get("id") and entry["id"] not in characters:
+                characters.append(entry["id"])
+    speeches, present, all_speeches, all_scenes = speech_and_scene_counts(workspace)
+    silent = [identifier for identifier, _, _, _ in silent_people(workspace)]
+    if all_speeches:
+        speech_share = float(workspace.constant("principal_speech_share", 0.08))
+        scene_share = float(workspace.constant("principal_scene_share", 0.25))
+        principals, minors = [], []
+        speakers = sorted((character for character in speeches if character.startswith("CH-")),
+                          key=lambda character: (-speeches[character], character))
+        for character in speakers:
+            by_speech = speeches[character] >= speech_share * all_speeches
+            by_scenes = all_scenes and present.get(character, 0) >= scene_share * all_scenes
+            (principals if by_speech or by_scenes else minors).append(character)
+        silent = [character for character in silent if character not in speeches]
+        return principals, minors, silent
     owners = {scene.get("whose_scene") for scene in workspace.records("SCENE") if scene.get("whose_scene")}
     speaking_scenes = {}
     for scene in workspace.records("SCENE"):
@@ -632,7 +704,7 @@ def principal_characters(workspace):
             (principals if character in owners else minors).append(character)
         else:
             (principals if speaking_scenes.get(character, 0) > 1 else minors).append(character)
-    return principals, minors
+    return principals, minors, [character for character in silent if character not in principals + minors]
 
 
 def place_key(text):
@@ -819,12 +891,19 @@ def plan_units(workspace):
 
     # Step 4: motifs first, then each principal, the minor characters, the places, the things.
     units.append(ai_unit(workspace, "U-04-MOTIFS", 4))
-    principals, minors = principal_characters(workspace)
+    principals, minors, silent = principal_characters(workspace)
     for character in principals:
         units.append(ai_unit(workspace, f"U-04-{character}", 4, characters=[character]))
-    for number, group in enumerate(balanced_chunks(minors, int(workspace.constant("minor_characters_per_unit", 4))),
-                                   start=1):
+    group_size = int(workspace.constant("minor_characters_per_unit", 4))
+    for number, group in enumerate(balanced_chunks(minors, group_size), start=1):
         units.append(ai_unit(workspace, f"U-04-MINOR-P{number}", 4, characters=group))
+    found = {identifier: (name, scene, line) for identifier, name, scene, line in silent_people(workspace)}
+    for number, group in enumerate(balanced_chunks(silent, group_size), start=1):
+        people = ", ".join(f"{found[character][0]} ({scene_words(found[character][1]) if found[character][1] else 'a scene'}"
+                           f", line {found[character][2]})" if character in found else character for character in group)
+        units.append(ai_unit(workspace, f"U-04-SILENT-P{number}", 4, characters=group,
+                             note=f"these people never speak: {people}; write each CHARACTER with voice: none and no "
+                                  "speech line (a reduced field set), and no VOICE"))
     for number, group in enumerate(balanced_chunks(places_of_scenes(workspace),
                                                    int(workspace.constant("places_per_unit", 2))), start=1):
         units.append(ai_unit(workspace, f"U-04-PLACES-P{number}", 4, places=group))
@@ -1053,38 +1132,195 @@ def checkpoint_passed(workspace, unit):
 
 
 def mark_done(workspace, units):
-    """Set unit.done (and unit.waiting for checkpoints) on every planned unit.
+    """Set unit.done (and unit.waiting for checkpoints) on every planned unit (C3).
 
-    A unit is done when the manifest lists it among the units applied, or its records are there. Steps 0 to 6 run
-    once each, in order: when any later unit's work is there, every earlier unit of steps 0 to 6 counts as done (a
-    folder adopted from a chat app has records but no list of units). A checkpoint followed by work that is there
-    counts as passed. Code units never make earlier units count as done.
+    An AI unit is done only when the manifest lists it among the units applied (stage.py apply writes that list;
+    a repair inbox counts for its base unit): the records of a later unit, or a stub record of another type, never
+    make a unit count as done. A code unit is done when the file it writes is there (the numbered story, the film
+    strip, the book); the self-test and the reading count as done once an AI unit after them has been applied. A
+    checkpoint is passed only by its own test: its choices answered, or the user's "next" recorded in the manifest;
+    a checkpoint that does not wait (a later group of shots) also counts as passed once a unit of its own group
+    after it is applied. A folder adopted from a chat app gets its list of units when it is adopted.
     """
     applied = workspace.units_done()
     for unit in units:
         unit.waiting = []
         if unit.kind == "checkpoint":
             unit.done, unit.waiting = checkpoint_passed(workspace, unit)
-        else:
+        elif unit.kind == "code":
             unit.done = unit.identifier in applied or evidence_of(workspace, unit)
+        else:
+            unit.done = unit.identifier in applied
         unit.own_evidence = unit.done and unit.kind == "ai"
     moved_past = False
     for unit in reversed(units):
-        if unit.own_evidence or (unit.kind == "ai" and unit.identifier in applied):
+        if unit.kind == "ai" and unit.done:
             if unit.step >= 1:
                 moved_past = True
             continue
-        if moved_past and unit.step <= 6:
-            # the self-test, the reading and the checkpoints of steps 0 to 6 lie behind work that is there
+        if moved_past and unit.step <= 6 and unit.kind == "code":
+            # the self-test and the reading lie behind work that was applied after them
             unit.done = True
-    # A checkpoint of steps 7 and later counts as passed when a unit after it in its own loop is done.
     for position, unit in enumerate(units):
-        if unit.kind == "checkpoint" and unit.checkpoint == "c" and not unit.done:
+        if unit.kind == "checkpoint" and unit.checkpoint == "c" and not unit.done and not unit.blocks:
             later = [other for other in units[position + 1:] if other.step == 8 and other.sequence == unit.sequence
                      and set(other.scenes) <= set(unit.scenes)]
             if any(other.done for other in later):
                 unit.done = True
     return units
+
+
+def units_found_in_records(workspace):
+    """The AI units whose records are there (the evidence test), for a folder adopted from a chat app, which has
+    records but no list of units applied: each unit whose records are there, and every unit of steps 0 to 6 before
+    the last of them (steps 0 to 6 run once each, in order, so work after them means they were done). adopt records
+    them once; next then works from that list."""
+    units = [unit for unit in workspace.plan() if unit.kind == "ai"]
+    found = [unit for unit in units if evidence_of(workspace, unit)]
+    if not found:
+        return []
+    last = max(units.index(unit) for unit in found)
+    chosen = [unit for position, unit in enumerate(units)
+              if unit in found or (position < last and unit.step <= 6)]
+    return [unit.identifier for unit in chosen]
+
+
+def record_units_found(project_folder, schema=None, words=None, constants=None):
+    """Write the units whose records an adopted folder already holds into the manifest's units_done (each marked
+    adopted). Returns the unit IDs added."""
+    workspace = Workspace(project_folder, schema, words, constants)
+    applied = workspace.units_done()
+    added = [identifier for identifier in units_found_in_records(workspace) if identifier not in applied]
+    if not added:
+        return []
+    with workspace.project.lock():
+        manifest = workspace.project.read_manifest()
+        done = manifest.setdefault("units_done", [])
+        for identifier in added:
+            done.append({"unit": identifier, "applied": now(), "adopted": True})
+        workspace.project.write_manifest(manifest)
+    return added
+
+
+# ---------------------------------------------------------------- what a unit writes (check --unit, C7)
+
+# The record a completeness check is about when the missing thing lives in another record type: a scene in no
+# group of scenes waits for the SEQUENCE records of the film unit (COVER-06).
+CHECK_WAITS_FOR = {"COVER-06": ("SEQUENCE", None), "COVER-05": ("CARDINAL", None)}
+COMPLETENESS_CHECKS = ("FORM-05",) + tuple(CHECK_WAITS_FOR)
+
+
+def writes_of(entry_of_unit):
+    """[(record type, set of field names or None for every field)] from a steps.json unit's writes list:
+    "SCENE (event, sequence)", "PLAN", "PROJECT.prompt_words", "CHOICE-001"."""
+    found = []
+    for text in (entry_of_unit or {}).get("writes") or []:
+        match = re.match(r"^([A-Z]+)(?:\.([a-z_]+))?(?:-\d+)?(?:\s*\(([^)]*)\))?", text.strip())
+        if not match:
+            continue
+        type_name, single, listed = match.group(1), match.group(2), match.group(3)
+        fields = None
+        if single:
+            fields = {single}
+        elif listed:
+            names = {piece.strip() for piece in listed.split(",") if re.fullmatch(r"[a-z_]+", piece.strip())}
+            fields = names or None
+        found.append((type_name, fields))
+    return found
+
+
+def record_scene(workspace, key):
+    """The scene a record belongs to: its own ID's scene, or a STATE's first scene."""
+    type_name, identifier = key
+    if type_name == "STATE":
+        record = workspace.record(identifier, "STATE")
+        return split_item(record.get("from") or "").first if record is not None else None
+    return scene_of(identifier or "")
+
+
+def unit_covers(workspace, unit, key, field_name=None):
+    """True when the unit writes this record (and this field of it), by its steps.json writes and its scope."""
+    entry = unit.entry_of_unit or unit_entry_for(workspace, unit.step, unit.identifier) or {}
+    type_name, identifier = key
+    for written_type, fields in writes_of(entry):
+        if written_type != type_name:
+            continue
+        if field_name and fields is not None and field_name not in fields:
+            continue
+        if unit.step == 8:
+            return type_name in ("SHOT", "CUT") and (identifier in unit.shots or (
+                type_name == "CUT" and unit.shots and scene_of(identifier or "") == unit.scene and
+                shot_number(unit.shots[0]) <= (shot_number(identifier.replace("-C", "-SH")) or 0)
+                <= shot_number(unit.shots[-1])))
+        if unit.scenes and type_name not in ("PLAN", "SEQUENCE", "PLANT", "FACT", "CHOICE", "SETVALUE"):
+            return record_scene(workspace, key) in unit.scenes
+        if unit.characters and type_name in ("CHARACTER", "VOICE"):
+            if type_name == "CHARACTER":
+                return identifier in unit.characters
+            record = workspace.record(identifier, "VOICE")
+            return record is not None and record.get("character") in unit.characters
+        if unit.places and type_name == "LOCATION":
+            record = workspace.record(identifier, "LOCATION")
+            if record is None:
+                return False
+            try:
+                from .fill_code_fields import best_location_for
+            except ImportError:
+                return True
+            for place in unit.places:
+                best = best_location_for(place, workspace.records("LOCATION"))
+                if best is not None and best.identifier == identifier:
+                    return True
+            return False
+        return True
+    return False
+
+
+def unit_records(workspace, unit):
+    """The (type, ID) keys a unit wrote: the list apply kept in the manifest, else the records of its scope."""
+    keys = set()
+    for entry in workspace.manifest.get("units_done", []):
+        if not isinstance(entry, dict):
+            continue
+        from .project_files import unit_of_inbox
+        if (unit_of_inbox(entry.get("unit") or "")[0] or entry.get("unit")) != unit.identifier:
+            continue
+        for text in entry.get("records_written") or []:
+            parts = text.split(" ", 1)
+            keys.add((parts[0], parts[1] if len(parts) > 1 and parts[1] else None))
+    if keys:
+        return keys
+    for key, record in workspace.index.items():
+        if unit_covers(workspace, unit, key):
+            keys.add(key)
+    return keys
+
+
+def not_yet_due(workspace, step, problems):
+    """(problems kept, problems not yet due): at check --step N, a missing field (FORM-05) or a missing record the
+    film unit writes (COVER-06) that belongs to an AI unit of steps up to N not yet applied is not yet due: it
+    counts, and is never an error (C7)."""
+    units = mark_done(workspace, workspace.plan())
+    waiting = [unit for unit in units if unit.kind == "ai" and not unit.done and unit.step <= step]
+    if not waiting:
+        return list(problems), []
+    kept, later = [], []
+    for problem in problems:
+        check_id = getattr(problem, "check_id", "")
+        if check_id not in COMPLETENESS_CHECKS:
+            kept.append(problem)
+            continue
+        label = (getattr(problem, "record", "") or "").strip('"')
+        key = next((key for key in workspace.index if (key[1] or key[0]) == label), None)
+        if check_id in CHECK_WAITS_FOR:
+            wanted_type, _ = CHECK_WAITS_FOR[check_id]
+            due_later = any(any(written == wanted_type for written, _ in writes_of(unit.entry_of_unit or {}))
+                            for unit in waiting)
+        else:
+            due_later = key is not None and any(unit_covers(workspace, unit, key, getattr(problem, "field_name", None))
+                                                for unit in waiting)
+        (later if due_later else kept).append(problem)
+    return kept, later
 
 
 # ---------------------------------------------------------------- the next unit
@@ -1831,6 +2067,9 @@ def elements_in_scene(workspace, scene_identifier):
                 names += split_list(value)
             if type_name == "TEXT" and record.get("words"):
                 names.append(record.get("words"))
+            if not names and record.title:
+                # a record without names is found by its title, without its article ("The dashboard clock")
+                names.append(re.sub(r"^(the|a|an)\s+", "", record.title.strip(), flags=re.IGNORECASE))
             if text and any(name_in_text(name, text) for name in names):
                 found.append(record.identifier)
     for motif in workspace.records("MOTIF"):
@@ -1938,18 +2177,70 @@ def looks_for_scene(workspace, scene_identifier):
     return [look for look in looks if look is not None]
 
 
+def heading_pieces(value):
+    """The headings a LOCATION headings value holds: separated by semicolons (code writes them so), else by commas."""
+    value = value or ""
+    pieces = value.split(";") if ";" in value else split_list(value)
+    return [piece.strip() for piece in pieces if piece.strip() and normalise_word(piece) not in ("none", "open")]
+
+
 def location_for_scene(workspace, scene_identifier):
+    """The scene's place: its location when step 7 has written it; else the place whose headings hold the scene's
+    heading (code fills headings at step 4 of 12); else the place whose name shares most words with the scene's
+    place words (C20)."""
     scene = workspace.record(scene_identifier, "SCENE")
     if scene is not None and scene.get("location"):
-        return workspace.record(scene.get("location"), "LOCATION")
+        found = workspace.record(scene.get("location"), "LOCATION")
+        if found is not None:
+            return found
     heading = workspace.scene_heading(scene_identifier) or ""
     place = scene.get("place_text") if scene is not None else ""
+    wanted = place_key(heading)
+    for location in workspace.records("LOCATION"):
+        if any(place_key(piece) == wanted for value in location.get_all("headings") for piece in heading_pieces(value)):
+            return location
     for location in workspace.records("LOCATION"):
         for value in location.get_all("headings"):
             if any(place_key(piece) and place_key(piece) in place_key(heading + " " + (place or ""))
-                   for piece in split_list(value)):
+                   for piece in heading_pieces(value)):
                 return location
-    return None
+    try:
+        from .fill_code_fields import best_location_for
+        return best_location_for(place or heading, workspace.records("LOCATION"))
+    except ImportError:
+        return None
+
+
+def place_state_at_start(workspace, location, scene_identifier):
+    """The place's STATE valid at the scene's first line, or None when the place has no states (C20)."""
+    try:
+        from .derive_fields import state_valid_at
+        lines = workspace.scene_lines(scene_identifier)
+        return state_valid_at(workspace.breakdown, location.identifier, lines[0] if lines else None)
+    except Exception:  # without the derived order: the state that starts in this scene, else none
+        for state in workspace.records("STATE"):
+            element = state.get("element") or state.identifier.split(".S")[0]
+            if element == location.identifier and split_item(state.get("from") or "").first == scene_identifier:
+                return state
+        return None
+
+
+def in_story_cameras_for(workspace, scene_identifier):
+    """The in-story CAMERA records a scene needs (C20): its host when that is a camera; for a scene seen on a device
+    or tagged in-story footage without a camera host yet, every in-story camera."""
+    scene = workspace.record(scene_identifier, "SCENE")
+    story_scene = workspace.story_scene(scene_identifier) or {}
+    host = scene.get("host") if scene is not None else None
+    if host:
+        camera = workspace.record(host, "CAMERA")
+        if camera is not None:
+            return [camera]
+    presentation = normalise_word((scene.get("presentation") if scene is not None else None)
+                                  or story_scene.get("presentation") or "")
+    tags = [normalise_word(tag) for tag in split_list((scene.get("tags") if scene is not None else "") or "")]
+    if presentation in ("on_screen", "recording") or "in_story_footage" in tags:
+        return list(workspace.records("CAMERA"))
+    return []
 
 
 def has_set_plan(location):
@@ -2093,17 +2384,32 @@ def scene_records_section(workspace, unit, own_shots):
                      + records_block(workspace, states))
     location = location_for_scene(workspace, scene_identifier)
     if location is not None:
+        written = scene is not None and scene.get("location") == location.identifier
+        found_how = "" if written else " (found from the scene's heading; write it as the scene's location)"
         if has_set_plan(location):
-            parts.append("### The place, with its set plan (metres, in plan_orientation)\n"
+            parts.append(f"### The place, with its set plan (metres, in plan_orientation){found_how}\n"
                          + records_block(workspace, [location]))
         else:
-            parts.append("### The place (no set plan: write a staging line; subjects take at and faces)\n"
+            parts.append(f"### The place (no set plan: write a staging line; subjects take at and faces){found_how}\n"
                          + records_block(workspace, [location], fields=LOCATION_FIELDS_WITHOUT_PLAN))
+        place_state = place_state_at_start(workspace, location, scene_identifier)
+        if place_state is not None and place_state not in states:
+            parts.append("### The place's state at the scene's start\n" + records_block(workspace, [place_state]))
     elements = elements_in_scene(workspace, scene_identifier)
+    if location is not None:
+        elements = list(dict.fromkeys(elements + [location.identifier]))
     things = [workspace.record(element) for element in elements]
     props = [record for record in things if record is not None and record.type_name == "PROP"]
     texts = [record for record in things if record is not None and record.type_name == "TEXT"]
+    present_ids = {record.identifier for record in things if record is not None}
+    for text_record in workspace.records("TEXT"):
+        # a text on something present here (the car's clock on the car) comes with it (C20)
+        if text_record not in texts and text_record.get("on") in present_ids:
+            texts.append(text_record)
     cameras = [record for record in things if record is not None and record.type_name == "CAMERA"]
+    for camera in in_story_cameras_for(workspace, scene_identifier):
+        if camera not in cameras:
+            cameras.append(camera)
     if props or texts or cameras:
         parts.append("### Things, text in picture and cameras in the story here\n"
                      + records_block(workspace, props, fields=PROP_FIELDS_FOR_SCENES)
@@ -2454,6 +2760,10 @@ def names_of(workspace, identifier):
         for entry in (workspace.story_map or {}).get("characters", []):
             if entry.get("id") == identifier:
                 names = list(entry.get("names") or [])
+    if not names:
+        for person, name, _, _ in silent_people(workspace):
+            if person == identifier:
+                names = [name, re.sub(r"^(THE|A|AN)\s+", "", name.upper())]
     return [name for name in names if name and name.lower() not in ("none", "open")]
 
 
@@ -2493,6 +2803,63 @@ def mentions_section(workspace, unit):
     if not blocks:
         return None, None
     return "## The story's lines for this unit\n" + "\n\n".join(blocks), None
+
+
+def device_scenes(workspace):
+    """[(scene ID, heading, what shows it)] for the scenes the reader found seen on a device (on a screen or a
+    recording): the scenes whose host is required (SCENE host, required when presentation is on a device)."""
+    found = []
+    for scene_identifier in workspace.scene_order():
+        record = workspace.record(scene_identifier, "SCENE")
+        story_scene = workspace.story_scene(scene_identifier) or {}
+        presentation = normalise_word((record.get("presentation") if record is not None else None)
+                                      or story_scene.get("presentation") or "")
+        if presentation in ("on_screen", "recording"):
+            note = story_scene.get("presentation_note") or ""
+            what = presentation.replace("_", " ")
+            host = (record.get("host") if record is not None else None) or "open"
+            found.append((scene_identifier, workspace.scene_heading(scene_identifier) or "",
+                          what + (f", {note}" if note else "") + f"; host now: {host}"))
+    return found
+
+
+def device_scenes_section(workspace):
+    """C21: the THINGS unit, which designs the in-story cameras, names the device each such scene is seen on."""
+    scenes = device_scenes(workspace)
+    if not scenes:
+        return None
+    lines = [f"- {scene_words(scene)} ({scene}): {heading} — {what}" for scene, heading, what in scenes]
+    return ("## Scenes seen on a device: write each one's host\n"
+            "The reader found these scenes shown on a screen or a recording. For each, write a short SCENE record "
+            "with only its host: the ID of the in-story camera (a CAMERA you write in this unit) or of the thing that "
+            "shows it (a PROP), for example:\n"
+            + fenced("### SCENE SC15\n- host: CAM-JUDE-ROOM") + "\n" + "\n".join(lines))
+
+
+def facts_to_repoint(workspace):
+    """FACT records whose element still names a story point (or nothing), written at step 2 before the things
+    existed (C23)."""
+    waiting = []
+    for fact in workspace.records("FACT"):
+        value = fact.get("element") or ""
+        pieces = split_list(value)
+        if not pieces or any(parse_story_point(piece) for piece in pieces):
+            waiting.append(fact)
+    return waiting
+
+
+def facts_to_repoint_section(workspace):
+    """C23: the THINGS unit re-points each such FACT's element to the IDs of the things it designs."""
+    facts = facts_to_repoint(workspace)
+    if not facts:
+        return None
+    return ("## Facts whose element is not yet an ID: re-point them\n"
+            "At step 3 of 12 the things did not exist yet, so these facts name where their element is seen. Now that "
+            "you design the things, write each FACT again with only its element: the IDs (PROP, TEXT, MOTIF, "
+            "LOCATION, CAMERA, CHARACTER or STATE) of what would give the fact away in frame, for example "
+            "\"### FACT FT-02\" with \"- element: PR-VESSEL, MO-PUMP\". From step 6 of 12 the checker refuses a "
+            "story point here.\n"
+            + records_block(workspace, facts, fields=["what", "element", "audience_knows_from", "mode"]))
 
 
 def characters_to_name_section(workspace):
@@ -2658,7 +3025,9 @@ def unit_section(workspace, unit, step_entry, issued_lines, check_command):
                      "fields)"
         if check_command:
             after += f", then {check_command}"
-        lines.append(f"- Then run: {after}. Fix only the lines the checker prints, at most repair_rounds_max rounds.")
+        lines.append(f"- Then run: {after}. Fix only the lines the checker prints, at most repair_rounds_max rounds; "
+                     f'write each repair to {MACHINE_FOLDER}/{INBOX_FOLDER}/"{unit.identifier} - fix <N>.md" (N from 1) '
+                     "with only the records it changes, and apply that file.")
         lines.append("- Never type what code writes: status, locked, approved, dates, the ' = <beat>' ending of a "
                      "story point, labels, time floors, clip lengths, image sides, prompts, prices.")
     else:
@@ -2676,9 +3045,13 @@ def unit_section(workspace, unit, step_entry, issued_lines, check_command):
 
 
 def check_command_for(unit, step_entry):
-    command = step_entry.get("check_command")
-    if not command:
+    """The check after a unit (C7): check --unit, which checks only the records this unit wrote, with its step's
+    checks and only the fields its step fills, so later units' fields never flood it."""
+    if not step_entry.get("check_command"):
         return None
+    if unit.kind == "ai" and unit.identifier:
+        return f"stage.py check --unit {unit.identifier}"
+    command = step_entry.get("check_command")
     if unit.step in (7, 8) and unit.scene:
         return f"stage.py {command} --scene {unit.scene}"
     return f"stage.py {command}"
@@ -2793,6 +3166,11 @@ def build_handout(workspace, unit, surface=None):
             handout.add("odd lines", odd_lines_section(workspace))
         if unit.identifier == "U-04-MOTIFS" and not workspace.records("CHARACTER"):
             handout.add("characters to name", characters_to_name_section(workspace))
+        if unit.identifier == "U-04-THINGS":
+            for key, section in (("device scenes", device_scenes_section(workspace)),
+                                 ("facts to re-point", facts_to_repoint_section(workspace))):
+                if section:
+                    handout.add(key, section)
         if unit.step == 4:
             text, _ = mentions_section(workspace, unit)
             if text:
@@ -2813,10 +3191,7 @@ def build_handout(workspace, unit, surface=None):
     templates = []
     depth_rank = DEPTH_RANK_OF[workspace.scene_depth(unit.scene) if unit.scene else workspace.depth]
     for type_name in written_types(unit, workspace):
-        if type_name == "MOVE" and unit.step == 7:
-            location = location_for_scene(workspace, unit.scene) if unit.scene else None
-            if not has_set_plan(location) and depth_rank < DEPTH_RANK_OF["detailed"]:
-                continue
+        # every type the unit writes has its template, MOVE at step 7 included (C20)
         block = template_for(workspace, type_name, unit.step)
         if block:
             templates.append(filter_template(block, depth_rank, workspace.code_execution, add_on=unit.step >= 12))
@@ -3009,7 +3384,7 @@ def run_next(context):
         return 0
     if unit.kind == "code":
         if unit.identifier == "U-00-SELFTEST":
-            context.say("Next: U-00-SELFTEST, step 1 of 12 (the hidden self-test, not shown to the user). Run stage.py "
+            context.say("Next: U-00-SELFTEST, step 1 of 12, the hidden self-test (not shown to the user). Run stage.py "
                         f"selftest --prepare: it writes the handout {MACHINE_FOLDER}/{HANDOUTS_FOLDER}/U-00-SELFTEST.md. "
                         f"Write the test shots to {MACHINE_FOLDER}/{INBOX_FOLDER}/U-00-SELFTEST.md in one reply, then "
                         "run stage.py selftest --score --surface <this app>.")

@@ -190,7 +190,7 @@ The user types only the word in bold.
 
 ## What the user can type
 
-Break down my story. · Continue my breakdown. · Where are we? · Why shot 150? · Change ... · Go deeper on scene 13 · Quick / Standard / Detailed · Redo step 6 · Stop here · Check · continue · next · defaults · stop after each group · Make storyboards · Make grey previews (Claude Code on your computer only) · Get it ready for AI video · Plan the edit. Their own words work too. In a new chat, as a resume line says: Check my group of scenes. · Run the film pass on these scenes. · Check my breakdown.
+Break down my story. · Continue my breakdown. · Where are we? · Why shot 150? · Change ... · Go deeper on scene 13 · Quick / Standard / Detailed · Redo step 6 · Stop here · Check · continue · next · defaults · stop after each group · Only do scenes 2, 9 and 16 for now · Do the rest · Make storyboards · Make grey previews (Claude Code on your computer only) · Get it ready for AI video · Plan the edit. Their own words work too. In a new chat, as a resume line says: Check my group of scenes. · Run the film pass on these scenes. · Check my breakdown.
 
 ## 00 Start here
 

@@ -125,6 +125,13 @@ def make_gold_project(folder, story=None):
     return folder
 
 
+def list_units_found(folder):
+    """What adopt does for a folder made from records (fix list C3: next works only from the units applied): list the
+    units whose records the folder holds as done."""
+    from stage_tools.make_handout import record_units_found
+    return record_units_found(folder, SCHEMA, WORDS, CONSTANTS)
+
+
 def recount(text):
     count = len(re.findall(r"^### ", text, re.MULTILINE))
     return re.sub(r"\| \d+ records?(\s*)$", f"| {count} records\\1", text.rstrip("\n")) + "\n"
@@ -414,6 +421,7 @@ def run_groups(workspace, story_path):
 
     @group("next on the gold: past steps 0 to 8 it names the film pass; status prints the next unit")
     def next_on_gold():
+        list_units_found(gold)
         code, output = stage(["next", "--project", str(gold)])
         assert code == 0 and "check --film" in output, f"exit {code}: {output[:600]}"
         code, status = stage(["status", "--project", str(gold)])
@@ -427,6 +435,7 @@ def run_groups(workspace, story_path):
     def next_design():
         folder = make_gold_project(workspace / "no design", excerpt)
         (folder / SCENE_FILE).unlink()
+        list_units_found(folder)
         code, output = stage(["next", "--project", str(folder)])
         assert code == 0 and output.startswith("Next: U-07-SC10,"), f"exit {code}: {output[:600]}"
         assert (folder / MACHINE / "handouts" / "U-07-SC10.md").is_file()
@@ -439,6 +448,7 @@ def run_groups(workspace, story_path):
     def next_checkpoint():
         folder = make_gold_project(workspace / "list only", excerpt)
         without_shots(folder)
+        list_units_found(folder)
         code, output = stage(["next", "--project", str(folder)])
         assert code == 0 and "each group of shots" in output and "waits for the user" in output \
             and "--checkpoint-passed" in output, f"exit {code}: {output[:600]}"
@@ -464,6 +474,7 @@ def run_groups(workspace, story_path):
     def loop():
         folder = make_gold_project(workspace / "loop", excerpt)
         (folder / SCENE_FILE).unlink()
+        list_units_found(folder)
         gold_text = GOLD_SCENE.read_text(encoding="utf-8")
         code, output = stage(["next", "--project", str(folder)])
         assert code == 0 and output.startswith("Next: U-07-SC10,"), output[:400]
@@ -516,7 +527,7 @@ def run_groups(workspace, story_path):
             return "skipped: fixture not present"
         root = workspace / "fresh"
         root.mkdir()
-        code, output = stage(["new", str(SCREENPLAY_FIXTURE)], cwd=str(root))
+        code, output = stage(["new", str(SCREENPLAY_FIXTURE), "--into", str(root)], cwd=str(root))
         assert code == 0, output[:600]
         project = next(path for path in root.iterdir() if path.is_dir())
         code, output = stage(["read", "--project", str(project)])
@@ -542,7 +553,7 @@ def run_groups(workspace, story_path):
             return "skipped: story not present (give --story <The Catch>)"
         root = workspace / "catch"
         root.mkdir()
-        code, output = stage(["new", str(story_path)], cwd=str(root))
+        code, output = stage(["new", str(story_path), "--into", str(root)], cwd=str(root))
         assert code == 0, output[:600]
         project = next(path for path in root.iterdir() if path.is_dir())
         code, output = stage(["read", "--project", str(project)])

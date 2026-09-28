@@ -4,7 +4,7 @@ Step 0 reads only "The rights question"; step 4 reads only "Names and likeness";
 
 ## The job
 
-Settle, before any work, whether the user may adapt the story; keep real faces, voices, names, brands and protected designs out of pictures and prompts; plan sensitive shots around filters without tricks; record every licence; keep the provenance marks; write one honest disclosure line (D4 §2). Step 0 hands on PROJECT `rights` (CHOICE-001) and the source's RIGHTS record; step 4, `likeness_basis` and small choices for invented names; add-on C, RIGHTS records for voices, likeness, music, fonts, stock and tool terms, and the disclosure text in `22 Rights and credits.md`.
+Settle, before any work, whether the user may adapt the story; keep real faces, voices, names, brands and protected designs out of pictures and prompts; plan sensitive shots around filters without tricks; record every licence; keep the provenance marks; write one honest disclosure line (D4 §2). Step 0 hands on PROJECT `rights` (CHOICE-001) and the source's RIGHTS record; step 4, `likeness_basis`, small choices for invented names and the name checks (notes on RT-001); add-on C, RIGHTS records for voices, likeness, music, fonts, stock and tool terms, and the disclosure text in `22 Rights and credits.md`.
 
 ## Questions in order
 
@@ -14,11 +14,11 @@ Settle, before any work, whether the user may adapt the story; keep real faces, 
 4. **Does the tool plan allow the use?** A film that will be sold, shown at festivals or earn money needs every kept take, voice and sound made on a commercial plan (D4 R13), recorded as a RIGHTS record (`subject: model_terms`, `commercial_ok`). A take resembling a protected character, logo or artwork is rejected at checkpoint E (D4 R6).
 5. **Does every asset carry its licence?** One RIGHTS record per library sound, stock file or font, made when it enters (D4 P6, R15-R16).
 6. **What is disclosed?** Keep Content Credentials and watermarks (**provenance marks**, proof of where a file came from) (D4 P8; D8 R26); write one wording for credits, platform AI labels and festival answers (D4 R20-R22, Rec6).
-7. **Are the facts fresh?** Re-check any law, policy or terms fact older than `model_facts_max_age_days` before release or a large spend (D4 R29, which uses C1 §0's age).
+7. **Are the facts fresh?** Re-check any law, policy or terms fact older than `model_facts_max_age_days` before release or a large spend (D4 R29).
 
 ## The rights question
 
-Example first: The Catch's title page says "= An original short screenplay" (line 3). "Original" means not adapted from another work; it does not say who wrote it (D4 §9.1). So the welcome asks once: "Is this story yours, or do you have permission to adapt it? [It's mine]" (blueprint 13.2). Adapting a story is its owner's right (D4 §3.1).
+Example first: The Catch's title page says "= An original short screenplay" (line 3). "Original" means not adapted from another work; it does not say who wrote it (D4 §9.1). So the welcome asks once: "Is this story yours, or do you have permission to adapt it? [It's mine]". Adapting a story is its owner's right (D4 §3.1).
 
 PROJECT `rights` takes one value; D4's finer statuses map onto it (D4 §6.1):
 

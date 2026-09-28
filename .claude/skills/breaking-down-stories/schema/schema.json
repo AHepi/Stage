@@ -171,9 +171,44 @@
    "grammar_rule": "G6"
   },
   "because_list": {
-   "syntax": "Items separated by commas: IDs of the record types in id_types (5.4 rule 3), line:NNN, or line: \"<quote anchor>\"; or the single word default, allowed only on a normal shot where REASON-02 finds no departure. A comma inside double quotes does not split the list.",
-   "example": "SC10-B07, SC10-V1, MO-MINT, CR-IONA, line:456",
-   "grammar_rule": "G5 and 5.4 rule 3 (kind named by the WP1 review: an id_list would refuse line: items)"
+   "syntax": "Items separated by commas: the ID of any story record (a scene, value, part, beat, speech, move, setup, sequence, plan, plant, fact, chapter, character, voice, place, thing, text, motif, in-story camera, state, world, style, rule, camera system, camera rule, saved choice, lens exception, look, visual plan, sound plan or ladder: the kind's id_types), line:NNN, or line: \"<quote anchor>\"; or the single word default, allowed only on a normal shot where REASON-02 finds no departure. The same set in every record (fix list C14). A comma inside double quotes does not split the list.",
+   "example": "SC10-B07, SC10-V1, MO-MINT, PR-FLASK, LOC-SAYE-KITCHEN, CR-IONA, line:456",
+   "grammar_rule": "G5 and 5.4 rule 3 (kind named by the WP1 review: an id_list would refuse line: items)",
+   "id_types": [
+    "SCENE",
+    "VALUE",
+    "PART",
+    "BEAT",
+    "SPEECH",
+    "MOVE",
+    "SETUP",
+    "SEQUENCE",
+    "PLAN",
+    "PLANT",
+    "FACT",
+    "CARDINAL",
+    "STRAND",
+    "CHAPTER",
+    "CHARACTER",
+    "VOICE",
+    "LOCATION",
+    "PROP",
+    "TEXT",
+    "MOTIF",
+    "CAMERA",
+    "STATE",
+    "WORLD",
+    "STYLE",
+    "RULE",
+    "CAMSYS",
+    "CAMRULE",
+    "RESERVE",
+    "LENS",
+    "LOOK",
+    "VISUAL",
+    "SOUNDPLAN",
+    "LADDER"
+   ]
   },
   "reference_list": {
    "syntax": "IDs and field paths separated by commas. A field path is <ID>.<field> (SC10-SU01.lens_mm); a singleton record and the project are named by their type (PLAN.crisis, PROJECT.frame_shape).",
@@ -184,6 +219,11 @@
    "syntax": "A scene ID alone for the whole scene (SC26), or a story point (SC26 \"She pushes gently away from the rail.\"); from step 7 a beat ID is also accepted, and code resolves a story point as for the kind story_point. A field's id_types may add other IDs (MOTIF appearance also takes a shot ID from step 8).",
    "example": "SC26",
    "grammar_rule": "5.5 CAMSYS break and MOTIF appearance ('a scene or story point'; kind named by the WP1 review)"
+  },
+  "element_list": {
+   "syntax": "IDs of the record types in id_types, separated by commas; until step 4 designs the things, a story point (SC10 \"the flask\") may stand for an element that has no record yet. From step 5 on every item must be an ID.",
+   "example": "PR-RING, MO-MINT",
+   "grammar_rule": "G5 (kind added by the fix list after test run 01, C23)"
   }
  },
  "writers": {
@@ -286,7 +326,8 @@
   "when_used": "Written only when the thing it records exists (a departure, a flaw, a pov break); the checker never asks for it.",
   "casting_chosen": "Casting (the appearance of the people who play the characters) has been chosen in add-on C.",
   "music_policy_allows_cues": "SOUNDPLAN.music_policy is sparse or scored.",
-  "filmed_shot": "The SHOT kind is not card or black: a camera films it (a title card or black has no setup, height, lens or focus)."
+  "filmed_shot": "The SHOT kind is not card or black: a camera films it (a title card or black has no setup, height, lens or focus).",
+  "choice_settled": "CHOICE.status is answered or defaulted."
  },
  "common_fields": {
   "about": "Every record type also takes these three fields (5.5). A record type that lists its own status field (CHOICE, FINDING) uses its own list; status_values on each record type gives the allowed statuses.",
@@ -1296,7 +1337,7 @@
     {
      "name": "date",
      "label": "Date",
-     "meaning": "When it was answered or defaulted.",
+     "meaning": "When it was answered or defaulted (an open choice has none).",
      "kind": "date",
      "depth": "q",
      "writer": "code_state",
@@ -1306,7 +1347,8 @@
       "none"
      ],
      "filled_by_step": 0,
-     "repeat": false
+     "repeat": false,
+     "required_when": "choice_settled"
     }
    ]
   },
@@ -1600,11 +1642,11 @@
     {
      "name": "host",
      "label": "Host",
-     "meaning": "The device showing the scene when it is on a screen or a recording.",
+     "meaning": "The device showing the scene when it is on a screen or a recording; written at step 4 by the unit that designs the in-story cameras (fix list C21).",
      "kind": "id",
      "depth": "q",
      "writer": "ai",
-     "filled_by_step": 1,
+     "filled_by_step": 4,
      "example": "PR-TABLET",
      "id_types": [
       "PROP",
@@ -2231,10 +2273,42 @@
       },
       {
        "key": "because",
-       "kind": "id_list",
+       "kind": "because_list",
        "meaning": "The records that justify it.",
        "id_types": [
-        "*"
+        "SCENE",
+        "VALUE",
+        "PART",
+        "BEAT",
+        "SPEECH",
+        "MOVE",
+        "SETUP",
+        "SEQUENCE",
+        "PLAN",
+        "PLANT",
+        "FACT",
+        "CARDINAL",
+        "STRAND",
+        "CHAPTER",
+        "CHARACTER",
+        "VOICE",
+        "LOCATION",
+        "PROP",
+        "TEXT",
+        "MOTIF",
+        "CAMERA",
+        "STATE",
+        "WORLD",
+        "STYLE",
+        "RULE",
+        "CAMSYS",
+        "CAMRULE",
+        "RESERVE",
+        "LENS",
+        "LOOK",
+        "VISUAL",
+        "SOUNDPLAN",
+        "LADDER"
        ]
       }
      ],
@@ -4115,19 +4189,39 @@
      "example": "SC10-B07, SC10-V1, MO-MINT, CR-IONA",
      "group": "story",
      "id_types": [
-      "BEAT",
+      "SCENE",
       "VALUE",
-      "MOTIF",
+      "PART",
+      "BEAT",
+      "SPEECH",
+      "MOVE",
+      "SETUP",
+      "SEQUENCE",
+      "PLAN",
       "PLANT",
       "FACT",
+      "CARDINAL",
+      "STRAND",
+      "CHAPTER",
       "CHARACTER",
-      "CAMRULE",
+      "VOICE",
+      "LOCATION",
+      "PROP",
+      "TEXT",
+      "MOTIF",
+      "CAMERA",
+      "STATE",
+      "WORLD",
+      "STYLE",
       "RULE",
+      "CAMSYS",
+      "CAMRULE",
       "RESERVE",
       "LENS",
       "LOOK",
       "VISUAL",
-      "STATE"
+      "SOUNDPLAN",
+      "LADDER"
      ],
      "also_allowed": [
       "default"
@@ -6747,8 +6841,8 @@
     {
      "name": "element",
      "label": "Element",
-     "meaning": "What would give the fact away in frame.",
-     "kind": "id_list",
+     "meaning": "What would give the fact away in frame: IDs; before step 4 designs the things, a story point naming where it is seen, which step 4's things unit re-points to IDs (fix list C23).",
+     "kind": "element_list",
      "depth": "s",
      "writer": "ai",
      "example": "PR-RING, MO-MINT",
@@ -7925,7 +8019,8 @@
       }
      ],
      "filled_by_step": 4,
-     "repeat": false
+     "repeat": false,
+     "required_when": "character_has_cue"
     },
     {
      "name": "lineup",
@@ -8183,7 +8278,7 @@
     {
      "name": "voice",
      "label": "Voice",
-     "meaning": "Their voice.",
+     "meaning": "Their voice (none for a character who never speaks).",
      "kind": "id",
      "depth": "s",
      "writer": "ai",
@@ -8192,7 +8287,11 @@
       "VOICE"
      ],
      "filled_by_step": 4,
-     "repeat": false
+     "repeat": false,
+     "required_when": "character_has_cue",
+     "also_allowed": [
+      "none"
+     ]
     },
     {
      "name": "likeness_basis",
@@ -9042,6 +9141,32 @@
      "added_by": "WP1",
      "filled_by_step": 4,
      "repeat": false
+    },
+    {
+     "name": "words_from",
+     "label": "Words from",
+     "meaning": "Origin story: the story line that writes the words, with the exact words quoted when the line holds more than the text; code copies the words from it into words (not needed when words is already there, as in a project adopted from a chat).",
+     "kind": "sub_parts",
+     "depth": "q",
+     "writer": "ai",
+     "example": "608 | quote: \"CONTROL\"",
+     "repeat": true,
+     "required_when": "text_in_story",
+     "first_part": {
+      "kind": "lines",
+      "meaning": "The line or a quote anchor."
+     },
+     "sub_parts": [
+      {
+       "key": "quote",
+       "kind": "quote",
+       "meaning": "The exact words inside the line, when the line holds more than the text."
+      }
+     ],
+     "filled_by_step": 4,
+     "added_by": "fix list C4 (TEXT words for origin story are copied by code from these lines)",
+     "missing_fix": "add \"- words_from: <line>\", with \"| quote: <the exact words in quotes>\" when the line holds more than the text; when the story does not write the words, set origin: inferred and write words",
+     "one_of": "words"
     },
     {
      "name": "reader",

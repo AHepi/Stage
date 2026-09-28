@@ -40,7 +40,7 @@ A **saved choice** (RESERVE, `RC-`) names the choice, its `match` (how code reco
 Example: SC10-SH150 is `close_up`, `eye_level`, `height: eye:CH-IONA`, `lens_mm: 50`, `focus: moderate`, `move: static`: the scene's tightest frame on its main turn, with no push-in, because "Her face changes." (line 456) already marks the beat (B1 P11); the film's tightest size waits for scene 13 (K05).
 
 Fill the six camera slots (fields) in B1's order, after `purpose` and `because` (B1 §0):
-1. **Size** (`size`). Size equals importance now, and distance is emotional distance (B1 P2, P3). A scene's sizes approach, withdraw, hold or break (B1 §2.2). The turn gets the extreme (B1 R1); equals get matched singles, same size, lens and height (B1 R3; GEOM-08); a breaking relationship moves from two-shots to singles, or from dirty to clean singles (B1 R4). A **single** holds one person, a **two-shot** two; an **over-shoulder** looks past one at the other; a **dirty single** keeps a soft sliver of the other person, a **clean single** none (B1 §2.1).
+1. **Size** (`size`). Size equals importance now, and distance is emotional distance (B1 P2, P3). A scene's sizes approach, withdraw, hold or break (B1 §2.2). The turn gets the extreme its camera rules allow (B1 R1); equals get matched singles, same size, lens and height (B1 R3; GEOM-08); a breaking relationship moves from two-shots to singles, or from dirty to clean singles (B1 R4). A **single** holds one person, a **two-shot** two; an **over-shoulder** looks past one at the other; a **dirty single** keeps a soft sliver of the other person, a **clean single** none (B1 §2.1).
 2. **Angle and height** (`angle`, `height`). Height is where the lens sits; angle is its tilt (B1 §0.1). `height: eye:CH-IONA` or `kneeling:CH-IONA`: the eye of the person whose point of view the scene holds (B1 R6). Low or high only on the beat power shifts: up at the winner, down at the loser (B1 R7); top-down for a machine's or institution's view (B1 R9); a Dutch tilt only while a perception is wrong, and only as a saved choice, a RESERVE record that rations it (B1 R8).
 3. **Lens** (`lens_mm`). Stand first, then choose the lens: how near and far things compare in size depends only on where the camera stands (B1 P6, §4.1). A long lens from far away: closeness kept private (B1 R10); a wide lens close: a person pressed by the place (B1 R11); two people across a barrier: a long lens along the line between them, or the camera in the plane of the glass; a long lens shortens only distances toward the camera (B1 R13).
 4. **Focus** (`focus`, `focus_on`). `moderate` for dialogue; `deep` when the audience must read something behind; `shallow` hides what the character ignores (B1 §4.5). A **rack focus** (sharpness moving from one plane to another) becomes two shots for AI video unless a test shows the tool can do it (B1 R14).
@@ -97,7 +97,7 @@ SH080, the reflection two-shot: camera A on the table's centre line, `lens_mm: 8
 Yes or no (B1 §13).
 1. Does every camera-system line give a story reason?
 2. Does every principal have a camera rule, kept?
-3. Is the scene's most extreme framing on its turn, nothing tighter before?
+3. Is the scene's most extreme framing the camera rules allow on its turn, nothing tighter before?
 4. Is every lens in the family or a declared exception?
 5. Does every move name its cause, one per shot?
 6. Is what the story hides out of frame?

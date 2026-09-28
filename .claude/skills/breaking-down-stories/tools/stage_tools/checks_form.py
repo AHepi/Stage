@@ -262,6 +262,10 @@ class ConditionReader:
         status = record.get("status")
         return None if status is None else normalise_word(status) == "answered"
 
+    def condition_choice_settled(self, record, item):
+        status = record.get("status")
+        return None if status is None else normalise_word(status) in ("answered", "defaulted")
+
     def condition_rights_subject_source(self, record, item):
         subject = record.get("subject")
         return None if subject is None else normalise_word(subject) == "source"
@@ -548,9 +552,25 @@ def check_form_03(record_files, context):
 
 
 def check_form_04(record_files, context):
-    """FORM-04 Value not allowed for the field's kind or list, with 'did you mean'."""
+    """FORM-04 Value not allowed for the field's kind or list, with 'did you mean'. From step 5 on (and at --all), a
+    FACT element may no longer be a story point: step 4's things unit re-points it to IDs (C23)."""
     analysis, _ = analyse(record_files, context)
-    return [problem for problem in analysis if problem.check_id == "FORM-04"]
+    problems = [problem for problem in analysis if problem.check_id == "FORM-04"]
+    step_rank = context.schema.step_rank(context.step) if context.step is not None else None
+    if not context.written_by_ai and (step_rank is None or step_rank >= 5):
+        for record_file in record_files:
+            for record in record_file.records:
+                if record.type_name != "FACT":
+                    continue
+                for line in record.field_lines("element"):
+                    points = [piece for piece in split_list(line.value) if parse_story_point(piece)]
+                    if points:
+                        problems.append(make_problem(
+                            "E", "FORM-04", record_file, record, "element",
+                            f"still names a story point ({quote_for_message(points[0], 50)}) after step 5 of 12 "
+                            "designed the things", "Fix: write the IDs of the things, places or people that would give "
+                            "the fact away (step 5 of 12's things unit re-points these)", line.line_number))
+    return problems
 
 
 def step_in_words(step):
@@ -649,6 +669,14 @@ def check_form_05(record_files, context):
             if not required:
                 continue
             if not record.field_lines(name) or all(line.missing for line in record.field_lines(name)):
+                writer = context.conditions.writer_for(definition, record)
+                if writer in ("code_state", "story"):
+                    source = CODE_FIELD_SOURCES.get((key[0], name))
+                    if source and not record.has(source):
+                        continue  # code fills it from a field the AI writes, which FORM-05 asks for itself
+                    problems.append(make_problem("E", "FORM-05", record_file, first_copy, name,
+                                                 f"is missing ({reason})", code_field_fix(key[0], name)))
+                    continue
                 problems.append(make_problem("E", "FORM-05", record_file, first_copy, name, f"is missing ({reason})",
                                              missing_field_fix(name, definition)))
                 continue
@@ -657,8 +685,26 @@ def check_form_05(record_files, context):
     return problems
 
 
+# Code fields filled from a field the AI writes: while that field is missing, FORM-05 asks only for it.
+CODE_FIELD_SOURCES = {("TEXT", "words"): "words_from"}
+
+
+def code_field_fix(type_name, name):
+    """The fix for a missing field that code keeps: the AI writes nothing; it says what code fills it from."""
+    try:
+        from .fill_code_fields import FILL_COMMAND_WORDS, code_fill_path
+    except ImportError:
+        return "Fix: nothing for the AI to write; code fills it (stage.py build)"
+    path = code_fill_path(type_name, name)
+    how = f" ({path[2]})" if path else ""
+    return f"Fix: nothing for the AI to write; {FILL_COMMAND_WORDS}{how}"
+
+
 def missing_field_fix(name, definition):
-    """The fix for a missing field: a short example when the schema's example is short, else the field's label."""
+    """The fix for a missing field: the schema's own fix when it has one, a short example when the schema's example
+    is short, else the field's label."""
+    if definition.get("missing_fix"):
+        return "Fix: " + definition["missing_fix"]
     example = str(definition.get("example", "")).strip()
     if example and len(example) <= 40 and "\n" not in example:
         return f'Fix: add a line such as "- {name}: {example}"'
@@ -938,6 +984,19 @@ def same_value(first, second):
     return normalise_word(value_for_comparison(first)) == normalise_word(value_for_comparison(second))
 
 
+def incoming_view(merged, incoming):
+    """The record as it will be once an inbox copy is merged: the inbox's fields replace the stored ones they name."""
+    if merged is incoming or merged is None:
+        return incoming
+    from .record_format import Record
+    view = Record(type_name=incoming.type_name, identifier=incoming.identifier, title=incoming.title or merged.title,
+                  known_type=True)
+    named = {line.name for line in incoming.fields if not line.missing}
+    view.body.extend(line for line in merged.fields if line.name not in named)
+    view.body.extend(line for line in incoming.fields if not line.missing)
+    return view
+
+
 def check_form_10(record_files, context):
     """FORM-10 Wrong writer (5.2): a code_derived field typed (W, dropped); a code_state or story field changed by
     the AI (E), except a chat_writer ai field when code_execution is no; a user field set without an answered or
@@ -955,6 +1014,10 @@ def check_form_10(record_files, context):
             if not record.known_type:
                 continue
             merged = (context.index or {}).get(record.key, record)
+            if context.written_by_ai:
+                # the writer of a conditional field follows what the inbox itself says (origin: inferred on a text
+                # that was origin: story makes its words the AI's), not the stored copy it replaces
+                merged = incoming_view(merged, record)
             stored = current.get(record.key)
             for line in record.fields:
                 definition, name, _ = resolve_field(schema, context.words, record, line.name)
@@ -995,6 +1058,26 @@ def check_form_10(record_files, context):
                                 problems.append(make_problem("E", "FORM-10", record_file, record, name,
                                                              f"types the resolved beat after = in {quote_for_message(part)}; code writes that ending",
                                                              "Fix: write the scene ID and the quote only", line.line_number))
+                if writer == "user" and context.written_by_ai and record.type_name not in ("CHOICE", "SETVALUE") \
+                        and normalise_word(context.code_execution or "") != "no":
+                    # C6: on a code surface the user's fields come only through a CHOICE (its sets lines) or a
+                    # SETVALUE, which apply writes when the choice is answered or defaulted; the AI may repeat the
+                    # stored value, or write open where nothing is decided yet, and nothing else. In a chat without
+                    # code nobody applies the choice, so there the AI writes what the answered choice sets.
+                    stored_values = [value for value in (stored.get_all(name) if stored is not None else [])
+                                     if normalise_word(value) != "open"]
+                    if stored_values and any(same_value(line.value, value) for value in stored_values):
+                        continue
+                    if normalise_word(line.value) == "open" and not stored_values:
+                        continue
+                    if normalise_word(line.value) == "open":
+                        what = "is the user's decision, already made; writing open would erase it"
+                    else:
+                        what = "is the user's to decide; the AI may not write it"
+                    problems.append(make_problem("E", "FORM-10", record_file, record, name, what,
+                                                 "Fix: remove the line; the answer to a choice (its sets line or a "
+                                                 "SETVALUE record) writes this field", line.line_number))
+                    continue
                 if writer == "user":
                     if normalise_word(line.value) == "open":
                         continue

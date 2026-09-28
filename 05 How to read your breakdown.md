@@ -2,7 +2,7 @@
 
 ## A scene page, read on one example
 
-Here is the top of the page for scene 10 of The Catch, as it is in the folder **09 Example - The Catch, scene 10** (file `11 Scenes/Scene 10 - Saye's kitchen.md`), cut short where you see "...":
+Here is the top of scene 10's page, from the folder **09 Example - The Catch, scene 10**, cut short where you see "...":
 
 ```
 # Scene 10 - Saye's kitchen
@@ -53,7 +53,7 @@ Every numbered file has two parts. The top part is for you, in plain words. Then
 Below this line: details for the AI and the checker. You never need to read them.
 ```
 
-Below it are **records**: the same plan written field by field, so that the checker program can check it and any AI app can carry on from it. Never change them yourself; ask the AI. Each file ends with an **END line**, such as `END OF FILE | Scene 10 - Saye's kitchen | 58 records`, which counts the records so that a file that was cut short shows at once.
+Below it are **records**: the same plan written field by field, so that the checker can check it and any AI app can carry on from it. Never change them yourself; ask the AI. Each file ends with an **END line**, such as `END OF FILE | Scene 10 - Saye's kitchen | 58 records`, which counts the records so that a file that was cut short shows at once.
 
 ## What each file is
 
@@ -61,7 +61,7 @@ Below it are **records**: the same plan written field by field, so that the chec
 |---|---|
 | 00 Start here | Where things stand, the next step, the big choices, the word list and the log. Open this first. |
 | 01 Choices | Every question for you with its default, open ones first; then the small choices and the additions to keep or cut. |
-| 02 Whole-film summary | A short summary of files 04 to 10 that later steps read; never edited by hand. |
+| 02 Whole-film summary | One line for each record of files 04 to 09, at most 6,000 words, for later steps to read; never edited by hand. |
 | 03 Story - numbered | Your story with a number on every line. |
 | 04 Scene list | One line for each scene: its lines in your story and what changes in it. |
 | 05 Story plan | The groups of scenes, the climax, and what is planted early to pay off later. |
@@ -107,7 +107,6 @@ Type the change in your own words:
 
 - "Make the frame 16 to 9."
 - "Scene 13 should feel slower."
-- "Cut the lamp in scene 10."
 - "Why shot 150?"
 
 The AI says what the change touches ("The 16 to 9 frame touches the picture edges of 214 shots, 31 grey previews and every prompt page; about 20 minutes. Go ahead? [yes]"), asks once if it is costly, and redoes only that. Every change goes into the log in `00 Start here`.
@@ -132,6 +131,8 @@ Your own words work too. These are the short forms:
 | next | Carries on after a group of shots. |
 | defaults | Takes every answer that is ready. |
 | stop after each group | Waits for you after every group of scenes. |
+| Only do scenes 2, 9 and 16 for now | Works on those scenes only, and says so. |
+| Do the rest | Back to the whole story. |
 | Make storyboards | Adds storyboard pictures, after a choice of three styles. |
 | Make grey previews | Adds rough grey 3D versions of the hardest shots, in Claude Code on your computer only. |
 | Get it ready for AI video | Adds prompts for AI video tools, after you set a spending limit. |

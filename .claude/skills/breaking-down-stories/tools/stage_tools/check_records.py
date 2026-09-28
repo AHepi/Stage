@@ -1336,6 +1336,8 @@ def add_check_arguments(parser):
     parser.add_argument("--film", action="store_true", help="run the whole-film checks (step 9)")
     parser.add_argument("--all", action="store_true", help="run every check and ask for every field (the default)")
     parser.add_argument("--story", help="read the story from this file for the checks that compare story words")
+    parser.add_argument("--unit", help="check only the records this unit wrote (for example U-07-SC10), with its "
+                                       "step's checks and only the fields its step fills")
 
 
 def read_step(text):
@@ -1370,6 +1372,8 @@ def command_line_of(arguments):
         parts.append("--all")
     if getattr(arguments, "story", None):
         parts.append(f"--story \"{Path(arguments.story).name}\"")
+    if getattr(arguments, "unit", None):
+        parts.append(f"--unit {arguments.unit}")
     return " ".join(parts)
 
 
@@ -1429,6 +1433,60 @@ def set_checker_last_run(project, keep_old_copy):
     return True
 
 
+class UnitView:
+    """check --unit (C7): the records one unit wrote, and the records they cite."""
+
+    def __init__(self, unit, labels, cited):
+        self.unit = unit
+        self.labels = labels
+        self.cited = cited
+
+    @classmethod
+    def for_unit(cls, project_folder, identifier, context):
+        from .make_handout import Workspace, unit_from_identifier, unit_records
+        workspace = Workspace(project_folder, context.schema, context.words, context.constants)
+        unit = unit_from_identifier(workspace, identifier)
+        if unit.kind != "ai":
+            raise StageStop(f"{identifier} is not a unit the AI writes, so it has no records to check; run stage.py "
+                            "check --step N.")
+        keys = unit_records(workspace, unit)
+        labels = {key[1] or key[0] for key in keys}
+        cited = set()
+        known = {key[1] for key in workspace.index if key[1]}
+        for key in keys:
+            record = workspace.index.get(key)
+            if record is None:
+                continue
+            for line in record.fields:
+                for token in re.findall(r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+(?:\.S\d{2})?", line.value or ""):
+                    if token in known and token not in labels:
+                        cited.add(token)
+        return cls(unit, labels, cited)
+
+    def split(self, problems):
+        """(the unit's own problems, errors on the records it cites, how many other lines were left out)."""
+        own, cited, others = [], [], 0
+        for problem in problems:
+            label = (getattr(problem, "record", "") or "").strip('"')
+            if label in self.labels:
+                own.append(problem)
+            elif label in self.cited and getattr(problem, "level", "") == "E" and \
+                    getattr(problem, "check_id", "") != "FORM-05":
+                cited.append(problem)
+            else:
+                others += 1
+        return own, cited, others
+
+
+def scope_line_for(result):
+    """"Scope: 3 of 30 scenes ..." when PROJECT.scope names some scenes (C19), else ""."""
+    try:
+        from .project_files import scope_words
+        return scope_words(result.run.index)
+    except (ImportError, AttributeError):
+        return ""
+
+
 def run_check(context):
     """check [--step N] [--scene SCnn] [--film] [--all] [--story <path>]: run the checks on the project.
 
@@ -1443,6 +1501,14 @@ def run_check(context):
         raise StageStop("Give either --all or --step N, not both: --all runs every check, --step N the checks of "
                         "one step.")
     project = Project(context.project, context.schema, context.words)
+    unit_view = None
+    if getattr(arguments, "unit", None):
+        if step is not None or film or getattr(arguments, "all", False):
+            raise StageStop("Give --unit alone: it checks one unit's records with the checks of the unit's own step.")
+        unit_view = UnitView.for_unit(project.folder, arguments.unit, context)
+        step = unit_view.unit.step
+        scene = scene or (unit_view.unit.scene if step in (7, 8) else None)
+        all_checks = False
     story_path = getattr(arguments, "story", None)
     if story_path:
         if not Path(story_path).is_file():
@@ -1458,6 +1524,18 @@ def run_check(context):
         result = run_checks(record_files, context.schema, context.words, context.constants, story=story,
                             manifest=manifest, step=step, scene=scene, film=film, tidy=True, project=project,
                             locked_baseline=baseline)
+        not_due = []
+        cited_lines = []
+        left_to_others = 0
+        if unit_view is not None:
+            result.problems, cited_lines, left_to_others = unit_view.split(result.problems)
+        elif step is not None and not film:
+            try:
+                from .make_handout import Workspace, not_yet_due
+                result.problems, not_due = not_yet_due(Workspace(project.folder, context.schema, context.words,
+                                                                 context.constants), step, result.problems)
+            except StageStop:
+                not_due = []
         written = []
         history = []
         kept_names = set()
@@ -1492,6 +1570,22 @@ def run_check(context):
         update_manifest_after_check(project, result, command_line, project.load_record_files())
     for line in printable_lines(result):
         context.say(line)
+    if unit_view is not None:
+        context.say(f"Checked only {unit_view.unit.identifier}'s {plural(len(unit_view.labels), 'record')}, with "
+                    f"step {unit_view.unit.step + 1} of 12's checks and only the fields filled by then.")
+        if cited_lines:
+            context.say("About records it cites (fix them only if your records caused them; they do not count here):")
+            for line in cited_lines[:NOTE_LINES_PRINTED]:
+                context.say(str(line))
+        if left_to_others:
+            context.say(f"Left out: {plural(left_to_others, 'line')} about other units' records (check --all shows "
+                        "them).")
+    if not_due:
+        context.say(f"Not yet due: {plural(len(not_due), 'missing field')} that units of this step not yet written "
+                    "will fill (never errors; they are listed in 13 Health check.md).")
+    scope_line = scope_line_for(result)
+    if scope_line:
+        context.say(scope_line)
     if not result.checks_run and not result.checks_not_present:
         context.say("No check of the checker is listed for this step in steps.json, so nothing was checked.")
     for module_name, reason in result.families_broken.items():

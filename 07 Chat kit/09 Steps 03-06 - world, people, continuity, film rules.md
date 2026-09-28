@@ -25,7 +25,7 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
 ## Inputs
 
 - PLAN and the SCENE records (events, tones, tags).
-- Locale cues harvested by code, each with its line: words such as "torch" and "night bus", signs, vehicles, money, institutions.
+- The numbered story, which you search for locale cues (procedure 1): words such as "torch" and "night bus", signs, vehicles, money, institutions.
 - The answers to the length question.
 
 ## Outputs
@@ -43,7 +43,7 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
 
 1. **Harvest the locale cues** with their evidence, and label each `inferred`. The Catch never names a country, but "Torchlight on wet brick." and "A night bus comes at them" point to Britain. Write them as WORLD `evidence` items (`12 | quote: "Torchlight on wet brick."`), with `origin: inferred` (D17 R1).
 2. **Propose the world:** a default and one alternative. WORLD `place` and `period` are the user's (through the place-and-time CHOICE, whose `sets` lines write them); you write `drives_on`, `language`, `accents`, `signage`, `emergency_lights`, `institutions`, `money`, `evidence` and `origin`. Check the real colours of local signals (British emergency lights are blue; B2 R19). A real institution keeps its researched grammar under an invented name (D17 R12). A cue that conflicts with the rest is a question with both readings, never a quiet change (D17 R2).
-3. **Propose three style directions** and the frame shape, in one CHOICE. STYLE `medium` is the user's; you write `style_words` (`style_words_count` plain, visible descriptors: no names of films or artists, no feelings, no banned words), `texture`, `words_to_avoid`. Mark the style "provisional until you see pictures": `provisional` stays `yes` until D5's test of three directions on three hard shots, the first job of the storyboards or of the generation packs. Give the frame shape a story reason from the story's own images (B1 §5): The Catch's pairs face each other across tables and glass, so the default is the wide `2.39` frame.
+3. **Propose three style directions** and the frame shape, in one CHOICE. STYLE `medium` is the user's; you write `style_words` (`style_words_count` plain, visible descriptors: no names of films or artists, no feelings, no banned words), `texture`, `words_to_avoid`. The style is "provisional until you see pictures": code writes `provisional: yes` until D5's test of three directions on three hard shots (the first job of the storyboards or of the generation packs), and `named_reference_policy`; never type either. Give the frame shape a story reason from the story's own images (B1 §5): The Catch's pairs face each other across tables and glass, so the default is the wide `2.39` frame.
 4. **Write each story-world rule** as a RULE: `kind`, `statement`, `governs` (every ID it covers, or a note listing names step 4 will give IDs to), `exception` items (`<ID> | reads: normal | why:`). Anchor every rule to the exact lines where it starts and ends.
 5. **For a mirror rule** (K03), write the eras through a CHOICE and its SETVALUE, since `era` is the user's field: each era's lines and its frame value, `original` or `reversed`, and note which elements start `original` and which `reversed` (step 5 records each element's handedness). The Catch:
 
@@ -56,8 +56,8 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
    ```
 
    Era b starts at "Her eyes open." (line 263): the frame stays original and the world elements are reversed around Iona, Jude and Eli. Era c starts at "The ship is gone. The stars are gone." (line 1565). Detail rules follow K04: `WR-TITLES` (title cards always read normally), world screens, the copied name label, screen text, the replayed recording; each is one RULE listing what it governs (card 17, "Text orientation").
-6. **Music.** One CHOICE for `SOUNDPLAN.music_policy` (`none`, `sparse`, `scored`, `source_only`) with a story reason; The Catch's default is `none`, because the pump and the engine click do music's job. No clip ever has music baked in, whatever the answer.
-7. **Every choice the story does not state** becomes a CHOICE with a default, a one-line reason and `based_on` (the research reference). Keep `asked: yes` for the big ones; small ones are `asked: no` and go under "small choices I made".
+6. **Music.** One CHOICE for `SOUNDPLAN.music_policy` (`none`, `sparse`, `scored`, `source_only`) with a story reason; The Catch's default is `none`, because the pump and the engine click do music's job. No clip ever has music baked in, whatever the answer. SOUNDPLAN does not exist until step 6: code keeps the answer and writes `music_policy` when step 6 makes SOUNDPLAN (logged). Never write a SOUNDPLAN or a `music_policy` line yourself.
+7. **Every choice the story does not state** becomes a CHOICE with a default, a one-line reason and `based_on` (the research reference). Keep `asked: yes` for the big ones; small ones are `asked: no` and go under "small choices I made". On a code surface write no `status` or `date`: code fills them when a choice is answered or defaulted.
 8. **Check.** Run `stage.py check --step 3`; fix only the lines it prints, at most `repair_rounds_max` rounds.
 
 ## Record template
@@ -122,7 +122,7 @@ Every line reference is a quote anchor: `evidence` items, RULE start and end lin
 
 1. Harvest the locale cues yourself from the attached story: search it for place words, signs, vehicles, money and institutions, and quote each exactly.
 2. Write `06 World and style.md` in one copy box with "Save as:" above it, and the new CHOICE and SETVALUE records in a second box saved as `01 Choices - world and style.md` (`adopt` merges it with `01 Choices.md` by ID, G10). Leave the user's fields `open` in STYLE `medium`, WORLD `place` and `period` and RULE `era` until the big choices are answered; step 5's chat writes them then. PROJECT `prompt_words` waits for the next save of `00 Start here`.
-3. Write each CHOICE's `status: open` and each record's `status` and `locked`.
+3. Write each CHOICE's `status: open`, each record's `status` and `locked`, and STYLE `provisional: yes` and `named_reference_policy: describe_qualities_only`.
 4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 5. Report as above, then the resume line:
 
@@ -150,23 +150,23 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Design everything the film shows more than once: characters and voices; places with set plans; things; text in picture; motifs; in-story cameras. Every later prompt pastes these fixed descriptions word for word, so they are written once, from evidence, and then locked.
+Design, once and from evidence, everything the film shows more than once: every later prompt pastes its fixed description word for word, so it is then locked.
 
 ## When it runs
 
-Once, after world and style, in several units: motifs first, then one unit per principal character, the minor characters, the places, and the things. Each unit feeds the next.
+Once, after world and style, in several units: motifs first; one unit per principal character; the minor speaking characters, then those who never speak, in groups; the places; and last the things, which also write the in-story cameras.
 
 ## Inputs
 
-- For each element, a list code builds of every source line that mentions its aliases, capped at `alias_mentions_cap` plus every mention with a physical noun; ask `stage.py lines CH-SAYE --more` for the rest.
-- PLAN, SEQUENCE and the SCENE records; STYLE, WORLD and RULE.
-- The CHARACTER stubs from step 1.
+- For each element, code's list of the lines that mention its aliases, capped at `alias_mentions_cap` plus every mention with a physical noun (`stage.py lines CH-SAYE --more` for the rest).
+- PLAN, SEQUENCE, SCENE, STYLE, WORLD and RULE records, and step 1's CHARACTER stubs.
 
 ## Outputs
 
 - `07 Characters and voices.md`: CHARACTER and VOICE.
 - `08 Places and things.md`: LOCATION (with set-plan `object` and `mark` items where one is needed), PROP, TEXT, MOTIF, CAMERA.
-- `01 Choices.md`: small choices for sides the story leaves open, casting placeholders, invented names, every character's `likeness_basis` (default `invented`) and every voice's `source` (default `designed`; asked again with the generation packs).
+- `01 Choices.md`: small choices for open sides, casting placeholders, invented names, each `likeness_basis` (default `invented`) and each voice's `source` (default `designed`).
+- From the things unit also: SCENE `host`, FACT `element`, and name-check notes on RIGHTS RT-001.
 
 ## Card parts to open
 
@@ -174,26 +174,26 @@ Each unit opens only the parts listed for it (steps.json):
 
 - Motifs (U-04-MOTIFS): card 07, whole.
 - A principal (U-04-CH-IONA) or a group of minor characters (U-04-MINOR-P1): card 05, whole; card 06, part "Voices"; card 24, part "Names and likeness".
+- Characters who never speak (U-04-SILENT-P1): card 05, whole; card 24, part "Names and likeness".
 - Places (U-04-PLACES-P1): card 12, part "Set plans"; card 07, whole.
 - Things (U-04-THINGS): card 07, whole; card 17, whole.
 
 ## Procedure
 
-Work in this order; each part feeds the next.
-
 1. **Harvest** (in the motifs unit): every thing named more than once or at a turn, with its lines.
-2. **Motifs.** From PLAN's `theme_question` and `core_opposition`, run B4's six tests on each candidate, rank it (`spine`, `supporting`, `single_scene`, `minor`, `plot_machinery`), keep within `motif_spines_max`, `sound_motif_max` and `body_motif_max`, and write its `appearance` items as scenes or story points (no shot exists yet), each with a role and emphasis (B4 §3.3; card 07).
-3. **Characters.** For each: `tier`, `role`, `evidence` (quoted lines), `thesis` (the design idea in one sentence), `life_want`, `arc`, then:
-   - the `lineup`: height, mass, shape, value, colour and tempo as words, so code can compare principals; they must differ in at least `lineup_columns_differ_min` columns (B5 R3; CRAFT-20);
+2. **Motifs.** From PLAN's `theme_question` and `core_opposition`, run B4's six tests on each candidate, rank it (`spine`, `supporting`, `single_scene`, `minor`, `plot_machinery`), keep within `motif_spines_max`, `sound_motif_max` and `body_motif_max`, and write its `appearance` items as scenes or story points, each with a role and emphasis (B4 §3.3; card 07).
+3. **Characters.** Code makes the units. A principal has at least `principal_speech_share` of all speeches or is in at least `principal_scene_share` of the scenes (The Catch: Iona, Saye, Eli and Jude, a unit each); the other speakers are minor, `minor_characters_per_unit` to a unit (Nell); characters who never speak are grouped the same way (U-04-SILENT-P1: the figure, the guard, the nurse, the technician) with `voice: none`, no `speech` and no VOICE. For each: `tier`, `role`, `evidence` (quoted lines), `thesis` (the design idea in one sentence), `life_want`, `arc`, then:
+   - the `lineup`: height, mass, shape, value, colour and tempo as words; principals must differ in at least `lineup_columns_differ_min` columns (B5 R3; CRAFT-20);
    - for principals at Standard: the `face` (its three largest distinguishers, B5 R21); the `movement` field (home, stress and break effort, each as body part, direction, speed and what stays still; B5 §5.1-5.4); one `gesture` with its script line; `status_play` (default and the story points where it flips); `distance` (default and closest, in metres, with the scenes that change them; B5 §5.5);
    - the `fixed_description` last: within `fixed_description_words` for its tier; visible nouns only; no expression words (WORDS-05); no real person (WORDS-03); any sided feature in own terms, never image sides (SIDE-02);
    - casting placeholders stay `open`, never guessed; `likeness_basis` goes to a small choice.
-4. **Voices.** One VOICE per speaking character (every principal has one): `voice_description` (within `voice_description_words`), `pitch`, `pace_wps` (default `speech_wps_default`; slower for weighted speakers: Saye 2.0), `accent` from WORLD, `path_sound` for each way the voice is heard (earpiece, recording, through glass); `source` goes to a small choice.
-5. **Places.** For each LOCATION: `story_job`, `loudness` (at most `loud_sets_max` loud sets), `room_sound`, `anchor`, `exit`, `dressing`. Add a set plan (`plan_orientation`, `size`, `origin_corner`, `axes`, `wild_walls`, `object` and `mark` items, in metres; B3 §6) for every place used by a shot likely to need previs level `previs_plan_level_min` or more, a reflection or glass shot, or three or more people in one space; at Detailed, every place. Saye's kitchen: `size: [6.0, 3.6, 2.5]` from the south-west inside corner, west wall wild, `object: TABLE | at: [2.8, 1.8]`, `mark: IONA_MARK | at: [2.8, 2.55]`.
-6. **Things.** Each PROP: `names`, `category`, `fixed_description`, `real_size`, `side` (own terms), `first_seen`, `motif`, `origin`. Every readable text becomes a TEXT record with the exact `words`, what it is `on`, its `reader`, `plot_critical` and `emphasis` (card 17).
-7. **In-story cameras.** Each CAMERA: `at`, `lens_mm`, `ratio`, `fps`, `overlays`, `moves`, `master_clip`.
-8. **Name check** every invented name (D4 Recipe 3): search it, then give the verdict (clear, a low-risk coincidence, or a conflict) as a `> ` note on its record; a conflict becomes a small choice proposing a rename (card 24).
-9. **Check.** Run `stage.py check --step 4`; fix only the lines it prints, at most `repair_rounds_max` rounds.
+4. **Voices.** One VOICE per speaking character: `voice_description` (within `voice_description_words`), `pitch`, `pace_wps` (default `speech_wps_default`; slower for weighted speakers: Saye 2.0), `accent` from WORLD, `path_sound` for each way the voice is heard (earpiece, recording, through glass); `source` goes to a small choice.
+5. **Places.** For each LOCATION (code copies `headings` from the scenes that use it; never type them): `story_job`, `loudness` (at most `loud_sets_max` loud sets), `room_sound`, `anchor`, `exit`, `dressing`. Add a set plan (`plan_orientation`, `size`, `origin_corner`, `axes`, `wild_walls` by compass name, `object` and `mark` items, in metres; B3 §6) for every place used by a shot likely to need previs level `previs_plan_level_min` or more, a reflection or glass shot, or three or more people in one space; at Detailed, every place. Saye's kitchen: `size: [6.0, 3.6, 2.5]` from the south-west inside corner, west wall wild, `object: TABLE | at: [2.8, 1.8]`, `mark: IONA_MARK | at: [2.8, 2.55]`.
+6. **Things.** Each PROP: `names`, `category`, `fixed_description`, `real_size`, `side` (own terms), `first_seen`, `motif`, `origin`. Every readable text becomes a TEXT record: what it is `on`, its `reader`, `plot_critical` and `emphasis` (card 17); under a mirror rule, add its ID to the `governs` line of its text RULE, sent whole (SIDE-05). Text the story writes (`origin: story`) gives `words_from`, its line, and code copies the exact `words`; write `words` yourself only for invented or inferred text.
+7. **In-story cameras.** Each CAMERA: `at`, `lens_mm`, `ratio`, `fps`, `overlays`, `moves`, `master_clip`. Then SCENE `host` for each scene the handout lists as seen on a device: the camera whose picture it shows (scene 15: `CAM-JUDE-ROOM`).
+8. **Facts.** For each FACT the handout lists whose `element` is still a story point, send `element` again naming the IDs just made (`PR-VESSEL`), in one line.
+9. **Name check**, in the things unit, of every invented name of a character, company, product, institution or place (D4 Recipe 3): search it in quotes, then give the verdict (clear, a low-risk coincidence, or a conflict). Record each verdict as one `note` line on `### RIGHTS RT-001` in `22 Rights and credits.md` (`- note: name check: OSTREL, a low-risk coincidence with a household-goods mark`), all in one inbox with any note RT-001 already has (a field you send replaces all its lines). A conflict becomes a small choice proposing a rename (card 24).
+10. **Check.** After each unit run `stage.py check --unit <unit>`, and after the last `stage.py check --step 4`; fix only the lines printed, at most `repair_rounds_max` rounds.
 
 ## Record template
 
@@ -207,13 +207,13 @@ Work in this order; each part feeds the next.
 
 ## Batch and chunk rules
 
-One unit for the motifs, one per principal character, one per `minor_characters_per_unit` minor characters, one per `places_per_unit` places, one for all things, text and in-story cameras. The Catch takes about 12 units.
+One unit for the motifs, one per principal character, one per `minor_characters_per_unit` minor characters, and as many for those who never speak, one per `places_per_unit` places, one for things, text, in-story cameras, hosts, facts and name checks. The Catch takes about 20 units.
 
 ## Self-check
 
 Answer each question yes or no; each "no" is a fix before you report.
 
-1. Does every speaking cue have a CHARACTER?
+1. Does every speaking cue have a CHARACTER, and every character who never speaks `voice: none`?
 2. Does every principal have a VOICE, a lineup, a face, the `movement` field, a gesture, `status_play` and a distance?
 3. Do principals differ in at least `lineup_columns_differ_min` lineup columns (CRAFT-20)?
 4. Could a stranger draw each character from the fixed description alone, and is each within `fixed_description_words`?
@@ -224,7 +224,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-After each unit, a short report (Done, Example, Made, Needs you: nothing, Next). After the last unit:
+After each unit, a short report; after the last:
 
 ```
 Done: step 5 of 12, characters, places and things.
@@ -239,22 +239,22 @@ Next: continuity: how each person and thing appears in every scene.
 
 ## Checkpoint
 
-None here. Design ideas and small choices (sides, casting placeholders, invented names, faces and voices) go to the big choices after step 5; what each principal's appearance must say is item 6 there.
+None here. Design ideas and small choices go to the big choices after step 5; what each principal's appearance must say is item 6 there.
 
 ## How to redo
 
 - "Saye is frightened, not cold": only CH-SAYE runs again; `stage.py impact CH-SAYE` names every shot that cites CH-SAYE or CR-SAYE.
-- A new place or thing found later is added with a new ID; nothing is renumbered.
 
 ## If you cannot run code
 
 Every line reference is a quote anchor: `evidence` items, `gesture` lines, PROP `first_seen` and every `line:` are exact quotes of at least `quote_anchor_words_min` words, found once in the whole story (`- evidence: "fully dressed at four in the morning" | quote: "fully dressed at four in the morning"`).
 
 1. Build each element's line list yourself: search the attached story for every alias and quote what you use.
-2. Each unit's records go in one copy box with "Save as:" above it. The first unit that writes a file saves it under its name (`07 Characters and voices.md`); later units save theirs by content (`07 Characters and voices - Saye.md`, `08 Places and things - the kitchen and the quarantine.md`), and choices as `01 Choices - characters.md`; `adopt` merges them by ID (G10).
-3. Small choices (`asked: no`) are written `status: defaulted`, and their default values go into the records at once (`likeness_basis: invented`, VOICE `source: designed`); if the user changes one at the big choices, that file is saved again.
-4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
-5. Report as above, then the resume line naming every file saved so far that the next unit needs:
+2. Each unit's records go in one copy box with "Save as:" above it. The first unit that writes a file saves it under its name (`07 Characters and voices.md`); later units save theirs by content (`07 Characters and voices - Saye.md`), and choices as `01 Choices - characters.md`; `adopt` merges them by ID (G10).
+3. You write TEXT `words`, LOCATION `headings` and `voice: none` yourself. The things unit saves `04 Scene list.md` again, whole, with each device scene's `host`; `05 Story plan.md` again, whole, with the new FACT `element` lines; and the name checks as `22 Rights and credits - name checks.md`.
+4. Small choices (`asked: no`) are written `status: defaulted`, and their default values go into the records at once (`likeness_basis: invented`, VOICE `source: designed`); a change at the big choices saves that file again.
+5. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+6. Report as above, then the resume line naming every file saved so far that the next unit needs:
 
 ```
 Save as: 07 Characters and voices - Saye.md   (save only if the box ends with the END line)
@@ -281,7 +281,7 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Know the state of every changeable element in every scene, with the line that changed it, and every side. Then close the first half of the work with the big choices (checkpoint B), and write the whole-film summary every scene unit reads.
+Know every changeable element's state in every scene, with the line that changed it, and every side; then close the first half of the work with the big choices (checkpoint B) and the whole-film summary.
 
 ## When it runs
 
@@ -296,7 +296,7 @@ After characters, places and things: units of scenes in story order, then the bi
 
 - `09 Continuity.md`: STATE records (`CH-IONA.S02`, `PR-FLASK.S02`, `LOC-QUARANTINE.S02`): `element`, `from`, `cause`, `state_line` (words pasted after the fixed description in prompts), `changes`, `side` items in own terms, `handedness` (`original` or `reversed`, only under a mirror rule), `origin`.
 - `01 Choices.md`: small choices for sides the story does not confirm; the checkpoint answers.
-- After the big choices: `02 Whole-film summary.md` (code writes it; the AI in chat).
+- After the big choices: `02 Whole-film summary.md`, written by code (by the AI in chat): one line per record of files 04 to 09 with only the fields step 7 reads, at most `summary_words_max` words; when longer, code leaves out the least-needed record types first and says so.
 
 ## Card parts to open
 
@@ -307,7 +307,7 @@ After characters, places and things: units of scenes in story order, then the bi
 
 1. **Walk the lines** of the unit's scenes in order. At each scene's start copy the previous exit state into the entry, exactly; under `CONTINUOUS` it must match (STATE-03).
 2. **Add each change** as a new STATE with its `cause` line quoted (STATE-02) and `from` naming where it starts (`from: SC06 | line: 263`). Code works out `until` from the next state; never type it.
-3. **Write each state line** from visible nouns: what is worn, carried, torn, bloodied. No image-side words ("frame left") ever (SIDE-02); a sided feature goes in a `side` item with `own: left` or `own: right` and `plot: yes` when the story needs that side (SIDE-01).
+3. **Write each state line** from visible nouns: what is worn, carried, torn, bloodied. No image-side words ("frame left") ever (SIDE-02); a sided feature goes in a `side` item with `own: left` or `own: right` and `plot: yes` when the story needs that side (SIDE-01); with none, write `side: none`.
 4. **Apparent sides** (K03). A side the story states for an element that is mirrored on screen is an apparent side: record the own side and mark `origin: inferred`. The Catch, era b: "Saye's wedding ring. On her right hand." (line 436) is her own left:
 
    ```
@@ -323,7 +323,7 @@ After characters, places and things: units of scenes in story order, then the bi
    ```
 
 5. **Gaps.** A difference the story does not explain is recorded `origin: inferred` at first sight with the gap named in `changes`, or raised as a CHOICE. An unconfirmed side becomes a small choice for checkpoint B.
-6. **Check.** Run `stage.py check --step 5`; fix only the lines it prints, at most `repair_rounds_max` rounds.
+6. **Check.** Run `stage.py check --unit <unit>`, and after the last unit `stage.py check --step 5`; fix only the lines printed, at most `repair_rounds_max` rounds.
 7. **Checkpoint B** (below). Then the whole-film summary: code writes it; in chat the AI writes it as unit U-05-SUMMARY.
 
 ## Record template
@@ -352,7 +352,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-After each unit, a short report (Done, Example, Made, Needs you: nothing, Next). After the last unit the report is the big-choices message.
+After each unit, a short report; after the last, the big-choices message.
 
 ## Checkpoint
 
@@ -388,7 +388,7 @@ Next: I'll write the film's camera, light and sound rules from these answers,
 then design scene 1.
 ```
 
-Print your own computed counts. On a code surface pass each answer on as `### CHOICE CHOICE-NNN` with `- answer: <letter>` (or `- answer: defaults` for all) in the inbox, and run `stage.py apply`: the answers set their fields and SETVALUE lines and lock the step 2 to 5 records they name. Then code writes `02 Whole-film summary.md`.
+Print your own computed counts. On a code surface pass each answer on as `### CHOICE CHOICE-NNN` with `- answer: <letter>` (or `- answer: defaults` for all) in the inbox, and run `stage.py apply`: the answers set their fields and SETVALUE lines and lock the step 2 to 5 records they name. An answer for a record not yet made (music, for SOUNDPLAN) is kept and written when step 6 makes it. Then code writes `02 Whole-film summary.md`.
 
 ## How to redo
 
@@ -449,7 +449,7 @@ PLAN (climax, crisis, peaks) and the SEQUENCE list; STYLE, WORLD and RULE; CHARA
 - LENS (`LX-01`): a lens exception and the setups or scenes it is allowed in.
 - LOOK per place and time (`LK-SAYE-KITCHEN-NIGHT`): the `look_block` pasted into prompts, `main_light` placed on a set-plan object or a compass wall, `contrast`, `fill`, `stays_dark`, `palette`, `accent_allowed`, `light_cue` items at story points.
 - VISUAL per sequence (`VS-SQ03`): the colour-script row and the visual-structure plan.
-- SOUNDPLAN: music policy from the big choices, the clip audio rule, `voice_policy`, `device_budget`, `rupture_plan`.
+- SOUNDPLAN: `voice_policy`, `device_budget`, `rupture_plan`. When it is first applied, code adds `music_policy` (the music answer, kept since step 3) and `clip_audio` (from the music and voice policies).
 - LADDER: each scene's main turn as a story point, with its planned size and hold.
 
 Also PROJECT `fps`, and a small choice in `01 Choices.md` for `voice_policy` (default `designed_only`).
@@ -468,13 +468,13 @@ Work in this order (card 09, questions in order). Every line cites a plan, chara
 1. **Climax and peaks first.** Read PLAN `climax` and each `peak`. Decide which component the climax spends and which the opening may spend (B2 §4.4); the film's tightest size and longest hold are never spent before the climax unless PLAN's peaks place them there with a reason, as for a climax in counterpoint (D16 R16; FILM-01).
 2. **Camera system** (U-06-CAMERA): the baseline (static, at the whose-scene character's eye height, the normal lens), the lens family, what is banned with its why, real-time playback, the time rule for expanded action (overlapping real-time slices, never slow motion; K20), and the one `break` (B1 §9). The Catch breaks once, in scene 26: `break: SC26 "She pushes gently away from the rail."`.
 3. **Character camera rules**, one per principal: what the camera does when they hold control and when they lose it, what it never does to them, and their closest size saved for one story point, with nothing closer before it (B1 §9.2). `CR-ELI`: `never: push_in`, `closest: close_up | at: SC13 "Now he looks at her."`, `limit_before: medium_close_up`.
-4. **Saved choices and lens exceptions.** Each RESERVE: `choice`, `match` (how code knows a use: `size = extreme_close_up`), `max_uses`, `allowed_in`, `never_on`, `because`; always the two film-level ones above (B1 P5; FILM-08). Each LENS names exactly where it is allowed (CRAFT-07).
+4. **Saved choices and lens exceptions.** Each RESERVE: `choice`, `match` (how code knows a use: `size = extreme_close_up`), `max_uses` (a number, `1_per_scene` or `share`), `allowed_in`, `never_on`, `because`; always the two film-level ones above (B1 P5; FILM-08). Each LENS names exactly where it is allowed (CRAFT-07); footage from an in-story camera (SHOT `kind: screen`) keeps its CAMERA's lens and needs no LENS.
 5. **Looks** (U-06-LOOKS), one per place and time in use: the main light placed in the room (`from:` a set-plan object or a wall), so code works out its frame side per shot and per era; hold light as the look unless a story source changes it; a `light_cue` only where the story causes one (card 11). The look block stays within `look_block_sentences` and `look_block_words_max`.
 6. **Colour script** (U-06-PLANS): one VISUAL row per sequence, peaks first, valleys lower, then the monotony test (no `colour_monotony_run` sequences alike without a reason; B2 §8.3).
 7. **Visual structure**: for each sequence, `space`, each `component` (hold, progress or contrast, with why) and any `counterpoint` (B3 §2.6).
-8. **Sound plan**: `music_policy` as answered; `device_budget` within `device_budget_short` for a short; the `rupture_plan` from the peaks; `voice_policy` as a small choice.
+8. **Sound plan**: `device_budget` within `device_budget_short` for a short; the `rupture_plan` from the peaks; `voice_policy` as a small choice. Never type `music_policy` (the user's, set only through the music choice) or `clip_audio` (code's): `apply` refuses both (FORM-10).
 9. **The ladder**: one `rung` per scene with a main turn, as a story point with size, hold and why. It escalates by size and hold together; other scenes' main turns land at close-up or on a deliberate wide (A2 R4, R31). The Catch: `rung: SC10 "Her face changes." | size: close_up | hold: long | why: ...`, leaving the tightest size for scene 13.
-10. **Check.** Run `stage.py check --step 6`; fix only the lines it prints, at most `repair_rounds_max` rounds.
+10. **Check.** Run `stage.py check --unit <unit>`, and after the last unit `stage.py check --step 6`; fix only the lines printed, at most `repair_rounds_max` rounds.
 
 ## Record template
 
@@ -528,7 +528,7 @@ None here. The user approved the choices that drive these rules at the big choic
 
 Every line reference is a quote anchor: every story point (`break`, `closest`, `light_cue`, `rupture_plan`, the ladder's rungs) is a scene ID and an exact quote of at least `quote_anchor_words_min` words, found once in that scene. Never add the ` = SC10-B07` ending; code writes it after step 7.
 
-1. Save the three units' records as `10 Film rules.md`, then `10 Film rules - looks.md` and `10 Film rules - colour, sound and ladder.md`; `adopt` merges them by ID (G10). Save the voice choice, a small choice written `status: defaulted`, as `01 Choices - film rules.md`, and write its default (`voice_policy: designed_only`) in SOUNDPLAN.
+1. Save the three units' records as `10 Film rules.md`, then `10 Film rules - looks.md` and `10 Film rules - colour, sound and ladder.md`; `adopt` merges them by ID (G10). Save the voice choice, a small choice written `status: defaulted`, as `01 Choices - film rules.md`, and write its default (`voice_policy: designed_only`) in SOUNDPLAN, with `music_policy` as answered at the big choices and `clip_audio: No music in any clip.`
 2. Write each record's `status: approved` and `locked: yes`: film rules are locked on writing. Save `00 Start here.md` again, whole, with PROJECT `fps` and the log line.
 3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line for the first scene chat:

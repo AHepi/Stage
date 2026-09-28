@@ -445,7 +445,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - statement: <quick: text>
 - governs: <quick: IDs of any record ID, separated by commas>
 - era: <quick, when mirror_rule, the user's answer, set through a choice, one line each: one word> | from: <line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | to: <line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | frame: <original or reversed>
-- exception: <standard, one line each: an ID of any record ID> | reads: <normal or mirrored> | why: <text>
+- exception: <standard, one line each: an ID of any record ID; write none when there is nothing> | reads: <normal or mirrored> | why: <text>
 - occurrences: <quick, when device_rule: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)>
 - policy: <quick, when device_rule: open_only, open_and_close, every_return, episode_cold_open or template_refrain>
 - template_setup: <quick, when device_rule: an ID of SHOT (SC10-SH150), or none>
@@ -530,7 +530,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - pitch: <standard: low, low_mid, mid, mid_high or high>
 - pace_wps: <standard: words per second; default 2.5>
 - accent: <standard: text>
-- path_sound: <standard, one line each: one word from the note> | treatment: <text>
+- path_sound: <standard, one line each: one word from the note; write none when there is nothing> | treatment: <text>
 - source: <standard, the user's answer, set through a choice: one word from the note; default designed>
 - consent: <add-on, AI video: an ID of RIGHTS (RT-001), or none>
 - tool: <add-on, AI video: text>
@@ -591,7 +591,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - size: <standard, when set_plan_needed, always at detailed: [width, depth, height] in metres>
 - origin_corner: <standard, when set_plan_needed, always at detailed: text>
 - axes: <standard, when set_plan_needed, always at detailed: text>
-- wild_walls: <standard, when set_plan_needed, always at detailed: text>
+- wild_walls: <standard, when set_plan_needed, always at detailed: the compass names of the walls the camera may pass through (north, south, east or west, separated by commas), or none>
 - object: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres> | size: <[width, depth, height] in metres> | base: <metres> | material: <text> | meaning: <text> | furniture: <seat, bed or none>
 - mark: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
@@ -613,7 +613,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - fixed_description: <standard: text; what it is, what it looks like and its size; no state and no image sides>
 - real_size: <standard: [width, depth, height] in metres>
 - surface: <detailed: ordinary, matte_black, clear, shiny or very_bright>
-- side: <standard, one line each: text> | own: <left or right> | plot: <yes or no>
+- side: <standard, one line each: text; write none when there is nothing> | own: <left or right> | plot: <yes or no>
 - text: <standard: IDs of TEXT (TX-GOODS-ONLY), separated by commas, or none>
 - first_seen: <standard: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)>
 - motif: <standard: an ID of MOTIF (MO-MINT), or none>
@@ -629,9 +629,10 @@ Below this line: details for the AI and the checker. You never need to read them
 
 ### TEXT <TX- and capitals and hyphens, like TX-GOODS-ONLY> <a short plain title>
 - kind: <quick: one word from the note>
-- words: <quick, code copies it from the story when text_in_story; otherwise you write it; in a chat without code you write it: text>
+- words: <quick, code copies it from the story lines of words_from when origin is story; you write it when origin is inferred or invented: text>
 - on: <quick: an ID of PROP (PR-FLASK) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP) or CHARACTER (CH-IONA), or none>
 - origin: <quick: story, inferred or invented>
+- words_from: <quick, when text_in_story, one line each: the story line that writes the words (a line number, or a quote anchor in a chat without code)> | quote: <the exact words inside the line, when the line holds more than the text>
 - reader: <standard: an ID of CHARACTER (CH-IONA), or none>
 - plot_critical: <standard: yes or no>
 - emphasis: <standard: a number from 0 to 3>
@@ -716,7 +717,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - cause: <standard: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | quote: <"exact story words">
 - state_line: <quick: text; clothes, wounds and condition; own sides only (her right hand), never image sides>
 - changes: <standard: text>
-- side: <standard, one line each: text> | own: <left or right> | plot: <yes or no>
+- side: <standard, one line each: text; write none when there is nothing> | own: <left or right> | plot: <yes or no>
 - handedness: <standard, when mirror_rule_exists: original or reversed>
 - pictures_needed: <add-on, storyboards or AI video: text>
 - origin: <quick: story, inferred or invented>
@@ -770,7 +771,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - step_change: from: <standard, one line each: an ID of SCENE (SC10)> | family: <numbers separated by commas> | why: <text>
 - default_height: <quick: text>
 - default_move: <quick: static>
-- banned: <quick, one line each: text> | why: <text>
+- banned: <quick, one line each: text; write none when there is nothing> | why: <text>
 - camera_speed: <quick: real_time>
 - break: <standard: SCnn, or SCnn "<quote anchor>"> | what: <text> | because: <text>
 - time_rule: <standard: text>
@@ -803,7 +804,7 @@ Below this line: details for the AI and the checker. You never need to read them
 ### RESERVE <RC- and 2 digits, like RC-01> <a short plain title>
 - choice: <quick: text>
 - match: <quick: <field> = <value>, or manual>
-- max_uses: <quick: text> | fraction: <a number from 0 to 1>
+- max_uses: <quick: a whole number (3), 1_per_scene, or share> | fraction: <a number from 0 to 1, only with share>
 - allowed_in: <quick: IDs or text>
 - never_on: <quick: IDs of any record ID, separated by commas, or none>
 - because: <quick: IDs of any record ID, separated by commas>
@@ -837,7 +838,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - stays_dark: <standard: text>
 - palette: <standard: text>
 - accent_allowed: <standard: text>
-- light_cue: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"> | change: <text> | why: <text>
+- light_cue: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"; write none when there is nothing> | change: <text> | why: <text>
 - style_picture: <add-on, storyboards or AI video: a file name>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>
@@ -874,7 +875,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - clip_audio: <quick, code writes it; in a chat without code you write it: text>
 - voice_policy: <quick, the user's answer, set through a choice: designed_only, designed_plus_own_clone or designed_plus_consented_clones; default designed_only>
 - device_budget: <standard, one line each: cut_to_black, true_silence or freeze> | max: <a number>
-- rupture_plan: <standard, one line each: an ID of SCENE (SC10)> | device: <text>
+- rupture_plan: <standard, one line each: an ID of SCENE (SC10); write none when there is nothing> | device: <text>
 - loudness_target: <detailed: text>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>
@@ -951,9 +952,9 @@ Below this line: details for the AI and the checker. You never need to read them
 - reversal: <standard, when action_scene: IDs of BEAT (SC10-B07), separated by commas>
 - action_score: <standard, when action_scene: text; the block itself may sit in the plain part and be referred to here>
 - time_treatment: <standard, when action_scene: real_time_continuous, held_real_time, overlapping_slices, elliptical or slow_motion>
-- departure: <standard, one line each: an ID of CAMSYS or CAMRULE (CR-ELI) or RESERVE (RC-01) or LENS (LX-01) or LOOK (LK-SAYE-KITCHEN-NIGHT) or VISUAL (VS-SQ03) or SOUNDPLAN or LADDER or RULE (WR-MIRROR)> | what: <text> | why: <text>
-- additions: <standard, one line each: text> | changes_meaning: <yes or no>
-- lines_not_shown: <optional, one line each: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | why: <text>
+- departure: <standard, one line each: an ID of CAMSYS or CAMRULE (CR-ELI) or RESERVE (RC-01) or LENS (LX-01) or LOOK (LK-SAYE-KITCHEN-NIGHT) or VISUAL (VS-SQ03) or SOUNDPLAN or LADDER or RULE (WR-MIRROR); write none when there is nothing> | what: <text> | why: <text>
+- additions: <standard, one line each: text; write none when there is nothing> | changes_meaning: <yes or no>
+- lines_not_shown: <optional, one line each: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range); write none when there is nothing> | why: <text>
 - flags: <standard: any of nonevent, splintered, turn_too_soon, turn_too_late, continuity, separated by commas, or none>
 - note: <optional, one line each: text>
 
@@ -998,7 +999,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - unsaid: <standard, when turn_beat, always at detailed: an ID of CHARACTER (CH-IONA)> | thought: <text>
 - carrier: <standard, when turn_beat, always at detailed: an ID or text>
 - pause_after: <standard: none, short, medium, long or hold> | seconds: <seconds> | picture: <hold, push_in, cut or cut_wide> | sound: <text>
-- emphasis: <standard, one line each: an ID of MOTIF (MO-MINT) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or STATE (CH-IONA.S02)> | level: <a number from 0 to 3>
+- emphasis: <standard, one line each: an ID of MOTIF (MO-MINT) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or STATE (CH-IONA.S02); write none when there is nothing> | level: <a number from 0 to 3>
 - added_emphasis: <standard: 0 or 1> | what: <text>
 - change: <standard, when turn_beat: text>
 - distance: <detailed, one line each: IDs of CHARACTER (CH-IONA), separated by commas> | metres: <metres> | zone: <intimate, personal, social or public>
@@ -1120,8 +1121,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - frame_in_frame: <detailed: text, or none>
 - device: <detailed: text, or none>
 - glass: <standard, when glass_in_frame, one line each: text> | state: <clear, marked, reflecting, screen or broken_open> | camera: <through, along or angled>
-- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA)> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)>
-- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY)> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)>
+- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)>
+- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY); write none when there is nothing> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)>
 - text: <standard: IDs of TEXT (TX-GOODS-ONLY), separated by commas, or none>
 - keep_hidden: <standard, when fact_element_before_reveal, one line each: an ID of FACT (FT-03)> | how: <one word from the note>
 - must_show: <standard: IDs of CHARACTER (CH-IONA) or STATE (CH-IONA.S02) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or MOTIF (MO-MINT) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP), separated by commas, or none>
@@ -1132,8 +1133,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - light_cue: <standard: text> | when: <seconds> | why: <text>
 - dark: <detailed: text>
 - eye_light: <detailed: yes or no>
-- hear: <quick, one line each: an ID of SPEECH (SC10-D11)> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words">
-- effect: <standard, one line each: text> | at: <seconds> | sound_emphasis: <a number from 0 to 3>
+- hear: <quick, one line each: an ID of SPEECH (SC10-D11); write none when there is nothing> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words">
+- effect: <standard, one line each: text; write none when there is nothing> | at: <seconds> | sound_emphasis: <a number from 0 to 3>
 - room_sound: <standard: text, or as_place; default as_place>
 - silence: <standard: none, room_sound_only, drop_out or true_silence; default none>
 - music: <standard: an ID of MUSIC (MU-01), or none; default none>
@@ -1515,7 +1516,7 @@ A heading line names the record type, its ID and a plain title. Each field is on
 | charge | a value's charge: `---` `--` `-` `0` `+` `++` `+++`; the sign is the direction | `---` |
 | point, size | `[x, y]` or `[x, y, z]` in metres; a box `[w, d, h]` | `[2.8, 2.55]` |
 | span | `t0-t1` seconds inside a shot | `0-4` |
-| because_list | IDs (5.4 rule 3), `line:NNN` or `line: "<quote anchor>"`, separated by commas; or `default` on a normal shot | `SC10-B07, MO-MINT, line:456` |
+| because_list | the ID of any story record (scene, beat, value, character, state, place, prop, text, motif, rule, plan, camera rule, saved choice, look, fact, plant), `line:NNN` or `line: "<quote anchor>"`, separated by commas, the same set in every record; or `default` on a normal shot | `SC10-B07, MO-MINT, line:456` |
 | reference_list | IDs and field paths `<ID>.<field>`; a singleton record or the project is named by its type | `PROJECT.frame_shape, SC10-SU01.lens_mm` |
 | scene_or_story_point | a scene ID alone for the whole scene, or a story point | `SC26` |
 
@@ -1523,7 +1524,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 **G6. Items.** A repeatable field appears once per item. An item is a first part followed by named sub-parts: `- subject: CH-IONA.S02 | at: left_third | faces: camera | does: chews, stops, frowns`. The first part is the item's main value, usually an ID. Sub-part keys are schema words in any order; an unknown key is an error. Positional (unnamed) sub-parts are never allowed. A few fields have no first part (the schema marks them `first_part: null`); their value starts with the first named sub-part: `- lineup: height: short | mass: slight | shape: long | value: light | colour: grey | tempo: slow`.
 
-**G7. Empty and undecided.** Empty is `none`. Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing.
+**G7. Empty and undecided.** Empty is `none`: a field the depth asks for with nothing to hold is written `none` (`- effect: none`), never left out (FORM-05). Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing.
 
 **G8. Notes.** A line inside a record starting `> ` is a note attached to it, kept and not parsed.
 
@@ -1539,7 +1540,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 ## Who writes what
 
-Every field has one writer (schema `writer`): `story` (code copies it from the story), `ai` (you), `user` (only through an answered or defaulted CHOICE), `code_state` (code keeps it: status, locks, resolved story points) or `code_derived` (computed on every build, never stored: labels, time floors, clip lengths, sides, prompts, prices). Write only `ai` fields, plus the fields marked `chat_writer: ai` when you work in chat without code.
+Every field has one writer (schema `writer`): `story` (code copies it from the story), `ai` (you), `user` (only through an answered or defaulted CHOICE), `code_state` (code keeps it: status, locks, resolved story points) or `code_derived` (computed on every build, never stored: labels, time floors, clip lengths, sides, prompts, prices). Write only `ai` fields, plus the fields marked `chat_writer: ai` when you work in chat without code; on a code surface `apply` refuses a `user` or code field from you (FORM-10). A few fields change writer with the record: TEXT `words` is copied by code from `words_from` when the story writes the text, and is yours only for invented or inferred text.
 
 ## Example 2: a whole file saved from chat
 
@@ -1710,7 +1711,7 @@ From the skill file `reference/04 Rule order.md`:
 
 # Rule order
 
-When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order is merged from A1, A2, A4, B1, B2 and B3, with readability second as B2 and A1 put it.
+When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order merges A1, A2, A4, B1, B2 and B3, with readability second as B2 and A1 put it.
 
 1. What the story itself states we see and hear.
 2. Readability of the beat.
@@ -1733,7 +1734,7 @@ The audience must be able to read the face, the text and the geography (B2, A1).
 
 ## 3. Physical honesty
 
-In-story footage, physics and glass optics behave as they would for real (B1 R22-R23). **Tie-break.** Scene 13 replays the recording from the shaft camera `CAM-SHAFT-TOP`. The film's camera system (rule 4) would put the lens at the owner's eye height with the normal lens, but footage from an in-story camera keeps that camera's fixed place, lens, frame rate and overlays from its CAMERA record, and every excerpt is cut from one master take of the scene 6 event (B1 R22, B1 §10.4).
+In-story footage, physics and glass optics behave as they would for real (B1 R22-R23). **Tie-break.** Scene 13 replays the recording from the shaft camera `CAM-SHAFT-TOP`. The film's camera system (rule 4) would put the lens at the owner's eye height with the normal lens, but footage from an in-story camera keeps that camera's fixed place, lens, frame rate and overlays from its CAMERA record, and every excerpt is cut from one master take of the scene 6 event (B1 R22, §10.4).
 
 ## 4. The film's systems and budgets
 
@@ -1745,20 +1746,20 @@ Lines carrying a BEAT `flag` are staged to contain the flaw, never rewritten: on
 
 ## 6. Turn rules
 
-The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), which is that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere. B1 settles its own clash the same way: a hidden feeling plays one size wider (B1 R5), except on a turning beat, where R1 wins.
+The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03), within the rules above: a camera rule's cap (rule 4) may let earlier shots equal the turn's size; through one fixed in-story camera (rule 3) size cannot change, so the frame's action and the cuts carry the turn (B1 §10.5). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere.
 
 ## 7. Emotion over spatial continuity
 
-When a cut that serves the emotion breaks the geography, keep the emotion (Murch, A4 R1: emotion first, three-dimensional space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it; the scene records a `departure` naming the rule it breaks and why, and GEOM-03's warning is answered by that record.
+When a cut that serves the emotion breaks the geography, keep the emotion (A4 R1: emotion first, space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it; the scene records a `departure` naming the rule it breaks and why, and GEOM-03's warning is answered by that record.
 
 ## 8. Conflict-type defaults
 
-Each conflict type has its coverage (A2 R12-R17). **Tie-break.** Scene 10 is asymmetric: Saye drives, and the resister stays still, anchored in a task, with her closest shot saved for her turning line. The general approach progression (rule 9) would tighten on Iona beat by beat; the conflict type holds her wider until her line "Not mint."
+Each conflict type has its coverage (A2 R12-R17). **Tie-break.** Scene 10 is asymmetric: Saye drives, and the resister stays still, anchored in a task, with her closest shot saved for her turning line. The approach progression (rule 9) would tighten on Iona beat by beat; the conflict type holds her wider until her line "Not mint."
 
 ## 9. General beat defaults and translation menus
 
-The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask (A2's must-keep shot). A point-of-view shot follows the eyes, so the menu's pan beats the static baseline, and the shot's `why` names the flask.
+The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask. A point-of-view shot follows the eyes, so the menu's pan beats the static baseline, and the shot's `why` names the flask.
 
 ## 10. The baseline
 
-Static, the owner's eye height, a normal lens, room sound. It is a strong answer, not a failure, and a normal shot that departs from nothing may give `because: default` with no `why` (REASON-01, REASON-02). **Tie-break.** When two menus pull different ways and neither can cite a line, an object or an action from this story, neither wins: the shot returns to the baseline.
+Static, the owner's eye height, a normal lens, room sound. It is a strong answer, and a normal shot that departs from nothing may give `because: default` with no `why` (REASON-01, REASON-02). **Tie-break.** When two menus pull different ways and neither can cite a line, an object or an action from this story, neither wins: the shot returns to the baseline.

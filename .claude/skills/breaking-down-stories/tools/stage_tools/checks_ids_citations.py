@@ -47,7 +47,7 @@ from .record_format import (FIELD_PATH, Problem, normalise_word, parse_line_numb
                             parse_story_point, quote_for_message, split_item, split_list, split_outside_quotes)
 
 ID_KINDS = ("id", "id_list", "id_range", "because_list", "reference_list", "story_point", "story_point_list",
-            "scene_or_story_point")
+            "scene_or_story_point", "element_list")
 STORY_POINT_KINDS = ("story_point", "story_point_list", "scene_or_story_point")
 ANCHOR_KINDS = ("lines",) + STORY_POINT_KINDS
 EMPTY_WORDS = ("none", "open", "auto", "all", "default", "never", "as_written")
@@ -213,6 +213,11 @@ def identifier_pieces(value, kind):
     if kind == "because_list":
         return [(piece, "id") for piece in split_list(text)
                 if not piece.lower().startswith("line:") and piece.lower() != "default"]
+    if kind == "element_list":
+        for piece in split_list(text):
+            point = parse_story_point(piece)
+            pieces.append((point[0], "story point scene") if point else (piece, "id"))
+        return pieces
     if kind == "reference_list":
         for piece in split_list(text):
             match = FIELD_PATH.match(piece)

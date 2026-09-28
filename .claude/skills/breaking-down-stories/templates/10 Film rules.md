@@ -30,7 +30,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - step_change: from: <standard, one line each: an ID of SCENE (SC10)> | family: <numbers separated by commas> | why: <text>
 - default_height: <quick: text>
 - default_move: <quick: static>
-- banned: <quick, one line each: text> | why: <text>
+- banned: <quick, one line each: text; write none when there is nothing> | why: <text>
 - camera_speed: <quick: real_time>
 - break: <standard: SCnn, or SCnn "<quote anchor>"> | what: <text> | because: <text>
 - time_rule: <standard: text>
@@ -63,7 +63,7 @@ Below this line: details for the AI and the checker. You never need to read them
 ### RESERVE <RC- and 2 digits, like RC-01> <a short plain title>
 - choice: <quick: text>
 - match: <quick: <field> = <value>, or manual>
-- max_uses: <quick: text> | fraction: <a number from 0 to 1>
+- max_uses: <quick: a whole number (3), 1_per_scene, or share> | fraction: <a number from 0 to 1, only with share>
 - allowed_in: <quick: IDs or text>
 - never_on: <quick: IDs of any record ID, separated by commas, or none>
 - because: <quick: IDs of any record ID, separated by commas>
@@ -97,7 +97,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - stays_dark: <standard: text>
 - palette: <standard: text>
 - accent_allowed: <standard: text>
-- light_cue: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"> | change: <text> | why: <text>
+- light_cue: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"; write none when there is nothing> | change: <text> | why: <text>
 - style_picture: <add-on, storyboards or AI video: a file name>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>
@@ -134,7 +134,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - clip_audio: <quick, code writes it; in a chat without code you write it: text>
 - voice_policy: <quick, the user's answer, set through a choice: designed_only, designed_plus_own_clone or designed_plus_consented_clones; default designed_only>
 - device_budget: <standard, one line each: cut_to_black, true_silence or freeze> | max: <a number>
-- rupture_plan: <standard, one line each: an ID of SCENE (SC10)> | device: <text>
+- rupture_plan: <standard, one line each: an ID of SCENE (SC10); write none when there is nothing> | device: <text>
 - loudness_target: <detailed: text>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>

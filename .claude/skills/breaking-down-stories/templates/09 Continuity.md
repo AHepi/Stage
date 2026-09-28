@@ -20,7 +20,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - cause: <standard: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | quote: <"exact story words">
 - state_line: <quick: text; clothes, wounds and condition; own sides only (her right hand), never image sides>
 - changes: <standard: text>
-- side: <standard, one line each: text> | own: <left or right> | plot: <yes or no>
+- side: <standard, one line each: text; write none when there is nothing> | own: <left or right> | plot: <yes or no>
 - handedness: <standard, when mirror_rule_exists: original or reversed>
 - pictures_needed: <add-on, storyboards or AI video: text>
 - origin: <quick: story, inferred or invented>

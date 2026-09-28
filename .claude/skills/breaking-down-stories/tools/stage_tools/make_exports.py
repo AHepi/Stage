@@ -1816,6 +1816,13 @@ def run_export(context):
         context.say(f"Note: {note}")
     if view.study_only:
         context.say(f"Every export is marked {STUDY_ONLY_MARK} (the rights answer).")
+    try:  # C19: the exports say when they cover only the scenes in scope
+        from .project_files import scope_words
+        scope_line = scope_words(view.breakdown.index)
+        if scope_line:
+            context.say(scope_line)
+    except (ImportError, AttributeError):
+        pass
     problems = check_export_formats(view.folder, view)
     if problems:
         for problem in problems:

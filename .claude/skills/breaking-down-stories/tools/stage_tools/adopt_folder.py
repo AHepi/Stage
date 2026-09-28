@@ -1189,6 +1189,14 @@ def run_adopt(context):
             f"{MACHINE_FOLDER}/log.jsonl.")
     if report.story_points:
         say(f"- Stored the beat of {plural(len(report.story_points), 'story point')} (code keeps these).")
+    try:  # next works only from the list of units applied (C3): the units this folder already holds go on it
+        from .make_handout import record_units_found
+        found = record_units_found(folder, context.schema, context.words, context.constants)
+        if found:
+            say(f"- Listed {plural(len(found), 'unit')} whose records the folder holds as done, so stage.py next goes "
+                "on from there.")
+    except Exception as error:  # the list is a convenience for next; adopting must not fail on it
+        say(f"- The units done could not be listed ({type(error).__name__}: {error}); stage.py next may offer them again.")
     say("- The project is now marked as one where code runs. Checking everything (check --all):")
     check_context = CheckCommandContext(context, folder)
     exit_code = run_check(check_context)

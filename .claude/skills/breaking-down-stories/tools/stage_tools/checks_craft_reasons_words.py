@@ -726,6 +726,11 @@ def check_craft_02(run):
 @register_check("CRAFT-03", level="W", build=1, title="The scene's tightest non-insert size used before its main turn",
                 plain="uses the scene's closest size before its main turn, so the turn has nothing closer left")
 def check_craft_03(run):
+    """C24: the main turn's shot is at least as tight as every earlier shot. Where a camera rule caps the turn's
+    subject in this scene (CAMRULE limit_before before the scene where its closest size is spent, the closest size
+    from then on), the turn should be at that cap, and earlier shots may equal it; without a cap an earlier shot as
+    tight as the turn warns. A scene whose every shot is in-story footage (kind screen, a fixed camera in the story)
+    is skipped: its turn is carried by what the frame holds and by the cuts, not by size."""
     problems = []
     for scene in scene_identifiers(run):
         main = main_turn_of(run, scene)
@@ -736,17 +741,71 @@ def check_craft_03(run):
         views = [view for view in shot_views(run, scene) if view.is_live and size_rank(view.size) is not None]
         if not views or turn_position is None:
             continue
-        tightest = max(size_rank(view.size) for view in views)
+        written = [view for view in shot_views(run, scene) if view.record is not None]
+        if written and all(view.kind == "screen" for view in written):
+            run.skip("CRAFT-03", f"{scene}: every shot is in-story footage from a fixed camera, so size cannot mark "
+                                 "the turn")
+            continue
+        turn_views = [view for view in views if view.role == "turn" and main.identifier in view.beats]
+        if not turn_views:
+            tightest = max(size_rank(view.size) for view in views)
+            for view in views:
+                last = last_beat_position(view, positions)
+                if size_rank(view.size) == tightest and last is not None and last < turn_position:
+                    problems.append(problem_at(
+                        run, "W", "CRAFT-03", view.problem_record, "size",
+                        f"{view.size} is the scene's tightest size and comes before the main turn {main.identifier} "
+                        f"(beats {names_list(view.beats)})",
+                        f"Fix: open this shot to a wider size, so that the scene's closest frame is spent on "
+                        f"{main.identifier} (A2 R4)."))
+            continue
+        turn_view = max(turn_views, key=lambda view: size_rank(view.size))
+        turn_rank = size_rank(turn_view.size)
+        cap, cap_rule = size_cap_for(run, scene, turn_view)
         for view in views:
+            if view in turn_views:
+                continue
             last = last_beat_position(view, positions)
-            if size_rank(view.size) == tightest and last is not None and last < turn_position:
+            if last is None or last >= turn_position:
+                continue
+            rank = size_rank(view.size)
+            if rank > turn_rank or (rank == turn_rank and cap is None):
                 problems.append(problem_at(
                     run, "W", "CRAFT-03", view.problem_record, "size",
-                    f"{view.size} is the scene's tightest size and comes before the main turn {main.identifier} "
-                    f"(beats {names_list(view.beats)})",
-                    f"Fix: open this shot to a wider size, so that the scene's closest frame is spent on "
-                    f"{main.identifier} (A2 R4)."))
+                    f"{view.size} comes before the main turn {main.identifier} and is "
+                    f"{'tighter than' if rank > turn_rank else 'as tight as'} its turn shot {turn_view.identifier} "
+                    f"({turn_view.size})",
+                    f"Fix: open this shot to a wider size, or tighten the turn shot, so that the scene's closest "
+                    f"frame is spent on {main.identifier} (A2 R4)."))
+        if cap is not None and turn_rank < SIZE_LADDER.index(cap):
+            problems.append(problem_at(
+                run, "W", "CRAFT-03", turn_view.problem_record, "size",
+                f"the main turn is at {turn_view.size}, but {cap_rule.identifier} allows its subject up to {cap} "
+                f"in {scene}", f"Fix: take the turn to {cap}, the tightest size the camera rule allows here (A2 R4)."))
     return problems
+
+
+def size_cap_for(run, scene, view):
+    """(the tightest size a camera rule allows the turn's subject in this scene, the CAMRULE) or (None, None):
+    limit_before in scenes before the one where the rule's closest size is spent, the closest size from there."""
+    for subject in view.subjects or []:
+        character = element_of(subject)
+        if not character.startswith("CH-"):
+            continue
+        for rule in records_of(run, "CAMRULE"):
+            if (rule.get("character") or "").strip() != character:
+                continue
+            closest = split_item(rule.get("closest") or "")
+            closest_size = word_of(closest.first or "")
+            spent_at = parse_story_point(closest.get("at") or "") if closest.get("at") else None
+            spent_scene = spent_at[0] if spent_at else scene_of(closest.get("at") or "")
+            limit = word_of(rule.get("limit_before") or "")
+            if spent_scene and sort_key_for_identifier(scene) < sort_key_for_identifier(spent_scene) \
+                    and limit in SIZE_LADDER:
+                return limit, rule
+            if closest_size in SIZE_LADDER:
+                return closest_size, rule
+    return None, None
 
 
 @register_check("CRAFT-04", level="E", build=1, title="A turn beat without exactly one turn shot",
@@ -886,6 +945,33 @@ def lens_exception_covers(run, lens, targets):
     return None
 
 
+def in_story_camera_for(run, shot):
+    """The in-story CAMERA a screen shot is seen through: its scene's host when that is a camera, else the first
+    CAMERA its fields name (C13)."""
+    scene = run.record(scene_of(shot.identifier) or "")
+    host = scene.get("host") if scene is not None else None
+    if host:
+        camera = run.record(host.strip())
+        if camera is not None and camera.type_name == "CAMERA":
+            return camera
+    for line in shot.fields:
+        for token in re.findall(r"\bCAM-[A-Z0-9]+(?:-[A-Z0-9]+)*", line.value or ""):
+            camera = run.record(token)
+            if camera is not None and camera.type_name == "CAMERA":
+                return camera
+    return None
+
+
+def screen_camera_of(run, record):
+    """For a screen shot, or a setup used only by screen shots: the in-story CAMERA whose lens it takes, else None."""
+    if record.type_name == "SHOT":
+        return in_story_camera_for(run, record) if word_of(record.get("kind")) == "screen" else None
+    users = [shot for shot in records_of(run, "SHOT") if (shot.get("setup") or "").strip() == record.identifier]
+    if users and all(word_of(shot.get("kind")) == "screen" for shot in users):
+        return in_story_camera_for(run, users[0])
+    return None
+
+
 @register_check("CRAFT-07", level="W", build=1, title="A lens outside the family without a lens exception that covers it",
                 plain="uses a lens outside the film's lenses with no lens exception for it")
 def check_craft_07(run):
@@ -894,6 +980,17 @@ def check_craft_07(run):
         for record in records_of(run, type_name):
             lens = number_of(record.get("lens_mm"))
             if lens is None:
+                continue
+            camera = screen_camera_of(run, record)
+            if camera is not None:
+                # in-story footage takes the lens of the camera in the story, not the film's lens family (C13)
+                own = number_of(camera.get("lens_mm"))
+                if own is not None and abs(own - lens) > 1e-6:
+                    problems.append(problem_at(
+                        run, "W", "CRAFT-07", record, "lens_mm",
+                        f"{lens:g} differs from the lens of the in-story camera {camera.identifier} ({own:g}), "
+                        "which this footage is seen through",
+                        f"Fix: write lens_mm: {own:g}, the in-story camera's own lens (card 17)."))
                 continue
             scene = scene_of(record.identifier)
             family = lens_family_for(run, scene)
@@ -2077,6 +2174,11 @@ def fact_reveal(run, fact):
     return scene, beat, quote, line
 
 
+# The ways keep_hidden hides a fact's element from sight (SHOT keep_hidden how); an item without a how is read as
+# hidden too, since keep_hidden means "stays out of view".
+HIDDEN_FROM_SIGHT = ("frame_edge", "focus", "dark", "obstruction", "timing", "sound_first", "off_frame", "")
+
+
 @register_check("INFO-01", level="W", build=1,
                 title="A shot before a FACT's reveal whose subject, thing or must_show includes the fact's element "
                       "(A4 S1-S3)",
@@ -2102,13 +2204,18 @@ def check_info_01(run):
                     last = last_beat_position(view, positions)
                     if last is None or last >= positions[reveal_beat]:
                         continue
-                hidden_facts = {item.first.strip() for item in items(run, shot, "keep_hidden") if item.first}
+                hidden_facts = {item.first.strip() for item in items(run, shot, "keep_hidden")
+                                if item.first and normalise_word(item.get("how") or "") in HIDDEN_FROM_SIGHT}
                 present = {}
+                # C12: a shot that keeps this fact hidden (heard first, at the frame's edge, out of focus, in the
+                # dark, behind something, or timed out of view) does not show its subjects and things; only what
+                # it must show still counts
+                kept_hidden = fact.identifier in hidden_facts
                 for item in items(run, shot, "subject"):
-                    if item.first:
+                    if item.first and not kept_hidden:
                         present.setdefault(element_of(item.first.strip()), "subject")
                 for item in thing_items(run, shot):
-                    if fact.identifier in hidden_facts and (thing_emphasis(item) or 0) == 0:
+                    if kept_hidden:
                         continue
                     present.setdefault(element_of(item.first.strip()), "thing")
                 for reference in id_list(shot, "must_show"):

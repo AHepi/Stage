@@ -3734,7 +3734,7 @@
      "E FORM-10 SC03 status is written by code (code_state); the AI may not change it. Fix: remove the line; code keeps it. [FORM-10 writers - inbox.md, line 5]",
      "W FORM-10 SC03-SH150 clips is worked out by code and never stored; the typed value is dropped. Fix: leave this field out; stage.py build computes it. [FORM-10 writers - inbox.md, line 10]",
      "E FORM-10 PLAN crisis types the resolved beat after = in \"SC24 \"She puts the lamp out herself.\" = SC24-B05\"; code writes that ending. Fix: write the scene ID and the quote only. [FORM-10 writers - inbox.md, line 13]",
-     "E FORM-10 LANTERN rights is \"study_only\", which differs from what the answered choice sets (\"mine\"). Fix: write the value the choice sets, or ask the user again. [FORM-10 writers - inbox.md, line 16]"
+     "E FORM-10 LANTERN rights is the user's to decide; the AI may not write it. Fix: remove the line; the answer to a choice (its sets line or a SETVALUE record) writes this field. [FORM-10 writers - inbox.md, line 16]"
     ]
    }
   },

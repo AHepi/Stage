@@ -44,7 +44,7 @@ A heading line names the record type, its ID and a plain title. Each field is on
 | charge | a value's charge: `---` `--` `-` `0` `+` `++` `+++`; the sign is the direction | `---` |
 | point, size | `[x, y]` or `[x, y, z]` in metres; a box `[w, d, h]` | `[2.8, 2.55]` |
 | span | `t0-t1` seconds inside a shot | `0-4` |
-| because_list | IDs (5.4 rule 3), `line:NNN` or `line: "<quote anchor>"`, separated by commas; or `default` on a normal shot | `SC10-B07, MO-MINT, line:456` |
+| because_list | the ID of any story record (scene, beat, value, character, state, place, prop, text, motif, rule, plan, camera rule, saved choice, look, fact, plant), `line:NNN` or `line: "<quote anchor>"`, separated by commas, the same set in every record; or `default` on a normal shot | `SC10-B07, MO-MINT, line:456` |
 | reference_list | IDs and field paths `<ID>.<field>`; a singleton record or the project is named by its type | `PROJECT.frame_shape, SC10-SU01.lens_mm` |
 | scene_or_story_point | a scene ID alone for the whole scene, or a story point | `SC26` |
 
@@ -52,7 +52,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 **G6. Items.** A repeatable field appears once per item. An item is a first part followed by named sub-parts: `- subject: CH-IONA.S02 | at: left_third | faces: camera | does: chews, stops, frowns`. The first part is the item's main value, usually an ID. Sub-part keys are schema words in any order; an unknown key is an error. Positional (unnamed) sub-parts are never allowed. A few fields have no first part (the schema marks them `first_part: null`); their value starts with the first named sub-part: `- lineup: height: short | mass: slight | shape: long | value: light | colour: grey | tempo: slow`.
 
-**G7. Empty and undecided.** Empty is `none`. Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing.
+**G7. Empty and undecided.** Empty is `none`: a field the depth asks for with nothing to hold is written `none` (`- effect: none`), never left out (FORM-05). Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing.
 
 **G8. Notes.** A line inside a record starting `> ` is a note attached to it, kept and not parsed.
 
@@ -68,7 +68,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 ## Who writes what
 
-Every field has one writer (schema `writer`): `story` (code copies it from the story), `ai` (you), `user` (only through an answered or defaulted CHOICE), `code_state` (code keeps it: status, locks, resolved story points) or `code_derived` (computed on every build, never stored: labels, time floors, clip lengths, sides, prompts, prices). Write only `ai` fields, plus the fields marked `chat_writer: ai` when you work in chat without code.
+Every field has one writer (schema `writer`): `story` (code copies it from the story), `ai` (you), `user` (only through an answered or defaulted CHOICE), `code_state` (code keeps it: status, locks, resolved story points) or `code_derived` (computed on every build, never stored: labels, time floors, clip lengths, sides, prompts, prices). Write only `ai` fields, plus the fields marked `chat_writer: ai` when you work in chat without code; on a code surface `apply` refuses a `user` or code field from you (FORM-10). A few fields change writer with the record: TEXT `words` is copied by code from `words_from` when the story writes the text, and is yours only for invented or inferred text.
 
 ## Example 2: a whole file saved from chat
 

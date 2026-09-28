@@ -46,6 +46,9 @@ PACK_LEFT_OUT = ("history", "handouts")
 SCENE_TYPES = ("SCENE", "PART", "BEAT", "SPEECH", "MOVE", "SETUP", "SHOTLIST", "SHOT", "CUT")
 SCENE_FILE_TYPE_ORDER = ["SCENE", "PART", "BEAT", "SPEECH", "MOVE", "SETUP", "SHOTLIST", "SHOT", "CUT"]
 UNIT_PATTERN = re.compile(r"^U-(\d{2})-(.+)$")
+# A repair inbox is named "<unit ID> - fix <N>.md" (C17); older habits ("U-02-FILM-fix1", "U-02-FILM fix 2",
+# "U-02-FILM-fix-facts") are read the same way, so the unit done is always the base unit, never the fix name.
+REPAIR_SUFFIX = re.compile(r"^(U-\d{2}-.+?)(?:\s*-\s*fix\b.*|\s+fix\b.*|-fix\d*(?:-.*)?)$", re.IGNORECASE)
 SCENE_ID = re.compile(r"^(SC(\d{2,3})([A-Z]?))(?:-|$)")
 UNSAFE_NAME_CHARACTERS = re.compile(r'[\\/:*?"<>|\x00-\x1f]')
 
@@ -137,21 +140,74 @@ def scene_number_words(scene_identifier):
 
 # ---------------------------------------------------------------- finding the project (7.1)
 
+SKILL_FOLDER_IN_STAGE = Path(".claude") / "skills" / "breaking-down-stories"
+
+
+def is_stage_folder(folder):
+    """True for the Stage folder (the kit's repository): it holds "My breakdowns/", or it holds CLAUDE.md together
+    with the skill, "My stories/" or a CLAUDE.md that names the skill or "My breakdowns". A CLAUDE.md alone (the
+    one in a user's own .claude settings folder, say) is not enough."""
+    folder = Path(folder)
+    if (folder / BREAKDOWNS_FOLDER).is_dir():
+        return True
+    claude = folder / "CLAUDE.md"
+    if folder.name == ".claude" or not claude.is_file():
+        return False
+    if (folder / SKILL_FOLDER_IN_STAGE).is_dir() or (folder / "My stories").is_dir():
+        return True
+    try:
+        text = claude.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    return "breaking-down-stories" in text or BREAKDOWNS_FOLDER in text
+
+
+def folders_upward(start):
+    """start (or the folder holding it, when start is a file) and every folder above it."""
+    folder = Path(start).expanduser().resolve()
+    if folder.is_file() or (not folder.exists() and folder.suffix):
+        folder = folder.parent
+    return [folder] + list(folder.parents)
+
+
 def repository_root(start):
-    """The nearest folder at or above start that holds CLAUDE.md (the Stage repository), or None."""
-    folder = Path(start).resolve()
-    for candidate in [folder] + list(folder.parents):
-        if (candidate / "CLAUDE.md").is_file():
+    """The nearest folder at or above start that is the Stage folder (see is_stage_folder), or None."""
+    for candidate in folders_upward(start):
+        if is_stage_folder(candidate):
             return candidate
     return None
 
 
-def default_breakdowns_folder(start):
-    """My breakdowns/ in the repository when there is one, else the start folder."""
-    root = repository_root(start)
-    if root is not None and (root / BREAKDOWNS_FOLDER).is_dir():
-        return root / BREAKDOWNS_FOLDER
+def default_breakdowns_folder(start, story=None):
+    """Where new projects go (C1): "My breakdowns/" of the Stage folder found by walking up from the current folder,
+    else from the story file (the folder is made when it is missing); only when neither walk finds a Stage folder,
+    the current folder itself."""
+    for origin in [start] + ([story] if story else []):
+        root = repository_root(origin)
+        if root is not None:
+            return root / BREAKDOWNS_FOLDER
     return Path(start).resolve()
+
+
+def breakdowns_folder_for(into, start, story=None):
+    """(the folder a project is made in, a plain note or ""). An --into folder is kept, except one inside the Stage
+    folder but outside its "My breakdowns/": projects never go anywhere else in the kit, because git ignores only
+    My breakdowns/ and the story inside a project must never be committed."""
+    if not into:
+        return default_breakdowns_folder(start, story), ""
+    parent = Path(into).expanduser()
+    if not parent.is_absolute():
+        parent = Path(start) / parent
+    parent = parent.resolve()
+    root = repository_root(parent) if parent.exists() else next(
+        (candidate for candidate in folders_upward(parent)[1:] if candidate.exists() and is_stage_folder(candidate)),
+        None)
+    if root is not None:
+        home = (root / BREAKDOWNS_FOLDER).resolve()
+        if parent != home and home not in parent.parents:
+            return home, (f'"{into}" is inside the Stage folder but outside {BREAKDOWNS_FOLDER}/, which git leaves out; '
+                          f"the project is made in {BREAKDOWNS_FOLDER}/ instead, so your story stays private.")
+    return parent, ""
 
 
 def is_project(folder):
@@ -160,7 +216,8 @@ def is_project(folder):
 
 def find_project(explicit=None, start=None):
     """The project folder: --project; else the current folder; else its single project subfolder; else the single
-    project in My breakdowns/ (found by walking up to the folder that holds CLAUDE.md). Stops with exit 2 otherwise."""
+    project in My breakdowns/ (found by walking up to the Stage folder, the one that holds My breakdowns/ or the
+    kit's CLAUDE.md); else the project folder the current folder lies in. Stops with exit 2 otherwise."""
     start = Path(start or os.getcwd()).resolve()
     if explicit:
         folder = Path(explicit)
@@ -183,6 +240,11 @@ def find_project(explicit=None, start=None):
                                 if child.is_dir() and is_project(child))
             if len(candidates) == 1:
                 return candidates[0]
+        if not candidates:
+            # inside a project folder (its "11 Scenes" or its machine folder, say): the project above it
+            above = next((candidate for candidate in folders_upward(start)[1:] if is_project(candidate)), None)
+            if above is not None:
+                return above
     if not candidates:
         raise StageStop("No project found here. Start one with: stage.py new \"<story file>\", "
                         "or give the project folder with --project \"<folder>\".")
@@ -659,7 +721,8 @@ def unique_folder(parent, name):
 # ---------------------------------------------------------------- plain words for units
 
 def unit_in_plain_words(unit, steps=None):
-    """'U-08-SC10-B2' becomes 'writing the shots, scene 10, batch 2' (the step's name from steps.json)."""
+    """'U-08-SC10-B2' becomes 'step 9 of 12, writing the shots, scene 10, batch 2': the step as the user counts it
+    (from 1, of 12) and its name from steps.json (C15). Add-on steps (12 and later) are named only."""
     match = UNIT_PATTERN.match(unit or "")
     if not match:
         return "records"
@@ -672,7 +735,7 @@ def unit_in_plain_words(unit, steps=None):
             break
     if scope == "SELFTEST":
         return "checking this app"
-    parts = [f"step {step + 1} ({name})" if step <= 11 else name]
+    parts = [f"step {step + 1} of 12, {name}" if step <= 11 else name]
     scene = SCENE_ID.match(scope)
     range_match = re.match(r"^(SC\d+[A-Z]?)\.\.(SC\d+[A-Z]?)$", scope)
     chapter = re.match(r"^CP(\d+)(?:\.\.CP(\d+))?$", scope)
@@ -916,6 +979,20 @@ def drop_code_written_fields(inbox, context):
                 record.body.remove(line)
 
 
+def unit_of_inbox(name):
+    """(the unit an inbox file belongs to, or None; the repair number or None). "U-07-SC10.md" is unit U-07-SC10;
+    "U-07-SC10 - fix 2.md" is its second repair (C17)."""
+    stem = Path(name).stem if str(name).endswith(".md") else str(name)
+    stem = stem.strip()
+    match = REPAIR_SUFFIX.match(stem)
+    if match:
+        number = re.search(r"(\d+)", stem[len(match.group(1)):])
+        return match.group(1).strip(), int(number.group(1)) if number else 1
+    if UNIT_PATTERN.match(stem):
+        return stem, None
+    return None, None
+
+
 def history_run_folder(project):
     """A new folder in history/ for one command's old versions, named by date and time ('2026-10-02 141503')."""
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H%M%S")
@@ -991,6 +1068,7 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
             stored.set_field("status", "answered", schema)
         stored.set_field("date", today(), schema)
         changed_files.add(stored.file_name)
+        waiting = []
         for item_text in stored.get_all("sets"):
             item = split_item(item_text)
             if letter is None or (item.get("when") or "").lower() != letter:
@@ -1000,7 +1078,7 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
                 set_value = book.set_values[target_text]
                 target = find_record(all_records, set_value.get("target") or "", schema)
                 if target is None:
-                    notes.append(f"{choice_label}: the record it sets, {set_value.get('target')}, does not exist yet.")
+                    waiting.append(f"{set_value.get('target')} ({', '.join(name for name in set_value.field_names() if name not in ('target', 'status', 'locked'))})")
                     continue
                 for name in set_value.field_names():
                     if name == "target" or name in ("status", "locked"):
@@ -1014,7 +1092,7 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
                 continue
             target = find_record(all_records, match.group(1), schema)
             if target is None:
-                notes.append(f"{choice_label}: the record it sets, {match.group(1)}, does not exist yet.")
+                waiting.append(f"{match.group(1)} ({match.group(2)}: {item.get('value')})")
                 continue
             target.set_field(match.group(2), item.get("value"), schema)
             changed_files.add(target.file_name)
@@ -1023,7 +1101,13 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
             if target is not None:
                 target.set_field("locked", "yes", schema)
                 changed_files.add(target.file_name)
-        notes.append(f"{choice_label} is now {normalise_word(stored.get('status'))}; what it sets was written.")
+        if waiting:
+            # C5: the answer is kept with its choice and written when the record is made (stage_tools/fill_code_fields)
+            notes.append(f"{choice_label} is now {normalise_word(stored.get('status'))}; what it sets on records that "
+                         f"exist was written. Kept waiting until its record is made: {'; '.join(waiting)}. "
+                         "Code writes it then and notes it in the log.")
+        else:
+            notes.append(f"{choice_label} is now {normalise_word(stored.get('status'))}; what it sets was written.")
         result.answered.append(f"{choice_label} {normalise_word(stored.get('status'))}")
     return notes
 
@@ -1093,9 +1177,7 @@ def run_new(context):
         text = data.decode("latin-1")
     title = (arguments.title or guess_title(story, text)).strip()
     identifier = project_identifier(title)
-    parent = Path(arguments.into).expanduser() if arguments.into else default_breakdowns_folder(os.getcwd())
-    if not parent.is_absolute():
-        parent = Path(os.getcwd()) / parent
+    parent, moved_note = breakdowns_folder_for(arguments.into, os.getcwd(), story)
     parent.mkdir(parents=True, exist_ok=True)
     folder = unique_folder(parent, safe_file_name(title))
     folder.mkdir(parents=True)
@@ -1122,6 +1204,8 @@ def run_new(context):
                      "source": {"file": f"{ORIGINAL_FOLDER}/{story.name}", "fingerprint": fingerprint}})
     project.write_manifest(project.refresh_manifest(manifest))
     shown = folder.relative_to(parent.parent) if parent.parent in folder.parents else folder.name
+    if moved_note:
+        context.say(moved_note)
     context.say(f'Made the project "{title}" in "{shown}".')
     context.say(f"Kept your story in {ORIGINAL_FOLDER}/ with its fingerprint. Depth: {depth}. App: {surface}.")
     context.say("Next: the app self-test (selftest --prepare), then ask the user the rights question (choice 1).")
@@ -1172,7 +1256,16 @@ def run_status(context):
     else:
         context.say("Waiting for the user: nothing.")
     last_run = (project_record.get("checker_last_run") if project_record else None) or "never"
-    context.say(f"Checked by the checker: {last_run}.")
+    last_check = manifest.get("last_check") or {}
+    latest = ""
+    if last_check.get("time"):
+        latest = (f" The last check: {last_check.get('command', 'check')} on {last_check['time'][:10]} at "
+                  f"{last_check['time'][11:16]}, {plural(int(last_check.get('errors') or 0), 'problem')} and "
+                  f"{plural(int(last_check.get('warnings') or 0), 'warning')}.")
+    context.say(f"Checked everything (check --all): {last_run}.{latest}")
+    scope_line = scope_words(merged, project.schema)
+    if scope_line:
+        context.say(scope_line)
     batches = manifest.get("batches", {})
     short = [f"{unit} ({batch.get('received')} of {batch.get('expected')})"
              for scene, scene_batches in batches.items() for unit, batch in scene_batches.items()
@@ -1184,6 +1277,32 @@ def run_status(context):
         context.say("In the inbox, not yet applied: " + ", ".join(pending) + ".")
     context.say("Next: " + next_step_line(project, context))
     return 0
+
+
+def scope_words(index, schema=None):
+    """'Scope: 3 of 30 scenes (scenes 2, 9 and 16).' when PROJECT.scope names some scenes, else "" (C19)."""
+    project_record = next((record for key, record in index.items() if key[0] == "PROJECT"), None)
+    value = (project_record.get("scope") if project_record else None) or ""
+    if not value or normalise_word(value) in ("all", "open", "none"):
+        return ""
+    order = sorted((key[1] for key in index if key[0] == "SCENE" and key[1]),
+                   key=lambda identifier: (int(re.sub(r"\D", "", identifier) or 0), identifier))
+    chosen = []
+    for piece in split_list(value):
+        piece = piece.strip()
+        if ".." in piece:
+            first, last = [end.strip() for end in piece.split("..", 1)]
+            if first in order and last in order:
+                chosen.extend(order[order.index(first):order.index(last) + 1])
+        elif piece:
+            chosen.append(piece)
+    chosen = [scene for scene in dict.fromkeys(chosen) if scene in order or not order]
+    if not chosen:
+        return ""
+    names = [scene_number_words(scene)[6:] for scene in chosen]
+    listed = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+    return (f"Scope: {len(chosen)} of {len(order)} scenes (scene{'s' if len(chosen) != 1 else ''} {listed}); "
+            "the other scenes wait until the user says \"Do the rest\".")
 
 
 def next_step_line(project, context):
@@ -1223,7 +1342,7 @@ def run_apply(context):
         exit_code, result = apply_inbox(project, inbox_path, steps)
         for problem in result.problems:
             context.say(str(problem))
-        unit = inbox_path.stem if UNIT_PATTERN.match(inbox_path.stem) else None
+        unit, repair = unit_of_inbox(inbox_path.name)
         if exit_code != 0:
             errors = sum(1 for problem in result.problems if problem.is_error)
             context.say(f"Not applied: {errors} error(s) above. Fix only those lines in {inbox_path.name} and apply it again.")
@@ -1234,16 +1353,37 @@ def run_apply(context):
         applied_copy.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(inbox_path), applied_copy)
         manifest = project.read_manifest()
+        written_keys = sorted({f"{record.type_name} {record.identifier or ''}".strip() for record in inbox_records})
         if unit:
-            manifest.setdefault("units_done", []).append({"unit": unit, "applied": now(),
-                                                          "records": len(inbox_records),
-                                                          "files": result.files_written})
+            done = manifest.setdefault("units_done", [])
+            earlier = next((entry for entry in done if isinstance(entry, dict) and entry.get("unit") == unit), None)
+            if earlier is not None and repair is not None:
+                # a repair of a unit already applied: the unit stays done once; the repair is counted on it (C17)
+                earlier["repairs"] = int(earlier.get("repairs") or 0) + 1
+                earlier["last_repair"] = now()
+                earlier["files"] = sorted(set(earlier.get("files") or []) | set(result.files_written))
+                earlier["records_written"] = sorted(set(earlier.get("records_written") or []) | set(written_keys))
+            elif earlier is None:
+                entry = {"unit": unit, "applied": now(), "records": len(inbox_records), "files": result.files_written,
+                         "records_written": written_keys}
+                if repair is not None:
+                    entry["repairs"] = 1
+                done.append(entry)
+            else:
+                earlier["applied_again"] = now()
+                earlier["files"] = sorted(set(earlier.get("files") or []) | set(result.files_written))
+                earlier["records_written"] = sorted(set(earlier.get("records_written") or []) | set(written_keys))
             batch = re.match(r"^U-08-(SC\d{2,3}[A-Z]?)-B(\d+)$", unit)
             if batch:
                 scene_batches = manifest.setdefault("batches", {}).setdefault(batch.group(1), {})
                 entry = scene_batches.setdefault(unit, {"expected": None})
-                entry["received"] = sum(1 for record in inbox_records if record.type_name == "SHOT")
+                shots = sum(1 for record in inbox_records if record.type_name == "SHOT")
+                if repair is None or entry.get("received") is None:
+                    entry["received"] = shots
+                else:  # a repair re-sends some of the batch's shots: the batch keeps its full count
+                    entry["received"] = max(int(entry.get("received") or 0), shots)
         project.write_manifest(project.refresh_manifest(manifest))
+        filled = fill_after_apply(project)
         described = unit_in_plain_words(unit, steps) if unit else f'the file "{inbox_path.name}"'
         if result.files_written:
             files = ", ".join(name[:-3] if name.endswith(".md") else name for name in result.files_written)
@@ -1251,14 +1391,38 @@ def run_apply(context):
             project.add_log_entry(f"Saved {described}: {plural(len(inbox_records), 'record')}, in {files}.{answered}")
         for note in result.notes:
             context.say(note)
+        if filled is not None:
+            if filled.summary():
+                context.say(filled.summary())
+            for note in filled.notes:
+                context.say(note)
+            result.files_written = sorted(set(result.files_written) | set(filled.files))
         if result.files_written:
             views_note = refresh_views(project)
             if views_note:
                 context.say(views_note)
+        after = f'stage.py check --unit {unit}' if unit else "stage.py check"
         context.say(f"Applied {inbox_path.name}: {result.new_records} new and {result.changed_records} changed "
-                    f"records in {', '.join(result.files_written) or 'no file'}. Next: stage.py check.")
+                    f"records in {', '.join(result.files_written) or 'no file'}. Next: {after}."
+                    + (f' A repair of it goes in "{unit} - fix <N>.md".' if unit and repair is None else ""))
         context.summary = f"{inbox_path.name} applied"
     return 0
+
+
+def fill_after_apply(project):
+    """Fill the fields code keeps that the unit's records make possible (C4, C5, C8): the plan's copies on PROJECT,
+    choice dates, the style and sound plan fields, place headings, story text words, answers kept waiting for
+    their record, and the first estimate's figures once the story plan exists. Returns a FillResult, or None when
+    the fill could not run (build fills them later)."""
+    try:
+        from .fill_code_fields import fill_code_fields
+        return fill_code_fields(project)
+    except Exception as error:  # filling must never undo a saved unit; build tries again
+        from .fill_code_fields import FillResult
+        result = FillResult()
+        result.notes.append(f"The fields code keeps were not filled ({type(error).__name__}: {error}); "
+                            "stage.py build fills them.")
+        return result
 
 
 def refresh_views(project):
@@ -1338,9 +1502,9 @@ def run_unpack(context):
         zip_path = Path(os.getcwd()) / zip_path
     if not zip_path.is_file():
         raise StageStop(f'The save file "{context.arguments.zip_file}" was not found.')
-    into = Path(context.arguments.into).expanduser() if context.arguments.into else default_breakdowns_folder(os.getcwd())
-    if not into.is_absolute():
-        into = Path(os.getcwd()) / into
+    into, moved_note = breakdowns_folder_for(context.arguments.into, os.getcwd())
+    if moved_note:
+        context.say(moved_note)
     try:
         archive = zipfile.ZipFile(zip_path)
     except zipfile.BadZipFile:

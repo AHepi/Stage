@@ -60,11 +60,6 @@ SCENE_LIST_FIELDS = ["heading", "int_ext", "place_text", "time_text", "lines", "
                      "strands", "origin", "location", "status"]
 # The floor plan of a place (5.5 LOCATION): never in the summary.
 SET_PLAN_FIELDS = ("plan_orientation", "size", "origin_corner", "axes", "wild_walls", "object", "mark")
-# Fields the summary drops first when it is over its word limit, in this order.
-SUMMARY_TRIM_ORDER = [("CHARACTER", "evidence"), ("WORLD", "evidence"), ("CHAPTER", "candidate"),
-                      ("CHARACTER", "thesis"), ("CHARACTER", "lineup"), ("CHARACTER", "face"),
-                      ("CHAPTER", "digest"), ("SCENE", "speaking"), ("SCENE", "five_test")]
-
 # Plain words for stored values, where the value's own words are not plain enough (5.7).
 PLAIN_WORDS = {
     "close_up": "close-up", "medium_close_up": "medium close-up", "extreme_close_up": "extreme close-up",
@@ -91,6 +86,17 @@ PLAIN_WORDS = {
     "action_midpoint": "the middle of an action", "line_end": "the end of a line", "sound_hit": "a sound",
     "keep_hidden": "keeping something hidden for later", "flip": "flip", "lip_sync": "lip sync", "voice_path": "voice path",
 }
+# How a shot is made (SHOT route), as whole phrases for the book's "Making it" line (C18).
+ROUTE_WORDS = {
+    "auto": "made the way the tools choose", "text": "made from a written description first",
+    "start_picture": "made from a start picture", "start_end_pictures": "made from start and end pictures",
+    "references": "made from reference pictures", "guide_video": "made from a guide video",
+    "performance_transfer": "made from a performance copied from a recording",
+    "still_with_move": "made from a still with a camera move", "composite_only": "put together in the edit",
+}
+# How the camera sees a glass surface (SHOT glass camera), in plain words.
+GLASS_CAMERA_WORDS = {"through": "seen straight through", "along": "seen along its surface",
+                      "angled": "seen at an angle"}
 # Plain words for sub-part keys and for field names that have no plain label.
 KEY_WORDS = {
     "at": "at", "faces": "facing", "eyeline": "eyes on", "dwell_s": "eyes stay (seconds)", "does": "does",
@@ -545,7 +551,7 @@ class PlainNames:
                 speech = view.speech(identifier)
                 if speech:
                     speaker = self.name(speech.get("speaker"), short=True) if speech.get("speaker") else ""
-                    words = first_sentence(speech.get("text") or "", 12)
+                    words = " ".join((speech.get("text") or "").split())  # the whole speech (C18)
                     if speaker and words:
                         return f'{speaker}\'s line "{words}"'
                     if speaker:
@@ -697,7 +703,12 @@ class PlainNames:
                 reference = piece[5:].strip()
                 parts.append(f'story line {reference}' if re.match(r"^\d", reference) else f"the story at {reference}")
             else:
-                parts.append(self.name(piece, scene, short=True))
+                name = self.name(piece, scene, short=True)
+                if piece.startswith("MO-") and any(name.lower() in part.lower() for part in parts):
+                    name = f"{name} as a motif"
+                elif any(part.lower() == name.lower() for part in parts):
+                    continue
+                parts.append(name)
         return join_words(parts)
 
 
@@ -1878,74 +1889,143 @@ def plain_part_for(view, record_file):
 
 # ---------------------------------------------------------------- 02 Whole-film summary
 
-def summary_record_lines(view, record, schema, dropped):
-    """A record as the summary keeps it: its list and plan fields, without floor plans or locks."""
-    keep = []
-    for line in record.fields:
-        name = line.name
-        if name == "locked":
+# C25: the summary holds one line per record with only the fields step 7 reads, in this order per type.
+SUMMARY_FIELDS = {
+    "SCENE": ["lines", "characters", "presentation", "host", "event", "sequence", "scene_intensity", "whose_scene",
+              "tone", "tags", "target_duration_s", "keep", "merged_into", "from_lines"],
+    "PLAN": ["logline", "theme_question", "core_value", "crisis", "climax", "pov_plan", "genre", "tone_home",
+             "tone_range", "tone_mix_rule"],
+    "SEQUENCE": ["title", "scenes", "value_change", "act"],
+    "PLANT": ["what", "planted_at", "paid_off_at", "plot_event", "motif"],
+    "FACT": ["what", "element", "audience_knows_from", "mode"],
+    "CHAPTER": ["title", "lines", "digest"],
+    "STRAND": ["title", "chapters"],
+    "CARDINAL": ["what", "chapter"],
+    "WORLD": ["place", "period", "drives_on", "language"],
+    "RULE": ["kind", "statement", "governs", "era", "exception"],
+    "CHARACTER": ["names", "tier", "role", "fixed_description", "height_m", "voice"],
+    "VOICE": ["character", "pitch", "pace_wps", "accent"],
+    "LOCATION": ["story_job", "room_sound", "anchor"],
+    "PROP": ["names", "fixed_description", "side", "motif"],
+    "TEXT": ["kind", "words", "on", "origin", "plot_critical"],
+    "MOTIF": ["meaning", "rank", "channel", "signature"],
+    "CAMERA": ["at", "lens_mm", "ratio", "moves"],
+    "STATE": ["from", "state_line", "handedness"],
+}
+# Values the summary leaves out because they say the usual thing (a normal scene, a state not mirrored).
+SUMMARY_USUAL_VALUES = {("SCENE", "presentation"): "normal", ("STATE", "handedness"): "original"}
+# Fields whose sub-parts the summary leaves out, keeping the first part (a state's from: its scene).
+SUMMARY_FIRST_PART_ONLY = {("STATE", "from"), ("PROP", "side"), ("SCENE", "speaking")}
+# When the summary is over summary_words_max, record types are left out in this order (the lowest priority first):
+# code surfaces give each step-7 handout the records it needs anyway, so only chat surfaces miss these.
+# The continuity states stay longest: in a chat, 09 Continuity is not attached to a scene's chat, while 08 Places and
+# things is (when the place has a floor plan).
+SUMMARY_DROP_ORDER = ["CARDINAL", "STRAND", "CAMERA", "VOICE", "WORLD", "TEXT", "PROP", "MOTIF", "LOCATION",
+                      "PLANT", "STATE"]
+SUMMARY_TEXT_WORDS_MAX = 30
+SUMMARY_TEXT_WORDS_SHORT = 12
+
+
+def shortened(value, most):
+    """A long text value cut to its first most words, with ' ...' when cut."""
+    words = value.split()
+    return value if len(words) <= most else " ".join(words[:most]) + " ..."
+
+
+def summary_record_line(view, record, most_words=SUMMARY_TEXT_WORDS_MAX):
+    """One line for a record, its heading carrying only the fields step 7 reads:
+    '### SCENE SC10 Saye's kitchen | event: ... | sequence: SQ04'. The file stays a record file (one record per line,
+    no field lines), so its END line counts them."""
+    fields = SUMMARY_FIELDS.get(record.type_name, [])
+    pieces = []
+    for name in fields:
+        values = record.get_all(name)
+        values = [value for value in values if value and not is_empty(value)]
+        usual = SUMMARY_USUAL_VALUES.get((record.type_name, name))
+        if usual is not None:
+            values = [value for value in values if normalise_word(value) != usual]
+        if (record.type_name, name) in SUMMARY_FIRST_PART_ONLY:
+            values = [split_item(value).first or value for value in values]
+        if not values:
             continue
-        if record.type_name == "SCENE" and name not in SCENE_LIST_FIELDS:
-            continue
-        if record.type_name == "LOCATION" and name in SET_PLAN_FIELDS:
-            continue
-        if (record.type_name, name) in dropped:
-            continue
-        keep.append(FieldLine(name=name, value=line.value, written_name=name))
-    copy = Record(type_name=record.type_name, identifier=record.identifier, title=record.title, body=keep,
-                  is_new=True)
-    return record_lines(copy, schema, canonical=True)
+        value = "; ".join(values)
+        pieces.append(f"{name}: {shortened(value, most_words)}")
+    head = " ".join(piece for piece in (record.type_name, record.identifier, record.title) if piece)
+    return "### " + " | ".join([head] + [piece.replace("\n", " ") for piece in pieces])
+
+
+def summary_words_limit(view):
+    """summary_words_max from rules/constants.json (else limits.json's whole_film_summary_words_max, else 6,000)."""
+    try:
+        value = view.constant("summary_words_max", None)
+        if value:
+            return int(value)
+    except (TypeError, ValueError, AttributeError):
+        pass
+    try:
+        from .record_format import load_json
+        return int(load_json("rules/limits.json").get("whole_film_summary_words_max", {}).get("value", 6000))
+    except (OSError, ValueError, TypeError):
+        return 6000
 
 
 def whole_film_summary_text(view):
-    """The text of 02 Whole-film summary (6.1): plain part, divider, the records and the END line."""
-    limit = 6000
-    try:
-        from .record_format import load_json
-        limit = int(load_json("rules/limits.json").get("whole_film_summary_words_max", {}).get("value", limit))
-    except (OSError, ValueError, TypeError):
-        pass
+    """The text of 02 Whole-film summary (6.1, C25): plain part, divider, one line per record with only the fields
+    step 7 reads, and the END line; the whole file within summary_words_max words: long texts are first cut to their
+    first words, then the lowest-priority record types are left out, and the plain part says so."""
+    limit = summary_words_limit(view)
     records = []
     for type_name in SUMMARY_TYPES:
         records += view.records(type_name)
-    dropped = set()
-    for attempt in range(len(SUMMARY_TRIM_ORDER) + 1):
-        body = []
-        for record in records:
-            body += summary_record_lines(view, record, view.schema, dropped) + [""]
-        words = sum(len(line.split()) for line in body)
-        if words <= limit or attempt == len(SUMMARY_TRIM_ORDER):
-            break
-        dropped.add(SUMMARY_TRIM_ORDER[attempt])
-    scenes = [record for record in records if record.type_name == "SCENE"]
+    dropped_types = []
+    most_words = SUMMARY_TEXT_WORDS_MAX
+    while True:
+        kept = [record for record in records if record.type_name not in dropped_types]
+        body = [summary_record_line(view, record, most_words) for record in kept]
+        text = summary_file_text(view, kept, body, most_words, dropped_types, limit)
+        if len(text.split()) <= limit:
+            return text
+        if most_words > SUMMARY_TEXT_WORDS_SHORT:
+            most_words = SUMMARY_TEXT_WORDS_SHORT  # first shorten every long text to its first words
+            continue
+        remaining = [type_name for type_name in SUMMARY_DROP_ORDER if type_name not in dropped_types
+                     and any(record.type_name == type_name for record in records)]
+        if not remaining:
+            return summary_file_text(view, kept, body, most_words, dropped_types, limit, still_over=True)
+        dropped_types.append(remaining[0])
+
+
+def summary_file_text(view, kept, body, most_words, dropped_types, limit, still_over=False):
+    """The whole summary file for one choice of what it keeps."""
     counts = {}
-    for record in records:
+    for record in kept:
         counts[record.type_name] = counts.get(record.type_name, 0) + 1
+    words = sum(len(line.split()) for line in body)
+    held = join_words([f"{counts[type_name]} {word}{'s' if counts[type_name] != 1 else ''}"
+                       for type_name, word in (("SCENE", "scene"), ("CHARACTER", "character"), ("LOCATION", "place"),
+                                               ("PROP", "thing"), ("STATE", "state")) if counts.get(type_name)])
     glance = [
-        "Made by the tools from files 04 to 09 for the scene work: the scene list with its events, the story plan, "
-        "the characters and their voices, the places and things without their floor plans, and the continuity "
-        "states. The film rules are in 10 Film rules, whole. Never edit this file: it is made again after every "
-        "change to those files.",
+        "Made by the tools from files 04 to 09 for the scene work: one line for each record, with only what the "
+        "scene design reads: the scene list with its events, the story plan, the characters and their voices, the "
+        "places and things without their floor plans, and the continuity states. The film rules are in 10 Film "
+        "rules, whole. Never edit this file: it is made again after every change to those files.",
         "",
-        f"It holds {len(scenes)} scene{'s' if len(scenes) != 1 else ''}, "
-        f"{counts.get('CHARACTER', 0)} character{'s' if counts.get('CHARACTER', 0) != 1 else ''}, "
-        f"{counts.get('LOCATION', 0)} place{'s' if counts.get('LOCATION', 0) != 1 else ''}, "
-        f"{counts.get('PROP', 0)} thing{'s' if counts.get('PROP', 0) != 1 else ''} and "
-        f"{counts.get('STATE', 0)} state{'s' if counts.get('STATE', 0) != 1 else ''}, in about {words} words.",
+        f"It holds {held or 'no records yet'}, in about {words:,} words (the whole file stays under {limit:,}).",
     ]
-    if words > limit:
-        glance.append("")
-        glance.append(f"It is longer than its limit of about {limit:,} words even with the details below left out; "
-                      "attach only the part a chat needs, or work on a code surface.")
-    if dropped:
-        glance.append("")
-        glance.append("To stay short it leaves out: " + join_words(
-            sorted({f"{KEY_WORDS.get(name, name.replace('_', ' '))} of each {view.schema.data['record_types'][type_name].get('plain_name', type_name.lower())}"
-                    for type_name, name in dropped})) + ".")
+    if most_words < SUMMARY_TEXT_WORDS_MAX:
+        glance += ["", f"To stay short, long descriptions are cut to their first {most_words} words (the full text is in "
+                       "files 04 to 09)."]
+    if dropped_types:
+        left_out = join_words([view.schema.data["record_types"][type_name].get("plain_name", type_name.lower())
+                               for type_name in dropped_types])
+        glance += ["", f"To stay within about {limit:,} words it leaves out these kinds of record: {left_out}. Files "
+                       "04 to 09 hold them whole; on a code surface each scene's handout brings the ones it "
+                       "needs."]
+    if still_over:
+        glance += ["", f"It is still longer than about {limit:,} words; attach only the part a chat needs, or work on "
+                       "a code surface."]
     lines = ["# Whole-film summary", "", "## At a glance", ""] + glance + ["", DIVIDER_LINE, ""] + body
-    while lines and not lines[-1].strip():
-        lines.pop()
-    lines += ["", f"END OF FILE | Whole-film summary | {len(records)} records"]
+    lines += ["", f"END OF FILE | Whole-film summary | {len(kept)} records"]
     return "\n".join(lines) + "\n"
 
 
@@ -2387,7 +2467,10 @@ def full_shot_rows(view, shot, scene_identifier):
                     value = plain_words_list(value)
                 else:
                     value = names.text(value, scene_identifier)
-                parts.append(f"{KEY_WORDS.get(key, key)} {value}")
+                if key == "does":
+                    parts.append(value)  # a verb phrase of its own: "settles behind the wheel" (C18)
+                else:
+                    parts.append(f"{KEY_WORDS.get(key, key)} {value}")
         add("In the frame", "; ".join(parts))
     for item in view.items(shot, "thing"):
         text = names.name(item.first, scene_identifier, short=True)
@@ -2401,7 +2484,8 @@ def full_shot_rows(view, shot, scene_identifier):
     add("Must not show", names.list_words(shot.get("must_not_show"), scene_identifier, short=True))
     for item in view.items(shot, "glass"):
         add("Glass", f"{item.first}" + (f", {plain_value(item.get('state'))}" if item.get("state") else "")
-            + (f", the camera looks {plain_value(item.get('camera'))}" if item.get("camera") else ""))
+            + (f", {GLASS_CAMERA_WORDS.get(normalise_word(item.get('camera')), 'seen ' + plain_value(item.get('camera')))}"
+               if item.get("camera") else ""))
     light = shot.get("light")
     add("Light", plain_value(light) if light and re.fullmatch(r"[a-z_]+", light) else names.text(light, scene_identifier))
     for item in view.items(shot, "light_cue"):
@@ -2441,7 +2525,7 @@ def full_shot_rows(view, shot, scene_identifier):
     if shot.get("previs_level") and not is_empty(shot.get("previs_level")):
         making.append(f"grey preview level {shot.get('previs_level')}")
     if shot.get("route") and not is_empty(shot.get("route")):
-        making.append(f"made from {plain_value(shot.get('route'))}")
+        making.append(ROUTE_WORDS.get(normalise_word(shot.get("route")), f"made from {plain_value(shot.get('route'))}"))
     if normalise_word(shot.get("held") or "no") == "yes":
         making.append("one unbroken take")
     add("Making it", ", ".join(making))
@@ -2531,6 +2615,34 @@ def how_to_read_lines(view):
     return lines
 
 
+def scene_join_lines(view, scene_identifier):
+    """One line per CUT record of a scene (a join that is not a plain cut): 'After shot 010: a jump cut, why ...'
+    (C18). Every other join is a plain cut."""
+    names = view.names
+    lines = []
+    for cut in view.records("CUT"):
+        if scene_of(cut.identifier) != scene_identifier:
+            continue
+        number = re.search(r"-C(\d+)$", cut.identifier or "")
+        kind = normalise_word(cut.get("type") or "")
+        what = "the shot carries straight on" if kind == "continue" else f"a {plain_value(kind)}"
+        text = f"After shot {int(number.group(1)):03d}: {what}" if number else f"{cut.identifier}: {what}"
+        if cut.get("to") and not is_empty(cut.get("to")):
+            text += f", into {names.name(cut.get('to'), scene_identifier, short=True)}"
+        if cut.get("split_s") and not is_empty(cut.get("split_s")):
+            text += f", the sound leads by {seconds_words(cut.get('split_s'))}"
+        if cut.get("black_frames") and not is_empty(cut.get("black_frames")):
+            text += f", {cut.get('black_frames')} frames of black"
+        if cut.get("sound_across") and not is_empty(cut.get("sound_across")):
+            text += f"; heard across it: {names.text(cut.get('sound_across'), scene_identifier)}"
+        if cut.get("why") and not is_empty(cut.get("why")):
+            text += f". Why: {names.text(cut.get('why'), scene_identifier)}"
+        lines.append("- " + text.rstrip(".") + ".")
+    if lines:
+        lines.append("- Every other join is a plain cut.")
+    return lines
+
+
 def write_book(project_folder, schema=None, words=None, constants=None, view=None):
     """Write 15 The breakdown/The breakdown.md and The breakdown.html from the records. Returns their paths."""
     view = view or ProjectView(project_folder, schema, words, constants)
@@ -2607,6 +2719,7 @@ def write_book(project_folder, schema=None, words=None, constants=None, view=Non
             book.label("The full shots (open one to read it)")
             for shot in shots:
                 book.details(shot_line(view, shot.identifier, scene), full_shot_rows(view, shot, scene))
+        add_section_to_book(book, scene_join_lines(view, scene), "How the shots join")
         add_section_to_book(book, scene_why_lines(view, scene), "Why it's shot this way")
         add_section_to_book(book, scene_small_choice_lines(view, scene), "Small choices I made")
         waiting = scene_waiting_lines(view, scene)

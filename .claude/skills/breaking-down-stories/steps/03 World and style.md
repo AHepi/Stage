@@ -17,7 +17,7 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
 ## Inputs
 
 - PLAN and the SCENE records (events, tones, tags).
-- Locale cues harvested by code, each with its line: words such as "torch" and "night bus", signs, vehicles, money, institutions.
+- The numbered story, which you search for locale cues (procedure 1): words such as "torch" and "night bus", signs, vehicles, money, institutions.
 - The answers to the length question.
 
 ## Outputs
@@ -35,7 +35,7 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
 
 1. **Harvest the locale cues** with their evidence, and label each `inferred`. The Catch never names a country, but "Torchlight on wet brick." and "A night bus comes at them" point to Britain. Write them as WORLD `evidence` items (`12 | quote: "Torchlight on wet brick."`), with `origin: inferred` (D17 R1).
 2. **Propose the world:** a default and one alternative. WORLD `place` and `period` are the user's (through the place-and-time CHOICE, whose `sets` lines write them); you write `drives_on`, `language`, `accents`, `signage`, `emergency_lights`, `institutions`, `money`, `evidence` and `origin`. Check the real colours of local signals (British emergency lights are blue; B2 R19). A real institution keeps its researched grammar under an invented name (D17 R12). A cue that conflicts with the rest is a question with both readings, never a quiet change (D17 R2).
-3. **Propose three style directions** and the frame shape, in one CHOICE. STYLE `medium` is the user's; you write `style_words` (`style_words_count` plain, visible descriptors: no names of films or artists, no feelings, no banned words), `texture`, `words_to_avoid`. Mark the style "provisional until you see pictures": `provisional` stays `yes` until D5's test of three directions on three hard shots, the first job of the storyboards or of the generation packs. Give the frame shape a story reason from the story's own images (B1 §5): The Catch's pairs face each other across tables and glass, so the default is the wide `2.39` frame.
+3. **Propose three style directions** and the frame shape, in one CHOICE. STYLE `medium` is the user's; you write `style_words` (`style_words_count` plain, visible descriptors: no names of films or artists, no feelings, no banned words), `texture`, `words_to_avoid`. The style is "provisional until you see pictures": code writes `provisional: yes` until D5's test of three directions on three hard shots (the first job of the storyboards or of the generation packs), and `named_reference_policy`; never type either. Give the frame shape a story reason from the story's own images (B1 §5): The Catch's pairs face each other across tables and glass, so the default is the wide `2.39` frame.
 4. **Write each story-world rule** as a RULE: `kind`, `statement`, `governs` (every ID it covers, or a note listing names step 4 will give IDs to), `exception` items (`<ID> | reads: normal | why:`). Anchor every rule to the exact lines where it starts and ends.
 5. **For a mirror rule** (K03), write the eras through a CHOICE and its SETVALUE, since `era` is the user's field: each era's lines and its frame value, `original` or `reversed`, and note which elements start `original` and which `reversed` (step 5 records each element's handedness). The Catch:
 
@@ -48,8 +48,8 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
    ```
 
    Era b starts at "Her eyes open." (line 263): the frame stays original and the world elements are reversed around Iona, Jude and Eli. Era c starts at "The ship is gone. The stars are gone." (line 1565). Detail rules follow K04: `WR-TITLES` (title cards always read normally), world screens, the copied name label, screen text, the replayed recording; each is one RULE listing what it governs (card 17, "Text orientation").
-6. **Music.** One CHOICE for `SOUNDPLAN.music_policy` (`none`, `sparse`, `scored`, `source_only`) with a story reason; The Catch's default is `none`, because the pump and the engine click do music's job. No clip ever has music baked in, whatever the answer.
-7. **Every choice the story does not state** becomes a CHOICE with a default, a one-line reason and `based_on` (the research reference). Keep `asked: yes` for the big ones; small ones are `asked: no` and go under "small choices I made".
+6. **Music.** One CHOICE for `SOUNDPLAN.music_policy` (`none`, `sparse`, `scored`, `source_only`) with a story reason; The Catch's default is `none`, because the pump and the engine click do music's job. No clip ever has music baked in, whatever the answer. SOUNDPLAN does not exist until step 6: code keeps the answer and writes `music_policy` when step 6 makes SOUNDPLAN (logged). Never write a SOUNDPLAN or a `music_policy` line yourself.
+7. **Every choice the story does not state** becomes a CHOICE with a default, a one-line reason and `based_on` (the research reference). Keep `asked: yes` for the big ones; small ones are `asked: no` and go under "small choices I made". On a code surface write no `status` or `date`: code fills them when a choice is answered or defaulted.
 8. **Check.** Run `stage.py check --step 3`; fix only the lines it prints, at most `repair_rounds_max` rounds.
 
 ## Record template
@@ -114,7 +114,7 @@ Every line reference is a quote anchor: `evidence` items, RULE start and end lin
 
 1. Harvest the locale cues yourself from the attached story: search it for place words, signs, vehicles, money and institutions, and quote each exactly.
 2. Write `06 World and style.md` in one copy box with "Save as:" above it, and the new CHOICE and SETVALUE records in a second box saved as `01 Choices - world and style.md` (`adopt` merges it with `01 Choices.md` by ID, G10). Leave the user's fields `open` in STYLE `medium`, WORLD `place` and `period` and RULE `era` until the big choices are answered; step 5's chat writes them then. PROJECT `prompt_words` waits for the next save of `00 Start here`.
-3. Write each CHOICE's `status: open` and each record's `status` and `locked`.
+3. Write each CHOICE's `status: open`, each record's `status` and `locked`, and STYLE `provisional: yes` and `named_reference_policy: describe_qualities_only`.
 4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 5. Report as above, then the resume line:
 

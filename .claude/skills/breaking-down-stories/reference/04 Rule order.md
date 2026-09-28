@@ -1,6 +1,6 @@
 # Rule order
 
-When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order is merged from A1, A2, A4, B1, B2 and B3, with readability second as B2 and A1 put it.
+When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order merges A1, A2, A4, B1, B2 and B3, with readability second as B2 and A1 put it.
 
 1. What the story itself states we see and hear.
 2. Readability of the beat.
@@ -23,7 +23,7 @@ The audience must be able to read the face, the text and the geography (B2, A1).
 
 ## 3. Physical honesty
 
-In-story footage, physics and glass optics behave as they would for real (B1 R22-R23). **Tie-break.** Scene 13 replays the recording from the shaft camera `CAM-SHAFT-TOP`. The film's camera system (rule 4) would put the lens at the owner's eye height with the normal lens, but footage from an in-story camera keeps that camera's fixed place, lens, frame rate and overlays from its CAMERA record, and every excerpt is cut from one master take of the scene 6 event (B1 R22, B1 §10.4).
+In-story footage, physics and glass optics behave as they would for real (B1 R22-R23). **Tie-break.** Scene 13 replays the recording from the shaft camera `CAM-SHAFT-TOP`. The film's camera system (rule 4) would put the lens at the owner's eye height with the normal lens, but footage from an in-story camera keeps that camera's fixed place, lens, frame rate and overlays from its CAMERA record, and every excerpt is cut from one master take of the scene 6 event (B1 R22, §10.4).
 
 ## 4. The film's systems and budgets
 
@@ -35,20 +35,20 @@ Lines carrying a BEAT `flag` are staged to contain the flaw, never rewritten: on
 
 ## 6. Turn rules
 
-The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), which is that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere. B1 settles its own clash the same way: a hidden feeling plays one size wider (B1 R5), except on a turning beat, where R1 wins.
+The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03), within the rules above: a camera rule's cap (rule 4) may let earlier shots equal the turn's size; through one fixed in-story camera (rule 3) size cannot change, so the frame's action and the cuts carry the turn (B1 §10.5). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere.
 
 ## 7. Emotion over spatial continuity
 
-When a cut that serves the emotion breaks the geography, keep the emotion (Murch, A4 R1: emotion first, three-dimensional space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it; the scene records a `departure` naming the rule it breaks and why, and GEOM-03's warning is answered by that record.
+When a cut that serves the emotion breaks the geography, keep the emotion (A4 R1: emotion first, space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it; the scene records a `departure` naming the rule it breaks and why, and GEOM-03's warning is answered by that record.
 
 ## 8. Conflict-type defaults
 
-Each conflict type has its coverage (A2 R12-R17). **Tie-break.** Scene 10 is asymmetric: Saye drives, and the resister stays still, anchored in a task, with her closest shot saved for her turning line. The general approach progression (rule 9) would tighten on Iona beat by beat; the conflict type holds her wider until her line "Not mint."
+Each conflict type has its coverage (A2 R12-R17). **Tie-break.** Scene 10 is asymmetric: Saye drives, and the resister stays still, anchored in a task, with her closest shot saved for her turning line. The approach progression (rule 9) would tighten on Iona beat by beat; the conflict type holds her wider until her line "Not mint."
 
 ## 9. General beat defaults and translation menus
 
-The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask (A2's must-keep shot). A point-of-view shot follows the eyes, so the menu's pan beats the static baseline, and the shot's `why` names the flask.
+The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask. A point-of-view shot follows the eyes, so the menu's pan beats the static baseline, and the shot's `why` names the flask.
 
 ## 10. The baseline
 
-Static, the owner's eye height, a normal lens, room sound. It is a strong answer, not a failure, and a normal shot that departs from nothing may give `because: default` with no `why` (REASON-01, REASON-02). **Tie-break.** When two menus pull different ways and neither can cite a line, an object or an action from this story, neither wins: the shot returns to the baseline.
+Static, the owner's eye height, a normal lens, room sound. It is a strong answer, and a normal shot that departs from nothing may give `because: default` with no `why` (REASON-01, REASON-02). **Tie-break.** When two menus pull different ways and neither can cite a line, an object or an action from this story, neither wins: the shot returns to the baseline.
