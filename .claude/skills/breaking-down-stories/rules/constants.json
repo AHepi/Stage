@@ -467,6 +467,12 @@
    "meaning": "Longest caption cue; longer speeches split at a sentence end.",
    "source": "judgement, tune in test",
    "judgement": true
+  },
+  "shot_screen_time_max_s": {
+   "value": 600,
+   "unit": "seconds",
+   "meaning": "The longest screen time one shot may have before code refuses to plan clips for it (10 minutes). Longer values are almost certainly typing slips; the longest real single takes in feature films run a few minutes.",
+   "source": "Code review A (fuzz test): an absurd screen time made clip planning run for over 10 minutes."
   }
  },
  "from_blueprint_text": {

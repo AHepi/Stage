@@ -824,6 +824,13 @@ def clip_plan(breakdown, shot, model=None, planned_cuts=None):
     needed = round(screen_time + 2 * handles, 3)
     held, why_held = held_take(breakdown, shot)
     plan = ClipPlan(shot.identifier, screen_time, needed, held, why_held, model=model)
+    longest_allowed = constant(breakdown.constants, "shot_screen_time_max_s", 600)
+    if screen_time > longest_allowed:
+        plan.fits = False
+        plan.clip_lengths = []
+        plan.note = (f"screen time {seconds_text(screen_time)} s is over the most one shot may last "
+                     f"({seconds_text(longest_allowed)} s), so no clips were planned; check the value")
+        return plan
     models = breakdown.models or {}
     lengths = allowed_lengths(models.get(model)) if model else None
     if lengths is None:

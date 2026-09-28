@@ -58,7 +58,7 @@ Pick one behaviour, primary first, tied to this line; the rows are untested unti
 | Script word | Behaviour | Pitfall |
 |---|---|---|
 | shock | stops moving completely; eyes fix on Saye | a gasp, a hand to the mouth |
-| withholding | eyes go to the flask, not to her; does not answer | shifty eyes |
+| holding back | eyes go to the flask, not to her; does not answer | shifty eyes |
 | speechless | opens her mouth, holds it, closes it without a sound | generated speech: add "No dialogue." |
 
 Delivery words come from the tactic: pressing becomes "level, quiet, unhurried, no rise" (D3 §5.2).

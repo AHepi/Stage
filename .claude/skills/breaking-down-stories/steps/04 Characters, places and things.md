@@ -87,7 +87,7 @@ After each unit, a short report (Done, Example, Made, Needs you: nothing, Next).
 ```
 Done: step 5 of 12, characters, places and things.
 Example: Saye's fixed description now reads "Dr Saye, a slim, upright woman in her
-  late fifties, short neat grey hair, ...". It goes word for word into every picture
+  fifties, short neat grey hair, ...". It goes word for word into every picture
   prompt with her.
 Made: 07 Characters and voices, 08 Places and things (with a floor plan of Saye's
   kitchen), and small choices in 01 Choices.

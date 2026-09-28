@@ -61,10 +61,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - conflict: asymmetric
 - third_thing: the tests Saye sets them: the raised hands, then the mint leaf
 - staging: Staging assumed except the two women facing each other across the table (line 428): beat 1 at the back door, then Jude on his back on the table with his head to the west, Saye on its south side, Iona on its north side, Eli at the east end by the fridge on the table's line; stations: the table, the counter and sill under the window, the fridge end.
-- start: CH-SAYE | at: SAYE_MARK | faces: CH-IONA | posture: standing
-- start: CH-IONA | at: IONA_MARK | faces: CH-SAYE | posture: standing
-- start: CH-ELI | at: ELI_MARK | faces: CH-SAYE | posture: standing
-- start: CH-JUDE | at: [2.6, 1.8] | faces: [1.0, 1.8] | posture: lying
+- start: CH-SAYE | at: SAYE_DOOR | faces: [-1.0, 0.9] | posture: standing
+- start: CH-IONA | at: [-0.7, 1.25] | faces: [0.25, 0.9] | posture: standing
+- start: CH-ELI | at: [-0.7, 0.6] | faces: [0.25, 0.9] | posture: standing
+- start: CH-JUDE | at: [-0.7, 0.93] | faces: [0.25, 0.9] | posture: standing
 - scene_idea: Saye proves with a leaf what Iona would not accept from a street sign, then wins by waiting; at the main turn only the camera (the scene's one close-up, held) and the sound (room sound only) change.
 - department_idea: camera | idea: Level, static and at Iona's eye height throughout; the one long lens is the far frame down the table (the reflection, the cap, the body in the way); the one close-up is spent on the turn and held. | holds_baseline: no | because: CR-IONA, RC-01, LX-01, SC10-B07
 - department_idea: light | idea: One lamp is the only light; Iona lifts it for Saye and then sets it back between the women so both are lit alike, and it does not change at the mint because nothing has happened to the mint. | holds_baseline: yes | because: LK-SAYE-KITCHEN-NIGHT, PR-LAMP.S01
@@ -447,6 +447,66 @@ Below this line: details for the AI and the checker. You never need to read them
 - posture: standing
 - why: she yields: Jude's need is the one argument she cannot refuse
 - origin: story
+- status: approved
+- locked: yes
+
+### MOVE SC10-M07 Saye lets them in
+- beat: SC10-B02
+- who: CH-SAYE
+- from: SAYE_DOOR
+- to: SAYE_MARK
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: CH-IONA
+- posture: standing
+- why: she lets them in and takes her place at the table; the cut from the step to the table leaves out the walk
+- origin: inferred
+- status: approved
+- locked: yes
+
+### MOVE SC10-M08 Iona comes in
+- beat: SC10-B02
+- who: CH-IONA
+- from: [-0.7, 1.25]
+- to: IONA_MARK
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: CH-SAYE
+- posture: standing
+- why: she brings Jude in and takes the lamp to the table's far side; the cut leaves out the walk
+- origin: inferred
+- status: approved
+- locked: yes
+
+### MOVE SC10-M09 Eli comes in
+- beat: SC10-B02
+- who: CH-ELI
+- from: [-0.7, 0.6]
+- to: ELI_MARK
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: CH-SAYE
+- posture: standing
+- why: he stays as far from Saye as the room allows, by the fridge; the cut leaves out the walk
+- origin: inferred
+- status: approved
+- locked: yes
+
+### MOVE SC10-M10 Jude is laid on the table
+- beat: SC10-B02
+- who: CH-JUDE
+- from: [-0.7, 0.93]
+- to: [2.6, 1.8]
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: [1.0, 1.8]
+- posture: lying
+- why: they lay him on the table for Saye to treat; the cut leaves out the carrying
+- origin: inferred
 - status: approved
 - locked: yes
 
@@ -1713,4 +1773,4 @@ Below this line: details for the AI and the checker. You never need to read them
 - status: approved
 - locked: yes
 
-END OF FILE | Scene 10 - Saye's kitchen | 54 records
+END OF FILE | Scene 10 - Saye's kitchen | 58 records

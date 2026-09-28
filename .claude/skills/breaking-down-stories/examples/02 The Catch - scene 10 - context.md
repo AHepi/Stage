@@ -709,7 +709,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - object: MINT | at: [2.8, 0.1] | size: [0.15, 0.15, 0.2] | base: 1.0 | material: a clay pot of green mint | meaning: the one living thing in the room | furniture: none
 - object: FLASK | at: [3.6, 0.35] | size: [0.09, 0.09, 0.25] | base: 0.9 | material: dented steel | meaning: Eli's secret, set down in Saye's house | furniture: none
 - object: PHONE | at: [3.3, 0.35] | size: [0.08, 0.16, 0.01] | base: 0.9 | material: a black phone, screen down | meaning: the hospital and the police | furniture: none
-- object: LAMP | at: [3.2, 1.8] | size: [0.15, 0.15, 0.35] | base: 0.75 | material: a small lamp with a warm shade | meaning: the only light; Iona lifts it and sets it back here | furniture: none
+- object: LAMP | at: [3.6, 1.8] | size: [0.15, 0.15, 0.35] | base: 0.75 | material: a small lamp with a warm shade | meaning: the only light; Iona lifts it and sets it back here | furniture: none
 - object: CASE | at: [2.2, 0.35] | size: [0.45, 0.3, 0.15] | base: 0.9 | material: worn black leather | meaning: Saye's medical case, open | furniture: none
 - mark: IONA_MARK | at: [2.8, 2.55]
 - mark: SAYE_MARK | at: [2.8, 1.05]

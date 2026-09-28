@@ -247,7 +247,7 @@
   {
    "name": "LAMP",
    "loc": [
-    3.2,
+    3.6,
     1.8,
     0.925
    ],
@@ -471,7 +471,6 @@
   ]
  },
  "notes": [
-  "left out with the wild wall they stand in: BACK_DOOR",
-  "Jude's lying stand-in overlaps the set-plan object LAMP by 0.15 metres; the blocking check cannot see it, because a lying body is a box of the set. Move one of them in the records"
+  "left out with the wild wall they stand in: BACK_DOOR"
  ]
 }

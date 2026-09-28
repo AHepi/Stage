@@ -64,8 +64,8 @@ PROMPTS_FOLDER = "prompts"
 MODEL_FACTS_FILES = ("adapters/video_models.json", "adapters/image_models.json")
 NO_PACKS = ("no compiled prompts yet: stage.py compile writes them to 'For machines - do not edit/prompts/' "
             "(add-on C, or step 10's compile --lint-only)")
-NO_FACTS = ("the model facts files (adapters/video_models.json, adapters/image_models.json) are not in this copy of "
-            "the tools yet (work package 8 writes them), so this check waits for them")
+NO_FACTS = ("the model facts files (adapters/video_models.json, adapters/image_models.json) are missing from this copy of "
+            "the tools, so this check waits for them")
 # 5.5 PROJECT intended_use values that release the film to other people (GEN-14; D4).
 PUBLIC_USES = ("festival", "online_free", "online_monetised", "commercial")
 # SPEECH path values that relay a voice through something, so the prompt must name the path (GEN-17; C3 L11, 7F).

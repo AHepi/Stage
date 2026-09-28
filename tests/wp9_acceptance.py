@@ -421,7 +421,7 @@ def main():
         plan = previs.compile_shot_plan(breakdown, "SC10-SH080").plan
         lamp = next(entry for entry in plan["animate"] if entry["object"] == "LAMP")["keys"]
         assert [key[0] for key in lamp] == list(range(19, 19 + len(lamp))), [key[0] for key in lamp]
-        assert close(lamp[0][1], [3.2, 1.8, 2.2]) and lamp[-1][1][2] == 0.925, (lamp[0], lamp[-1])
+        assert close(lamp[0][1], [3.6, 1.8, 2.2]) and lamp[-1][1][2] == 0.925, (lamp[0], lamp[-1])
         return f"a 9.2 to 2.53 m fall keys {len(keys)} frames; the lamp dropped in shot 080 keys frames 19-{lamp[-1][0]}"
 
     @group("a master and a time slice: the master's frames 30-100 become the slice's frames 1-71")
@@ -475,10 +475,10 @@ def main():
         context = add_lines(texts["context"], "LOCATION LOC-SAYE-KITCHEN", [
             "- object: STOOL | at: [5.1, 2.0] | size: [0.4, 0.4, 0.45] | base: 0 | material: wood | meaning: a stool "
             "| furniture: seat"])
-        scene = edit_record(texts["scene"], "SCENE SC10", "- start: CH-ELI | at: ELI_MARK | faces: CH-SAYE | posture: "
-                            "standing", "- start: CH-ELI | at: ELI_MARK | faces: CH-SAYE | posture: seated")
-        scene = edit_record(scene, "SCENE SC10", "- start: CH-IONA | at: IONA_MARK | faces: CH-SAYE | posture: "
-                            "standing", "- start: CH-IONA | at: IONA_MARK | faces: CH-SAYE | posture: kneeling")
+        # The gold starts the three at the back door and brings them to their marks with moves at beat 2
+        # (SC10-M08 Iona, SC10-M09 Eli), so the postures are set on those moves.
+        scene = edit_record(texts["scene"], "MOVE SC10-M09", "- posture: standing", "- posture: seated")
+        scene = edit_record(scene, "MOVE SC10-M08", "- posture: standing", "- posture: kneeling")
         scene = edit_record(scene, "MOVE SC10-M06", "- posture: standing", "- posture: lying")
         breakdown = breakdown_of({"scene": scene, "context": context}, work / "postures")
         plan = previs.compile_shot_plan(breakdown, "SC10-SH080").plan

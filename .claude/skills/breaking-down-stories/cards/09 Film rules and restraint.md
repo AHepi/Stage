@@ -27,11 +27,11 @@ Step 6 answers them in this order (D16 §4; B2 §8.3):
 
 ## Film pass
 
-Example: in The Catch the rhyme check compares scene 10's reflection two-shot (two people in profile at the frame's edges, shot along the glass) with scene 29's: the same lens, level, along the glass; sides reversed on purpose, since Iona is turned back: FILM-02's warning, answered in the `why` (B3 §8.2; K07). The **film pass** (step 9) judges the whole film as one structure before any picture is made. It reads the **film strip**, one line per shot (ID, beats, role, size, lens, camera move, saved choice used, emphasis, screen time, scene intensity). A **turn picture** is the one-sentence frame each turn must show; a **light cue** is a change of light the story causes.
+Example: in The Catch the rhyme check compares scene 10's reflection two-shot with scene 29's: the same lens, level, along the glass; sides reversed on purpose (Iona is turned back), so the PLANT says `rhyme: yes | framing: profile two-shot | side: reversed` (B3 §8.2; K07). The **film pass** (step 9) judges the whole film as one structure before any picture is made. It reads the **film strip**, one line per shot (ID, beats, role, size, lens, camera move, saved choice used, emphasis, screen time, scene intensity). A **turn picture** is the one-sentence frame each turn must show; a **light cue** is a change of light the story causes.
 
 **Code first.** `stage.py check --film` runs:
 - FILM-01, the ladder: nothing before the climax spends the tightest size or longest hold unless a peak places it there.
-- FILM-02, rhyme: a payoff shot marked `rhyme` repeats its plant shot's lens, angle, size and frame side (B3 P8).
+- FILM-02, rhyme: a payoff shot marked `rhyme` repeats its plant shot's lens, angle, size and frame side (the opposite side under `side: reversed`) (B3 P8).
 - FILM-03, character camera rules: nothing tighter than a character's `limit_before` size before the story point in `closest`; nothing listed in `never` used.
 - FILM-04, colour monotony: `colour_monotony_run` sequences in a row with the same frame value (how light the frame is), saturation (how intense its colour) and temperature (warm or cool) (B2 §8.3).
 - FILM-05, more than two components raised at one peak (B3 R7).

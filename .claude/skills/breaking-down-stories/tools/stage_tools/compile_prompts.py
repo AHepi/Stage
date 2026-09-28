@@ -2140,8 +2140,14 @@ class Compiler:
         self.current_scene_model = scene_model
         notes = []
         clips = []
+        longest_allowed = constant(breakdown.constants, "shot_screen_time_max_s", 600)
         for plan in plans:
             if not plan.video:
+                continue
+            if (plan.screen_time or 0) > longest_allowed:
+                notes.append(f"shot {three_digits(plan.identifier)}: screen time {plan.screen_time:g} seconds is over the "
+                             f"most one shot may last ({longest_allowed:g} seconds), so no prompt was made for it; "
+                             f"check the value and compile again")
                 continue
             routing = route_shot(self.adapters, plan, scene_model, forced, self.licensed_only)
             facts = self.adapters.video.get(routing.model) or {}
@@ -2927,6 +2933,8 @@ def run_compile(context):
     compiler = Compiler(breakdown, adapters, context.words, raw)
     scenes = read_scene_list(getattr(arguments, "scene", None), breakdown)
     missing = [scene for scene in scenes if not breakdown.shots_of(scene)]
+    if not scenes:
+        raise StageStop("No shots to compile yet: write the scenes' shots first (step 8).")
     if missing and len(missing) == len(scenes):
         raise StageStop(f"No shots to compile in {', '.join(missing)}: write the scene's shots first (step 8).")
     scenes = [scene for scene in scenes if breakdown.shots_of(scene)]

@@ -102,7 +102,7 @@ At most `checkpoint_b_items_max` numbered items, in this order: the climax; styl
 ```
 Done: steps 4 to 6 of 12 (world and style; characters, places and things; continuity).
 Example: Saye's fixed description now reads "Dr Saye, a slim, upright woman in her
-  late fifties, ...". It goes word for word into every picture prompt with her.
+  fifties, ...". It goes word for word into every picture prompt with her.
 
 The big choices. Reply "defaults", or answer by number.
 *1. The climax: the crossing beside the ship (scenes 26 and 27).        [26-27]

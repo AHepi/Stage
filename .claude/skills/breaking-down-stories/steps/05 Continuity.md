@@ -88,7 +88,7 @@ Checkpoint B, shown to the user as "the big choices". It blocks. One message, at
 ```
 Done: steps 4 to 6 of 12 (world and style; characters, places and things; continuity).
 Example: Saye's fixed description now reads "Dr Saye, a slim, upright woman in her
-  late fifties, ...". It goes word for word into every picture prompt with her.
+  fifties, ...". It goes word for word into every picture prompt with her.
 
 The big choices. Reply "defaults", or answer by number.
 *1. The climax: the crossing beside the ship (scenes 26 and 27), where the main
