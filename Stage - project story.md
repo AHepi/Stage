@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 28 September 2026 (log entry 26).
+Last updated: 30 September 2026 (log entry 31).
 
 ## The goal
 
@@ -21,16 +21,21 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 
 **Tested:**
 - The automatic tests pass in 18 of 19 groups. The failing group is a size target, explained under "Known issues".
-- A fresh AI with only the kit planned the whole of The Catch (story plan, world, characters, places, continuity, film rules). It then broke down three scenes nobody had studied before: scene 2 (the ladder climb), scene 9 (the car) and scene 15 (Jude's room seen on the tablet).
-- The film craft was good. The code's bookkeeping had 36 problems, and all 36 are fixed (entries 23 to 25).
+- A fresh AI with only the kit planned the whole of The Catch and broke down three scenes (entries 23 to 25). Its 36 problems are fixed.
+- **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`. Only one of them is fixed so far.
 
 **Not tested yet:**
-- All 30 scenes of The Catch from start to finish, including the last three steps: the whole-film pass, the final check and the book.
+- A real person answering the questions. In the tests, the answers were always "defaults" and "no changes".
 - The Long Places (you asked to leave it for later).
 - The chat-app route in the real ChatGPT and Gemini apps. It is designed and bundled, but was only simulated here.
 - Actually making pictures, videos or voices. This computer has no accounts for those services, so the prompt packs stop at "ready to send, checked and priced".
 
 **Known issues:**
+- **The full run's 18 problem groups (entry 31).** The worst:
+  - A code slip hides jump cuts after shots numbered below 100.
+  - One error in text the checker wrote itself can never be cleared, so the kit never says "finished".
+  - Several checking rules contradict the film's own plan, so the AI cannot satisfy both.
+  - The book prints internal names such as "CAMSYS" in its "why" lines.
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
@@ -59,7 +64,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 | Checking program | `.../tools/stage.py` and `stage_tools/` | Reads stories; numbers lines; checks about 90 things; works out timings, sides and camera distances; builds handouts; exports; estimates cost; writes video prompts; builds 3D mock-ups | Checked, readable files |
 | Templates and model scene | `.../templates/`, `.../examples/` | Empty forms, and the finished scene 10 | A model to copy |
 | Guides and bundles | Repository top: `01` to `09` | How to start in each app; the chat-app bundle; the skill file for Claude; the example folder | What you open first |
-| Project notes | `Project notes/` | The blueprint, the test report, the fix list | The record of how it was built |
+| Project notes | `Project notes/` | The blueprint, the two test reports, the fix list | The record of how it was built and tested |
 
 ## Word list
 
@@ -101,6 +106,14 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 | Repository | The project's folder on GitHub. |
 | Branch | A separate line of work in the repository. |
 | Pull request | A GitHub page proposing that one branch be merged into the main line. |
+| Sequence | A group of scenes that belong together, such as scenes 1 to 3. The kit works through the film one sequence at a time. |
+| Error | A problem the checker says must be fixed before going on. |
+| Warning | A problem the checker only points out. It does not stop the work. |
+| Scoring (rubric) | The kit's scoresheet: 10 questions per scene, each scored 0 to 3. A scene passes at 20 of 30. |
+| Ladder | The film's plan for how close the camera gets at each scene's turn, so the film builds toward its climax. |
+| Jump cut | A deliberate cut between two shots taken from nearly the same place, so the picture seems to jump. |
+| Insert | A close shot of a hand, an object or a screen, cut into a scene. |
+| Command safety checker | The automatic check in this session that approves or blocks each command before it runs. |
 
 ## Numbered log
 
@@ -130,7 +143,20 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 24. **Wrote a fix list with a decision for each problem.** File: `Project notes/24 Fix list - after the first test.md`.
 25. **Two helpers applied all 36 fixes.** On the tester's project, problems went from 44 (most of them impossible to clear) to 13, all clearable with plain instructions. The whole-film summary went from 23,717 words to 5,940. Tests: 18 of 19 groups pass, and the failing one is the chat-app size target.
 26. **Wrote this project story.**
+27. **Mistake: I told you Sonnet 5.5 was not available.** You asked for the scene work to run on Sonnet 5.5 (a faster, cheaper model), with the planning and the analysis on the main model. I wrongly said Sonnet 5.5 did not exist. You asked again. I checked, it does exist, and I apologised. A small helper on Sonnet 5.5 ran fine before the real run started.
+28. **Started the full run of The Catch.** One helper on the main model did the planning: your steps 1 to 7. Then 10 helpers on Sonnet 5.5 did the scenes, one group of scenes each. One more on Sonnet 5.5 did the finish: the whole-film check, the scores, the cost and time, and the book. The "user" was simulated and answered "defaults" to every question.
+29. **Failure: the kit wrote into its own example folder.** A scene helper ran two commands from the Stage folder without naming the project, and the tool picked the example folder (The Catch, scene 10) and rebuilt it. The helper tried to undo it, but the command safety checker blocked that. I restored the example folder, and changed the tool so that from the Stage folder it never picks the example. I also fixed one test that depended on the old behaviour. Tests: 18 of 19 groups pass, the same as before.
+30. **Failure: the command safety checker stopped working, and the run stopped at scene 24.** No commands could run for many hours. When you said "Go", the run picked up where it stopped, without redoing finished work.
+31. **The full run finished, and I analysed it myself (as you asked, not Sonnet).** The results:
+    - 180 pieces of work, 514 shots and about 43 minutes of film.
+    - The book is 15,112 lines, with a shot list, captions, audio description and edit timelines.
+    - 29 of 30 scenes pass the scoring. Scene 30 fails by one point because it runs long and asks the video model to draw words.
+    - The final check left 1 error, which nobody can clear, and 126 warnings.
+    - The cost to make the film with today's video models is $2,742 to $11,445.
+    - The book reads well and follows the script shot by shot. But it prints internal names like "CAMSYS", and in one place it calls Jude Iona's "husband", which the script never says.
+    - The 10 scene helpers logged 254 problems and unclear instructions. I grouped them into 18 groups, each with a fix. The worst are a code slip that hides jump cuts, an error nobody can clear, and checking rules that contradict the film's own plan.
+    - File: `Project notes/31 Test - The Catch - full run.md`.
 
 ## Next step
 
-Run all 30 scenes of The Catch through the kit from start to finish, including the whole-film pass, the final check and the book. This is the first complete end-to-end run, and the one thing still untested. Expect it to take a few hours of AI time and a large share of a usage window.
+Fix the 18 problem groups from the full run myself, without new helpers, starting with the code slips and the rules that contradict each other. Then re-check The Catch's finished breakdown with the fixed checker, to confirm the warnings drop, without re-running the scenes. That uses far less of your allowance than another full run.
