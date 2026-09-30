@@ -72,7 +72,8 @@ MACHINE = "For machines - do not edit"
 FIXTURES = REPOSITORY / "tests" / "fixtures"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
 READER_SCREENPLAY = FIXTURES / "reader" / "Night shift.fountain"
-DEFAULT_TESTER_PROJECT = REPOSITORY / "My breakdowns" / "The Catch"
+# the first test's project (git-ignored); "The Catch" itself may now hold a later, different run
+DEFAULT_TESTER_PROJECT = REPOSITORY / "My breakdowns" / "The Catch - first test"
 RESULTS = []
 
 

@@ -229,7 +229,12 @@ def find_project(explicit=None, start=None):
                         "Give the folder of a project made with stage.py new.")
     if is_project(start):
         return start
-    subfolders = sorted(child for child in start.iterdir() if child.is_dir() and is_project(child)) if start.is_dir() else []
+    # At the Stage folder itself, projects live only in My breakdowns/: the kit's example folder (09 Example ...) is
+    # a project too, but it is for reading and must never be picked by a command run from here.
+    stage_folder = repository_root(start)
+    at_stage_folder = stage_folder is not None and stage_folder.resolve() == start
+    subfolders = [] if at_stage_folder else (
+        sorted(child for child in start.iterdir() if child.is_dir() and is_project(child)) if start.is_dir() else [])
     if len(subfolders) == 1:
         return subfolders[0]
     candidates = list(subfolders)

@@ -2,7 +2,7 @@
 
 Scope: 1 of 1 scene (scene 10).
 
-1 scene, 21 shots, about 1 minute 53 seconds of film. Made from the records on 2026-09-28; if it looks wrong, the record is fixed and the book is made again.
+1 scene, 21 shots, about 1 minute 53 seconds of film. Made from the records on 2026-09-30; if it looks wrong, the record is fixed and the book is made again.
 
 ## Contents
 
