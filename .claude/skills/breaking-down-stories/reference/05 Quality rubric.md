@@ -14,7 +14,7 @@ In `score` items the first part is the criterion's number and the `score` sub-pa
 
 ## When, and who scores
 
-- **When.** At step 10, on every scene in scope and on the film, after `stage.py check --all` reports no ERROR: scores on a broken file measure the break (D7 R1). In chat apps without code, the check chat scores each group's scenes once the user has reached step 10 (`reference/06 Checks in words.md` part 2); what only the checker can measure is scored at the real check on a code surface.
+- **When.** At step 10, on every scene in scope and on the film, after `stage.py check --all` reports no ERROR: scores on a broken file measure the break (D7 R1). In chat apps without code, the check chat scores each group's scenes once the user has reached step 10 (`reference/06` part 2); what only the checker measures waits for the real check.
 - **Who.** A fresh unit that did not write the records (in chat apps, the check chat), never the writer (D7 §2; C5 R12). Scores are advice: AI judges agree only weakly with people (D7 §8), so the user also reads three scenes with the review sheet in `05 How to read your breakdown.md`.
 - **How**, in the table's second column. **M**: measured by the checker; read the check IDs named for it from `13 Health check`. **J**: yes/no questions answered by the fresh unit against the story. On a code surface `stage.py questions --sample` builds them for every turn shot, turn beat and must-keep shot, every shot needing mirror, text or violence handling, and a seeded share (`question_sample_share`) of the rest, in batches of `question_batch_size` (C5 R11; D7 R3, R5). Without code, write the same questions by hand, taking one remaining shot in every ten (`question_sample_share`), in shot order. Each answer is a REVIEW `answer` item; each "no" also becomes a FINDING. **U**: the user's reading of the three scenes. Coverage and counts are scored from the checker's report, never from a judge's impression (C5 R25).
 
@@ -46,7 +46,7 @@ Where a row below gives a measure for 2 and 3, a result under the measure for 2 
 
 ## The pass rule
 
-A scene passes when there is no ERROR, no criterion scores 0, criteria 1, 3 and 6 score 2 or more, and the total is 20 or more of 30. The film passes when every scene in scope passes (D7 §5.2); RV-FILM gives each criterion the lowest score of any scene, with that scene named in its evidence, and scores criterion 8 from the film pass.
+A scene passes when there is no ERROR, no criterion scores 0, criteria 1, 3 and 6 score 2 or more, and the total is 20 or more of 30. The film passes when every scene in scope passes (D7 §5.2); RV-FILM gives each criterion the lowest score of any scene, with that scene named in its evidence; criterion 8 takes the lower of that and the film pass. A 3 out of reach here (the user's agreement before acceptance, `pictures_needed`, the five-question test) scores 2, saying so.
 
 Every score below 2 carries one line of evidence and a fix. Write the fix as a FINDING (`rule: rubric criterion 4`, `source: review`, `status: open`) and cite its ID in the score's evidence. Fix only the findings named, run the checks again and score only the criteria they touch, at most `repair_rounds_max` rounds (C5 R13; D7 R8). A finding that survives them, or needs a story choice, becomes one plain question for the user.
 

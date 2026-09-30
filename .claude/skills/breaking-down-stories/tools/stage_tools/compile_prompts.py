@@ -26,6 +26,9 @@ Command: compile [--scene <one ID, a comma list or SC07..SC10>] [--model <list>]
 Numbers come from rules/constants.json by name (handles_s, on_screen_speakers_per_clip_max,
 named_sounds_per_prompt_max, model_facts_max_age_days, hold_needs_still_s) and from the adapter files.
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- the project's word swaps are made in pasted place, look and subject text too, once.
 """
 
 import datetime
@@ -37,8 +40,8 @@ from pathlib import Path
 
 from .derive_fields import (Breakdown, allowed_lengths, clip_plan, constant, element_name, element_of, feature_hidden,
                             flipped_after, held_take, image_sides, is_yes, mirror_route, number_of, person_name,
-                            round_up_to, scene_label, scene_of, seconds_text, set_plan, shot_mirror_states, shot_number,
-                            subject_items)
+                            project_prompt_swaps, round_up_to, scene_label, scene_of, seconds_text, set_plan,
+                            shot_mirror_states, shot_number, subject_items, swap_prompt_words, swap_sources_banned)
 from .record_format import load_json, normalise_word, sort_key_for_identifier, split_item, split_list
 
 MACHINE_FOLDER = "For machines - do not edit"
@@ -299,25 +302,17 @@ CUTAWAY_WORDS = re.compile(r"(?:^|(?<=[;,.]))\s*(?:(?:after|at|on|from) the |a )
 
 class WordFixer:
     """Word swaps (torch becomes flashlight), negation rewrites and banned-word guards for the prompt's own words.
-    Pasted keys (fixed descriptions, state lines, the look block, style words) are never changed here."""
+    Pasted keys (fixed descriptions, state lines, the look block) get the word swaps only (key_words): the project's
+    swaps apply to every word the model reads, and GEN-04 accepts exactly the swapped form."""
 
     def __init__(self, adapters, words, project_record):
-        self.swaps = []
-        for swap in (words.get("prompt_substitutions") or {}).get("swaps") or []:
-            source, target = swap.get("from", ""), swap.get("to", "")
-            if source and target and "<" not in source and "(" not in target and "visible evidence" not in target:
-                self.swaps.append((source, target))
-        if project_record is not None:
-            for written in project_record.get_all("prompt_words"):
-                item = split_item(written)
-                if item.first and not is_none(item.first) and item.get("use"):
-                    self.swaps.append((item.first.strip(), item.get("use").strip()))
+        self.swaps = project_prompt_swaps(words, project_record)
         rewrites = adapters.phrase("negation_rewrites", default={}) or {}
         self.patterns = [(re.compile(entry["find"], re.IGNORECASE), entry["replace"]) for entry in rewrites.get("patterns") or []]
         self.gerunds = rewrites.get("gerunds") or {}
         groups = (words.get("banned_prompt_words") or {}).get("groups") or {}
         banned = [word for group in groups.values() for word in group]
-        banned += [source for source, _ in self.swaps]
+        banned += swap_sources_banned(self.swaps)
         self.banned = sorted(set(banned), key=lambda word: (-len(word), word))
         self.allowed_lines = {re.sub(r"\s+", " ", line).strip().casefold()
                               for line in (words.get("allowed_negations") or {}).get("lines") or []}
@@ -336,9 +331,11 @@ class WordFixer:
         return stem
 
     def swap_words(self, text):
-        for source, target in self.swaps:
-            text = re.sub(r"(?<!\w)" + re.escape(source) + r"(?!\w)", target, text, flags=re.IGNORECASE)
-        return text
+        return swap_prompt_words(text, self.swaps)
+
+    def key_words(self, text):
+        """A pasted key (fixed description, state line, look block) with the word swaps made and nothing else."""
+        return swap_prompt_words(text, self.swaps) if text else text
 
     def rewrite_negations(self, text):
         for pattern, replacement in self.patterns:
@@ -1243,6 +1240,7 @@ class PromptWriter:
             reversed_here = shows_pre_reversed(self.breakdown, clip.plan.shot, person.element, turned)
             fixed = swap_own_sides(person.fixed_description) if reversed_here else person.fixed_description
             state_line = swap_own_sides(person.state_line) if reversed_here else person.state_line
+            fixed, state_line = self.fixer.key_words(fixed), self.fixer.key_words(state_line)
             segments.append(Segment(fixed if fixed.endswith(".") else fixed + ".", "key"))
             if state_line:
                 segments.append(Segment(f"{capital_label} now:", "words"))
@@ -1593,7 +1591,7 @@ class PromptWriter:
             setting += self.things_block(clip, cast)
             look = look_of(self.breakdown, shot)
             if look is not None and not is_none(look.get("look_block")):
-                look_block = look.get("look_block").strip()
+                look_block = self.fixer.key_words(look.get("look_block").strip())
                 contrast = normalise_word(look.get("contrast") or "")
                 if contrast in ("high", "extreme"):
                     for person in people:
@@ -1868,7 +1866,7 @@ class PromptWriter:
                     element = element_of(reference)
                     name = element_name(self.breakdown, element)
                     things.append(("prop", reference, f"Reference pictures/{name[:1].upper() + name[1:]}{state_words_of(reference)}.png",
-                                   f"{lower_first(name)}"))
+                                   f"{self.fixer.swap_words(lower_first(name))}"))
             location_entry = []
             if location and not is_none(location):
                 name = element_name(self.breakdown, location)
@@ -1876,7 +1874,7 @@ class PromptWriter:
                 place_reference = place_state.identifier if place_state is not None else location
                 location_entry = [("location", place_reference,
                                    f"Reference pictures/{name[:1].upper() + name[1:]}{state_words_of(place_reference)}.png",
-                                   f"the place: {lower_first(name)}, empty")]
+                                   f"the place: {self.fixer.swap_words(lower_first(name))}, empty")]
             most = (facts.get("inputs") or {}).get("references_max")
             ordered = stack[:1] + location_entry + stack[1:] + things
             if isinstance(most, int):
@@ -2474,11 +2472,11 @@ def description_prompt(compiler, plan, moment_words=""):
         parts += [segment.text for segment in writer.subject_block(person, fake, cast, False, for_picture=True)]
     location = location_state_line(compiler.breakdown, plan.shot)
     if location and not is_none(location):
-        parts.append(sentence(location))
+        parts.append(sentence(compiler.fixer.key_words(location)))
     parts += [segment.text for segment in writer.things_block(fake, cast)]
     look = look_of(compiler.breakdown, plan.shot)
     if look is not None and not is_none(look.get("look_block")):
-        parts.append(look.get("look_block"))
+        parts.append(compiler.fixer.key_words(look.get("look_block")))
     style = compiler.breakdown.singleton("STYLE")
     if style is not None and not is_none(style.get("style_words")):
         parts.append(sentence(style.get("style_words")))
@@ -2532,7 +2530,7 @@ def plate_route_prompts(compiler, plan, moment_words=""):
         parts += [segment.text for segment in writer.subject_block(person, plate_clip, plate_cast, False, for_picture=True)]
     location = location_state_line(compiler.breakdown, plan.shot)
     if location and not is_none(location):
-        parts.append(sentence(location))
+        parts.append(sentence(compiler.fixer.key_words(location)))
     added_names = [name.lower() for person in added for name in (person.name, person_name(person.element)) if name]
 
     def in_the_plate(reference):
@@ -2549,7 +2547,7 @@ def plate_route_prompts(compiler, plan, moment_words=""):
     parts += [segment.text for segment in writer.things_block(plate_clip, plate_cast, keep=in_the_plate, turned=True)]
     look = look_of(compiler.breakdown, plan.shot)
     if look is not None and not is_none(look.get("look_block")):
-        parts.append(look.get("look_block"))
+        parts.append(compiler.fixer.key_words(look.get("look_block")))
     style = compiler.breakdown.singleton("STYLE")
     if style is not None and not is_none(style.get("style_words")):
         parts.append(sentence(style.get("style_words")))
@@ -2689,8 +2687,8 @@ def pictures_to_make(compiler, scene):
         element = element_of(reference)
         record = compiler.breakdown.record(element)
         state = state_record(compiler.breakdown, reference)
-        fixed = record.get("fixed_description") if record is not None else ""
-        state_line = state.get("state_line") if state is not None else ""
+        fixed = compiler.fixer.key_words(record.get("fixed_description") if record is not None else "")
+        state_line = compiler.fixer.key_words(state.get("state_line") if state is not None else "")
         model = picture_model(compiler, "reference")
         if element.startswith("CH-"):
             prompt = ("Using the attached portrait as the exact identity reference, create a character turnaround sheet of "
@@ -2792,7 +2790,7 @@ def storyboard_prompts(compiler, scene_identifier):
         parts += [segment.text for segment in compiler.writer.things_block(fake, cast)]
         look = look_of(breakdown, shot)
         if look is not None:
-            parts.append(light_sentence(look.get("look_block")))
+            parts.append(light_sentence(compiler.fixer.key_words(look.get("look_block"))))
         middle = plan.screen_time / 2
         chosen = ""
         for written in shot.get_all("moment"):

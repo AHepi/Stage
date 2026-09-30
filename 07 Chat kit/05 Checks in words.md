@@ -26,7 +26,7 @@ Checked in words: 14 of 14 passed.
 | FORM-08 | no shortening marker inside a record | PASS |
 | FORM-12 | sub-parts are named, and no text holds a space, bar, space | PASS |
 | ID-01 | no ID is used twice | PASS |
-| ID-03 | shot numbers go in tens; cards and black from 990 | PASS |
+| ID-03 | shot numbers go in tens; end cards and black from 990 | PASS |
 | ID-06 | every new ID is inside the numbers given for this step | PASS |
 | ID-07 | every shot is in the scene's shot list | PASS |
 | ID-08 | each shot's beats, role and size match its list item | PASS |
@@ -47,10 +47,10 @@ Count and match only. The `---` line ends the last record (G3), so the table is 
 | FORM-05 | Every field of the template at the project's depth (or the scene's deeper one) whose step is this one or earlier is present; empty is `none`, undecided `open`. |
 | FORM-06 | Exactly one line `END OF FILE \| <what the file holds> \| <n> records` ends the file. |
 | FORM-07 | `n` equals the number of lines starting `### ` below the divider. |
-| FORM-08 | No record holds "...", "…", "etc.", "and so on", "same as above", "as before", "remaining shots", "omitted for brevity" or a line starting `//`, except inside exact story quotes. |
+| FORM-08 | No record holds "...", "…", "etc.", "and so on", "same as above", "remaining shots", "omitted for brevity", "as before" standing for a value, or a line starting `//`, except inside exact story quotes. |
 | FORM-12 | Every sub-part after ` \| ` has a template key (`at: left_third`, never a bare `left_third`); no text value holds ` \| `. |
 | ID-01 | No ID appears twice as a record heading or as the first part of a SCENE `value` or SHOTLIST `item`. |
-| ID-03 | Shot numbers go in steps of `shot_number_step`; an insert takes a number between; cards and black use `end_card_numbers`. |
+| ID-03 | Shot numbers go in steps of `shot_number_step`; an insert takes a number between; end cards and black use `end_card_numbers`. |
 | ID-06 | Every new ID lies in the block the step file gives (`issued_blocks`: beats B01 to B30, shots SH010 to SH400 per scene). |
 | ID-07 | Every SHOT is an item of its scene's SHOTLIST; at standard and detailed, every list item in the batch's range has its SHOT. |
 | ID-08 | Each SHOT's `beats`, `role` and `size` equal its list item's. |
@@ -63,7 +63,7 @@ A check with nothing to look at is written `PASS (no beats or shots in this file
 
 ## Part 2: in a check chat (20 checks, then questions)
 
-At the end of each group of scenes (after its last batch of shots) the resume line sends the user to a new chat in the same Gem or Project with that group's saved files, the story, `02 Whole-film summary`, `10 Film rules`, `05 Checks in words` and the last saved `13 Health check` file, if any (in two messages when they pass the app's file limit), and the message "Check my group of scenes." Quote this part's task first: "Check the attached group against the story and return 13 Health check." Without the story, ask for it.
+At the end of each group of scenes the resume line sends the user to a new chat in the same Gem or Project with that group's saved files, the story, `02 Whole-film summary`, `10 Film rules`, `05 Checks in words` and the last saved `13 Health check` file, if any (two messages past the app's file limit), and the message "Check my group of scenes." Quote this part's task first: "Check the attached group against the story and return 13 Health check." Without the story, ask for it.
 
 | Check | How to check it in words |
 |---|---|
@@ -78,7 +78,7 @@ At the end of each group of scenes (after its last batch of shots) the resume li
 | SIDE-03 | A sided insert (a ring, a palm, a scar) has `flip: never`. |
 | CRAFT-01 | At most `push_in_per_scene_max` shots of a scene have `move: push_in`. |
 | CRAFT-02 | At most `extreme_close_up_per_scene_max` extreme close-ups, only on the main turn. |
-| CRAFT-03 | No shot before the main turn is as tight as the scene's tightest size (inserts not counted). |
+| CRAFT-03 | The main turn is at its ladder rung's size, nothing before it tighter unless the rung is wide (inserts not counted). |
 | CRAFT-04 | Each beat whose `turn` is not `none` has exactly one shot with `role: turn`. |
 | CRAFT-06 | `move` holds one value and no `moment` describes a second camera move. |
 | CRAFT-14 | Every thing in frame with `origin: invented` is listed in the scene's `additions`. |
@@ -88,15 +88,15 @@ At the end of each group of scenes (after its last batch of shots) the resume li
 | REASON-04 | No `why` holds a mood-only phrase ("to build tension", "for drama", "cinematic", "moody", "dynamic", or "to emphasise" with no object). |
 | WORDS-01 | No `does` or `task` holds an emotion adjective (angry, sad, afraid; `emotion_adjectives` in `rules/words.json`); write what the body does. |
 
-**The time floor by hand.** Floor = the larger of the speech floor and the text floor, plus the pause owed. Speech floor: for each `hear` item, the speech's words ÷ the speaker's `pace_wps` (`speech_wps_default` if the voice has none), plus `speech_floor_extra_s`. Text floor: `text_floor` for each text in picture in frame, doubled when mirrored. Pause owed: for each beat whose last line lies inside the shot's lines, its `pause_after` seconds, or `turn_reaction_min_s` for a turn if that is larger. Scene 10, shot 150: Saye 19 words at 2.0 = 9.5 s, Iona 2 words at 2.5 = 0.8 s, three speeches add 1.5 s, so the speech floor is 11.8 s; the turn at beat 7 owes 2.0 s; the floor is 13.8 s, and 15 passes.
+**The time floor by hand.** Floor = the larger of the speech floor and the text floor, plus the pause owed. Speech floor: for each `hear` item, the speech's words ÷ the speaker's `pace_wps` (`speech_wps_default` if the voice has none), plus `speech_floor_extra_s`. Text floor: `text_floor` for each text to read (plot-critical or with emphasis), doubled when mirrored. Pause owed: for each beat this shot ends (the last shot naming it), its `pause_after` seconds, or `turn_reaction_min_s` for a turn if that is larger. Scene 10, shot 150: Saye 19 words at 2.0 = 9.5 s, Iona 2 words at 2.5 = 0.8 s, three speeches add 1.5 s, so the speech floor is 11.8 s; the turn at beat 7 owes 2.0 s; the floor is 13.8 s, and 15 passes.
 
 **Then the questions,** once the user reaches those steps. Step 9: with the sound off, does each turn picture tell its beat? Could a stranger say what each scene is about from its turn pictures and purposes? Is there a symbol not in the story, a scene with more than `plant_inserts_per_scene_max` plant inserts, music under an unsaid line, a light cue on the line that states the point, a rhyme the story does not support? Does any shot feel like a different film? Step 10: the questions and scores of `reference/05 Quality rubric.md`. Answer each yes or no against the story, quoting the record and the line (D7 R3).
 
-**What the check chat returns:** one copy box with "Save as: 13 Health check - group 3.md" (the group's number) above it: the plain part ("In short: 2 things need you, 5 findings to fix", then what to fix first, one line each), the divider, one REVIEW per scene of the group (`RV-SC07` ...) with its answers (and its scores once the user has reached step 10), one FINDING per failed check or "no" answer (`record`, `rule`, `evidence`, `fix`, `source: review`, `status: open`), numbered on from the highest finding number in the attached health-check file, and the END line. `adopt` merges the group files by ID. The next working chat attaches it, fixes those findings first, and marks each `fixed`.
+**What the check chat returns:** one copy box with "Save as: 13 Health check - group 3.md" (the group's number) above it: the plain part ("In short: 2 things need you, 5 findings to fix", then what to fix first, one line each), the divider, one REVIEW per scene of the group (`RV-SC07` ...) with its answers (and its scores once the user has reached step 10), one FINDING per failed check or "no" answer (`record`, `rule`, `evidence`, `fix`, `source: review`, `status: open`), numbered on from the attached health-check file, and the END line. `adopt` merges the group files by ID. The next working chat attaches it, fixes those findings first, and marks each `fixed`.
 
 ## Part 3: the real check
 
-Words are weaker than code. At the end of each group, or at least before acceptance, the user attaches the folder as one ZIP and the story on the Claude website (the free plan is enough) and types "Check my breakdown."; `stage.py adopt` then `check --all` run every check (the house rules, "What the user may type").
+Words are weaker than code. At the end of each group, or at least before acceptance, the user attaches the folder as one ZIP and the story on the Claude website (the free plan is enough) and types "Check my breakdown."; `stage.py adopt` then `check --all` run every check.
 
 ## Numbers this page uses
 
@@ -172,7 +172,7 @@ In `score` items the first part is the criterion's number and the `score` sub-pa
 
 ## When, and who scores
 
-- **When.** At step 10, on every scene in scope and on the film, after `stage.py check --all` reports no ERROR: scores on a broken file measure the break (D7 R1). In chat apps without code, the check chat scores each group's scenes once the user has reached step 10 (`reference/06 Checks in words.md` part 2); what only the checker can measure is scored at the real check on a code surface.
+- **When.** At step 10, on every scene in scope and on the film, after `stage.py check --all` reports no ERROR: scores on a broken file measure the break (D7 R1). In chat apps without code, the check chat scores each group's scenes once the user has reached step 10 (`reference/06` part 2); what only the checker measures waits for the real check.
 - **Who.** A fresh unit that did not write the records (in chat apps, the check chat), never the writer (D7 §2; C5 R12). Scores are advice: AI judges agree only weakly with people (D7 §8), so the user also reads three scenes with the review sheet in `05 How to read your breakdown.md`.
 - **How**, in the table's second column. **M**: measured by the checker; read the check IDs named for it from `13 Health check`. **J**: yes/no questions answered by the fresh unit against the story. On a code surface `stage.py questions --sample` builds them for every turn shot, turn beat and must-keep shot, every shot needing mirror, text or violence handling, and a seeded share (`question_sample_share`) of the rest, in batches of `question_batch_size` (C5 R11; D7 R3, R5). Without code, write the same questions by hand, taking one remaining shot in every ten (`question_sample_share`), in shot order. Each answer is a REVIEW `answer` item; each "no" also becomes a FINDING. **U**: the user's reading of the three scenes. Coverage and counts are scored from the checker's report, never from a judge's impression (C5 R25).
 
@@ -204,7 +204,7 @@ Where a row below gives a measure for 2 and 3, a result under the measure for 2 
 
 ## The pass rule
 
-A scene passes when there is no ERROR, no criterion scores 0, criteria 1, 3 and 6 score 2 or more, and the total is 20 or more of 30. The film passes when every scene in scope passes (D7 §5.2); RV-FILM gives each criterion the lowest score of any scene, with that scene named in its evidence, and scores criterion 8 from the film pass.
+A scene passes when there is no ERROR, no criterion scores 0, criteria 1, 3 and 6 score 2 or more, and the total is 20 or more of 30. The film passes when every scene in scope passes (D7 §5.2); RV-FILM gives each criterion the lowest score of any scene, with that scene named in its evidence; criterion 8 takes the lower of that and the film pass. A 3 out of reach here (the user's agreement before acceptance, `pictures_needed`, the five-question test) scores 2, saying so.
 
 Every score below 2 carries one line of evidence and a fix. Write the fix as a FINDING (`rule: rubric criterion 4`, `source: review`, `status: open`) and cite its ID in the score's evidence. Fix only the findings named, run the checks again and score only the criteria they touch, at most `repair_rounds_max` rounds (C5 R13; D7 R8). A finding that survives them, or needs a story choice, becomes one plain question for the user.
 

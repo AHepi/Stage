@@ -3490,7 +3490,7 @@
     {
      "name": "script_marked",
      "label": "Marked by the script",
-     "meaning": "yes when the beat's lines already mark it: a capitalised sound, emphasis or text token, or a light, colour or darkness word that stage.py read found (B1 P11, B4 R17). CRAFT-10 and added_emphasis_per_beat_max read it.",
+     "meaning": "yes when the beat's lines already mark it: a capitalised sound, emphasis or text token, or a light, colour or darkness word that stage.py read found and that is light in its sentence, not a person's colour (B1 P11, B4 R17). CRAFT-10 and added_emphasis_per_beat_max read it.",
      "kind": "yes_no",
      "depth": "q",
      "writer": "code_derived",
@@ -3928,6 +3928,19 @@
      "writer": "ai",
      "example": "[2.8, 1.8, 1.4]",
      "filled_by_step": 7,
+     "repeat": false,
+     "one_of": "look_at_words"
+    },
+    {
+     "name": "look_at_words",
+     "label": "Looks at, in words",
+     "meaning": "Where the camera aims, in words (without a set plan).",
+     "kind": "text",
+     "depth": "s",
+     "writer": "ai",
+     "example": "Iona's hands on the gate",
+     "one_of": "look_at",
+     "filled_by_step": 7,
      "repeat": false
     },
     {
@@ -4250,7 +4263,7 @@
     {
      "name": "kind",
      "label": "Kind of shot",
-     "meaning": "The kind of shot.",
+     "meaning": "The kind of shot: live (filmed in the scene), insert (a thing close), pov (what a character sees with their own eyes), screen (the picture an in-story camera or device makes, at that camera's own lens; CRAFT-07), card (a title) or black.",
      "kind": "word",
      "values": [
       "live",
@@ -4858,6 +4871,11 @@
         "SHOT"
        ],
        "depth": "f"
+      },
+      {
+       "key": "recorded",
+       "kind": "text",
+       "meaning": "Only for footage from an earlier time (a recording on a screen): the scene (SC06) or story point whose state it shows; STATE-01 reads the state there, not at this shot."
       }
      ],
      "filled_by_step": 8
@@ -4916,6 +4934,11 @@
        "id_types": [
         "PLANT"
        ]
+      },
+      {
+       "key": "recorded",
+       "kind": "text",
+       "meaning": "Only for footage from an earlier time (a recording on a screen): the scene (SC06) or story point whose state it shows; STATE-01 reads the state there, not at this shot."
       }
      ],
      "filled_by_step": 8
@@ -9215,11 +9238,12 @@
     {
      "name": "method",
      "label": "Method",
-     "meaning": "How it gets into the picture.",
+     "meaning": "How it gets into the picture: composite (a text graphic laid in after, the default), background_blur (never read), or model_drawn (the video model draws it: only a single large letter or mark the shot is about, such as the toy carriage's F, checked in the take; GEN-06 allows it).",
      "kind": "word",
      "values": [
       "composite",
-      "background_blur"
+      "background_blur",
+      "model_drawn"
      ],
      "depth": "s",
      "writer": "ai",
@@ -10216,7 +10240,7 @@
     {
      "name": "allowed_in",
      "label": "Allowed in",
-     "meaning": "Where it may be used.",
+     "meaning": "Where it may be used. The checker reads only scene IDs here (SC13); words are for people.",
      "kind": "text",
      "depth": "q",
      "writer": "ai",

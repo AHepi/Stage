@@ -12,6 +12,10 @@ condition_reader and ConditionReader answer the schema's named conditions (requi
 which other checks can reuse.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- FORM-08 never judges text code wrote, and reads 'as before' as English unless it stands for the value or points
+  back; FORM-05 does not ask for a shot list's approved mark before its group of shots has passed.
 """
 
 import difflib
@@ -48,6 +52,7 @@ class FormContext:
     current_records: dict = None
     index: dict = None
     modules: set = None
+    checkpoints: dict = None
     cache: dict = dataclass_field(default_factory=dict)
 
     @classmethod
@@ -639,6 +644,54 @@ PREVIS_STUB_FIELDS = ("for", "level", "status", "locked")
 # Fields FORM-05 never asks the AI for, because the AI never writes them: PREVIS approved is written by code
 # (auto, or no until the checks pass) or by the user's answer at the grey previews checkpoint (schema writer_when).
 NEVER_ASKED_OF_THE_AI = {("PREVIS", "approved")}
+SEQUENCE_OR_SCENE_RANGE = re.compile(r"^(SC\d{2,3}[A-Z]?)\.\.(SC\d{2,3}[A-Z]?)$")
+
+
+def scenes_with_group_passed(context):
+    """The scenes whose group of shots has passed (checkpoint C): named in the manifest's checkpoints
+    (CHECKPOINT-C-<group or scene>), or with a written SHOT (step 8 starts only after its group passed)."""
+    if "groups_passed" in context.cache:
+        return context.cache["groups_passed"]
+    passed = set()
+    index = context.index or {}
+    for key in index:
+        if key[0] == "SHOT" and key[1]:
+            match = SCENE_PREFIX.match(key[1])
+            if match:
+                passed.add(match.group(1))
+    scenes = sorted((key[1] for key in index if key[0] == "SCENE" and key[1]), key=scene_sort_key)
+    for name in (context.checkpoints or {}):
+        if not str(name).startswith("CHECKPOINT-C-"):
+            continue
+        scope = str(name)[len("CHECKPOINT-C-"):]
+        sequence = index.get(("SEQUENCE", scope))
+        pieces = split_list(sequence.get("scenes") or "") if sequence is not None else [scope]
+        for piece in pieces:
+            match = SEQUENCE_OR_SCENE_RANGE.match(piece.strip())
+            if match:
+                low, high = scene_sort_key(match.group(1)), scene_sort_key(match.group(2))
+                passed.update(scene for scene in scenes if low <= scene_sort_key(scene) <= high)
+            elif piece.strip():
+                passed.add(piece.strip())
+    context.cache["groups_passed"] = passed
+    return passed
+
+
+def scene_sort_key(identifier):
+    match = re.match(r"^SC(\d+)([A-Z]?)$", identifier or "")
+    return (int(match.group(1)), match.group(2)) if match else (10 ** 6, identifier or "")
+
+
+def approval_not_yet_due(record, name, context):
+    """SHOTLIST approved is code's mark that the user passed the scene's group of shots (checkpoint C). Until the
+    group passes it is not yet due: FORM-05 never asks for it (in a chat without code the AI writes it, so it is
+    asked as any field is)."""
+    if record.type_name != "SHOTLIST" or name != "approved":
+        return False
+    if normalise_word(context.code_execution or "") == "no":
+        return False
+    scene = SCENE_PREFIX.match(record.identifier or "")
+    return scene is not None and scene.group(1) not in scenes_with_group_passed(context)
 
 
 def check_form_05(record_files, context):
@@ -663,7 +716,8 @@ def check_form_05(record_files, context):
             fields = {"target": fields["target"]}
         stub = is_previs_stub(key, record)
         for name, definition in fields.items():
-            if (key[0], name) in NEVER_ASKED_OF_THE_AI or (stub and name not in PREVIS_STUB_FIELDS):
+            if (key[0], name) in NEVER_ASKED_OF_THE_AI or (stub and name not in PREVIS_STUB_FIELDS) or \
+                    approval_not_yet_due(record, name, context):
                 continue
             required, reason = field_is_required(record, definition, context, record_type)
             if not required:
@@ -691,6 +745,9 @@ CODE_FIELD_SOURCES = {("TEXT", "words"): "words_from"}
 
 def code_field_fix(type_name, name):
     """The fix for a missing field that code keeps: the AI writes nothing; it says what code fills it from."""
+    if (type_name, name) == ("SHOTLIST", "approved"):
+        return ("Fix: nothing for the AI to write; code sets it when the group of shots passes: run stage.py next "
+                "(after the user's \"next\" on a group that waits, stage.py next --checkpoint-passed)")
     try:
         from .fill_code_fields import FILL_COMMAND_WORDS, code_fill_path
     except ImportError:
@@ -810,19 +867,49 @@ def remove_quoted(value):
     return re.sub(r'["\u201c][^"\u201c\u201d]*["\u201d]', '""', value)
 
 
+# Markers that are also ordinary English inside a sentence ("the sound goes on as before"): they mark a shortening
+# only when they stand for the value: at its start ("As before, the lamp on its hook."), in a value of at most this
+# many words, or in a clause that points back to an earlier record ("the same framing, lens and light as before").
+MARKERS_ALSO_ENGLISH = {"as before"}
+MARKER_VALUE_WORDS_MAX = 5
+POINTING_BACK_WORDS = {"same", "identical", "unchanged", "previous", "earlier", "above"}
+
+
+def marker_clause_points_back(lowered, start):
+    """True when the sentence part holding a marker (after the last ; . : or dash) holds a word that points back."""
+    before = re.split(r"[;.:\u2014]|\s-\s", lowered[:start])[-1]
+    return bool(set(re.findall(r"[a-z]+", before)) & POINTING_BACK_WORDS)
+
+
 def find_marker(text, markers):
     lowered = text.lower()
     for marker in markers:
         if marker[0].isalpha():
-            if re.search(r"(?<![a-z])" + re.escape(marker.lower()) + r"(?![a-z])", lowered):
+            found = re.search(r"(?<![a-z])" + re.escape(marker.lower()) + r"(?![a-z])", lowered)
+            if found:
+                if marker.lower() in MARKERS_ALSO_ENGLISH and lowered[:found.start()].strip(" \t\"'(") and \
+                        len(re.findall(r"[a-z']+", lowered)) > MARKER_VALUE_WORDS_MAX and \
+                        not marker_clause_points_back(lowered, found.start()):
+                    continue
                 return marker
         elif marker in text:
             return marker
     return None
 
 
+def written_by_code(context, record, field_name):
+    """True when code wrote this field of this record (writer story or code_state): FORM-08 does not judge code's
+    own text, which the AI may not change (FORM-10). A chat project's chat_writer ai fields are the AI's."""
+    definition, _, how = resolve_field(context.schema, context.words, record, field_name)
+    if definition is None or how is None:
+        return False
+    if definition.get("chat_writer") == "ai" and normalise_word(context.code_execution or "") == "no":
+        return False
+    return context.conditions.writer_for(definition, record) in ("story", "code_state")
+
+
 def check_form_08(record_files, context):
-    """FORM-08 Shortening marker inside a record (G11), unless inside double quotes."""
+    """FORM-08 Shortening marker inside a record (G11), unless inside double quotes, or in a field code wrote."""
     problems = []
     markers, starts = shortening_markers(context.words)
     for record_file in record_files:
@@ -830,6 +917,8 @@ def check_form_08(record_files, context):
             for line in record.body:
                 raw = line.raw if line.raw is not None else ""
                 if isinstance(line, FieldLine):
+                    if not context.written_by_ai and written_by_code(context, record, line.name):
+                        continue
                     if raw.strip().startswith(tuple(starts)):
                         marker = raw.strip()[:2]
                     else:

@@ -32,6 +32,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 
 REPOSITORY = Path(__file__).resolve().parent.parent
 SKILL = REPOSITORY / ".claude" / "skills" / "breaking-down-stories"
@@ -275,8 +276,14 @@ def run_groups(workspace, story_path):
         if excerpt is not None:
             source = sections_of(text).get("The scene's lines (scene 10, 397 to 489)", "")
             assert "397  ## INT. SAYE'S HOUSE - KITCHEN - BEFORE DAWN" in source and "489" in source
-        example = sections_of(text).get("One example from the gold (The Catch, scene 10)", "")
-        assert "### BEAT SC10-B07" in example and "### SHOTLIST SC10-LIST" in example
+        # changed after the full run (Project notes 32, problem 6): the gold is this very scene, so its handout leaves
+        # the gold out rather than hand the unit its answer; any other scene's handout gets the gold's beat and list
+        example = sections_of(text).get("One example from the gold", "")
+        assert "the gold example is this very scene" in example, f"the gold handed to its own scene: {example[:200]}"
+        from stage_tools.make_handout import Workspace, example_section
+        other_scene = SimpleNamespace(step=7, scene="SC11", part=None, list_unit=False)
+        example = example_section(Workspace(gold), other_scene) or ""
+        assert "### BEAT SC10-B07" in example and "### SHOTLIST SC10-LIST" in example, example[:300]
         return (f"about {max(words_estimate, character_estimate):,} tokens of {CLAUDE_CEILING:,} (words x {PER_WORD}: "
                 f"{words_estimate:,}; characters / 4: {character_estimate:,}); card parts {cards:,} of {CARD_CAP:,}")
     handout_7()
@@ -339,8 +346,11 @@ def run_groups(workspace, story_path):
             match = re.search(r"^- item: SC10-SH150 .*\n  provisional floor (\S+) s \((.*)\)", other, re.MULTILINE)
             assert match and match.group(1) == "13.8", f"shot 150's floor: {match.group(0) if match else None}"
             assert "2.0 s after the turn at beat 7" in match.group(2)
-        example = sections_of(other).get("One example from the gold (The Catch, scene 10)", "")
-        assert "### SHOT SC10-SH150" in example
+        example = sections_of(other).get("One example from the gold", "")
+        assert "the gold example is this very scene" in example, f"the gold handed to its own scene: {example[:200]}"
+        from stage_tools.make_handout import Workspace, example_section
+        other_scene = SimpleNamespace(step=8, scene="SC11", part=None, list_unit=False)
+        assert "### SHOT SC10-SH150" in (example_section(Workspace(gold), other_scene) or "")
         return (f"about {max(words_estimate, character_estimate):,} tokens of {CLAUDE_CEILING:,}; card parts {cards:,}; "
                 f"{len(items)} items, each with its floor; shot 150's floor 13.8 s in {holder}"
                 + ("" if excerpt else " (floors skipped: story not present)"))
@@ -381,8 +391,9 @@ def run_groups(workspace, story_path):
         return "; ".join(lines)
     stub_handouts()
 
-    @group("over the ceiling: the example goes first, then the lowest-listed card parts, then the story is trimmed to "
-           "the unit's own lines, then the unit is marked for splitting")
+    @group("over the ceiling: the example goes first, then the records the unit only reads are put in brief, then the "
+           "lowest-listed card parts, then the story is trimmed to the unit's own lines, then the unit is marked for "
+           "splitting")
     def drop_order():
         from stage_tools.make_handout import Workspace, build_handout, unit_from_identifier, estimate_tokens
         full = build_handout(Workspace(gold), unit_from_identifier(Workspace(gold), "U-08-SC10-B1"), "claude_code")
@@ -400,20 +411,28 @@ def run_groups(workspace, story_path):
         first = with_ceiling(total - 10)
         assert first.left_out and "example" in first.left_out[0] and len(first.left_out) == 1, first.left_out
         assert first.tokens() <= total - 10
+        # changed after the full run (Project notes 32, problem 6): the records a unit only reads are put in brief
+        # before any card part is left out (the full run lost the mirror rule's card part to whole records)
         last_card = cards[-1]
         second = with_ceiling(total - example_tokens - 10)
-        assert "example" in second.left_out[0] and any(last_card.label in entry for entry in second.left_out[1:]), \
-            second.left_out
-        assert not any(cards[0].label in entry for entry in second.left_out), "the highest-listed part went first"
+        assert "example" in second.left_out[0] and "in brief" in second.left_out[1], second.left_out
+        assert not any(card.label in entry for card in cards for entry in second.left_out), \
+            f"a card part went before the records were put in brief: {second.left_out}"
         third = with_ceiling(3000)
         kinds = [entry for entry in third.left_out]
-        assert kinds[0].startswith("the example"), kinds
+        assert kinds[0].startswith("the example") and "in brief" in kinds[1], kinds
+        card_places = [index for index, entry in enumerate(kinds) if any(card.label in entry for card in cards)]
+        assert card_places and min(card_places) > 1 and last_card.label in kinds[min(card_places)], kinds
+        assert not any(cards[0].label in entry for entry in kinds[:min(card_places) + 1]) or len(cards) == 1, \
+            "the highest-listed part went first"
         if excerpt is not None:
             assert any("the story's lines outside this unit's own" in entry for entry in kinds), kinds
             source = next(section for section in third.sections if section.kind == "source")
             assert source.trimmed and "Trimmed to this unit's own lines" in source.current_text()
         assert third.too_big, "a handout still over the ceiling is not marked for splitting"
-        assert "split this unit" in third.text()
+        # changed after the full run (Project notes 32, problem 6): the advice names only a split that exists; for a
+        # batch of shots that is two replies (a smaller batch is not a unit next can hand out)
+        assert "Still over the ceiling" in third.text() and "two replies" in third.text()
         return (f"full {total:,} tokens; ceiling {total - 10:,}: {first.left_out[0]}; ceiling "
                 f"{total - example_tokens - 10:,}: {len(second.left_out)} things left out; ceiling 3,000: "
                 f"{len(third.left_out)} left out and the unit marked for splitting")
@@ -462,7 +481,8 @@ def run_groups(workspace, story_path):
         assert sum(entry["expected"] for entry in batches.values()) == 21, batches
         assert manifest["checkpoints"]["CHECKPOINT-C-SQ03"]["how"] == "the user replied next"
         code, again = stage(["next", "--checkpoint-passed", "--project", str(folder)])
-        assert code == 2, "passing a checkpoint when none waits should stop with exit 2"
+        # changed after the full run (Project notes 32, problem 4): with nothing waiting it goes on as next does
+        assert code == 0 and "No checkpoint was waiting" in again and "Next: U-08-SC10-B1," in again, again[:600]
         code, check = stage(["check", "--step", "7", "--scene", "SC10", "--project", str(folder)])
         assert not [line for line in check.splitlines() if "approved is missing" in line], "approved still missing"
         shown = ", ".join(f"{name} ({entry['expected']})" for name, entry in batches.items())

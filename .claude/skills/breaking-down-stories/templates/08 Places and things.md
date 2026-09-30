@@ -79,7 +79,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - reader: <standard: an ID of CHARACTER (CH-IONA), or none>
 - plot_critical: <standard: yes or no>
 - emphasis: <standard: a number from 0 to 3>
-- method: <standard: composite or background_blur>
+- method: <standard: composite, background_blur or model_drawn>
 - lettering: <detailed: text>
 - animation: <standard: text, or none>
 - translate: <detailed: yes or no>

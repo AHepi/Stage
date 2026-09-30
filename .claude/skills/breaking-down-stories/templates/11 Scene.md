@@ -161,7 +161,8 @@ Below this line: details for the AI and the checker. You never need to read them
 ### SETUP <scene ID, -SU and 2 digits, like SC10-SU02> <a short plain title>
 - at: <standard, or write at_words instead: [x, y] or [x, y, z] in metres>
 - at_words: <standard, or write at instead: text>
-- look_at: <standard: [x, y] or [x, y, z] in metres>
+- look_at: <standard, or write look_at_words instead: [x, y] or [x, y, z] in metres>
+- look_at_words: <standard, or write look_at instead: text>
 - lens_mm: <standard: millimetres>
 - use: <standard: text>
 - side: <standard: a or b>
@@ -216,8 +217,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - frame_in_frame: <detailed: text, or none>
 - device: <detailed: text, or none>
 - glass: <standard, when glass_in_frame, one line each: text> | state: <clear, marked, reflecting, screen or broken_open> | camera: <through, along or angled>
-- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)>
-- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY); write none when there is nothing> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)>
+- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)> | recorded: <footage only: SC06>
+- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY); write none when there is nothing> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)> | recorded: <footage only: SC06>
 - text: <standard: IDs of TEXT (TX-GOODS-ONLY), separated by commas, or none>
 - keep_hidden: <standard, when fact_element_before_reveal, one line each: an ID of FACT (FT-03)> | how: <one word from the note>
 - must_show: <standard: IDs of CHARACTER (CH-IONA) or STATE (CH-IONA.S02) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or MOTIF (MO-MINT) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP), separated by commas, or none>

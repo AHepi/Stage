@@ -44,6 +44,10 @@ cheap_test_above_usd_per_take, named_sounds_per_prompt_max) and rules/limits.jso
 word lists from rules/words.json (banned_prompt_words, allowed_negations).
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- GEN-05 leaves the room sound out; GEN-06 lets the model draw only one short mark (model_drawn) and finds capitals
+  written with a capital on every word; GEN-15 leaves quoted script lines out.
 """
 
 import datetime
@@ -55,7 +59,8 @@ from pathlib import Path
 
 from . import film_pass  # noqa: F401  (registers FILM-01 to FILM-12 and the film pass report section)
 from .check_records import register_check, same_scene, scene_of
-from .derive_fields import allowed_lengths, constant, element_of, held_take, number_of, round_up_to
+from .derive_fields import (allowed_lengths, constant, element_of, held_take, number_of, project_prompt_swaps,
+                            round_up_to, swap_prompt_words, swap_sources_banned)
 from .film_pass import (MACHINE_FOLDER, breakdown_of, ends_before, film_scenes, id_range_pairs, in_pairs,
                         is_empty, is_kept, number_words, pairs_words, place_of, report, story_point_position)
 from .record_format import load_json, normalise_word, split_item, split_list
@@ -78,6 +83,8 @@ RELAYED_PATHS = {
 # words or more taken from a fixed description, a state line or the look block counts as re-describing.
 # [judgement: long enough that "on the left" or "the woman" never counts]
 REDESCRIBED_CLAUSE_WORDS_MIN = 4
+# A double-quoted quotation of the script inside a record's words.
+QUOTED_WORDS = re.compile(r'["\u201c][^"\u201c\u201d]+["\u201d]')
 # A reason (why, purpose, motif meaning) counts as travelling into the prompt when a clause of this many words or
 # more from it is there (GEN-15). [judgement, as above]
 REASON_CLAUSE_WORDS_MIN = 4
@@ -684,7 +691,10 @@ def lint_gen_04(run, clips, facts=None, forced=False):
         for field_name, what, text in appearance_texts(run, clip):
             # the one change allowed: left and right turned, where the picture shows the element pre-reversed
             # (a mirrored element made as it appears, or a normal one made before the clip's flip; 8.5, B1 method 1)
-            if normalised(text) not in prompt and normalised(turned_sides(text)) not in prompt:
+            # the one change allowed: left and right turned, and the project's word swaps made on every word
+            swapped = swap_prompt_words(text, prompt_swaps(run))
+            if normalised(text) not in prompt and normalised(turned_sides(text)) not in prompt and \
+                    normalised(swapped) not in prompt and normalised(turned_sides(swapped)) not in prompt:
                 problems.append(clip_problem(
                     run, "E", "GEN-04", clip, field_name,
                     f"the prompt does not hold {what} word for word",
@@ -693,12 +703,24 @@ def lint_gen_04(run, clips, facts=None, forced=False):
     return problems
 
 
+def prompt_without_sounds(clip):
+    """The prompt with its sound sentences taken out (the effects and the room sound): a room sound that begins with
+    the place's words ("a small sealed room at dawn: the air handling") describes what is heard, not what is seen,
+    so it never counts as re-describing the place for GEN-05."""
+    prompt = str(clip.prompt or "")
+    for sound in clip.data.get("sounds") or []:
+        text = re.sub(r"^room sound:\s*", "", str(sound or ""), flags=re.IGNORECASE).strip().rstrip(".")
+        if text:
+            prompt = re.sub(re.escape(text), " ", prompt, flags=re.IGNORECASE)
+    return prompt
+
+
 def lint_gen_05(run, clips, facts=None, forced=False):
     problems = []
     for clip in clips:
         if not clip.inputs.get("start_picture"):
             continue
-        prompt = normalised(clip.prompt)
+        prompt = normalised(prompt_without_sounds(clip))
         for _, what, text in appearance_texts(run, clip):
             found = normalised(text) in prompt or any(piece in prompt
                                                      for piece in clauses(text, REDESCRIBED_CLAUSE_WORDS_MIN))
@@ -722,10 +744,31 @@ def texts_in_frame(run, clip):
         if record is not None and record.type_name == "TEXT" and record not in found:
             found.append(record)
     things = {element_of(split_item(written).first or "") for written in clip.shot.get_all("thing")}
+    things = {thing for thing in things if thing and not is_empty(thing)}
     for record in run.records("TEXT"):
-        if element_of(record.get("on") or "") in things and record not in found:
+        on = element_of(record.get("on") or "")
+        # a title card is on nothing: "on: none" never matches a shot's "thing: none"
+        if on and not is_empty(on) and on in things and record not in found:
             found.append(record)
     return found
+
+
+def is_single_mark(words):
+    """True for one short mark a model may draw itself (a single letter, digit or sign of up to 3 characters)."""
+    return len(words.split()) == 1 and len(words) <= 3
+
+
+def words_asked_for(words, prompt):
+    """True when a prompt asks for a text's words. Words printed in capitals are found as printed ("THE END") or
+    with a capital on every word ("The End", "The Catch"), never inside lower-case prose ("the end of the corridor");
+    other words are found without regard to case."""
+    pattern = r"(?<!\w)" + re.escape(words) + r"(?!\w)"
+    if words != words.upper() or not re.search(r"[A-Z]", words):
+        return bool(re.search(pattern, prompt, re.IGNORECASE))
+    if len(words.split()) < 2:
+        return bool(re.search(pattern, prompt))
+    return any(all(piece[:1].isupper() for piece in match.group(0).split() if piece[:1].isalpha())
+               for match in re.finditer(pattern, prompt, re.IGNORECASE))
 
 
 def lint_gen_06(run, clips, facts=None, forced=False):
@@ -737,11 +780,14 @@ def lint_gen_06(run, clips, facts=None, forced=False):
             words = (text.get("words") or "").strip().strip('"')
             if not words or is_empty(words):
                 continue
-            flags = re.IGNORECASE if word_count(words) >= 2 else 0
-            if re.search(r"(?<!\w)" + re.escape(words) + r"(?!\w)", prompt, flags):
+            drawn = normalise_word(text.get("method") or "") == "model_drawn"
+            if drawn and is_single_mark(words):
+                continue  # a single mark the shot is about, drawn by the model and checked in the take
+            if words_asked_for(words, prompt):
                 problems.append(clip_problem(
                     run, "E", "GEN-06", clip, "text",
-                    f"asks the model to draw the words of {text.identifier} ('{words}')",
+                    f"asks the model to draw the words of {text.identifier} ('{words}')" +
+                    ("; model_drawn is only for one short mark, such as a single letter" if drawn else ""),
                     "Fix: ask for a plain, unmarked surface; the words are drawn as a text graphic and composited "
                     "after any flip."))
                 reported = True
@@ -951,17 +997,19 @@ def lint_gen_11(run, packs, clips, facts, forced=False):
 
 
 def banned_words(run):
+    """The words banned from prompts: words.json's groups, and each word swap's source except one whose own target
+    holds it ("flask" becomes "small steel vacuum flask")."""
     groups = (run.words.get("banned_prompt_words") or {}).get("groups") or {}
     words = []
     for group in groups.values():
         words.extend(group)
-    project = run.project_record
-    if project is not None:
-        for written in project.get_all("prompt_words"):
-            first = (split_item(written).first or "").strip()
-            if first and not is_empty(first):
-                words.append(first)
+    words += swap_sources_banned(prompt_swaps(run))
     return sorted(set(words), key=lambda word: (-len(word), word))
+
+
+def prompt_swaps(run):
+    """The prompt word swaps (words.json's and the project's own), as the compiler makes them."""
+    return project_prompt_swaps(run.words, run.project_record)
 
 
 def lint_gen_12(run, clips, facts=None, forced=False):
@@ -1074,7 +1122,9 @@ def lint_gen_15(run, clips, facts=None, forced=False):
         visible = visible_texts(clip)
         found = None
         for what, text in reason_texts(run, clip):
-            for piece in clauses(text, REASON_CLAUSE_WORDS_MIN):
+            # a quotation of the script inside a reason is the story's own words (a spoken line the prompt sends,
+            # text the shot shows), never the reason travelling into the prompt
+            for piece in clauses(QUOTED_WORDS.sub(" ; ", text or ""), REASON_CLAUSE_WORDS_MIN):
                 if piece in prompt and piece not in visible:
                     found = (what, piece)
                     break

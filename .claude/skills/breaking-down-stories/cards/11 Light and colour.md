@@ -8,7 +8,7 @@ In Saye's kitchen the only warm light is the lamp Iona holds, and when Saye says
 
 ## Questions in order
 
-1. **What does the story already say?** Every light, colour and darkness word is binding (B2 §5.1, R3; COVER-08). In prose, figurative light ("A question is a lamp you hold up on somebody", The Long Places, line 92) guides meaning only (B2 §5.1).
+1. **What does the story already say?** Every light, colour and darkness word is binding (B2 §5.1, R3; COVER-08): the look carries a light at rest; a light that changes or moves (goes out, is held up) needs a light cue quoting its line, and that cue adds nothing (CRAFT-10). A colour describing a person ("grey and tidy") is not light. In prose, figurative light ("A question is a lamp you hold up on somebody", The Long Places, line 92) guides meaning only (B2 §5.1).
 2. **What is each source, and where is it in the room?** (B2 P2)
 3. **Which source reads as plain white?** (B2 §4.1)
 4. **What stays dark?** (B2 P7)

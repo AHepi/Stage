@@ -123,8 +123,14 @@
   "scene_total_tolerance": {
    "value": 0.1,
    "unit": "fraction",
-   "meaning": "A scene's total screen time may differ from target_duration_s by at most this share (TIME-03).",
-   "source": "C5 R27"
+   "meaning": "A scene's written shots may differ from its design, the total of its one-line list's times, by at most this share (TIME-03 and the estimate's scene warnings). The first estimate's target_duration_s is a guess from word counts and is not judged. The one scene-length tolerance: scene_duration_tolerance_share was removed after the full run.",
+   "source": "C5 R27; Project notes 32 (problem 10)"
+  },
+  "scene_target_far_ratio": {
+   "value": 2.0,
+   "unit": "ratio",
+   "meaning": "A scene's design (its one-line list's total) more than this many times its target_duration_s, or under its inverse, is warned (TIME-03, from step 7): the first estimate is a guess and is not kept, but a scene that doubles or halves its planned length changes the film's length and is seen before its shots are written.",
+   "source": "Project notes 32 (cross-examination X08)"
   },
   "main_actions_per_seconds": {
    "value": {
@@ -473,13 +479,6 @@
    "unit": "seconds",
    "meaning": "The longest screen time one shot may have before code refuses to plan clips for it (10 minutes). Longer values are almost certainly typing slips; the longest real single takes in feature films run a few minutes.",
    "source": "Code review A (fuzz test): an absurd screen time made clip planning run for over 10 minutes."
-  },
-  "scene_duration_tolerance_share": {
-   "value": 0.25,
-   "unit": "fraction",
-   "meaning": "A scene's total screen time may differ from its target_duration_s by at most this share before TIME-03 warns; wider than scene_total_tolerance because the target is the first estimate, made from word counts, not a design.",
-   "source": "C5 R27; widened after test run 01 (fix list C8)",
-   "judgement": true
   }
  },
  "from_blueprint_text": {

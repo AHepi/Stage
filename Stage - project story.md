@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 30 September 2026 (log entry 31).
+Last updated: 30 September 2026 (log entry 34).
 
 ## The goal
 
@@ -22,20 +22,19 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 **Tested:**
 - The automatic tests pass in 18 of 19 groups. The failing group is a size target, explained under "Known issues".
 - A fresh AI with only the kit planned the whole of The Catch and broke down three scenes (entries 23 to 25). Its 36 problems are fixed.
-- **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`. Only one of them is fixed so far.
+- **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`.
+- **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
 
 **Not tested yet:**
+- A new scene written with the fixed kit. The Catch was only re-checked, so its records are still the ones written under the old rules.
 - A real person answering the questions. In the tests, the answers were always "defaults" and "no changes".
 - The Long Places (you asked to leave it for later).
 - The chat-app route in the real ChatGPT and Gemini apps. It is designed and bundled, but was only simulated here.
 - Actually making pictures, videos or voices. This computer has no accounts for those services, so the prompt packs stop at "ready to send, checked and priced".
 
 **Known issues:**
-- **The full run's 18 problem groups (entry 31).** The worst:
-  - A code slip hides jump cuts after shots numbered below 100.
-  - One error in text the checker wrote itself can never be cleared, so the kit never says "finished".
-  - Several checking rules contradict the film's own plan, so the AI cannot satisfy both.
-  - The book prints internal names such as "CAMSYS" in its "why" lines.
+- **The Catch still has 37 warnings.** They are real points in its records (for example 8 light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
+- **The light check reads words.** A change of light written in words it does not know would slip through.
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
@@ -64,7 +63,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 | Checking program | `.../tools/stage.py` and `stage_tools/` | Reads stories; numbers lines; checks about 90 things; works out timings, sides and camera distances; builds handouts; exports; estimates cost; writes video prompts; builds 3D mock-ups | Checked, readable files |
 | Templates and model scene | `.../templates/`, `.../examples/` | Empty forms, and the finished scene 10 | A model to copy |
 | Guides and bundles | Repository top: `01` to `09` | How to start in each app; the chat-app bundle; the skill file for Claude; the example folder | What you open first |
-| Project notes | `Project notes/` | The blueprint, the two test reports, the fix list | The record of how it was built and tested |
+| Project notes | `Project notes/` | The blueprint, the test reports, the fix notes and the cross-examination | The record of how it was built and tested |
 
 ## Word list
 
@@ -114,6 +113,10 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 | Jump cut | A deliberate cut between two shots taken from nearly the same place, so the picture seems to jump. |
 | Insert | A close shot of a hand, an object or a screen, cut into a scene. |
 | Command safety checker | The automatic check in this session that approves or blocks each command before it runs. |
+| Cross-examination | A second helper, which did not do the work, trying to prove it wrong. |
+| Locked record | A record you approved. It cannot change unless you answer a question that unlocks it. |
+| False alarm | A warning about something that is not really a problem. |
+| Effort | How long and how carefully a helper thinks before answering. "Highest" (xhigh) is the slowest and most careful. |
 
 ## Numbered log
 
@@ -156,7 +159,26 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - The book reads well and follows the script shot by shot. But it prints internal names like "CAMSYS", and in one place it calls Jude Iona's "husband", which the script never says.
     - The 10 scene helpers logged 254 problems and unclear instructions. I grouped them into 18 groups, each with a fix. The worst are a code slip that hides jump cuts, an error nobody can clear, and checking rules that contradict the film's own plan.
     - File: `Project notes/31 Test - The Catch - full run.md`.
+32. **Fixed the 18 problem groups, with one helper at the highest effort, as you asked.** The helper also added a test for each fix, rebuilt the chat kit and re-checked The Catch's finished breakdown. The results:
+    - Errors went from 1 to 0 and warnings from 126 to 29.
+    - Video-prompt problems went from 133 to 40.
+    - "What's next" says "Finished" at the end.
+    - The book no longer shows the kit's internal names.
+    - Only the handouts for the biggest scenes are still slightly too large.
+    - File: `Project notes/32 Fixes - after the full run.md`.
+33. **Cross-examination by Opus 5.5.** You asked for GLM to cross-examine the work. GLM could not be reached: it needs an access key this environment does not have. You chose Opus 5.5 instead. A fresh Opus 5.5 helper at the highest effort tried to prove the fixes wrong, on copies only. It confirmed most of the work, and found five fixes that went too far:
+    - "none" could wipe fields of records you had approved and locked;
+    - "Finished" could appear with no spreadsheets or captions;
+    - the light check let "The lamp goes out." through;
+    - any quote excused an added light change;
+    - a close shot of a ring could lose its protection from being flipped.
+    It also found twelve smaller problems, and wrong sentences in note 32. File: `Project notes/33 Cross-examination - the fixes checked.md`.
+34. **Repaired everything the cross-examination found, myself, without more helpers.** Each repair has a test that fails if the repair is undone; the new test file now has 42 groups.
+    - Failure: my first light repair made four false alarms on The Catch ("turns the tag to the light", "the bright steel", "comes into the light", "a fire shutter"). I caught them on the re-check and fixed them, with tests.
+    - Final re-check of The Catch: no errors, 37 warnings (up from 29, because the repaired checks catch real faults again), 40 video-prompt problems, and "Finished" only after every export.
+    - Tests: 19 of 20 files pass; the failing one is the old chat-kit size check, whose files are within 3 words of their size before all this.
+    - Note 32 is corrected, and note 33 ends with what was done about each finding.
 
 ## Next step
 
-Fix the 18 problem groups from the full run myself, without new helpers, starting with the code slips and the rules that contradict each other. Then re-check The Catch's finished breakdown with the fixed checker, to confirm the warnings drop, without re-running the scenes. That uses far less of your allowance than another full run.
+Run a small fresh test of the fixed kit: one helper writes three scenes of The Catch from scratch (for example scenes 2, 13 and 26). That shows whether a helper following the new instructions really finishes scenes without warnings it cannot clear. It is the main thing still untested, and it costs a small share of what the full run did.

@@ -35,6 +35,10 @@ story-point value, of every ID-kind first part and sub-part, and the ID after "e
 a CUT shared_geometry is never ID-02: code creates that stub with status planned (5.4 rule 2).
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- ID-02 waits for a choice whose record is not made yet; ID-03 warns only an end card or black numbered below 990;
+  CITE-03 reads a speech across a stage direction.
 """
 
 import re
@@ -376,6 +380,7 @@ def check_id_01(run):
 def check_id_02(run):
     problems = []
     left_out = set()
+    waiting = set()
     speeches_missing = False
     source_kind = run.project_record.get("source_kind") if run.project_record is not None else None
     for record_file, record, field_name, line_number, identifier, how in references(run):
@@ -404,6 +409,11 @@ def check_id_02(run):
                 and not run.records("SPEECH", include_omitted=True) and source_kind in (None, "screenplay"):
             speeches_missing = True
             continue
+        if how == "field path" and record.type_name == "CHOICE" and run.schema.knows_type(identifier):
+            # a choice that sets a field of a film record not made yet (the sound plan, written at step 6): apply
+            # keeps its answer waiting until the record is made, so this is not an error now
+            waiting.add(f"{record.identifier} ({identifier})")
+            continue
         what = f"names {identifier}, which does not exist"
         if how == "resolved beat":
             what = f"resolves its story point to {identifier}, which does not exist"
@@ -413,14 +423,17 @@ def check_id_02(run):
                                     "Fix: copy an ID that exists (reference/03 lists where each kind is issued), or "
                                     "write that record first", line_number=line_number, file_name=record_file.name))
     left_out_skip(run, "ID-02", left_out)
+    if waiting:
+        run.skip("ID-02", "choices kept waiting until the record they set is made: " + ", ".join(sorted(waiting)))
     if speeches_missing:
         run.skip("ID-02", "speech IDs: speeches.json is not present (run stage.py read, or give --story)")
     return problems
 
 
 @register_check("ID-03", level="W", build=1,
-                title="Shot numbers not in tens; an insert without a gap; cards and black below 990",
-                plain="has a shot number out of the usual steps of ten")
+                title="Shot numbers not in tens; an insert without a gap; end cards and black below 990",
+                plain="has a shot number outside the usual pattern: tens for shots, 990 to 999 for an end card or "
+                      "black screen")
 def check_id_03(run):
     problems = []
     end_cards = constant_value(run, "end_card_numbers", [990, 999])
@@ -464,10 +477,15 @@ def check_id_03(run):
                                                 "before it, so it is not an insert between two shots",
                                                 f"Fix: use the next free number in steps of {step} from the issued "
                                                 "block"))
-            if kind in ("card", "black") and number < end_first:
+            later_filmed = [other for other, value in numbers.items() if value > number and (
+                other not in shots or normalise_word(shots[other].get("kind") or "") not in ("card", "black"))]
+            if kind in ("card", "black") and number < end_first and not later_filmed:
+                # only an end card or black after the scene's last filmed shot takes 990 to 999; a black or a card
+                # in the middle of a scene (the script's own, scene 6) keeps its number in story order
                 problems.append(run.problem("W", "ID-03", record, field,
-                                            f"{subject}is a {kind} shot numbered below {end_first}",
-                                            f"Fix: number cards and black from {end_first} to {end_last}"))
+                                            f"{subject}is a {kind} shot at the end of the scene numbered below "
+                                            f"{end_first}",
+                                            f"Fix: number end cards and black from {end_first} to {end_last}"))
             if kind and kind not in ("card", "black") and number >= end_first:
                 problems.append(run.problem("W", "ID-03", record, field,
                                             f"{subject}is a {kind} shot numbered {end_first} or above; those "
@@ -1031,6 +1049,20 @@ def item_cited_lines(run, first_part):
     return None
 
 
+def quote_in_a_speech(run, quote, first, last):
+    """True when a quote is part of one speech whose cue lies in first..last, read as its words are recorded: a
+    speech broken by a stage direction in brackets ("I know. (beat) Not that one.") may be quoted whole, without the
+    direction."""
+    wanted = " ".join(quote.split()).lower()
+    for entry in (run.speeches or {}).values():
+        line = entry.get("line")
+        if line is None or not (first <= line <= last):
+            continue
+        if wanted and wanted in " ".join(str(entry.get("text") or "").split()).lower():
+            return True
+    return False
+
+
 @register_check("CITE-03", level="E", build=1, title="A quoted string not found in the cited or scene lines",
                 plain="quotes words that are not in the story lines it cites")
 def check_cite_03(run):
@@ -1051,7 +1083,7 @@ def check_cite_03(run):
             if lines is None:
                 continue
             first, last, complete = lines
-            if story.find(quote, first, last):
+            if story.find(quote, first, last) or quote_in_a_speech(run, quote, first, last):
                 continue
             if not complete:
                 partial = True

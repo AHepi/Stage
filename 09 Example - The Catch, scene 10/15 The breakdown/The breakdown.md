@@ -2,7 +2,7 @@
 
 Scope: 1 of 1 scene (scene 10).
 
-1 scene, 21 shots, about 1 minute 53 seconds of film. Made from the records on 2026-09-30; if it looks wrong, the record is fixed and the book is made again.
+1 scene, 21 shots, about 1 minute 53 seconds of story. Made from the records on 2026-09-30; if it looks wrong, the record is fixed and the book is made again.
 
 ## Contents
 
@@ -232,7 +232,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Light:** as the look
 - **Sound:** the back door opening, sound emphasis 1
 - **Room sound:** as the place
-- **Screen time:** 4 seconds (it cannot be shorter than 0.5 seconds)
+- **Screen time:** 4 seconds
 - **Moment:** 0 to 4 seconds: the door opens on Saye, dressed and buttoned; her eyes move over the three of them, to the blood, then down, and hold there
 - **Last picture:** Saye still, eyes down on something below the frame
 - **Cut out on:** keeping something hidden for later
@@ -531,7 +531,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Glass:** window, clear, seen straight through
 - **Light:** as the look
 - **Room sound:** as the place
-- **Screen time:** 2.5 seconds (it cannot be shorter than 0.5 seconds)
+- **Screen time:** 2.5 seconds
 - **Moment:** 0 to 2.5 seconds: Saye holds Eli's look, then her head turns to the flask on the counter
 - **Last picture:** Saye turned toward the counter
 - **Cut out on:** the thought is complete
@@ -800,11 +800,11 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 
 **Small choices I made**
 
-- Iona sets the lamp back on the table between the women before the raised hands (an addition to the story; keep or cut it).
-- The three arrive at the back door, which opens into the kitchen (an addition to the story; keep or cut it).
-- Eli stands at the far end of the table by the fridge, on the table's line (an addition to the story; keep or cut it).
-- Saye's phone lies on the counter beside the flask (an addition to the story; keep or cut it).
-- Shot 070: Iona sets the lamp back on the table between them (an addition to the story; keep or cut it).
+- Iona sets the lamp back on the table between the women before the raised hands (an addition that changes the scene; keep or cut it).
+- The three arrive at the back door, which opens into the kitchen (a small addition, kept).
+- Eli stands at the far end of the table by the fridge, on the table's line (a small addition, kept).
+- Saye's phone lies on the counter beside the flask (a small addition, kept).
+- Shot 070: Iona sets the lamp back on the table between them (an addition that changes the scene; keep or cut it).
 - Where everyone stands in the kitchen: far back along the table's line on the long lens, Eli small in the middle behind the women, the bottle cap in the same frame (choice 15).
 
 ## Word list

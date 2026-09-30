@@ -35,7 +35,7 @@ Behind it is one SHOT record (`SC10-SH150`, in `.claude/skills/breaking-down-sto
 - **End every reply the same way.** **Done** (with progress: "scene 11 of 30, step 9 of 12"), **Example from your story** (one concrete line), **Made** (files), **Needs you** (nothing, or one question with its default in square brackets), then **Next** (one step); in chat apps, then "Save as" and "To continue later". Every message shape is in `.claude/skills/breaking-down-stories/reference/07 Report and message formats.md`.
 - **Use the user's words, never the codes.** "Scene 10", "shot 150", "beat 7", "camera B" (a setup), "floor-plan move 4", "group 3" (a sequence), "choice 21", "saved choice 1", "Iona, state 2", "take 3"; named records by their plain names. Name checkpoints by what they are, never by letter. Count steps from 1: step 7 here is "step 8 of 12". Say "grey previews" for previs, "the first estimate" and "the estimate from the shots". The checker flags retired words and codes (WORDS-02, WORDS-04; `.claude/skills/breaking-down-stories/rules/words.json`).
 - **Plain words, example first.** Explain a new craft word in one plain sentence the first time and add it to the word list in `00 Start here`.
-- **Ask as little as you can.** The user answers only at checkpoints; everything else is a small choice (`asked: no`), listed under "small choices I made". Questions are numbered; "defaults" accepts them all.
+- **Ask as little as you can.** The user answers only at checkpoints; everything else is a small choice (`asked: no`), listed under "small choices I made". Questions are numbered.
 - **On a code surface, pass answers through records.** Write `### CHOICE CHOICE-NNN` with `- answer: <letter>` (or `- answer: defaults`) to an inbox file and apply it; code sets `status`, `date`, the fields the choice `sets`, and the locks; never write those yourself there. Write a small choice whole, with `- answer: defaults`, so it is defaulted at once. In a chat without code you write the answer, `status`, `date` and what it sets.
 - **Stop only when you must:** at a blocking checkpoint, after "stop here" or "stop after each group", before any money is spent, and when a repair has failed `repair_rounds_max` times. Otherwise report and carry on.
 
@@ -46,7 +46,7 @@ Behind it is one SHOT record (`SC10-SH150`, in `.claude/skills/breaking-down-sto
 **On a code surface** (Claude Code; Claude desktop with a connected folder; the Claude website with this skill; ChatGPT with `07 Tools.zip`):
 
 1. `stage.py next` names the next unit and its handout.
-2. `stage.py handout <unit>` writes `For machines - do not edit/handouts/<unit>.md`. Read it whole: step excerpt, card parts, records, source lines, issued IDs.
+2. `stage.py handout <unit>` writes `For machines - do not edit/handouts/<unit>.md`. Read it whole (in parts if need be): step excerpt, card parts, records, source lines, issued IDs.
 3. Quote the one-line task back.
 4. Write the records to `For machines - do not edit/inbox/<unit>.md`, ending with the END line.
 5. `stage.py apply "<inbox file>"`. Any error refuses the whole inbox and changes no file: fix the lines it names and apply again. A field you send replaces all its stored lines: send every item of a repeated field you change.
@@ -65,7 +65,7 @@ In Claude Code, helper agents may take scenes, one handout each; `apply` takes o
 5. After every checkpoint answer and at every stop, save `00 Start here.md` again, whole: its six plain sections and every PROJECT field filled so far (`format`, `scope`, `genre`, `tone_home`, `frame_shape`, `prompt_words`, `fps`).
 6. Report, then "Save as" and "To continue later". A resume line naming more files than the app takes at once (Gemini: 10) says to attach them in two messages.
 
-After each sequence's last batch the resume line names the check chat (`.claude/skills/breaking-down-stories/reference/06` part 2); then, or at least before acceptance, the user takes the folder to the Claude website (the free plan is enough) for the real check.
+After each sequence's last batch the resume line names the check chat (`.claude/skills/breaking-down-stories/reference/06` part 2); then, or at least before acceptance, the user takes the folder to the Claude website for the real check.
 
 **Sizes.** At step 8 a reply holds `batch_size` shots (12, or 18 once the self-test passes). A chat holds one sequence; hand over earlier if the app says it is summarising or usage passes `chat_usage_handover_share` (D1 R5, R6).
 
@@ -73,7 +73,7 @@ After each sequence's last batch the resume line names the check chat (`.claude/
 
 ## The steps
 
-"User's count" is how messages number the steps. Checkpoints are named as the user sees them; the letter is only for you and the records. A blocking checkpoint waits for an answer; its default is in square brackets. On a code surface a checkpoint passes when its answered choices are applied; one with no choice record (a group of shots, the finished check) passes, once the user replies, with `stage.py next --checkpoint-passed`.
+"User's count" is how messages number the steps. Checkpoints are named as the user sees them; the letter is only for you and the records. A blocking checkpoint waits for an answer; its default is in square brackets. On a code surface a checkpoint passes when its answered choices are applied; one with no choice record (the first group of shots, the finished check) passes, once the user replies, with `stage.py next --checkpoint-passed`. Later groups do not wait: `stage.py next` passes them.
 
 | Step | User's count | Step file | What it makes | Checkpoint |
 |---|---|---|---|---|
@@ -128,9 +128,9 @@ Run every tool as `python .claude/skills/breaking-down-stories/tools/stage.py <c
 | `new "<story file>" [--title] [--depth]` | Makes the project folder, `00`, `01`, `Original/` | Write `00` and `01` from the templates; the user makes the folder |
 | `selftest --prepare` / `--score` | The step 0 self-test; `--score` records `surface`, `code_execution`, `batch_size` | Quote the story's first and last line; batch size 12 |
 | `read` | Numbers the story: `03`, `04`, stubs, `speeches.json`, odd-lines report, first-estimate counts | Write the scene list with quote anchors |
-| `adopt "<folder>" "<story file>"` | Makes a folder saved by hand in a chat app checkable, then runs `check --all` | None: it is the bridge from chat to code |
-| `status` | Done, stale, waiting, next | Answer from `00 Start here` |
-| `next [--checkpoint-passed]` | The next unit and its handout | The step file and the resume line in `00 Start here` |
+| `adopt "<folder>" "<story file>"` | Makes a folder saved in a chat app checkable, then runs `check --all` | None: it is the bridge from chat to code |
+| `status` | Done, stale, waiting, next; changes no record | Answer from `00 Start here` |
+| `next [--checkpoint-passed]` | The next unit and its handout; passes groups that do not wait | The step file and the resume line in `00 Start here` |
 | `handout <unit>` | Builds a unit's handout | Name the files the user should attach |
 | `apply <inbox file>` | Accepts your records into the numbered files and the log | The user saves the copy box under its "Save as" name |
 | `check [--unit <unit>] [--step N] [--scene SCnn] [--film] [--all] [--story <path>]` | Runs the checks; writes `13 Health check` | Checks in words in each reply; judgement in a check chat; the real check after `adopt` |
@@ -146,7 +146,7 @@ Run every tool as `python .claude/skills/breaking-down-stories/tools/stage.py <c
 | `lines <ID> [--more]` | Every story line that mentions an element | Search the attached story |
 | `lib <code> <reference>` | One library section or rule with its errata (`B1 R14`), or its digest entry, labelled | The cards only |
 | `refresh-models --propose` / `--apply` | Dated model facts, applied once the user approves price changes | Not available |
-| `import-json <file>` | Not in this version (planned): structured output from an API into record text | None |
+| `import-json <file>` | Not in this version (planned) | None |
 | `build-kit` | Maintainers: the chat kit, the skill ZIP, `AGENTS.md`, the field guide | None |
 | `replay [--story <path>]` | Maintainers: re-checks the gold examples | None |
 

@@ -29,6 +29,13 @@ mood_only_phrases_in_reason, reason_is_anchored) to check text that is not a rec
 checkpoint templates and guides.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- CRAFT-03 follows the ladder's rung on the main turn, else the camera rule's cap;
+- CRAFT-10 and CRAFT-19: a change is not added when a quote of the beat's own light or sound words backs it, or the
+  sound plan's rupture points at the beat;
+- INFO-01 accepts a shot whose keep_hidden names the fact; retired words are found only in their retired senses;
+  REASON-08 reads a thing's 'at' and the shot's end.
 """
 
 import re
@@ -723,31 +730,48 @@ def check_craft_02(run):
     return problems
 
 
-@register_check("CRAFT-03", level="W", build=1, title="The scene's tightest non-insert size used before its main turn",
-                plain="uses the scene's closest size before its main turn, so the turn has nothing closer left")
+@register_check("CRAFT-03", level="W", build=1, title="The main turn's size against the film's ladder, or the scene's "
+                                                   "tightest size spent before the turn",
+                plain="does not give the main turn the size the film's plan sets for it, or spends a closer shot "
+                      "before the turn")
 def check_craft_03(run):
-    """C24: the main turn's shot is at least as tight as every earlier shot. Where a camera rule caps the turn's
-    subject in this scene (CAMRULE limit_before before the scene where its closest size is spent, the closest size
-    from then on), the turn should be at that cap, and earlier shots may equal it; without a cap an earlier shot as
-    tight as the turn warns. A scene whose every shot is in-story footage (kind screen, a fixed camera in the story)
-    is skipped: its turn is carried by what the frame holds and by the cuts, not by size."""
+    """C24, and the full run (Project notes 31, problem 8): the film's ladder decides the turn shot's size.
+
+    Where a LADDER rung names a beat of this scene, a shot of that beat (its turn shot first) is at the rung's size,
+    and the main turn, when it is the rung's beat, is compared with the rung, never with the camera rule's closest
+    size. Earlier shots are then held to the rung as to a cap (they may equal it, never be tighter), unless the
+    rung plays the turn wide on purpose (wider than medium), when the turn is marked by opening out and earlier
+    closer shots are the build to it. A rung on an insert leaves people's sizes alone.
+
+    Without a rung, as before: the main turn is at least as tight as every earlier shot; where a camera rule caps the
+    turn's subject (limit_before before the scene where its closest size is spent, the closest size from then on,
+    stepped down past a size a saved choice keeps out of this scene), the turn should be at that cap, and earlier
+    shots may equal it. A scene whose every shot is in-story footage from a fixed camera is skipped."""
     problems = []
     for scene in scene_identifiers(run):
         main = main_turn_of(run, scene)
-        if main is None:
-            continue
+        rung_beat, rung_size, _ = ladder_rung_of(run, scene)
         positions = beat_positions(run, scene)
-        turn_position = positions.get(main.identifier)
-        views = [view for view in shot_views(run, scene) if view.is_live and size_rank(view.size) is not None]
-        if not views or turn_position is None:
-            continue
         written = [view for view in shot_views(run, scene) if view.record is not None]
         if written and all(view.kind == "screen" for view in written):
             run.skip("CRAFT-03", f"{scene}: every shot is in-story footage from a fixed camera, so size cannot mark "
                                  "the turn")
             continue
+        if rung_size and rung_beat:
+            problems.extend(rung_size_problems(run, scene, rung_beat, rung_size))
+        if main is None:
+            continue
+        turn_position = positions.get(main.identifier)
+        views = [view for view in shot_views(run, scene) if view.is_live and size_rank(view.size) is not None]
+        if not views or turn_position is None:
+            continue
+        ladder_decides = bool(rung_size) and rung_beat == main.identifier
+        if ladder_decides and (size_rank(rung_size) is None or size_rank(rung_size) < SIZE_LADDER.index("medium")):
+            continue  # an insert turn, or a deliberate wide: the ladder chose it, and earlier sizes are the build
         turn_views = [view for view in views if view.role == "turn" and main.identifier in view.beats]
         if not turn_views:
+            if rung_size:
+                continue  # the turn is carried by an insert or a card; the ladder set this scene's size elsewhere
             tightest = max(size_rank(view.size) for view in views)
             for view in views:
                 last = last_beat_position(view, positions)
@@ -761,7 +785,10 @@ def check_craft_03(run):
             continue
         turn_view = max(turn_views, key=lambda view: size_rank(view.size))
         turn_rank = size_rank(turn_view.size)
-        cap, cap_rule = size_cap_for(run, scene, turn_view)
+        if ladder_decides:
+            cap, cap_rule = rung_size, None
+        else:  # no rung, or a rung on another beat of the scene: the camera rule's cap still holds for the turn
+            cap, cap_rule = size_cap_for(run, scene, turn_view)
         for view in views:
             if view in turn_views:
                 continue
@@ -769,25 +796,74 @@ def check_craft_03(run):
             if last is None or last >= turn_position:
                 continue
             rank = size_rank(view.size)
-            if rank > turn_rank or (rank == turn_rank and cap is None):
+            if rank > turn_rank or (rank == turn_rank and cap is None and not ladder_decides):
                 problems.append(problem_at(
                     run, "W", "CRAFT-03", view.problem_record, "size",
                     f"{view.size} comes before the main turn {main.identifier} and is "
                     f"{'tighter than' if rank > turn_rank else 'as tight as'} its turn shot {turn_view.identifier} "
                     f"({turn_view.size})",
-                    f"Fix: open this shot to a wider size, or tighten the turn shot, so that the scene's closest "
-                    f"frame is spent on {main.identifier} (A2 R4)."))
-        if cap is not None and turn_rank < SIZE_LADDER.index(cap):
+                    f"Fix: open this shot to a wider size, so that the scene's closest frame is spent on "
+                    f"{main.identifier} (A2 R4)."))
+        if cap_rule is not None and cap is not None and turn_rank < SIZE_LADDER.index(cap):
             problems.append(problem_at(
                 run, "W", "CRAFT-03", turn_view.problem_record, "size",
-                f"the main turn is at {turn_view.size}, but {cap_rule.identifier} allows its subject up to {cap} "
-                f"in {scene}", f"Fix: take the turn to {cap}, the tightest size the camera rule allows here (A2 R4)."))
+                f"the main turn is at {turn_view.size}, but {cap_rule.identifier} allows its subject up to {cap} in "
+                f"{scene}, and the film's ladder sets no size for this turn" +
+                (f" (its rung for {scene} is on {rung_beat}, not on the main turn {main.identifier})"
+                 if rung_size and rung_beat else ""),
+                (f"Fix: when the rung was meant for this turn, move it to {main.identifier} (a film rule, so it asks "
+                 f"the user); otherwise take the turn to {cap}" if rung_size and rung_beat else
+                 f"Fix: take the turn to {cap}") +
+                ", the tightest size the camera rule and the saved choices allow here (A2 R4)."))
     return problems
+
+
+def ladder_rung_of(run, scene):
+    """(the beat the LADDER's rung for this scene names, the rung's size, the rung's value), or (None, None, None).
+    The rung's beat is the one code resolved its story point to (' = SC06-B17'), else the beat holding its line."""
+    for ladder in records_of(run, "LADDER"):
+        for value in ladder.get_all("rung"):
+            item = split_item(value)
+            point = item.first or ""
+            scene_identifier, _, stored = parse_story_point(point)
+            if scene_identifier != scene:
+                continue
+            beat = stored
+            if not beat:
+                try:
+                    from .derive_fields import resolve_story_point
+                    beat = resolve_story_point(breakdown_for_run(run), point).beat
+                except Exception:  # an unresolved rung is simply not used here
+                    beat = None
+            size = word_of(item.get("size") or "")
+            return beat, (size if size and size not in EMPTY_WORDS else None), value
+    return None, None, None
+
+
+def rung_size_problems(run, scene, rung_beat, rung_size):
+    """A rung's beat must have a shot at the rung's size: its turn shot when it has one, else any of its shots."""
+    views = [view for view in shot_views(run, scene) if rung_beat in view.beats and view.kind not in ("card", "black")]
+    if not views:
+        return []
+    turn_views = [view for view in views if view.role == "turn"]
+    wanted = turn_views or views
+
+    def size_of(view):
+        return "insert" if view.is_insert else word_of(view.size)
+    if any(size_of(view) == rung_size for view in wanted):
+        return []
+    view = wanted[0]
+    return [problem_at(
+        run, "W", "CRAFT-03", view.problem_record, "size",
+        f"{size_of(view)} is not the size the film's ladder gives beat {rung_beat} ({rung_size})",
+        f"Fix: take the {'turn ' if turn_views else ''}shot of {rung_beat} to {rung_size}, as the ladder says, or "
+        f"change the ladder rung for {scene} first (a film rule, so it asks the user).")]
 
 
 def size_cap_for(run, scene, view):
     """(the tightest size a camera rule allows the turn's subject in this scene, the CAMRULE) or (None, None):
-    limit_before in scenes before the one where the rule's closest size is spent, the closest size from there."""
+    limit_before in scenes before the one where the rule's closest size is spent, the closest size from there,
+    each stepped down past a size a saved choice keeps out of this scene."""
     for subject in view.subjects or []:
         character = element_of(subject)
         if not character.startswith("CH-"):
@@ -802,10 +878,31 @@ def size_cap_for(run, scene, view):
             limit = word_of(rule.get("limit_before") or "")
             if spent_scene and sort_key_for_identifier(scene) < sort_key_for_identifier(spent_scene) \
                     and limit in SIZE_LADDER:
-                return limit, rule
+                return size_allowed_by_saved_choices(run, scene, limit), rule
             if closest_size in SIZE_LADDER:
-                return closest_size, rule
+                return size_allowed_by_saved_choices(run, scene, closest_size), rule
     return None, None
+
+
+def size_allowed_by_saved_choices(run, scene, size):
+    """The size itself, or the next wider one while a saved choice (a RESERVE matched on 'size = <size>') keeps that
+    size out of this scene: an extreme close-up saved for scenes 13 and 25 is never asked of scene 26. Only scene IDs
+    in allowed_in are read (SC13); words there ("the first in scene 13", "not in scenes 26 and 27") are for people,
+    since reading them as a list could turn their meaning round."""
+    while size in SIZE_LADDER:
+        reserved = False
+        for reserve in records_of(run, "RESERVE"):
+            match = re.match(r"^\s*size\s*=\s*([a-z_]+)\s*$", reserve.get("match") or "")
+            if not match or match.group(1) != size:
+                continue
+            allowed = set(re.findall(r"\bSC\d{2,3}[A-Z]?\b", reserve.get("allowed_in") or ""))
+            if allowed and scene not in allowed:
+                reserved = True
+        position = SIZE_LADDER.index(size)
+        if not reserved or position == 0:
+            return size
+        size = SIZE_LADDER[position - 1]
+    return size
 
 
 @register_check("CRAFT-04", level="E", build=1, title="A turn beat without exactly one turn shot",
@@ -1134,12 +1231,40 @@ def added_emphasis_of(run, beat):
     return number_of(found[0].first), found[0]
 
 
-def reason_quotes_lines(run, text, lines):
-    """True when a reason quotes words found in the given lines (the script's own words)."""
+# Words of sound or its absence that a script writes in lower case (the reader's SOUND_WORDS are effects in capitals).
+QUIET_WORDS = {"silence", "silent", "quiet", "quieter", "hush", "hushed", "noise", "sound", "sounds", "soundless",
+               "deaf", "deafening", "loud", "louder"}
+
+
+def reason_quotes_lines(run, text, lines, kind=None):
+    """True when a reason quotes words found in the given lines (the script's own words). With kind "light" or
+    "sound", the quote must also hold a light or sound word of the story (read_story's word lists): quoting any line
+    of the beat does not excuse a light or sound the line does not write."""
+    if not lines or run.story is None:
+        return False
+    from .read_story import LIGHT_WORDS, SOUND_WORDS
+    wanted = {"light": {word.lower() for word in LIGHT_WORDS},
+              "sound": {word.lower() for word in SOUND_WORDS} | QUIET_WORDS}.get(kind)
+    first, last = min(lines), max(lines)
+    for match in QUOTED.finditer(text or ""):
+        quote = match.group(1)
+        if wanted is not None and not ({word.lower() for word in re.findall(r"[A-Za-z]+", quote)} & wanted):
+            continue
+        if quote_found(run, quote, (first, last)):
+            return True
+    return False
+
+
+def rupture_points_at(run, item, lines, identifiers):
+    """True when a rupture_plan line of the sound plan points at this moment: it names one of the given beat or shot
+    IDs, or it quotes words found in the given lines."""
+    text = " ".join(part for part in (item.first or "", item.get("device") or "") if part)
+    if any(identifier and re.search(rf"\b{re.escape(identifier)}\b", text) for identifier in identifiers):
+        return True
     if not lines or run.story is None:
         return False
     first, last = min(lines), max(lines)
-    return any(quote_found(run, match.group(1), (first, last)) for match in QUOTED.finditer(text or ""))
+    return any(quote_found(run, match.group(1), (first, last)) for match in QUOTED.finditer(text))
 
 
 def beat_lines(run, beat):
@@ -1154,23 +1279,68 @@ def beat_lines(run, beat):
 
 
 def shot_light_sound_changes(run, shot, beat=None):
-    """[(field, what)] of the light and sound changes a shot makes (CRAFT-10, CRAFT-19)."""
+    """[(field, what)] of the light and sound changes a shot adds (CRAFT-10, CRAFT-19). Not added, so not counted:
+    light (or a light cue) that quotes the lines of the shot's beats, the script's own light (the same cue then
+    covers COVER-08); silence room_sound_only, which keeps the room's sound; and a silence the film's sound plan
+    or the beat's own pause already plans (a rupture_plan of this scene naming it, or the pause's sound)."""
     changes = []
+    lines = []
+    for beat_identifier in ([beat.identifier] if beat is not None else id_list(shot, "beats")):
+        record = run.record(beat_identifier)
+        if record is not None and record.type_name == "BEAT":
+            lines += beat_lines(run, record)
+    lines += [number for first, last in (parse_line_numbers(shot.get("lines") or "") or []) for number in
+              range(first, last + 1)]
     light = shot.get("light")
-    if light and not is_empty(light) and word_of(light) != "as_look":
+    if light and not is_empty(light) and word_of(light) != "as_look" and \
+            not reason_quotes_lines(run, light, lines, "light"):
         changes.append(("light", f"light {light}"))
     for item in items(run, shot, "light_cue"):
         if item.first and not is_empty(item.first):
-            if beat is not None and reason_quotes_lines(run, item.get("why"), beat_lines(run, beat)):
+            if reason_quotes_lines(run, item.get("why"), lines, "light") or \
+                    reason_quotes_lines(run, item.first, lines, "light"):
                 continue
             changes.append(("light_cue", f"light cue: {item.first}"))
     silence = shot.get("silence")
-    if silence and not is_empty(silence):
+    if silence and not is_empty(silence) and word_of(silence) != "room_sound_only" and \
+            not silence_planned(run, shot, word_of(silence), beat, lines):
         changes.append(("silence", f"silence {word_of(silence)}"))
     music = shot.get("music")
     if music and not is_empty(music):
         changes.append(("music", f"music {music}"))
     return changes
+
+
+def silence_planned(run, shot, silence, beat=None, lines=None):
+    """True when the film's sound plan or the beat's own pause plans this silence: a SOUNDPLAN rupture_plan for the
+    shot's scene whose device names it and points at this moment (it names the shot or one of its beats, quotes the
+    shot's lines, or names the black or card that this shot is), or a pause_after of one of the shot's beats whose
+    sound names it. A rupture planned somewhere in the scene does not excuse every silence in it."""
+    words = silence.replace("_", " ")
+    stems = {words, words.replace("true ", ""), words.replace(" ", "-"), words.replace(" ", "")}
+    scene = scene_of(shot.identifier)
+    beats = [beat] if beat is not None else [run.record(identifier) for identifier in id_list(shot, "beats")]
+    identifiers = [shot.identifier] + [record.identifier for record in beats if record is not None]
+    kind = word_of(shot.get("kind"))
+
+    def names_it(text):
+        lowered = (text or "").lower()
+        return any(stem and stem in lowered for stem in stems)
+    for plan in records_of(run, "SOUNDPLAN"):
+        for item in items(run, plan, "rupture_plan"):
+            if not (item.first and same_scene(item.first.strip(), scene) and names_it(item.get("device"))):
+                continue
+            device = (item.get("device") or "").lower()
+            if rupture_points_at(run, item, lines or [], identifiers) or \
+                    (kind in ("black", "card") and re.search(r"\b(black|blacks|card|cards|title)\b", device)):
+                return True
+    for record in beats:
+        if record is None or record.type_name != "BEAT":
+            continue
+        for pause in items(run, record, "pause_after"):
+            if names_it(pause.get("sound")):
+                return True
+    return False
 
 
 @register_check("CRAFT-10", level="W", build=1,
@@ -1212,9 +1382,13 @@ def check_craft_10(run):
             if item is not None:
                 light, sound = item.get("light"), item.get("sound")
                 changed = []
-                if light and not is_empty(light) and word_of(light) != "as_look":
+                lines = beat_lines(run, beat)
+                if light and not is_empty(light) and word_of(light) != "as_look" and \
+                        not reason_quotes_lines(run, light, lines, "light"):
                     changed.append(f"light {light}")
-                if sound and not is_empty(sound) and word_of(sound) != "room_sound":
+                if sound and not is_empty(sound) and word_of(sound) != "room_sound" and \
+                        not reason_quotes_lines(run, sound, lines, "sound") and \
+                        not rupture_planned(run, scene, beat, lines):
                     changed.append(f"sound {sound}")
                 if changed:
                     problems.append(problem_at(
@@ -1236,6 +1410,18 @@ def check_craft_10(run):
         run.skip("CRAFT-10", "story not present, so the beats the script already marks are not known (added emphasis "
                              "above the most was still checked)")
     return problems
+
+
+def rupture_planned(run, scene, beat=None, lines=None):
+    """True when the film's sound plan has a rupture_plan for this scene that points at this beat (it names the beat
+    or quotes its lines): the dial's sound change there is planned. Without a beat, any rupture of the scene."""
+    for plan in records_of(run, "SOUNDPLAN"):
+        for item in items(run, plan, "rupture_plan"):
+            if not (item.first and same_scene(item.first.strip(), scene)):
+                continue
+            if beat is None or rupture_points_at(run, item, lines or [], [beat.identifier]):
+                return True
+    return False
 
 
 def script_marked_yes(breakdown, run, beat_identifier):
@@ -1795,24 +1981,26 @@ def beat_signals(run, scene, beat, previous_dial, dial, views):
         size, before = word_of(item.get("size")), word_of(previous_item.get("size"))
         if size and before and size != before:
             signals["size"] = f"{size_words(before)} to {size_words(size)}"
+    lines = beat_lines(run, beat)
     if item is not None:
         light, sound = item.get("light"), item.get("sound")
-        if light and not is_empty(light) and word_of(light) != "as_look":
-            signals["light"] = f"dial light {light}"
-            if COLOUR_WORDS.search(light):
-                signals["colour"] = f"dial light {light}"
-        if sound and not is_empty(sound) and word_of(sound) != "room_sound":
+        # one change counts once: a light change that names a colour is the light's change, not light and colour
+        if light and not is_empty(light) and word_of(light) != "as_look" and \
+                not reason_quotes_lines(run, light, lines, "light"):
+            signals["colour" if COLOUR_WORDS.search(light) and "light" in signals else "light"] = f"dial light {light}"
+        if sound and not is_empty(sound) and word_of(sound) != "room_sound" and \
+                not reason_quotes_lines(run, sound, lines, "sound") and not rupture_planned(run, scene, beat, lines):
             signals["sound"] = f"dial sound {sound}"
     for view in views:
         # a shot's own changes count on the beat it starts on, so a shot over two beats is not counted twice
         if not view.written or view.is_card or (view.beats and view.beats[0] != beat.identifier):
             continue
         shot = view.record
-        for field_name, what in shot_light_sound_changes(run, shot):
+        for field_name, what in shot_light_sound_changes(run, shot, beat):
             key = "light" if field_name in ("light", "light_cue") else "sound"
+            if key == "light" and "light" in signals and COLOUR_WORDS.search(what):
+                key = "colour"  # a second, coloured light change; one change never counts as both
             signals.setdefault(key, f"{shot.identifier} {what}")
-            if key == "light" and COLOUR_WORDS.search(what):
-                signals.setdefault("colour", f"{shot.identifier} {what}")
         move = word_of(shot.get("move"))
         if move and move != "static":
             signals.setdefault("camera move", f"{shot.identifier} move {move}")
@@ -2206,25 +2394,27 @@ def check_info_01(run):
                         continue
                 hidden_facts = {item.first.strip() for item in items(run, shot, "keep_hidden")
                                 if item.first and normalise_word(item.get("how") or "") in HIDDEN_FROM_SIGHT}
+                # C12 and the full run (Project notes 31, problem 11): a shot that says how it keeps this fact
+                # hidden (heard first, at the frame's edge, out of focus, in the dark, behind something, or timed
+                # out of view) is not warned, whatever it lists as seen: the thing stays in must_show when it is
+                # really on screen, and the review questions judge whether the hiding works
+                if fact.identifier in hidden_facts:
+                    continue
                 present = {}
-                # C12: a shot that keeps this fact hidden (heard first, at the frame's edge, out of focus, in the
-                # dark, behind something, or timed out of view) does not show its subjects and things; only what
-                # it must show still counts
-                kept_hidden = fact.identifier in hidden_facts
                 for item in items(run, shot, "subject"):
-                    if item.first and not kept_hidden:
+                    if item.first:
                         present.setdefault(element_of(item.first.strip()), "subject")
                 for item in thing_items(run, shot):
-                    if kept_hidden:
-                        continue
                     present.setdefault(element_of(item.first.strip()), "thing")
                 for reference in id_list(shot, "must_show"):
                     present.setdefault(element_of(reference), "must_show")
                 for element in elements:
                     where = present.get(element)
                     if where is None:
+                        # a thing that carries the secret's motif shows it; a motif named in the shot is not
+                        # read as every thing that carries it (the labels motif is not the sleeve container)
                         for other, other_where in present.items():
-                            if element_matches(run, element, {other}):
+                            if prop_motif(run, other) == element:
                                 where = other_where
                                 break
                     if where is None:
@@ -2563,8 +2753,8 @@ def check_reason_07(run):
 
 
 def carrier_seen(run, carrier, views):
-    """True when a carrier (an ID, or words) is seen or heard in the shots: things, subjects and what they do,
-    effects and heard speeches."""
+    """True when a carrier (an ID, or words) is seen or heard in the shots: things and where they are (at), subjects
+    and what they do, moments, the end picture, effects and heard speeches."""
     identifiers = [match.group(1) for match in ID_TOKEN.finditer(carrier)]
     texts = []
     present = set()
@@ -2572,6 +2762,8 @@ def carrier_seen(run, carrier, views):
         shot = view.record
         for item in thing_items(run, shot):
             present.add(element_of(item.first.strip()))
+            texts.append(item.get("at") or "")
+        texts.append(shot.get("end") or "")
         for item in items(run, shot, "subject"):
             if item.first:
                 present.add(element_of(item.first.strip()))

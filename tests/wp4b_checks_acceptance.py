@@ -550,11 +550,15 @@ def run_command_groups(temporary):
     id_08 = [line for line in output_fault.splitlines() if line.startswith("E ID-08 SC10-SH150 size")]
     code_film, output_film = stage(["check", "--film", "--project", str(project)] + story_arguments)
     film_text = health.read_text(encoding="utf-8")
-    passed = (id_08 and code_fault == 1 and code_film in (0, 1) and "the whole film" in above_divider(film_text)
+    # changed after the full run (Project notes 32, problem 7): once a full check has run, a partial check (here the
+    # film pass) keeps the full check's plain part and replaces only the checker's lines below the divider
+    passed = (id_08 and code_fault == 1 and code_film in (0, 1)
+              and re.search(r"^Checked: everything, on ", above_divider(film_text), re.MULTILINE)
+              and "check --film" in film_text.split(DIVIDER_LINE, 1)[1]
               and "In short:" in output_film)
     report(passed, "check --step 8 --scene SC10 with a shot whose size differs from its list item gives E ID-08 and "
-           "exit 1; check --film runs and reports", (id_08[0] if id_08 else f"exit {code_fault}")
-           + f"; --film exit {code_film}")
+           "exit 1; check --film runs and reports, keeping the full check's plain part",
+           (id_08[0] if id_08 else f"exit {code_fault}") + f"; --film exit {code_film}")
 
     # 6. without any story the story checks are skipped, never failed
     code_none, output_none = stage(["check", "--all", "--project", str(project)])

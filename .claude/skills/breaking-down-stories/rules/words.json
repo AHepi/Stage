@@ -1040,11 +1040,12 @@
    "word": "her look",
    "use_instead": "style (with its style words) / appearance",
    "thing": "How the whole film is made to appear / how a character appears",
-   "flag": "always",
+   "flag": "context",
    "extra_words": [
     "his look",
     "their look"
-   ]
+   ],
+   "note": "not flagged by code: 'her look goes to the door' is her eyes; writers say appearance for how she appears"
   },
   {
    "as_written": "key light",
@@ -1218,7 +1219,9 @@
    "flag": "always",
    "exempt_field_names": [
     "CHARACTER.movement"
-   ]
+   ],
+   "pattern": "(?<![A-Za-z0-9_])(?:(?:camera|dolly|crane|tracking|lens|zoom)\\s+movements?|movements?\\s+(?:\\d+|one|two|three|four|five|six|of the scene))(?![A-Za-z0-9_])",
+   "note": "flagged only in its retired senses (a camera movement, a movement of a scene); 'his movement' is ordinary English, and CHARACTER.movement is a field name"
   },
   {
    "as_written": "part (for replies)",
@@ -1257,7 +1260,9 @@
    "flag": "always",
    "exempt_field_names": [
     "CHARACTER.movement"
-   ]
+   ],
+   "pattern": "(?<![A-Za-z0-9_])(?:(?:camera|dolly|crane|tracking|lens|zoom)\\s+movements?|movements?\\s+(?:\\d+|one|two|three|four|five|six|of the scene))(?![A-Za-z0-9_])",
+   "note": "flagged only in its retired senses (a camera movement, a movement of a scene); 'his movement' is ordinary English, and CHARACTER.movement is a field name"
   },
   {
    "as_written": "\"move\" alone in user text",
@@ -1510,7 +1515,15 @@
    "word": "withhold",
    "use_instead": "keep hidden",
    "thing": "Kept out of frame for later",
-   "flag": "always"
+   "flag": "always",
+   "exempt_field_names": [
+    "BEAT.action",
+    "BEAT.reaction",
+    "SHOT.subject",
+    "CHARACTER.status_play",
+    "CHARACTER.speech"
+   ],
+   "note": "a tactic ('withholding') is ordinary English in the tactic fields; keep hidden is the word for what stays out of frame"
   },
   {
    "as_written": "withheld",
@@ -1573,7 +1586,8 @@
     "SHOT.room_sound",
     "SHOT.effect"
    ],
-   "note": "LOCATION.object keeps furniture: bed"
+   "note": "flagged only as a sound bed ('a room-tone bed'); a hospital bed that creaks is furniture, and LOCATION.object keeps furniture: bed",
+   "pattern": "(?<![A-Za-z0-9_])(?:(?:sound|room|tone|ambient|ambience|audio|music|musical|drone|noise)\\s+beds?|beds?\\s+of\\s+(?:sound|noise|hum|tone|traffic))(?![A-Za-z0-9_])"
   },
   {
    "as_written": "ambience",

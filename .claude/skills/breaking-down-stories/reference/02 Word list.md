@@ -88,6 +88,6 @@ Only the user's words go above a file's divider, into reports and into messages:
 
 ## Where the checker looks
 
-WORDS-02 warns on a retired word in a field value or in user-facing text. Each entry in `rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03 suggests the right one), only in prompts (GEN-12), or nowhere, because the word is common or correct elsewhere (`bed` in a set plan, `emblem` as a PROP kind, `channel` on a MOTIF, `spine` as a MOTIF rank). Never use those words in their retired sense.
+WORDS-02 warns on a retired word in a field value or in user-facing text, read in its retired sense ("camera movement", "a sound bed"; "his movement" is plain English). Each entry in `rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03), only in prompts (GEN-12), or nowhere (`emblem` as a PROP kind, `spine` as a MOTIF rank).
 
-Always allowed: "Stage" as the product's name and `stage.py`; story words inside double quotes (a script's "torch" stays); the field names `CHARACTER.movement` (label "How they move") and `SETUP.look_at` (label "Aimed at"); research codes in AI-facing files. Mood-only reasons, emotion words in `does` and banned prompt words have their own lists in `rules/words.json` (REASON-04, WORDS-01, GEN-12).
+Always allowed: "Stage" as the product's name and `stage.py`; story words inside double quotes (a script's "torch" stays); the field names `CHARACTER.movement` (label "How they move") and `SETUP.look_at` (label "Aimed at"); research codes in AI-facing files. Mood-only reasons, emotion words and banned prompt words have their own lists (REASON-04, WORDS-01, GEN-12).

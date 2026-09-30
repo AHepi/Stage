@@ -28,6 +28,10 @@ Other modules use: write_breakdown_json(project_folder) (called by stage.py buil
 check_export_formats, SHOT_LIST_COLUMNS, ELEMENT_COLUMNS, nesting_depth, validate_portable.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- export all notes which records it was made from, so step 12 counts as done only after it; WORDS-04 runs on the
+  book; the audio description speaks of inserts with no people.
 """
 
 import csv
@@ -639,8 +643,11 @@ def fitted_description(sentences, words_allowed):
         if taken:
             joined = "; ".join(taken)
             first_word = joined.split()[0].lower() if joined.split() else ""
-            parts.append(f"{name}: {joined}." if first_word in ("his", "her", "their", "its", "the", "a", "an")
-                         else f"{name} {joined}.")
+            if name is None:  # a shot with no people: what its moments show, as a sentence of its own
+                parts.append(joined[:1].upper() + joined[1:].rstrip(".") + ".")
+            else:
+                parts.append(f"{name}: {joined}." if first_word in ("his", "her", "their", "its", "the", "a", "an")
+                             else f"{name} {joined}.")
         if used >= words_allowed:
             break
     return " ".join(parts)
@@ -669,7 +676,15 @@ def description_script_text(view, timeline, cues):
             continue
         sentences = description_words(view, shot)
         if not sentences:
-            lines.append(f"- {where}: nothing to read; the shot's people have no behaviour written.")
+            # a shot with no people (an insert of bolt holes) is described by what its moments show
+            shows = [view.names.text(item.get("shows") or "", entry.scene).strip()
+                     for item in view.items(shot, "moment") if (item.get("shows") or "").strip()][:2]
+            sentences = [(None, [clause.strip() for text in shows for clause in text.split(";") if clause.strip()])] \
+                if shows else []
+        if not sentences:
+            people = [item for item in view.items(shot, "subject") if (item.first or "").startswith("CH-")]
+            lines.append(f"- {where}: nothing to read; " + ("the shot's people have no behaviour written."
+                                                            if people else "the shot has no words for what it shows."))
             continue
         gaps = speech_gaps(entry, cues)
         if not gaps:
@@ -1760,6 +1775,10 @@ def add_export_arguments(parser):
     parser.add_argument("--story", help="a story file to read the lines and speeches from (default: the project's)")
 
 
+# The name under which "made from.json" notes that export all ran, whole and checked, on the current records.
+EXPORT_ALL_MARK = "export all"
+
+
 def run_export(context):
     """stage.py export <what>: build first (derived fields, views, breakdown.json), then write the exports asked for
     and check their formats. Exit 1 when a format check fails."""
@@ -1812,6 +1831,8 @@ def run_export(context):
         context.say(f"Finishing jobs: {len(made)} made, {len(marked)} marked out of date, in {FINISHING_FILE}.")
     for path in written:
         context.say(f"Written: {Path(path).relative_to(view.folder).as_posix()}")
+    if "book" in kinds:
+        notes += book_code_notes(view)
     for note in notes:
         context.say(f"Note: {note}")
     if view.study_only:
@@ -1832,8 +1853,33 @@ def run_export(context):
     length = timeline[-1].end_s if timeline else 0
     context.say(f"Format checks passed: {len(timeline)} shots, {len(timeline)} timeline events, "
                 f"about {round(length)} seconds of film.")
+    if what == "all":
+        # step 11 is done only when every export was made, and checked, from the records as they are now
+        from .project_files import remember_made_from
+        remember_made_from(view.folder, EXPORT_ALL_MARK)
     context.summary = f"export {what}: {len(written)} files, formats checked"
     return 0
+
+
+def book_code_notes(view):
+    """WORDS-04 on the book: the internal names and codes its text still holds (outside quotations), as one note line
+    for the AI to trace to its record or to the view code. [] when the book reads clean."""
+    from .make_views import BOOK_FOLDER, BOOK_MARKDOWN, SINGLETON_IN_TEXT
+    try:
+        from .checks_craft_reasons_words import abbreviations_in_text
+    except ImportError:
+        return []
+    path = view.folder / BOOK_FOLDER / BOOK_MARKDOWN
+    if not path.is_file():
+        return []
+    text = re.sub(r'"[^"\n]*"|\u201c[^\u201d\n]*\u201d', " ", path.read_text(encoding="utf-8"))
+    found = sorted({match.group(0) for match in SINGLETON_IN_TEXT.finditer(text)})
+    found += sorted({written for written, kind in abbreviations_in_text(text, view.words or {})
+                     if kind != "abbreviation"} - set(found))
+    if not found:
+        return []
+    return [f"the book still holds internal names or codes ({', '.join(found[:6])}); trace each to the record "
+            "that wrote it, or report it as a fault in the book's code (WORDS-04)."]
 
 
 def register_commands(table):

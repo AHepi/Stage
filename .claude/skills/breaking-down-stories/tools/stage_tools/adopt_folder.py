@@ -21,6 +21,9 @@ In plain words:
   "For machines - do not edit/questions.json" and "questions.md".
 
 Numbers come from rules/constants.json by name. Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- every shot that keeps a fact hidden gets a review question about the hiding.
 """
 
 import argparse
@@ -1805,6 +1808,19 @@ class QuestionMaker:
             if shows:
                 ask(f"Shot {where[5:]} ({lines}): does the story need what it shows, '{shows}', so that the scene "
                     "would lose something the story writes without it?")
+        if "keeps a fact hidden" in reasons:
+            for value in shot.get_all("keep_hidden"):
+                item = split_item(value)
+                fact_identifier = (item.first or "").strip()
+                if not fact_identifier or is_empty_word(fact_identifier):
+                    continue
+                fact = self.index.get(("FACT", fact_identifier))
+                secret = (fact.title if fact is not None and fact.title else fact_identifier)
+                how = item.get("how")
+                ask(f"Shot {where[5:]} ({lines}) says it keeps a secret from the audience, '{secret}'"
+                    + (f", by {how}" if how and not is_empty_word(how) else "") +
+                    ": does the picture really keep it hidden until the story reveals it, even with what the shot "
+                    "must show?", [fact_identifier])
         if "mirror" in reasons:
             side_line = self.side_line(numbers)
             if side_line:
@@ -1948,6 +1964,8 @@ def select_and_ask(run, speeches, breakdown, sample, seed, share, scene_filter=N
             reasons.append("turn shot")
         if role == "must_keep":
             reasons.append("must-keep shot")
+        if any(not is_empty_word(split_item(value).first or "none") for value in shot.get_all("keep_hidden")):
+            reasons.append("keeps a fact hidden")  # INFO-01 trusts keep_hidden, so a reader checks the hiding
         reasons += maker.needs(shot)
         if reasons:
             chosen.append((shot, reasons))
@@ -1980,6 +1998,7 @@ def select_and_ask(run, speeches, breakdown, sample, seed, share, scene_filter=N
     counts = {"turn shots": sum(1 for _, reasons in chosen if "turn shot" in reasons),
               "turn beats": len(turn_beats),
               "must-keep shots": sum(1 for _, reasons in chosen if "must-keep shot" in reasons),
+              "shots keeping a fact hidden": sum(1 for _, reasons in chosen if "keeps a fact hidden" in reasons),
               "shots needing mirror, text or violence handling": sum(
                   1 for _, reasons in chosen if set(reasons) & {"mirror", "text", "violence"}),
               "other shots": len(rest), "other shots asked about": len(sampled),

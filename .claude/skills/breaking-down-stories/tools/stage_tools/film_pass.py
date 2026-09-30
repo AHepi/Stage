@@ -30,6 +30,10 @@ departments_changing_at_main_turn_max, short_runtime_max_s) and rules/limits.jso
 written next to each check and in the WP4e build log.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- the film pass writes no '...' into what it stores, rewrites the old stored wording, refreshes the evidence and fix
+  of findings found again, and notes which records the film strip was made from.
 """
 
 import datetime
@@ -467,6 +471,8 @@ def write_film_strip(run, project_folder):
             (folder / name).write_text(film_strip_text(part_rows, f", part {index} of {len(acts)}"), encoding="utf-8")
             written.append(name)
     scenes = {scene_of(row.split(" | ", 1)[0]) for _, row in rows}
+    from .project_files import remember_made_from
+    remember_made_from(project_folder, FILM_STRIP_FILE)
     return len(rows), len(scenes), tokens, written
 
 
@@ -534,7 +540,8 @@ def check_film_01(run):
                 f"{shot.get('size')} is the film's tightest size, spent in {scene_identifier} before the climax "
                 f"{pairs_words(pairs)}, and no peak tightest_size places it there",
                 f"Fix: keep {scene_identifier} wider than the film's tightest size, or add to the story plan "
-                f"'peak: tightest_size | scene: {scene_identifier} | reason: ...' quoting why the story peaks here.",
+                f"'peak: tightest_size | scene: {scene_identifier} | reason: <why>', the why quoting the line where the "
+                "story peaks.",
                 place_of(run, shot, "size")))
         seconds = number_of(shot.get("screen_time"), 0.0)
         if longest and seconds == longest and (scene_identifier, "hold") not in reported \
@@ -545,7 +552,7 @@ def check_film_01(run):
                 f"{number_words(seconds)} s is the film's longest hold, spent in {scene_identifier} before the climax "
                 f"{pairs_words(pairs)}, and no peak longest_hold places it there",
                 f"Fix: shorten the hold below the film's longest, or add to the story plan 'peak: longest_hold | "
-                f"scene: {scene_identifier} | reason: ...' quoting why the story peaks here.",
+                f"scene: {scene_identifier} | reason: <why>', the why quoting the line where the story peaks.",
                 place_of(run, shot, "screen_time")))
     return problems
 
@@ -1372,6 +1379,17 @@ def one_line(text):
     return text or "none"
 
 
+OLD_PEAK_WORDING = "reason: ...' quoting why the story peaks here."
+NEW_PEAK_WORDING = "reason: <why>', the why quoting the line where the story peaks."
+
+
+def refresh_code_text(record, fields):
+    """Write code's own fields of an existing checker finding afresh, keeping the record's place and other lines."""
+    for name, value in fields:
+        if (record.get(name) or "") != value:
+            record.set_field(name, value)
+
+
 def all_finding_numbers(run):
     numbers = []
     for (type_name, identifier) in run.index:
@@ -1440,22 +1458,32 @@ def write_whole_film_check(project, run, problems, strip_facts):
     for record in [segment for segment in kept if isinstance(segment, Record)]:
         if record.type_name == "FINDING" and normalise_word(record.get("source") or "") == "checker":
             written[((record.get("record") or "").strip(), (record.get("rule") or "").strip())] = record
+    for record in written.values():
+        # a wording the checker wrote before it stopped writing "..." (FORM-08 no longer judges code's text, but
+        # the old text is written afresh so the record reads whole)
+        for name in ("evidence", "fix"):
+            value = record.get(name) or ""
+            if OLD_PEAK_WORDING in value:
+                record.set_field(name, value.replace(OLD_PEAK_WORDING, NEW_PEAK_WORDING))
     numbers = all_finding_numbers(run)
     next_number = (max(numbers) if numbers else 0) + 1
     new_records = []
     again = []
     for problem in problems:
         key = (problem.record, problem.check_id)
+        fix = re.sub(r"^(Fix|Allowed):\s*", "", getattr(problem, "fix", "") or "").strip()
+        evidence = one_line(f"{problem.field_name} {problem.what}" if problem.field_name else problem.what)
         if key in written:
             if normalise_word(written[key].get("status") or "") == "fixed":
                 again.append(written[key].identifier)
+            # the evidence and the fix are code's text (code_state): a check run again writes them afresh, so a
+            # wording the checker has since changed never stays behind in the record
+            refresh_code_text(written[key], (("evidence", evidence), ("fix", one_line(fix))))
             continue
-        fix = re.sub(r"^(Fix|Allowed):\s*", "", getattr(problem, "fix", "") or "").strip()
         record = make_record("FINDING", f"FIND-{next_number:03d}", title=one_line(
             f"{problem.check_id} on {problem.record}")[:60], fields=[
             ("record", problem.record), ("rule", problem.check_id),
-            ("evidence", one_line(f"{problem.field_name} {problem.what}" if problem.field_name else problem.what)),
-            ("fix", one_line(fix)), ("source", "checker"), ("status", "open"), ("reason", "none"),
+            ("evidence", evidence), ("fix", one_line(fix)), ("source", "checker"), ("status", "open"), ("reason", "none"),
             ("locked", "no")], file_name=WHOLE_FILM_FILE)
         written[key] = record
         new_records.append(record)

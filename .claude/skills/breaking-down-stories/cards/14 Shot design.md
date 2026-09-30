@@ -23,7 +23,7 @@ Example: `SC10-SH150 | beats: SC10-B07, SC10-B08 | role: turn | size: close_up |
 The **one-line shot list** (SHOTLIST `item`) fixes each shot's ID, beats, role, size, frame, subject, seconds and one line of what we see, before any detail. IDs come from the handout's issued block, in steps of `shot_number_step`; an insert takes a number between (SH155); end cards and black use `end_card_numbers` (ID-03, ID-06). At Quick depth these items are the final shots.
 
 Write them in this order (A2 Step 9):
-1. **Turn shots** (`role: turn`), one per turn, from the **turn pictures**, the one-sentence frames each turn must show, written at step 7 before any shot (CRAFT-04). The main turn gets the most extreme framing the camera rules allow its subject, and nothing tighter comes before it (A2 R4; CRAFT-03); a `limit_before` cap may let earlier shots equal it (reference/04, rule 4). Through one fixed in-story camera, what the frame shows and the cuts carry the turn, not size (B1 §10.5, R22). A later turn gets its part's tightest size or a deliberate wide.
+1. **Turn shots** (`role: turn`), one per turn, from the **turn pictures**, the one-sentence frames each turn must show, written at step 7 before any shot (CRAFT-04). The main turn takes its ladder rung's size, and nothing tighter comes before it unless the rung plays it wide on purpose (A2 R4, R31; CRAFT-03); with no rung, the most extreme framing its camera rule and the saved choices allow. Through one fixed in-story camera, what the frame shows and the cuts carry the turn, not size (B1 §10.5, R22). A later turn gets its part's tightest size or a deliberate wide.
 2. **Must-keep shots** (`role: must_keep`): plants, reveals and the geography of a new place. A fact's reveal shot is a turn or must-keep shot (INFO-02); a new place gets who-is-where in its first one or two shots (A2 R29).
 3. **The rest**, until every beat and every line is covered (COVER-02 to COVER-04). A new beat changes the image; a repeated tactic keeps one setup (camera position); a beat with no words still gets its shot, in full view (A2 R1 to R3).
 
@@ -33,7 +33,7 @@ Rules for the list:
 - In dialogue, plan singles that need not match frame for frame, and keep the wide for the start and the turn (A3 §5.6); one staged wide can do the work of several singles (B3 §4.1).
 - Several people reacting at once share one frame (A2 R7).
 - Estimate seconds from the speech and pauses in the item's beats (A2 Step 9); a shot without dialogue starts from `non_dialogue_seconds_by_intensity` (A4 §6.1). Step 8 holds each full shot to its floor.
-- The main turn's shot is the scene's longest or its shortest (A4 P5; TIME-10), and the scene's total stays near its target, which code set from the first estimate; TIME-03 warns past `scene_duration_tolerance_share`.
+- The main turn's shot is the scene's longest or its shortest (A4 P5; TIME-10), and the written shots keep the list's total: TIME-03 warns past `scene_total_tolerance` of the list, and when the list is over twice or under half the first estimate's guess.
 
 ## Full shots
 

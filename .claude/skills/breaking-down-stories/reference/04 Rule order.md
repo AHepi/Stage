@@ -1,6 +1,6 @@
 # Rule order
 
-When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order merges A1, A2, A4, B1, B2 and B3, with readability second as B2 and A1 put it.
+When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order merges A1, A2, A4 and B1 to B3, readability second as B2 and A1 put it.
 
 1. What the story itself states we see and hear.
 2. Readability of the beat.
@@ -35,11 +35,11 @@ Lines carrying a BEAT `flag` are staged to contain the flaw, never rewritten: on
 
 ## 6. Turn rules
 
-The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03), within the rules above: a camera rule's cap (rule 4) may let earlier shots equal the turn's size; through one fixed in-story camera (rule 3) size cannot change, so the frame's action and the cuts carry the turn (B1 §10.5). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere.
+The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03), within the rules above: the ladder's rung (rule 4) sets the turn's size, a wide rung marking the turn by opening out, and a rung or a camera rule's cap may let earlier shots equal it; through one fixed in-story camera (rule 3) size cannot change, so the frame's action and the cuts carry the turn (B1 §10.5). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere.
 
 ## 7. Emotion over spatial continuity
 
-When a cut that serves the emotion breaks the geography, keep the emotion (A4 R1: emotion first, space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it; the scene records a `departure` naming the rule it breaks and why, and GEOM-03's warning is answered by that record.
+When a cut that serves the emotion breaks the geography, keep the emotion (A4 R1: emotion first, space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it, and the scene's `departure` answers GEOM-03.
 
 ## 8. Conflict-type defaults
 
@@ -47,7 +47,7 @@ Each conflict type has its coverage (A2 R12-R17). **Tie-break.** Scene 10 is asy
 
 ## 9. General beat defaults and translation menus
 
-The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask. A point-of-view shot follows the eyes, so the menu's pan beats the static baseline, and the shot's `why` names the flask.
+The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask. The menu's pan beats the static baseline, and the `why` names the flask.
 
 ## 10. The baseline
 

@@ -21,13 +21,13 @@ A heading line names the record type, its ID and a plain title. Each field is on
 
 ## The grammar
 
-**G1. What counts.** A record file is UTF-8 Markdown. Only record headings, field lines inside a record, and the END line mean anything to the parser. Every other line (the plain part above the divider, titles, "At a glance", tables, paragraphs, the check table after a `---` line) is free text for people, kept and ignored.
+**G1. What counts.** A record file is UTF-8 Markdown. Only record headings, field lines inside a record, and the END line mean anything to the parser. Every other line (the plain part, titles, tables, paragraphs, the check table after a `---` line) is free text, kept and ignored.
 
 **G2. Headings.** A record starts `### <TYPE> <ID> <optional plain title>`. TYPE is an upper-case word from the schema. The ID matches its type's pattern (`SC10-SH150`, `CH-IONA`, `CHOICE-021`). Singleton types (PLAN, STYLE, WORLD, CAMSYS, SOUNDPLAN, LADDER) have no ID: `### PLAN`. The title is free text after the ID.
 
 **G3. Where a record ends.** At the next line starting with `#`, at a line `---`, or at the END line.
 
-**G4. Field lines.** A field is one line: `- <field>: <value>`. Field names are lowercase snake_case plain words from the schema. The parser lowercases names and turns spaces and hyphens into underscores, so `- Screen time: 15` is read as `screen_time` and logged as a tidy fix.
+**G4. Field lines.** A field is one line: `- <field>: <value>`. Field names are lowercase snake_case plain words from the schema. Names are read in lower case, spaces and hyphens as underscores (`- Screen time: 15` is `screen_time`, a logged tidy fix).
 
 **G5. Values.** A value is one line. Its kind comes from the schema:
 
@@ -52,7 +52,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 **G6. Items.** A repeatable field appears once per item. An item is a first part followed by named sub-parts: `- subject: CH-IONA.S02 | at: left_third | faces: camera | does: chews, stops, frowns`. The first part is the item's main value, usually an ID. Sub-part keys are schema words in any order; an unknown key is an error. Positional (unnamed) sub-parts are never allowed. A few fields have no first part (the schema marks them `first_part: null`); their value starts with the first named sub-part: `- lineup: height: short | mass: slight | shape: long | value: light | colour: grey | tempo: slow`.
 
-**G7. Empty and undecided.** Empty is `none`: a field the depth asks for with nothing to hold is written `none` (`- effect: none`), never left out (FORM-05). Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing.
+**G7. Empty and undecided.** Empty is `none`: a field the depth asks for with nothing to hold is written `none` (`- effect: none`), never left out (FORM-05). Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing. Elsewhere, `- at: none` in an inbox clears a stored field you wrote (a wrong `at` once `at_words` is there).
 
 **G8. Notes.** A line inside a record starting `> ` is a note attached to it, kept and not parsed.
 

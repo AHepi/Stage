@@ -12,7 +12,7 @@ Glass stands between people, a shot needs a reflection, or a sided feature (a ri
 2. **What is each element's `handedness` in its STATE?** Code derives `mirror_state`: mirrored where it differs from the frame (K03; blueprint 5.6).
 3. **Which sided features are in frame?** Each needs an own side (SIDE-01); code derives the image side. Behaviour text says "hand nearest the camera"; state lines never say frame-left (blueprint 5.4 rule 8; SIDE-02).
 4. **Does the story state a side for a mirrored element?** That side is apparent: the own side is the opposite, `origin: inferred` (K03; SIDE-04).
-5. **In profile, which hand is nearest the camera?** A person facing frame-right shows their own right side; one facing frame-left shows their own left (B3 §8.2).
+5. **In profile, which hand is nearest the camera?** A person facing frame-right shows their own right side; facing frame-left, their own left (B3 §8.2).
 6. **Is there glass in frame?** Give it a `glass` item: state `clear`, `marked` (a smear, label or crack makes the pane visible), `reflecting`, `screen` or `broken_open`, and camera `through`, `along` or `angled` (B3 §8.1).
 7. **Which side of the glass is the camera on?** The side of the character whose scene it is (`whose_scene`); it crosses only when the point of view shifts (B3 R11).
 8. **Must a reflection lie over someone?** Check the twin and the light (B3 R28-R29).

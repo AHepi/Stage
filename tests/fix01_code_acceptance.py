@@ -18,7 +18,7 @@ What it proves, one group per item (or a few items together):
 - C6 apply refuses an AI unit writing a user field (it may write open, or repeat the stored value);
 - C7 check --unit checks only that unit's records; check --step N counts later units' fields as not yet due;
 - C8 applying the story plan fills every scene's target and the plan's budgets from the first estimate; TIME-03 is a
-  warning with scene_duration_tolerance_share;
+  warning with scene_total_tolerance (the one scene-length tolerance since Project notes 32);
 - C9 the self-test handout marks required fields and names the IDs to cite; --score writes every error to a file;
   a retry with the same IDs works; --surface is in the help;
 - C10 REASON-03, REASON-04 and STATE-01 run at step 7 too, and STATE-01 reads list subjects with the step-8 rule;
@@ -394,7 +394,7 @@ def user_fields_refused(scratch):
 
 
 @group("C8: applying the story plan runs the first estimate: every scene's target and the plan's budgets; TIME-03 "
-       "is a warning with scene_duration_tolerance_share")
+       "is a warning with the one tolerance, scene_total_tolerance")
 def first_estimate_on_plan(scratch):
     if not READER_SCREENPLAY.is_file():
         info("skipped: the reader fixture is not present")
@@ -402,7 +402,10 @@ def first_estimate_on_plan(scratch):
     from stage_tools.check_records import REGISTRY, load_check_families
     load_check_families()
     assert REGISTRY["TIME-03"].level == "W", REGISTRY["TIME-03"].level
-    assert CONSTANTS["constants"]["scene_duration_tolerance_share"]["value"] == 0.25
+    # changed after the full run (Project notes 32, problem 10): one scene-length tolerance, measured against the
+    # scene's list; scene_duration_tolerance_share is gone
+    assert CONSTANTS["constants"]["scene_total_tolerance"]["value"] == 0.1
+    assert "scene_duration_tolerance_share" not in CONSTANTS["constants"]
     project = small_project(scratch, "c8")
     scenes = [record.identifier for record in parse_file(project / "04 Scene list.md", "04 Scene list.md",
                                                          SCHEMA).records if record.type_name == "SCENE"]

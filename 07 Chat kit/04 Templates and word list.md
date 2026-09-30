@@ -636,7 +636,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - reader: <standard: an ID of CHARACTER (CH-IONA), or none>
 - plot_critical: <standard: yes or no>
 - emphasis: <standard: a number from 0 to 3>
-- method: <standard: composite or background_blur>
+- method: <standard: composite, background_blur or model_drawn>
 - lettering: <detailed: text>
 - animation: <standard: text, or none>
 - translate: <detailed: yes or no>
@@ -1066,7 +1066,8 @@ Below this line: details for the AI and the checker. You never need to read them
 ### SETUP <scene ID, -SU and 2 digits, like SC10-SU02> <a short plain title>
 - at: <standard, or write at_words instead: [x, y] or [x, y, z] in metres>
 - at_words: <standard, or write at instead: text>
-- look_at: <standard: [x, y] or [x, y, z] in metres>
+- look_at: <standard, or write look_at_words instead: [x, y] or [x, y, z] in metres>
+- look_at_words: <standard, or write look_at instead: text>
 - lens_mm: <standard: millimetres>
 - use: <standard: text>
 - side: <standard: a or b>
@@ -1121,8 +1122,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - frame_in_frame: <detailed: text, or none>
 - device: <detailed: text, or none>
 - glass: <standard, when glass_in_frame, one line each: text> | state: <clear, marked, reflecting, screen or broken_open> | camera: <through, along or angled>
-- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)>
-- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY); write none when there is nothing> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)>
+- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)> | recorded: <footage only: SC06>
+- thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY); write none when there is nothing> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)> | recorded: <footage only: SC06>
 - text: <standard: IDs of TEXT (TX-GOODS-ONLY), separated by commas, or none>
 - keep_hidden: <standard, when fact_element_before_reveal, one line each: an ID of FACT (FT-03)> | how: <one word from the note>
 - must_show: <standard: IDs of CHARACTER (CH-IONA) or STATE (CH-IONA.S02) or PROP (PR-FLASK) or TEXT (TX-GOODS-ONLY) or MOTIF (MO-MINT) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP), separated by commas, or none>
@@ -1493,13 +1494,13 @@ A heading line names the record type, its ID and a plain title. Each field is on
 
 ## The grammar
 
-**G1. What counts.** A record file is UTF-8 Markdown. Only record headings, field lines inside a record, and the END line mean anything to the parser. Every other line (the plain part above the divider, titles, "At a glance", tables, paragraphs, the check table after a `---` line) is free text for people, kept and ignored.
+**G1. What counts.** A record file is UTF-8 Markdown. Only record headings, field lines inside a record, and the END line mean anything to the parser. Every other line (the plain part, titles, tables, paragraphs, the check table after a `---` line) is free text, kept and ignored.
 
 **G2. Headings.** A record starts `### <TYPE> <ID> <optional plain title>`. TYPE is an upper-case word from the schema. The ID matches its type's pattern (`SC10-SH150`, `CH-IONA`, `CHOICE-021`). Singleton types (PLAN, STYLE, WORLD, CAMSYS, SOUNDPLAN, LADDER) have no ID: `### PLAN`. The title is free text after the ID.
 
 **G3. Where a record ends.** At the next line starting with `#`, at a line `---`, or at the END line.
 
-**G4. Field lines.** A field is one line: `- <field>: <value>`. Field names are lowercase snake_case plain words from the schema. The parser lowercases names and turns spaces and hyphens into underscores, so `- Screen time: 15` is read as `screen_time` and logged as a tidy fix.
+**G4. Field lines.** A field is one line: `- <field>: <value>`. Field names are lowercase snake_case plain words from the schema. Names are read in lower case, spaces and hyphens as underscores (`- Screen time: 15` is `screen_time`, a logged tidy fix).
 
 **G5. Values.** A value is one line. Its kind comes from the schema:
 
@@ -1524,7 +1525,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 **G6. Items.** A repeatable field appears once per item. An item is a first part followed by named sub-parts: `- subject: CH-IONA.S02 | at: left_third | faces: camera | does: chews, stops, frowns`. The first part is the item's main value, usually an ID. Sub-part keys are schema words in any order; an unknown key is an error. Positional (unnamed) sub-parts are never allowed. A few fields have no first part (the schema marks them `first_part: null`); their value starts with the first named sub-part: `- lineup: height: short | mass: slight | shape: long | value: light | colour: grey | tempo: slow`.
 
-**G7. Empty and undecided.** Empty is `none`: a field the depth asks for with nothing to hold is written `none` (`- effect: none`), never left out (FORM-05). Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing.
+**G7. Empty and undecided.** Empty is `none`: a field the depth asks for with nothing to hold is written `none` (`- effect: none`), never left out (FORM-05). Undecided is `open` (listed as a question for the user). `auto` means code decides. `null`, `N/A`, `-` and a blank read as missing. Elsewhere, `- at: none` in an inbox clears a stored field you wrote (a wrong `at` once `at_words` is there).
 
 **G8. Notes.** A line inside a record starting `> ` is a note attached to it, kept and not parsed.
 
@@ -1701,9 +1702,9 @@ Only the user's words go above a file's divider, into reports and into messages:
 
 ## Where the checker looks
 
-WORDS-02 warns on a retired word in a field value or in user-facing text. Each entry in `rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03 suggests the right one), only in prompts (GEN-12), or nowhere, because the word is common or correct elsewhere (`bed` in a set plan, `emblem` as a PROP kind, `channel` on a MOTIF, `spine` as a MOTIF rank). Never use those words in their retired sense.
+WORDS-02 warns on a retired word in a field value or in user-facing text, read in its retired sense ("camera movement", "a sound bed"; "his movement" is plain English). Each entry in `rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03), only in prompts (GEN-12), or nowhere (`emblem` as a PROP kind, `spine` as a MOTIF rank).
 
-Always allowed: "Stage" as the product's name and `stage.py`; story words inside double quotes (a script's "torch" stays); the field names `CHARACTER.movement` (label "How they move") and `SETUP.look_at` (label "Aimed at"); research codes in AI-facing files. Mood-only reasons, emotion words in `does` and banned prompt words have their own lists in `rules/words.json` (REASON-04, WORDS-01, GEN-12).
+Always allowed: "Stage" as the product's name and `stage.py`; story words inside double quotes (a script's "torch" stays); the field names `CHARACTER.movement` (label "How they move") and `SETUP.look_at` (label "Aimed at"); research codes in AI-facing files. Mood-only reasons, emotion words and banned prompt words have their own lists (REASON-04, WORDS-01, GEN-12).
 
 ---
 
@@ -1711,7 +1712,7 @@ From the skill file `reference/04 Rule order.md`:
 
 # Rule order
 
-When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order merges A1, A2, A4, B1, B2 and B3, with readability second as B2 and A1 put it.
+When two rules want different things for the same shot, the higher rule on this list wins, and the record's `why` says which rule won and names the line, object or ID it rests on. Example: in The Catch scene 10, Eli's warning "Don't open the flask." would get a single on Eli under ordinary dialogue coverage (rule 9), but his camera rule `CR-ELI` saves his closest singles for scene 13 (rule 4), so shot 130 hears him off screen. The order merges A1, A2, A4 and B1 to B3, readability second as B2 and A1 put it.
 
 1. What the story itself states we see and hear.
 2. Readability of the beat.
@@ -1746,11 +1747,11 @@ Lines carrying a BEAT `flag` are staged to contain the flaw, never rewritten: on
 
 ## 6. Turn rules
 
-The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03), within the rules above: a camera rule's cap (rule 4) may let earlier shots equal the turn's size; through one fixed in-story camera (rule 3) size cannot change, so the frame's action and the cuts carry the turn (B1 §10.5). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere.
+The scene's most extreme framing goes on its turn, and nothing tighter comes before it (B1 R1, A2 R4; CRAFT-03), within the rules above: the ladder's rung (rule 4) sets the turn's size, a wide rung marking the turn by opening out, and a rung or a camera rule's cap may let earlier shots equal it; through one fixed in-story camera (rule 3) size cannot change, so the frame's action and the cuts carry the turn (B1 §10.5). **Tie-break.** A black-comedy reading of scene 10 would widen beat 7 and cut after "Not mint." to Saye's unmoved face (D10 §12.2), that tone's default (rule 9). The turn rule wins: the tone moves the dial, never the turn (D10 principle 1), so beat 7 keeps the scene's closest frame and the comic undercurrent rides on lines and wide shots elsewhere.
 
 ## 7. Emotion over spatial continuity
 
-When a cut that serves the emotion breaks the geography, keep the emotion (A4 R1: emotion first, space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it; the scene records a `departure` naming the rule it breaks and why, and GEOM-03's warning is answered by that record.
+When a cut that serves the emotion breaks the geography, keep the emotion (A4 R1: emotion first, space last). **Tie-break.** In a balanced two-person scene the matched singles (A2, rule 8) keep both sides on one lens and one side of the line. If the strongest reaction can only be seen from across the line, the shot crosses it, and the scene's `departure` answers GEOM-03.
 
 ## 8. Conflict-type defaults
 
@@ -1758,7 +1759,7 @@ Each conflict type has its coverage (A2 R12-R17). **Tie-break.** Scene 10 is asy
 
 ## 9. General beat defaults and translation menus
 
-The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask. A point-of-view shot follows the eyes, so the menu's pan beats the static baseline, and the shot's `why` names the flask.
+The menus in cards 10 to 14 and the tone defaults apply where nothing above decides. **Tie-break.** Scene 10 opens on Saye's view at her door: a point-of-view pan to the flask. The menu's pan beats the static baseline, and the `why` names the flask.
 
 ## 10. The baseline
 

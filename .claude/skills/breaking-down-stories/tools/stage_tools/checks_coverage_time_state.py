@@ -27,6 +27,13 @@ come from rules/constants.json by name (pause_tiers, long_pauses_per_scene_max, 
 scene_total_tolerance, main_actions_per_seconds, film_asl_range_s) and rules/tone_defaults.json.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- COVER-08: the look covers a light at rest; a light that changes or moves still needs a light cue;
+- TIME-01 counts text the audience must read and owes a beat's pause once; TIME-03 measures the shots against the
+  list (scene_total_tolerance) and warns a list far from its planned length (scene_target_far_ratio);
+- TIME-09 prints one line per character and leaves out a silent non-human character; STATE-01 reads a recording's
+  state where it was recorded.
 """
 
 import math
@@ -35,6 +42,7 @@ from dataclasses import dataclass
 
 from .check_records import register_check, same_scene, scene_of
 from .derive_fields import (breakdown_for_run, constant, element_of, elements_present, focus_subject,
+                            light_words_in_context,
                             is_insert_or_card, list_items, number_of, provisional_floor, resolve_story_point,
                             seconds_text, state_from, states_in_play, time_floor)
 from .record_format import (load_json, normalise_word, parse_line_numbers, parse_quote_anchor, parse_story_point,
@@ -847,6 +855,83 @@ def colours_kept(breakdown, scene, look):
     return set(re.findall(r"[a-z]+", " ".join(texts).lower()))
 
 
+# COVER-08 reads light words in their sentence: a light the scene's LOOK already carries, described as it is, is
+# covered by the look. Brightness words are covered by any look with a main light; a named source (torch, lamp) by a
+# look whose text names it, a word built on it (torchlight) or the project's word swap for it (torch becomes
+# flashlight). A sentence where the light changes or moves is never covered by the look alone: it needs a light cue.
+# That is a word of change (the light dims, flickers, dies, goes out, floods in), a person moving the light (holds,
+# lifts, brings it up, points it) or a beat of light repeated ("Light, brick, light, brick.").
+LIGHT_BRIGHTNESS_WORDS = {"light", "lit", "bright", "brightness", "dim", "pale", "glow", "glows",
+                          "glowing", "beam", "beams", "shine", "shines", "shining", "glint", "gleam", "glare"}
+LIGHT_CHANGE_WORDS = {"dims", "flicker", "flickers", "flash", "flashes", "flare", "blaze", "strobe", "lightning",
+                      "blinding"}
+LIGHT_MOVING_WORDS = {"goes", "go", "going", "went", "gone", "out", "off", "dies", "died", "dying", "fades", "fade",
+                      "fading", "faded", "dimmed", "dimming", "brightens", "brightened", "floods", "flood", "flooded",
+                      "sweeps", "sweep", "swept", "swings", "swing", "swinging", "swung", "comes", "came", "onto",
+                      "across", "up", "brings", "bring", "brought", "raises", "raise", "raised", "lifts", "lift",
+                      "lifted", "holds", "hold", "held", "points", "pointed", "turns", "turned", "moves", "moved",
+                      "passes", "passed", "falls", "fell", "spills", "spilled", "catches", "caught", "snaps",
+                      "switches", "switched", "clicks", "blinks", "sparks", "rises", "rose", "drops", "dropped",
+                      "returns", "returned", "kills", "killed", "blows", "cuts", "cut", "stutters", "pulses",
+                      "carries", "carried", "carrying", "shifts", "shifted", "slides", "slid", "trails"}
+
+
+LIGHT_AS_PLACE = re.compile(r"\b(?:to|into|towards?|in|under)\s+(?:the|her|his|their|its)\s+$")
+
+
+def light_moves_in(sentence, word=None):
+    """True when a sentence of the story changes or moves its light (see the note above COVER-08's words). A light
+    that things move into or towards ("turns the tag to the light", "comes into the light") and a brightness word
+    that describes a surface ("the bright steel") are light at rest, unless a word of change is there too."""
+    lowered = (sentence or "").lower()
+    words = re.findall(r"[a-z]+", lowered)
+    if any(found in LIGHT_CHANGE_WORDS for found in words):
+        return True
+    light_words = [found for found in words if found in LIGHT_BRIGHTNESS_WORDS]
+    if len(light_words) != len(set(light_words)):
+        return True
+    if word:
+        match = re.search(r"\b" + re.escape(word) + r"\b", lowered)
+        if match:
+            after = re.findall(r"[a-z]+", lowered[match.end():])
+            if LIGHT_AS_PLACE.search(lowered[:match.start()]):
+                return False
+            if word in LIGHT_BRIGHTNESS_WORDS and word not in ("light", "glow", "beam", "beams") and after and \
+                    after[0] not in LIGHT_BRIGHTNESS_WORDS and after[0] not in LIGHT_MOVING_WORDS:
+                return False  # "the bright steel": the word describes a thing's surface
+    return any(found in LIGHT_MOVING_WORDS for found in words)
+
+
+def look_light_words(breakdown, look):
+    """The words of a LOOK's light text, with the project's word swaps read both ways (torch and flashlight)."""
+    if look is None:
+        return set()
+    text = " ".join(look.get(name) or "" for name in LOOK_COLOUR_FIELDS)
+    words = set(re.findall(r"[a-z]+", text.lower()))
+    project = next(iter(breakdown.records_of("PROJECT")), None)
+    for written in (project.get_all("prompt_words") if project is not None else []):
+        parts = [piece.strip().lower() for piece in re.split(r"\|\s*use:", written)]
+        if len(parts) == 2:
+            original, swapped = parts
+            swapped_words = set(re.findall(r"[a-z]+", swapped))
+            if original in words or (swapped_words and swapped_words <= words | {"a", "the", "of"}):
+                words.add(original)
+                words |= swapped_words
+    return words
+
+
+def light_word_carried_by_look(word, look, look_words):
+    """True when the LOOK already carries a light word of the story (see LIGHT_BRIGHTNESS_WORDS above)."""
+    if look is None or word in LIGHT_CHANGE_WORDS:
+        return False
+    if word in LIGHT_BRIGHTNESS_WORDS:
+        return bool(look.get("main_light")) and normalise_word(look.get("main_light") or "none") != "none"
+    if word in look_words:
+        return True
+    return any(word.startswith(stem) and len(stem) >= 4 for stem in look_words) or \
+        any(stem.startswith(word) and len(word) >= 4 for stem in look_words)
+
+
 @register_check("COVER-08", level="W", build=1,
                 title="A scripted light, colour or darkness line (B2 P2) with no LOOK light_cue, no stays_dark and "
                       "no shot light covering it",
@@ -869,6 +954,7 @@ def check_cover_08(run):
             continue
         look = scene_look(breakdown, scene)
         stays_dark = look is not None and normalise_word(look.get("stays_dark") or "none") not in ("none", "")
+        look_words = look_light_words(breakdown, look)
         cue_lines = light_cue_lines(run, breakdown, scene.identifier)
         kept_words = colours_kept(breakdown, scene, look)
         units, _ = coverage_units(run, breakdown, scene)
@@ -883,10 +969,15 @@ def check_cover_08(run):
                    or normalise_word(shot.get("light_cue") or "none") != "none" for shot in showing):
                 continue
             open_words = []
-            for word in words:
+            line_text = run.story.numbered.line(line)
+            for word in light_words_in_context(line_text, words):
                 if word in DARKNESS_WORDS and stays_dark:
                     continue
                 if word in COLOUR_WORDS and word in kept_words:
+                    continue
+                if word not in COLOUR_WORDS and word not in DARKNESS_WORDS and \
+                        not light_moves_in(sentence_holding(line_text, [word]) or line_text, word) and \
+                        light_word_carried_by_look(word, look, look_words):
                     continue
                 open_words.append(word)
             if not open_words:
@@ -1057,49 +1148,73 @@ def scene_total(run, breakdown, scene):
 
 
 @register_check("TIME-03", level="W", build=1,
-                title="Scene total outside its target by more than scene_duration_tolerance_share (a warning; run "
-                      "after the scene's last batch)",
-                plain="runs longer or shorter than its planned length allows")
+                title="Scene total outside its design (the approved list's total) by more than scene_total_tolerance "
+                      "(a warning; run after the scene's last batch); a design more than scene_target_far_ratio "
+                      "times its planned length, or under its inverse",
+                plain="is longer or shorter than planned")
 def check_time_03(run):
-    """A warning only (C8): the target is the first estimate, made from the words, not a design, so a scene may
-    differ from it by scene_duration_tolerance_share before the checker says so."""
+    """A warning only. The full run (Project notes 31, problem 10): a scene is measured against its own design, the
+    total of its one-line list's times, which step 7 set with room for speech, text reading and the pauses owed; the
+    target from the first estimate (word counts) is a guess and is not judged, so a scene given room to breathe
+    after an intense one (FILM-07) is never flagged for it. Before the shots are written, and at Quick depth, the
+    list is the design and there is nothing to compare. One tolerance, scene_total_tolerance, everywhere."""
     breakdown = breakdown_of(run)
     problems = []
-    tolerance_name = "scene_duration_tolerance_share"
-    tolerance = constant(run.constants, tolerance_name, None)
+    tolerance = constant(run.constants, "scene_total_tolerance", None)
     if tolerance is None:
-        tolerance_name = "scene_total_tolerance"
-        tolerance = constant(run.constants, tolerance_name, None)
-    if tolerance is None:
-        run.skip("TIME-03", "scene_duration_tolerance_share is missing from rules/constants.json")
+        run.skip("TIME-03", "scene_total_tolerance is missing from rules/constants.json")
         return problems
-    without_target = []
+    far = constant(run.constants, "scene_target_far_ratio", None)
     for scene in kept_scenes(run):
+        problems += design_far_from_target(run, breakdown, scene, far)
         if batch_beats(run, breakdown, scene.identifier) is not None:
             run.skip("TIME-03", f"{scene.identifier}: runs after the scene's last batch")
             continue
-        target = number_of(scene.get("target_duration_s"))
         total, counted = scene_total(run, breakdown, scene)
-        if total is None:
+        if total is None or counted != "shots":
             continue
-        if not target:
-            without_target.append(scene.identifier)
+        times = [number_of(item.get("time")) for _, item in list_items(breakdown, scene.identifier)]
+        times = [time for time in times if time is not None]
+        design = sum(times) if times else None
+        if not design:
             continue
-        share = (total - target) / target
+        share = (total - design) / design
         if abs(share) <= tolerance + TIME_TOLERANCE_S:
             continue
         direction = "over" if share > 0 else "under"
-        problems.append(report(run, "W", "TIME-03", scene, "target_duration_s",
-                               f"{seconds_words(target)}: the scene's {counted} total {seconds_text(round(total, 2))} s, "
-                               f"{round(abs(share) * 100)}% {direction} its target (at most {round(tolerance * 100)}% "
-                               f"either way, {tolerance_name}; the target is the first estimate, made from the words)",
-                               "Fix: " + ("shorten or cut shots that carry least" if share > 0 else
+        record = breakdown.record(f"{scene.identifier}-LIST", "SHOTLIST") or scene
+        problems.append(report(run, "W", "TIME-03", record, "item",
+                               f"the scene's shots run {seconds_text(round(total, 2))} s, {round(abs(share) * 100)}% "
+                               f"{direction} its one-line list's {seconds_text(round(design, 2))} s (at most "
+                               f"{round(tolerance * 100)}% either way, scene_total_tolerance)",
+                               "Fix: " + ("shorten the shots that hold longer than the list planned" if share > 0 else
                                           "hold the shots that need it longer") +
-                               ", or ask the user to change the scene's planned length.",
-                               place_of(run, scene, "target_duration_s")))
-    if without_target:
-        run.skip("TIME-03", f"no target_duration_s yet for {', '.join(without_target)}")
+                               ", or change the list's times (and say why) when the shots found time the list missed.",
+                               place_of(run, record, "item")))
     return problems
+
+
+def design_far_from_target(run, breakdown, scene, far):
+    """TIME-03's wide warning, from step 7: the scene's one-line list totals more than scene_target_far_ratio times
+    its planned target_duration_s, or under its inverse. The target is the first estimate's guess and is not kept to,
+    but a scene twice or half its plan changes the film's length, and the user should hear of it."""
+    target = number_of(scene.get("target_duration_s"))
+    if not far or not target:
+        return []
+    times = [number_of(item.get("time")) for _, item in list_items(breakdown, scene.identifier)]
+    times = [time for time in times if time is not None]
+    design = sum(times) if times else None
+    if not design or 1 / far <= design / target <= far:
+        return []
+    record = breakdown.record(f"{scene.identifier}-LIST", "SHOTLIST") or scene
+    how = f"{design / target:.1f} times" if design > target else f"{round(design / target * 100)}% of"
+    return [report(run, "W", "TIME-03", record, "item",
+                   f"the scene's one-line list totals {seconds_text(round(design, 2))} s, {how} its planned "
+                   f"{round(target, 2):g} s (target_duration_s; more than {far:g} times or under "
+                   f"1/{far:g} of it is warned, scene_target_far_ratio)",
+                   "Fix: check the list's times against the scene's lines; when the scene really needs this length, "
+                   "keep it and say so in the report to the user, since it changes the film's length.",
+                   place_of(run, record, "item"))]
 
 
 # ---------------------------------------------------------------- pauses (TIME-04, TIME-05, TIME-08)
@@ -1503,6 +1618,9 @@ def check_time_09(run):
         dialogue_average = average(dialogue)
         if dialogue_average is None:
             continue
+        # one line per character and cause: the facts they do not know are named together (the full run printed
+        # the same short shots once per fact)
+        by_character = {}
         for fact in facts:
             audience = point_position(breakdown, fact.get("audience_knows_from"))
             knowers = {}
@@ -1516,8 +1634,8 @@ def check_time_09(run):
                 if subject is None:
                     continue
                 character = element_of(subject.first or "")
-                if not character.startswith("CH-"):
-                    continue
+                if not character.startswith("CH-") or is_non_human(breakdown, character):
+                    continue  # a creature is not the one the audience waits for to learn a fact
                 at = shot_position(breakdown, shot)
                 if known_at(audience, at) is not True:
                     continue
@@ -1533,15 +1651,34 @@ def check_time_09(run):
                 unaware_average = average([number_of(shot.get("screen_time")) for shot in unexplained])
                 if unaware_average + TIME_TOLERANCE_S >= dialogue_average:
                     continue
-                names = ", ".join(shot.identifier for shot in unexplained)
-                problems.append(report(run, "W", "TIME-09", scene, "tags",
-                                       f"suspense_and_reveal: the shots on {character}, who does not know "
-                                       f"{fact.identifier} yet, average {seconds_text(round(unaware_average, 2))} s "
-                                       f"({names}), shorter than the scene's dialogue shots "
-                                       f"({seconds_text(round(dialogue_average, 2))} s), and none gives a why (A4 S2)",
-                                       f"Fix: hold longer on {character} while the audience knows and they do not, or "
-                                       "give those shots a why.", place_of(run, scene, "tags")))
+                key = (character, tuple(shot.identifier for shot in unexplained))
+                entry = by_character.setdefault(key, {"facts": [], "average": unaware_average})
+                entry["facts"].append(fact.identifier)
+        for (character, shot_names), entry in by_character.items():
+            facts_named = entry["facts"]
+            problems.append(report(run, "W", "TIME-09", scene, "tags",
+                                   f"suspense_and_reveal: the shots on {character}, who does not know "
+                                   f"{' or '.join(facts_named) if len(facts_named) <= 2 else ', '.join(facts_named)} "
+                                   f"yet, average {seconds_text(round(entry['average'], 2))} s ({', '.join(shot_names)}),"
+                                   f" shorter than the scene's dialogue shots ({seconds_text(round(dialogue_average, 2))}"
+                                   " s), and none gives a why (A4 S2)",
+                                   f"Fix: hold longer on {character} while the audience knows and they do not, or "
+                                   "give those shots a why.", place_of(run, scene, "tags")))
     return problems
+
+
+def is_non_human(breakdown, character):
+    """True for a character of tier non_human that has no voice and says nothing (the animal in The Catch). Marking
+    a speaking character non_human does not take it out of the checks: its voice or its speeches keep it a person."""
+    record = breakdown.record(character, "CHARACTER")
+    if record is None or normalise_word(record.get("tier") or "") != "non_human":
+        return False
+    if normalise_word(record.get("voice") or "none") not in ("none", ""):
+        return False
+    if any(voice.get("character") == character for voice in breakdown.records_of("VOICE")):
+        return False
+    speeches = getattr(breakdown, "speeches", None) or {}
+    return not any(isinstance(entry, dict) and entry.get("speaker") == character for entry in speeches.values())
 
 
 @register_check("TIME-10", level="W", build=2,
@@ -1674,8 +1811,13 @@ def check_state_01(run):
             first, last = shot_span(breakdown, shot)
             for field_name in ("subject", "thing"):
                 for item in breakdown.items(shot, field_name):
+                    item_first, item_last = first, last
+                    recorded = recorded_position(run, breakdown, item.get("recorded"))
+                    if recorded is not None:
+                        # footage from an earlier time: the state that held when it was recorded
+                        item_first, item_last = recorded
                     problems.extend(state_reference_problems(run, breakdown, scene, shot, field_name,
-                                                             (item.first or "").strip(), first, last))
+                                                             (item.first or "").strip(), item_first, item_last))
         shot_list = run.record(f"{scene.identifier}-LIST")
         if shot_list is None or shot_list.type_name != "SHOTLIST":
             continue
@@ -1692,6 +1834,30 @@ def check_state_01(run):
                 problems.extend(state_reference_problems(run, breakdown, scene, shot_list, "item",
                                                          reference, first, last, item_label=item.first))
     return problems
+
+
+def recorded_position(run, breakdown, value):
+    """((scene key, line), (scene key, line)) of a subject's or thing's `recorded` sub-part (footage from an earlier
+    time): a story point ('SC06 "The cage drops."') gives its line; a scene ID alone gives the scene's last line (the
+    state as the scene ends). None when there is no such sub-part or it names no scene."""
+    value = (value or "").strip()
+    if not value or normalise_word(value) in ("none", "no"):
+        return None
+    parsed = parse_story_point(value)
+    if parsed:
+        scene_identifier = parsed[0]
+        line = None
+        if run.story is not None:
+            line = resolve_story_point(breakdown, value).line
+        position = (scene_key(scene_identifier), line)
+        return position, position
+    match = re.search(r"\bSC\d{2,3}[A-Z]?\b", value)
+    if not match:
+        return None
+    span = breakdown.scene_range(match.group(0))
+    line = span[1] if span else None
+    position = (scene_key(match.group(0)), line)
+    return position, position
 
 
 def list_item_span(run, breakdown, scene, item):
@@ -1746,8 +1912,10 @@ def state_reference_problems(run, breakdown, scene, record, field_name, referenc
                                    f"{reference} has no state valid here: its first state, "
                                    f"{states[0].identifier}, starts at "
                                    f"{state_start_words(breakdown, states[0])}, after this shot",
-                                   f"Fix: add a state of {reference} from {scene.identifier}, or move "
-                                   f"{states[0].identifier}'s from earlier.", place))
+                                   f"Fix: write a STATE of {reference} from {scene.identifier} with this unit (an "
+                                   f"addition: its next free state number, origin: invented, listed in the scene's "
+                                   f"additions), or, for footage of an earlier time, add '| recorded: <scene>'.",
+                                   place))
     return problems
 
 

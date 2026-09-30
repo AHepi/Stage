@@ -26,10 +26,15 @@ ProjectView, PlainNames, plain_value,
 seconds_words, duration_words, scene_number, shot_number_text.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- the one-of-a-kind records are named in plain words (the camera system, the sound plan, the ladder); a rung 'held
+  past the longest pause'; one film length.
 """
 
 import datetime
 import html
+import json
 import re
 from pathlib import Path
 from urllib.parse import quote
@@ -126,6 +131,15 @@ ID_IN_TEXT = re.compile(
     r"|SQ\d{2}|CP\d{2}|SC\d{2,3}[A-Z]?"
     r")(?![\w-])")
 QUOTED_TEXT = re.compile(r'"[^"\n]*"|“[^”\n]*”')
+# The one-of-a-kind film records (no ID but their type), in the user's words, in lists and in free text.
+SINGLETON_WORDS = {"PLAN": "the story plan", "STYLE": "the style", "WORLD": "the world",
+                   "CAMSYS": "the camera system", "SOUNDPLAN": "the sound plan", "LADDER": "the ladder of closest shots"}
+SINGLETON_IN_TEXT = re.compile(r"(?<![\w-])(?:" + "|".join(SINGLETON_WORDS) + r")(?![\w-])")
+SINGLETON_FIELDS_IN_TEXT = "peak|break|rung|crisis|climax|step_change|rupture_plan|music_policy|default_height"
+SINGLETON_PEAK_IN_TEXT = re.compile(r"(?<![\w-])(" + "|".join(SINGLETON_WORDS) + r")\s+(" + SINGLETON_FIELDS_IN_TEXT
+                                    + r")(?:\s+([a-z]+(?:_[a-z]+)+))?(?![\w-])")
+# A field or value name written into a free text (tightest_size, whose_scene, push_in): read as plain words.
+FIELD_WORD_IN_TEXT = re.compile(r"(?<![\w-])[a-z]+(?:_[a-z]+)+(?![\w-])")
 # A unit ID in a text: U-08-SC10-B2, U-07-SC13-P1, U-02-SC01..SC10 (a range of scenes), U-02-CP01.
 UNIT_IN_TEXT = re.compile(r"\bU-\d{2}-[A-Z0-9]+(?:\.\.[A-Z0-9]+)?(?:-[A-Z0-9]+)*")
 SCENE_ID = re.compile(r"^SC(\d{2,3})([A-Z]?)$")
@@ -597,6 +611,9 @@ class PlainNames:
         job = re.match(r"^(FX|PV|PIC|TK|VT)-(.+)$", identifier)
         if job:
             return self.job_name(job.group(1), job.group(2))
+        if identifier in SINGLETON_WORDS:
+            # the one-of-a-kind film records have no ID but their type: never print CAMSYS or LADDER to the user
+            return SINGLETON_WORDS[identifier]
         record = view.record(identifier)
         if record is not None:
             title = record.title or ""
@@ -616,10 +633,6 @@ class PlainNames:
             return word or identifier
         if identifier in ("PROJECT",):
             return view.title
-        singleton_words = {"PLAN": "the story plan", "STYLE": "the style", "WORLD": "the world",
-                           "CAMSYS": "the camera system", "SOUNDPLAN": "the sound plan", "LADDER": "the ladder"}
-        if identifier in singleton_words:
-            return singleton_words[identifier]
         return identifier
 
     def job_name(self, kind, rest):
@@ -661,6 +674,13 @@ class PlainNames:
     def _plain_piece(self, text, scene):
         text = UNIT_IN_TEXT.sub(lambda match: unit_in_plain_words(match.group(0), self.view.steps), text)
         text = ID_IN_TEXT.sub(lambda match: self.name(match.group(0), scene, short=True), text)
+        # the one-of-a-kind film records, named by their type in a why ("(PLAN peak tightest_size, Iona)",
+        # "(CAMSYS break)", "A break from LADDER"), in the user's words
+        text = SINGLETON_PEAK_IN_TEXT.sub(
+            lambda match: f"{SINGLETON_WORDS[match.group(1)]}'s {plain_value(match.group(2).lower())}"
+                          + (f" for the {plain_value(match.group(3))}" if match.group(3) else ""), text)
+        text = SINGLETON_IN_TEXT.sub(lambda match: SINGLETON_WORDS[match.group(0)], text)
+        text = FIELD_WORD_IN_TEXT.sub(lambda match: plain_value(match.group(0)), text)
         text = re.sub(r"(\d)\s?mm\b", r"\1 millimetre", text)
         text = re.sub(r"\bline:\s*(\d+)", r"story line \1", text)
         return text
@@ -1057,28 +1077,32 @@ def waiting_line(view, choice, number=None):
     return f"{number}. {text}" if number is not None else f"- {text}"
 
 
-def additions_of_scene(view, scene_identifier):
-    """[(where, what)] of the additions to the story in a scene: SCENE additions and shots' additions."""
+def additions_of_scene(view, scene_identifier, with_meaning=False):
+    """[(where, what)] of the additions to the story in a scene: SCENE additions and shots' additions. With
+    with_meaning, [(where, what, changes meaning: True or False)] (only additions that change what the scene means
+    go to the user to keep or cut; the rest are kept and counted)."""
     names = view.names
     found = []
     scene = view.record(scene_identifier, "SCENE")
     for item in view.items(scene, "additions"):
         if item.first and not is_empty(item.first):
-            found.append((None, names.text(item.first, scene_identifier)))
+            changes = normalise_word(item.get("changes_meaning") or "yes") != "no"
+            found.append((None, names.text(item.first, scene_identifier), changes))
     for shot in view.shots(scene_identifier):
         value = shot.get("additions")
         if value and not is_empty(value):
-            found.append((shot.identifier, names.text(value, scene_identifier)))
-    return found
+            found.append((shot.identifier, names.text(value, scene_identifier), True))
+    return found if with_meaning else [(where, what) for where, what, _ in found]
 
 
 def scene_small_choice_lines(view, scene_identifier):
     names = view.names
     lines = []
-    for where, what in additions_of_scene(view, scene_identifier):
+    for where, what, changes in additions_of_scene(view, scene_identifier, with_meaning=True):
         place = sentence_start(names.name(where, scene_identifier)) + ": " if where else ""
         what = end_sentence(what).rstrip(".")
-        lines.append(f"- {place}{what if place else sentence_start(what)} (an addition to the story; keep or cut it).")
+        label = "an addition that changes the scene; keep or cut it" if changes else "a small addition, kept"
+        lines.append(f"- {place}{what if place else sentence_start(what)} ({label}).")
     for choice in view.records("CHOICE"):
         if not choice_mentions_scene(choice, scene_identifier) or is_asked(choice):
             continue
@@ -1855,7 +1879,9 @@ def rung_words(view, value):
     if item.get("size"):
         parts.append(plain_value(item.get("size")))
     if item.get("hold"):
-        parts.append(f"held {plain_value(item.get('hold'))}")
+        hold = normalise_word(item.get("hold"))
+        # the rung's hold values are short, medium, long and hold (held past the longest pause)
+        parts.append("held past the longest pause" if hold == "hold" else f"held {plain_value(item.get('hold'))}")
     text = where + (": " + ", ".join(parts) if parts else "")
     if item.get("why"):
         text += f"; {view.names.text(item.get('why'))}"
@@ -2643,6 +2669,17 @@ def scene_join_lines(view, scene_identifier):
     return lines
 
 
+def titles_seconds(view):
+    """The seconds of titles and credits the estimate from the shots adds (estimate.json), or 0: the book and the
+    time and cost page then give one film length, the story's, 'plus titles' when there are any."""
+    path = view.folder / "For machines - do not edit" / "estimate.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return float((data.get("estimate") or {}).get("titles_and_credits_s") or 0)
+    except (OSError, ValueError, TypeError, AttributeError):
+        return 0.0
+
+
 def write_book(project_folder, schema=None, words=None, constants=None, view=None):
     """Write 15 The breakdown/The breakdown.md and The breakdown.html from the records. Returns their paths."""
     view = view or ProjectView(project_folder, schema, words, constants)
@@ -2659,8 +2696,10 @@ def write_book(project_folder, schema=None, words=None, constants=None, view=Non
     length = sum(scene_duration(view.breakdown, scene) or 0 for scene in film_scenes)
     shot_count = sum(len(view.shots(scene)) for scene in film_scenes)
     if shot_count:
+        titles = titles_seconds(view)
+        with_titles = f" ({duration_words(length + titles)} with titles and credits)" if titles else ""
         book.paragraph(f"{len(film_scenes)} scene{'s' if len(film_scenes) != 1 else ''}, {shot_count} "
-                       f"shot{'s' if shot_count != 1 else ''}, {duration_words(length)} of film. "
+                       f"shot{'s' if shot_count != 1 else ''}, {duration_words(length)} of story{with_titles}. "
                        f"Made from the records on {datetime.date.today().isoformat()}; if it looks wrong, the record "
                        "is fixed and the book is made again.")
     sections = [("How to read this", "how-to-read-this"), ("The story plan", "the-story-plan"),
@@ -2744,4 +2783,6 @@ def write_book(project_folder, schema=None, words=None, constants=None, view=Non
     html_path = folder / BOOK_HTML
     write_text_exactly(markdown_path, book.to_markdown())
     write_text_exactly(html_path, book.to_html())
+    from .project_files import remember_made_from
+    remember_made_from(view.folder, f"{BOOK_FOLDER}/{BOOK_HTML}")
     return [markdown_path, html_path]

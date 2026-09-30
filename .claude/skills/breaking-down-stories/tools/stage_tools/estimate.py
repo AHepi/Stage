@@ -34,6 +34,9 @@ v0_action_seconds_per_word, rhythm_class_asl_s, model_facts_max_age_days, film_a
 page_eighths_line_model, scene_total_tolerance) or from adapters/prices.json (prices and D13's work defaults).
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- one film length: the story's, then with titles and credits.
 """
 
 import datetime
@@ -668,6 +671,16 @@ def works_from_shots(breakdown, scene, shots, prices, handles_s, average_shot_s,
         notes.append(f"{scene_words(scene.identifier)}: {plural(len(missing_time), 'shot')} without a screen time, "
                      f"counted at {one_place(average_shot_s)} seconds")
     return works, notes, extra_previs
+
+
+def list_design_seconds(breakdown, scene_identifier):
+    """The total of a scene's one-line list times (its design), or None without a timed list."""
+    listing = breakdown.record(f"{scene_identifier}-LIST", "SHOTLIST")
+    if listing is None:
+        return None
+    times = [number_of(item.get("time")) for item in breakdown.items(listing, "item")]
+    times = [time for time in times if time is not None]
+    return sum(times) if times else None
 
 
 def works_from_list(breakdown, scene, prices, handles_s):
@@ -1331,12 +1344,15 @@ def film_estimate(breakdown, version=None, on=None, prices=None, skill_folder=No
                 story_kind="screenplay" if screenplay else "prose")
     for block in film.scenes:
         film.notes.extend(block.notes)
-        if version == "v1" and block.basis in ("shots", "list") and block.target_s:
+        # a scene's shots are measured against its own design, the one-line list's total (the same rule and the same
+        # tolerance as TIME-03); the first estimate's target is a guess from the words and is not judged
+        design = list_design_seconds(breakdown, block.identifier) if block.basis == "shots" else None
+        if version == "v1" and design:
             tolerance = float(constant(constants, "scene_total_tolerance", 0.1))
-            if abs(block.runtime_s[1] - block.target_s) > tolerance * block.target_s:
+            if abs(block.runtime_s[1] - design) > tolerance * design:
                 film.warnings.append(
-                    f"{sentence_case(block.label)} runs {whole(block.runtime_s[1])} seconds against its planned "
-                    f"{whole(block.target_s)}, more than {whole(tolerance * 100)}% away.")
+                    f"{sentence_case(block.label)} runs {whole(block.runtime_s[1])} seconds against the "
+                    f"{whole(design)} its shot list planned, more than {whole(tolerance * 100)}% away.")
     pages = page_count(breakdown, constants) if screenplay and not film.partial else None
     film.counts["pages"] = pages
     film_checks(film, breakdown, constants, prices, pages)
@@ -1455,7 +1471,12 @@ def in_short(film):
     if film.rough and not film.total_shots and film.source_kind != "screenplay":
         return (f"In short: the book as written would run {minutes_range(film.runtime_s)}, counting every word as "
                 f"action. {film.money_note}")
-    parts = [f"In short: the film runs {minutes_range(film.runtime_s)}"]
+    if film.story_runtime_s and film.titles_s:
+        # one film length everywhere: the story's, then the same with titles and credits added (the book says so too)
+        parts = [f"In short: the film runs {minutes_range(film.story_runtime_s)} of story, "
+                 f"{minutes_range(film.runtime_s).replace('about ', '')} with titles and credits"]
+    else:
+        parts = [f"In short: the film runs {minutes_range(film.runtime_s)}"]
     if film.total_shots:
         parts.append(f" in about {plural(film.total_shots, 'shot')}")
     if film.money_shown and film.money:

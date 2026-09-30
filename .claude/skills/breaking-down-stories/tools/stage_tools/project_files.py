@@ -14,6 +14,11 @@ In plain words:
 - a lock file lets helper agents apply one unit at a time.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- '- field: none' clears a field the AI wrote, never on a locked record (FORM-11); notes sent on an existing record
+  are kept; apply names the next command as the handout does;
+- made from.json notes which records code's outputs were made from.
 """
 
 import datetime
@@ -26,10 +31,11 @@ import time
 import zipfile
 from pathlib import Path
 
-from .checks_form import INBOX_CHECKS, ChoiceBook, FormContext, apply_tidy_fixes, resolve_field, run_form_checks
+from .checks_form import (INBOX_CHECKS, ChoiceBook, FormContext, apply_tidy_fixes, locked, make_problem,
+                          resolve_field, run_form_checks)
 from .record_format import (DIVIDER_LINE, FieldLine, OtherLine, Record, TextBlock, add_record, ensure_end_line,
                             load_json, load_skill_data, merge_copies, new_record_file, normalise_word, parse_file,
-                            split_item, split_list, write_file)
+                            quote_for_message, split_item, split_list, write_file)
 
 MACHINE_FOLDER = "For machines - do not edit"
 START_HERE = "00 Start here.md"
@@ -96,6 +102,55 @@ def today():
 
 def now():
     return datetime.datetime.now().replace(microsecond=0).isoformat()
+
+
+# ---------------------------------------------------------------- what code made from which records
+
+# The files code rewrites as reports or logs: a change to them never makes code's own work (the film strip, the
+# book) out of date. The start page's plain part and log change with every command.
+REPORT_AND_LOG_FILES = ("00 Start here.md", "12 Whole-film check.md", "13 Health check.md", "14 Time and cost.md")
+FRESHNESS_FILE = "made from.json"
+
+
+def records_signature(folder):
+    """A fingerprint of every record file's records (the text below its divider; the plain part above it is code's
+    view and is rewritten by every build), leaving out the report and log files."""
+    folder = Path(folder)
+    digest = hashlib.sha1()
+    paths = sorted(list(folder.glob("[0-9][0-9] *.md")) + list((folder / "11 Scenes").glob("*.md")))
+    for path in paths:
+        if path.name in REPORT_AND_LOG_FILES or not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if DIVIDER_LINE in text:
+            text = text.split(DIVIDER_LINE, 1)[1]
+        digest.update(path.name.encode("utf-8"))
+        digest.update(text.encode("utf-8"))
+    return digest.hexdigest()
+
+
+def remember_made_from(folder, output_name):
+    """Note that code just made an output (the film strip, the book) from the records as they are now."""
+    path = Path(folder) / MACHINE_FOLDER / FRESHNESS_FILE
+    try:
+        data = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+    except (OSError, ValueError):
+        data = {}
+    data[output_name] = records_signature(folder)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
+
+
+def made_from_current_records(folder, output_name):
+    """True or False when code noted which records an output was made from; None when it did not (older projects)."""
+    path = Path(folder) / MACHINE_FOLDER / FRESHNESS_FILE
+    try:
+        data = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+    except (OSError, ValueError):
+        return None
+    if output_name not in data:
+        return None
+    return data[output_name] == records_signature(folder)
 
 
 def fingerprint_of_bytes(data):
@@ -864,7 +919,8 @@ def apply_inbox(project, inbox_path, steps=None):
     current_index, _ = merge_copies(current_files, schema)
     context = FormContext.for_records(schema, project.words, [inbox], other_record_files=current_files,
                                       written_by_ai=True, current_records=current_index)
-    problems = run_form_checks([inbox], context, INBOX_CHECKS)
+    clears, clearing_problems = take_out_clearing_lines(inbox, context, current_index)
+    problems = clearing_problems + run_form_checks([inbox], context, INBOX_CHECKS)
     for extra_check in APPLY_CHECKS:
         problems.extend(extra_check(project, inbox, current_files, context))
     result.problems = problems
@@ -916,13 +972,22 @@ def apply_inbox(project, inbox_path, steps=None):
                     if not before:
                         result.changed_records += 1
 
-    def put(record, field_lines, target_name, add_code_defaults):
+    def put(record, field_lines, target_name, add_code_defaults, keep_notes=True):
         keep_copies_in_step(record, field_lines, target_name)
         record_file = file_for(target_name)
         existing = record_file.find(record.type_name, record.identifier)
         if existing is not None:
             before = existing.changed
             merge_fields_into(existing, field_lines, schema)
+            for name in clears.get(record.key, []):
+                # "- field: none" on a field where none is not a value clears the stored field
+                if existing.field_lines(name):
+                    existing.remove_field(name)
+                    result.notes.append(f"Cleared {name} of {record.label}.")
+            for note in (record.notes if keep_notes else []):
+                # "> " notes sent on a record that exists are kept too, once
+                if note not in existing.notes:
+                    existing.add_note(note[2:] if note.startswith("> ") else note)
             if record.title and record.title != existing.title:
                 existing.title = record.title
                 existing.heading_changed = True
@@ -950,7 +1015,7 @@ def apply_inbox(project, inbox_path, steps=None):
                 put(record, list_fields, SCENE_LIST_FILE, add_code_defaults=True)
             if design_fields:
                 put(record, design_fields, project.scene_file_name(record.identifier, all_files(), record),
-                    add_code_defaults=False)
+                    add_code_defaults=False, keep_notes=not (list_fields or not design_fields))
             continue
         where = locations.get(record.key)
         target = where[0].name if where else project.target_file_for(record, all_files())
@@ -971,6 +1036,46 @@ def apply_inbox(project, inbox_path, steps=None):
         result.files_written.append(name)
     result.notes.extend(answered)
     return 0, result
+
+
+def none_allowed(definition):
+    """True when none is a value of the field (G7): text, id lists and repeatable fields, and any field whose values
+    or also_allowed name none."""
+    if definition.get("kind") in ("text", "id_list", "text_list") or definition.get("repeat"):
+        return True
+    return "none" in (definition.get("values") or []) or "none" in (definition.get("also_allowed") or [])
+
+
+def take_out_clearing_lines(inbox, context, current_index):
+    """({record key: [field names]}, [problems]) for the lines '- <field>: none' on a field where none is not a value
+    and that the AI writes: such a line means "clear this field" (a wrong at, look_at or lens can be taken out). The
+    lines are taken out of the inbox (so FORM-04 does not refuse them) and the fields are removed from the stored
+    record when the inbox is applied. On a record not stored yet the line is simply dropped. A locked record's field
+    is never cleared this way: the line is refused as FORM-11, like any other change to a locked value."""
+    clears = {}
+    problems = []
+    for record in inbox.records:
+        for line in list(record.fields):
+            if normalise_word(line.value or "") != "none":
+                continue
+            definition, name, how = resolve_field(context.schema, context.words, record, line.name)
+            if definition is None or how is None or none_allowed(definition):
+                continue
+            if context.conditions.writer_for(definition, record) != "ai":
+                continue
+            record.body.remove(line)
+            stored = current_index.get(record.key)
+            if stored is None:
+                continue
+            if locked(stored) and stored.get_all(name):
+                problems.append(make_problem("E", "FORM-11", inbox, record, name,
+                                             f"clears a field of a locked record (it was "
+                                             f"{quote_for_message(stored.get_all(name)[0], 40)})",
+                                             "Fix: keep the locked value; changing it needs a choice the user answers, "
+                                             "which unlocks it", line.line_number))
+                continue
+            clears.setdefault(record.key, []).append(name)
+    return clears, problems
 
 
 def drop_code_written_fields(inbox, context):
@@ -1272,16 +1377,42 @@ def run_status(context):
     if scope_line:
         context.say(scope_line)
     batches = manifest.get("batches", {})
-    short = [f"{unit} ({batch.get('received')} of {batch.get('expected')})"
+    short = [f"{unit} ({batch.get('received') or 0} of {batch.get('expected')})"
              for scene, scene_batches in batches.items() for unit, batch in scene_batches.items()
              if batch.get("expected") not in (None, batch.get("received"))]
     if short:
         context.say("Batches not complete: " + ", ".join(short) + ".")
-    pending = sorted(path.name for path in project.inbox_folder.glob("*.md")) if project.inbox_folder.is_dir() else []
-    if pending:
-        context.say("In the inbox, not yet applied: " + ", ".join(pending) + ".")
+    pending = sorted(project.inbox_folder.glob("*.md")) if project.inbox_folder.is_dir() else []
+    left_over = [path.name for path in pending if applied_since(manifest, path)]
+    waiting_files = [path.name for path in pending if path.name not in left_over]
+    if waiting_files:
+        context.say("In the inbox, not yet applied: " + ", ".join(waiting_files) + ".")
+    if left_over:
+        context.say("Left in the inbox after a refused apply, though its unit was applied later: "
+                    + ", ".join(left_over) + (". Nothing needs it; it can be removed." if len(left_over) == 1 else
+                                              ". Nothing needs them; they can be removed."))
     context.say("Next: " + next_step_line(project, context))
     return 0
+
+
+def applied_since(manifest, path):
+    """True when an inbox file's unit was applied after the file was last written (a refused repair that a later
+    repair of the same unit replaced)."""
+    unit, _ = unit_of_inbox(path.name)
+    if not unit:
+        return False
+    written = datetime.datetime.fromtimestamp(path.stat().st_mtime)
+    for entry in manifest.get("units_done", []) or []:
+        if not isinstance(entry, dict) or (unit_of_inbox(entry.get("unit") or "")[0] or entry.get("unit")) != unit:
+            continue
+        for key in ("applied", "last_repair"):
+            try:
+                when = datetime.datetime.fromisoformat(str(entry.get(key) or "")[:19])
+            except ValueError:
+                continue
+            if when > written:
+                return True
+    return False
 
 
 def scope_words(index, schema=None):
@@ -1406,12 +1537,36 @@ def run_apply(context):
             views_note = refresh_views(project)
             if views_note:
                 context.say(views_note)
-        after = f'stage.py check --unit {unit}' if unit else "stage.py check"
+        after = next_after_apply(unit, steps)
         context.say(f"Applied {inbox_path.name}: {result.new_records} new and {result.changed_records} changed "
                     f"records in {', '.join(result.files_written) or 'no file'}. Next: {after}."
                     + (f' A repair of it goes in "{unit} - fix <N>.md".' if unit and repair is None else ""))
         context.summary = f"{inbox_path.name} applied"
     return 0
+
+
+def next_after_apply(unit, steps):
+    """What to run after an apply, as the unit's handout says: at steps 7 and 8 build first (code places the story
+    points on their beats), then check the unit; for a file that is no unit of any step (the user's answers at the
+    finished check, say), a full check."""
+    if (unit or "").strip().lower() == "acceptance":
+        return "stage.py check --all, then stage.py next --checkpoint-passed"  # step 10's finished check
+    match = UNIT_PATTERN.match(unit or "")
+    if not match:
+        return "stage.py check --all, then stage.py next"
+    step = int(match.group(1))
+    try:
+        from .make_handout import pattern_expression
+        entries = next((entry for entry in (steps or {}).get("steps", []) if entry.get("step") == step), {})
+        known = any(pattern_expression(entry.get("id_pattern", "")).match(unit)
+                    for entry in entries.get("units", []) if not entry.get("id_pattern", "").startswith("code:"))
+    except ImportError:
+        known = True
+    if not known:
+        return "stage.py check --all, then stage.py next"
+    if step in (7, 8):
+        return f"stage.py build, then stage.py check --unit {unit}"
+    return f"stage.py check --unit {unit}"
 
 
 def fill_after_apply(project):

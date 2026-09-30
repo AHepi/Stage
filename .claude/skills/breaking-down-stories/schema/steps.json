@@ -1519,7 +1519,8 @@
       "TEXT",
       "CAMERA",
       "SCENE",
-      "FACT"
+      "FACT",
+      "CHARACTER (a non-human that acts in beats and that no unit wrote: tier non_human, voice none)"
      ],
      "surfaces": "all",
      "cards": [
@@ -2257,7 +2258,9 @@
      "batch_rule": "batch_size shots per unit (12 by default, 18 once the self-test passes); the manifest records each scene's expected batch ranges",
      "writes": [
       "SHOT",
-      "CUT"
+      "CUT",
+      "STATE (only a state continuity missed, as an addition)",
+      "SCENE (additions)"
      ],
      "surfaces": "all"
     }
@@ -2574,6 +2577,18 @@
      ],
      "surfaces": "all",
      "chat_note": "in chat, a check chat"
+    },
+    {
+     "id_pattern": "U-09-JUDGE-A<n>",
+     "example": "U-09-JUDGE-A1",
+     "scope": "one act of the film strip and its turn pictures",
+     "batch_rule": "one fresh unit per act, made only when the strip passes film_strip_tokens_per_unit_max",
+     "writes": [
+      "FINDING",
+      "CHOICE"
+     ],
+     "surfaces": "all",
+     "chat_note": "in chat, a check chat"
     }
    ],
    "cards": {
@@ -2640,16 +2655,16 @@
    ],
    "units": [
     {
-     "id_pattern": "code: export book, check --all, compile --lint-only, estimate --version v1, questions --sample",
+     "id_pattern": "code: export book, estimate --version v1, check --all, compile --lint-only, questions --sample",
      "example": null,
      "scope": "all records",
      "batch_rule": "code",
      "surfaces": "code",
      "commands": [
       "export book",
+      "estimate --version v1",
       "check --all",
       "compile --lint-only",
-      "estimate --version v1",
       "questions --sample"
      ]
     },

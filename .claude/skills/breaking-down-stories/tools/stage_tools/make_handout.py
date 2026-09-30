@@ -29,6 +29,13 @@ Other modules use: next_unit(project_folder) (stage.py status prints it), Worksp
 unit_from_identifier, build_handout, write_handout, estimate_tokens.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- a scene's split into parts is decided once; a handout over its ceiling leaves out the example, then puts read-only
+  records in brief, before cutting card parts;
+- the scoring handout gives each review in brief; shot handouts list speeches with their cue and word lines and the
+  lens family in force, and leave out the gold on its own scene;
+- what is done is judged by the records' fingerprint (made from.json), not by file times.
 """
 
 import json
@@ -37,8 +44,8 @@ import re
 from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
-from .project_files import (MACHINE_FOLDER, Project, StageStop, history_run_folder, keep_in_history, load_steps, now,
-                            plural, unit_in_plain_words)
+from .project_files import (MACHINE_FOLDER, REPORT_AND_LOG_FILES, Project, StageStop, history_run_folder,
+                            keep_in_history, load_steps, now, plural, unit_in_plain_words)
 from .record_format import (DIVIDER_LINE, SKILL_FOLDER, load_skill_data, merge_copies, normalise_word, parse_file,
                             parse_line_numbers, parse_story_point, sort_key_for_identifier, split_item, split_list,
                             write_file)
@@ -69,6 +76,9 @@ STEP_OF_CHECKPOINT = {"rights": 0, "a": 1, "p": 2, "b": 5, "c": 7, "acceptance":
 # An estimate of tokens from characters, used beside rules/limits.json's tokens_per_word_estimate so that record
 # text (IDs, numbers, punctuation) is not under-counted: the larger of the two estimates counts. [judgement]
 CHARACTERS_PER_TOKEN = 4
+# Over the ceiling, a record type the unit only reads with more records than this is shown as an index of IDs and
+# titles. [judgement: The Catch's 138 states and 52 things cost a step-6 unit its card parts in the full run]
+INDEX_ONLY_ABOVE_RECORDS = 25
 # How many numbers a unit's block of choices (and of findings, outside the review questions) holds, so that units
 # built side by side (helper agents taking scenes) never share a number. [judgement]
 ISSUED_BLOCK_SIZE = 20
@@ -760,7 +770,19 @@ def scope_scenes(workspace):
 
 def scene_is_big(workspace, scene_identifier):
     """A scene over scene_split_non_blank_lines non-blank lines (heading included) or scene_split_beats beats is
-    designed in two units by part and listed in a third (blueprint 3, step 7)."""
+    designed in two units by part and listed in a third (blueprint 3, step 7).
+
+    The split is decided once, when the scene's first step-7 handout is written (the manifest's scene_splits keeps
+    it), and a scene already designed keeps the way it was designed: a whole scene that turned out to have more
+    beats than scene_split_beats is never planned again in parts (the full run's scene 6)."""
+    decided = (workspace.manifest.get("scene_splits") or {}).get(scene_identifier)
+    if decided is not None:
+        return bool(decided)
+    applied = workspace.units_done()
+    if f"U-07-{scene_identifier}" in applied:
+        return False
+    if any(name.startswith(f"U-07-{scene_identifier}-") for name in applied):
+        return True
     lines_most = int(workspace.constant("scene_split_non_blank_lines", 70))
     beats_most = int(workspace.constant("scene_split_beats", 14))
     count = workspace.non_blank_lines(scene_identifier)
@@ -968,8 +990,9 @@ def plan_units(workspace):
             units.append(ai_unit(workspace, "U-09-JUDGE", 9, scenes=scenes_in_scope, strip_file=FILM_STRIP_FILE))
 
     # Step 10: check and estimate, the review questions, the scores, the finished check.
-    units.append(code_unit(workspace, 10, ["export book", "check --all", "compile --lint-only",
-                                           "estimate --version v1", "questions --sample"]))
+    # the estimate runs before the full check: it writes the date of the model facts that check --all asks for
+    units.append(code_unit(workspace, 10, ["export book", "estimate --version v1", "check --all",
+                                           "compile --lint-only", "questions --sample"]))
     for unit_identifier in question_units(workspace):
         units.append(ai_unit(workspace, unit_identifier, 10, scenes=scenes_in_scope))
     units.append(ai_unit(workspace, "U-10-SCORES", 10, scenes=scenes_in_scope))
@@ -1021,18 +1044,44 @@ def open_asked_choices(workspace, checkpoint):
 
 
 def newest_record_change(workspace):
-    """The time the newest record file changed (a code unit done before it is done again)."""
+    """The time the newest record file changed (a code unit done before it is done again). The files code writes
+    as reports or logs do not count: the start page (its log and the day of the last full check change with every
+    command), the two check reports and the time and cost page. Otherwise a full check or an estimate run after the
+    film pass would send the work back to the film pass, and the breakdown would never read as finished."""
     times = []
     for record_file in workspace.record_files:
         path = workspace.folder / record_file.name
-        if path.is_file() and record_file.name != HEALTH_CHECK_FILE and record_file.name != WHOLE_FILM_FILE:
+        if path.is_file() and record_file.name not in REPORT_AND_LOG_FILES:
             times.append(path.stat().st_mtime)
     return max(times) if times else 0
 
 
 def file_is_fresh(workspace, relative_path):
+    """True when code made the file from the records as they are now: by the records' fingerprint code noted when
+    it made the file (a build that only rewrites the plain parts changes nothing), else, in an older project, by
+    the files' times."""
     path = workspace.folder / relative_path
-    return path.is_file() and path.stat().st_mtime >= newest_record_change(workspace)
+    if not path.is_file():
+        return False
+    from .project_files import made_from_current_records
+    name = relative_path.split("/", 1)[1] if relative_path.startswith(MACHINE_FOLDER + "/") else relative_path
+    made = made_from_current_records(workspace.folder, name)
+    if made is not None:
+        return made
+    return path.stat().st_mtime >= newest_record_change(workspace)
+
+
+def exports_are_fresh(workspace):
+    """True when export all ran, whole and with its format checks passed, on the records as they are now. A book made
+    alone (step 10 makes one) does not count. An older project without the note counts when the book, the shot list
+    and breakdown.json are all newer than the records."""
+    from .make_exports import EXPORT_ALL_MARK
+    from .project_files import made_from_current_records
+    made = made_from_current_records(workspace.folder, EXPORT_ALL_MARK)
+    if made is not None:
+        return made
+    return all(file_is_fresh(workspace, path) for path in
+               (BOOK_FILE, "16 Spreadsheets/Shot list.csv", f"{MACHINE_FOLDER}/breakdown.json"))
 
 
 def evidence_of(workspace, unit):
@@ -1052,7 +1101,7 @@ def evidence_of(workspace, unit):
             return bool(workspace.manifest.get("questions")) or \
                 (workspace.project.machine_folder / QUESTIONS_FILE).is_file()
         if commands == ["export all"]:
-            return file_is_fresh(workspace, BOOK_FILE)
+            return exports_are_fresh(workspace)
         return False
     if identifier == "U-00-START":
         return not open_asked_choices(workspace, "rights")
@@ -1354,7 +1403,7 @@ def next_unit(project_folder):
     except Exception as error:  # status must still print; the command next says more
         return f"run stage.py next (the plan could not be worked out here: {type(error).__name__})."
     if unit is None:
-        return "nothing left in the 12 steps; the add-ons run on request."
+        return "nothing: the breakdown is finished (the book and the exports are made); the add-ons run on request."
     if unit.kind == "checkpoint":
         return f"{unit.plain(workspace.steps)}, a checkpoint that waits for the user (run stage.py next)."
     if unit.kind == "code":
@@ -1479,9 +1528,9 @@ class Section:
     """One part of a handout: its text and what may happen to it when the handout is too big."""
     key: str
     text: str
-    kind: str = "fixed"                   # fixed | card | example | source
+    kind: str = "fixed"                   # fixed | card | example | source | records
     label: str = ""
-    trimmed_text: str = None              # source: the unit's own lines only
+    trimmed_text: str = None              # source: the unit's own lines only; records: read-only records in brief
     left_out: bool = False
     trimmed: bool = False
 
@@ -1529,8 +1578,9 @@ class Handout:
 
     def fit(self):
         """Keep the card parts within card_tokens_per_unit_max and the handout within its ceiling (6.1): leave out
-        the example, then the lowest-listed card parts, then trim the story to the unit's lines, then say the unit
-        must be split."""
+        the example, then put the records the unit only reads in brief (the step's own card parts are worth more than
+        whole records a unit does not write: the full run lost the mirror rule's card that way), then leave out the
+        lowest-listed card parts, then trim the story to the unit's lines, then say the unit must be split."""
         cards = [section for section in self.sections if section.kind == "card"]
         while self.card_tokens() > self.card_cap and [section for section in cards if not section.left_out]:
             lowest = [section for section in cards if not section.left_out][-1]
@@ -1545,6 +1595,14 @@ class Handout:
                 if section.kind == "example" and not section.left_out:
                     section.left_out = True
                     self.left_out.append(f"{section.label} (to fit the ceiling)")
+        if self.tokens() > self.ceiling:
+            for section in self.sections:
+                if section.kind == "records" and section.trimmed_text is not None and not section.trimmed:
+                    section.trimmed = True
+                    note = ("the whole text of records this unit only reads: they are in brief (to fit the ceiling; "
+                            "the numbered files hold them whole)")
+                    if note not in self.left_out:
+                        self.left_out.append(note)
         while self.tokens() > self.ceiling and [section for section in cards if not section.left_out]:
             lowest = [section for section in cards if not section.left_out][-1]
             lowest.left_out = True
@@ -2302,9 +2360,16 @@ def scene_list_fields(workspace):
             if field.get("part_of") in ("list", "plan")]
 
 
-def scene_records_section(workspace, unit, own_shots):
-    """The records a step-7 or step-8 unit reads (blueprint 3, step 7's inputs), as one Markdown section."""
+def scene_records_section(workspace, unit, own_shots, brief=False):
+    """The records a step-7 or step-8 unit reads (blueprint 3, step 7's inputs), as one Markdown section. brief=True
+    is the text used when the handout is over its ceiling: people, things, texts and motifs in brief, and at step 8
+    no whole camera system (the camera section lists what it allows here) and no whole sound plan (its rupture for
+    this scene stays)."""
     scene_identifier = unit.scene
+    character_fields = BRIEF_FIELDS["CHARACTER"] if brief else CHARACTER_FIELDS_FOR_SCENES
+    prop_fields = BRIEF_FIELDS["PROP"] if brief else PROP_FIELDS_FOR_SCENES
+    text_fields = BRIEF_FIELDS["TEXT"] + ["plot_critical", "method"] if brief else TEXT_FIELDS_FOR_SCENES
+    motif_fields = BRIEF_FIELDS["MOTIF"] if brief else MOTIF_FIELDS_FOR_SCENES
     scene = workspace.record(scene_identifier, "SCENE")
     parts = ["## Records you need",
              "Read-only: these come from the numbered files. Cite their IDs; never copy them into your inbox file. "
@@ -2331,7 +2396,7 @@ def scene_records_section(workspace, unit, own_shots):
             workspace, [plan], fields=PLAN_FIELDS_FOR_SCENES + ["act", "peak"], item_filter=plan_items))
     rules = ["### Film rules this scene touches"]
     camera_system = workspace.singleton("CAMSYS")
-    if camera_system is not None:
+    if camera_system is not None and not (brief and unit.step == 8):
         rules.append(records_block(workspace, [camera_system]))
     present = characters_present(workspace, scene_identifier)
     camera_rules = [rule for rule in workspace.records("CAMRULE") if rule.get("character") in present]
@@ -2356,7 +2421,8 @@ def scene_records_section(workspace, unit, own_shots):
         rules.append("The look:\n" + records_block(workspace, looks))
     sound_plan = workspace.singleton("SOUNDPLAN")
     if sound_plan is not None:
-        rules.append(records_block(workspace, [sound_plan]))
+        rules.append(records_block(workspace, [sound_plan], item_filter=None if not brief else (
+            lambda name, value: name != "rupture_plan" or split_item(value).first == scene_identifier)))
     ladder = workspace.singleton("LADDER")
     if ladder is not None:
         rung = [value for value in ladder.get_all("rung") if story_point_in_scene(value, scene_identifier)]
@@ -2376,12 +2442,13 @@ def scene_records_section(workspace, unit, own_shots):
                                    if item.get("character") == record.identifier), None)
             if voice is not None and voice not in voices:
                 voices.append(voice)
-        parts.append("### The people present\n" + records_block(workspace, people, fields=CHARACTER_FIELDS_FOR_SCENES)
-                     + ("\n\n" + records_block(workspace, voices, fields=VOICE_FIELDS_FOR_SCENES) if voices else ""))
+        parts.append("### The people present\n" + records_block(workspace, people, fields=character_fields)
+                     + ("\n\n" + records_block(workspace, voices, fields=VOICE_FIELDS_FOR_SCENES if not brief
+                                                 else BRIEF_FIELDS["VOICE"]) if voices else ""))
     states = [state for state in states_in_play(workspace, scene_identifier) if state is not None]
     if states:
         parts.append("### States in play at the scene's start (each element's state, with its sides)\n"
-                     + records_block(workspace, states))
+                     + records_block(workspace, states, fields=BRIEF_FIELDS["STATE"] if brief else None))
     location = location_for_scene(workspace, scene_identifier)
     if location is not None:
         written = scene is not None and scene.get("location") == location.identifier
@@ -2408,19 +2475,19 @@ def scene_records_section(workspace, unit, own_shots):
             texts.append(text_record)
     cameras = [record for record in things if record is not None and record.type_name == "CAMERA"]
     for camera in in_story_cameras_for(workspace, scene_identifier):
-        if camera not in cameras:
-            cameras.append(camera)
+        if camera not in cameras and not brief:
+            cameras.append(camera)  # in brief, only the cameras the scene itself names
     if props or texts or cameras:
         parts.append("### Things, text in picture and cameras in the story here\n"
-                     + records_block(workspace, props, fields=PROP_FIELDS_FOR_SCENES)
-                     + ("\n\n" + records_block(workspace, texts, fields=TEXT_FIELDS_FOR_SCENES) if texts else "")
+                     + records_block(workspace, props, fields=prop_fields)
+                     + ("\n\n" + records_block(workspace, texts, fields=text_fields) if texts else "")
                      + ("\n\n" + records_block(workspace, cameras) if cameras else ""))
     motifs = [motif for motif in workspace.records("MOTIF")
               if any(scene_of(split_item(value).first or "") == scene_identifier or
                      split_item(value).first == scene_identifier for value in motif.get_all("appearance"))]
     if motifs:
         parts.append("### Motifs with an appearance here\n" + records_block(
-            workspace, motifs, fields=MOTIF_FIELDS_FOR_SCENES + ["appearance"],
+            workspace, motifs, fields=motif_fields + ["appearance"],
             item_filter=lambda name, value: name != "appearance" or scene_of(split_item(value).first or "") ==
             scene_identifier or split_item(value).first == scene_identifier))
     plants = [plant for plant in workspace.records("PLANT")
@@ -2445,8 +2512,10 @@ def scene_records_section(workspace, unit, own_shots):
     return "\n\n".join(parts)
 
 
-def speech_lines(workspace, scene_identifier):
-    """The scene's speeches with their IDs, speakers, lines, words and the seconds they need at the speaker's pace."""
+def speech_lines(workspace, scene_identifier, only_lines=None):
+    """The scene's speeches with their IDs, speakers, lines, words and the seconds they need at the speaker's pace.
+    Each names its cue line and the lines its words are on (the words sit on the lines after the cue: a beat or a
+    shot that holds the speech covers both). only_lines: just the speeches whose cue is one of these lines."""
     lines = []
     try:
         breakdown = workspace.breakdown
@@ -2455,7 +2524,7 @@ def speech_lines(workspace, scene_identifier):
         return lines
     extra = constant_value(workspace.constants, "speech_floor_extra_s", 0.5)
     for entry in entries:
-        if entry is None:
+        if entry is None or (only_lines is not None and entry.get("line") not in only_lines):
             continue
         speaker = entry.get("speaker") or "?"
         pace = breakdown.pace_of(speaker) if speaker != "?" else None
@@ -2463,10 +2532,41 @@ def speech_lines(workspace, scene_identifier):
         seconds = f", {seconds_text(count / pace + extra)} s with speech_floor_extra_s" if pace else ""
         path = entry.get("path") or "direct"
         path_text = f", heard by {path}" if path not in ("direct", None) else ""
-        lines.append(f"  - {entry['id']} {speaker}, line {entry.get('line')}, {plural(count, 'word')} at "
+        spoken = [number for number in (entry.get("lines") or []) if number != entry.get("line")]
+        where = f"cue line {entry.get('line')}" + (f", words on {line_span_words(spoken)}" if spoken else "")
+        lines.append(f"  - {entry['id']} {speaker}, {where}, {plural(count, 'word')} at "
                      f"{seconds_text(pace) if pace else '?'} words per second{seconds}{path_text}: "
                      f"\"{entry.get('text', '')}\"")
     return lines
+
+
+def lens_family_in_force(camera_system, scene_identifier):
+    """(the lens family for this scene, the scene its step_change starts at or None): CAMSYS lens_family, changed
+    from a scene on by step_change (the same reading as CRAFT-07's)."""
+    family = camera_system.get("lens_family")
+    changed = None
+    changes = []
+    for value in camera_system.get_all("step_change"):
+        parts = {}
+        for piece in value.split(" | "):
+            if ":" in piece:
+                key, _, text = piece.partition(":")
+                parts[key.strip()] = text.strip()
+        start = parts.get("from") or ""
+        if start and parts.get("family"):
+            changes.append((sort_key_for_identifier(start), start, parts["family"]))
+    for key, start, mms in sorted(changes):
+        if scene_identifier and sort_key_for_identifier(scene_identifier) >= key:
+            family, changed = mms, start
+    return family, changed
+
+
+def line_span_words(numbers):
+    """[48] -> 'line 48'; [48, 49, 50] -> 'lines 48 to 50'."""
+    numbers = sorted(numbers)
+    if len(numbers) == 1:
+        return f"line {numbers[0]}"
+    return f"lines {numbers[0]} to {numbers[-1]}"
 
 
 def source_section(workspace, title, first, last, unit_lines=None, heading_note=""):
@@ -2489,8 +2589,9 @@ def source_section(workspace, title, first, last, unit_lines=None, heading_note=
 
 # ---------------------------------------------------------------- step 8: the batch, the camera, the whys
 
-def batch_section(workspace, unit):
-    """This batch's list items with their provisional floors, the other items in brief, and the scene's design."""
+def batch_section(workspace, unit, brief=False):
+    """This batch's list items with their provisional floors, the other items in brief (left out when brief), and
+    the shot written just before the batch."""
     scene_identifier = unit.scene
     parts = ["## This batch", "One SHOT per list item below, in this order, at the project's depth. "
              "screen_time is at or above each item's provisional floor (TIME-01 checks the real floor from your hear "
@@ -2518,8 +2619,18 @@ def batch_section(workspace, unit):
             else:
                 lines.append("  provisional floor: not known (the speeches or beats are missing)")
     parts.append(fenced("\n".join(lines)))
+    beat_lines = set()
+    for shot in unit.shots:
+        for beat_identifier in split_list(split_item(items.get(shot, ""), definition).get("beats") or ""):
+            beat = workspace.record(beat_identifier.strip(), "BEAT")
+            if beat is not None:
+                beat_lines.update(workspace.breakdown.lines_of(beat))
+    speeches = speech_lines(workspace, scene_identifier, only_lines=beat_lines) if beat_lines else []
+    if speeches:
+        parts.append("The speeches of this batch's beats, for the `hear` items (cite their IDs; a shot's `lines` "
+                     "cover the cue line and the lines of the words):\n" + "\n".join(speeches))
     others = [value for shot, value in items.items() if shot not in unit.shots]
-    if others:
+    if others and not brief:
         parts.append("The scene's other list items (other batches; for continuity only):\n"
                      + fenced("\n".join(f"- item: {strip_story_point_endings(value)}" for value in others)))
     earlier = [shot for shot in workspace.records("SHOT") if scene_of(shot.identifier) == scene_identifier
@@ -2635,8 +2746,10 @@ def camera_choices_section(workspace, unit):
         lines += person_lines
     normal_lens = camera_system.get("normal_lens_mm") if camera_system is not None else None
     if camera_system is not None:
-        lines.append(f"- Lenses: the family {camera_system.get('lens_family') or '(not written)'}; the normal lens "
-                     f"{normal_lens or '(not written)'} millimetres"
+        family, changed = lens_family_in_force(camera_system, scene_identifier)
+        lines.append(f"- Lenses: the family {family or '(not written)'}"
+                     + (f" (the camera system's change from {changed})" if changed else "")
+                     + f"; the normal lens {normal_lens or '(not written)'} millimetres"
                      + "".join(f"; {lens.identifier} {lens.get('mm')} millimetres only in {lens.get('only_in')}"
                                for lens in lens_exceptions_here(workspace, scene_identifier)) + ".")
     why_defaults = (workspace.schema.record_types.get("SHOT") or {}).get("why_defaults") or {}
@@ -2652,9 +2765,10 @@ def camera_choices_section(workspace, unit):
 
 # ---------------------------------------------------------------- other steps' records
 
-def generic_records_section(workspace, unit, step_entry):
+def generic_records_section(workspace, unit, step_entry, brief=False):
     """The records a unit of steps 0 to 6, 9 to 11 or an add-on reads, by the step's reads list: in full for the
-    unit's own scenes, chapters, characters and places, in brief otherwise."""
+    unit's own scenes, chapters, characters and places, in brief otherwise. brief=True puts every record type with a
+    brief form in brief (the text used when the handout is over its ceiling)."""
     reads = []
     for text in step_entry.get("reads") or []:
         match = re.match(r"^([A-Z]+)\b", text)
@@ -2678,7 +2792,10 @@ def generic_records_section(workspace, unit, step_entry):
                                                                         fields=scene_list_fields(workspace)))
             else:
                 rest = records
-            if rest:
+            if rest and brief and len(rest) > INDEX_ONLY_ABOVE_RECORDS:
+                parts.append("### Every scene, as an index (the numbered files hold them whole)\n"
+                             + fenced("\n".join(f"{record.identifier} {record.title}".strip() for record in rest)))
+            elif rest:
                 parts.append("### Every scene, in brief\n" + fenced("\n\n".join(brief_line(workspace, record)
                                                                                 for record in rest)))
             continue
@@ -2710,7 +2827,12 @@ def generic_records_section(workspace, unit, step_entry):
                 parts.append("### States in play in these scenes\n" + records_block(workspace, wanted))
             continue
         text = records_block(workspace, records)
-        if estimate_tokens(text, workspace.tokens_per_word) > 3000 and type_name in BRIEF_FIELDS:
+        if brief and len(records) > INDEX_ONLY_ABOVE_RECORDS:
+            # a long list the unit only reads (138 states at step 6) becomes an index: ID and title, one line each
+            parts.append(f"### {label.capitalize()} records, as an index (the numbered files hold them whole)\n"
+                         + fenced("\n".join(f"{record.identifier} {record.title}".strip() for record in records)))
+            continue
+        if type_name in BRIEF_FIELDS and (brief or estimate_tokens(text, workspace.tokens_per_word) > 3000):
             parts.append(f"### {label.capitalize()} records, in brief\n"
                          + fenced("\n\n".join(brief_line(workspace, record) for record in records)))
         else:
@@ -2729,9 +2851,8 @@ def element_mentions(workspace, names, limit_lines=None):
         from .read_story import CUE, PHYSICAL_NOUNS
     except ImportError:
         CUE, PHYSICAL_NOUNS = "cue", set()
-    pattern = re.compile(r"(?<![\w])(" + "|".join(re.escape(name) for name in sorted(set(names), key=len,
-                                                                                         reverse=True))
-                         + r")(?![\w])", re.IGNORECASE)
+    story_text = "\n".join(workspace.story.lines)
+    pattern = re.compile("|".join(name_pattern(name, story_text) for name in sorted(set(names), key=len, reverse=True)))
     types = (workspace.story_map or {}).get("line_types") or []
     hits = []
     for offset, line in enumerate(workspace.story.lines):
@@ -2745,6 +2866,18 @@ def element_mentions(workspace, names, limit_lines=None):
     shown += [number for number in hits[cap:]
               if any(word.lower() in PHYSICAL_NOUNS for word in re.findall(r"[A-Za-z]+", workspace.story.line(number)))]
     return sorted(set(shown)), len(hits)
+
+
+def name_pattern(name, story_text=""):
+    """The pattern that finds a name in the story: any case for a proper name ("Iona"); for a one-word name that is
+    also a common word (the story writes it in small letters somewhere: "a small figure"), only in capitals or after
+    "the": "the figure" is the character, "a small figure" and "as a nurse" are not."""
+    words = name.split()
+    common = bool(re.search(r"(?<![\w])" + re.escape(name.lower()) + r"(?![\w])", story_text))
+    if len(words) == 1 and name.isupper() and common:
+        return (r"(?<![\w])" + re.escape(name) + r"(?![\w])|(?<![\w])(?:[Tt]he|THE)\s+(?i:" + re.escape(name.lower())
+                + r")(?![\w])")
+    return r"(?i:(?<![\w])" + re.escape(name) + r"(?![\w]))"
 
 
 def names_of(workspace, identifier):
@@ -2764,7 +2897,12 @@ def names_of(workspace, identifier):
         for person, name, _, _ in silent_people(workspace):
             if person == identifier:
                 names = [name, re.sub(r"^(THE|A|AN)\s+", "", name.upper())]
-    return [name for name in names if name and name.lower() not in ("none", "open")]
+    unique = []
+    for name in names:
+        # each name once ("GUARD", not "GUARD, GUARD")
+        if name and name.lower() not in ("none", "open") and name.lower() not in [kept.lower() for kept in unique]:
+            unique.append(name)
+    return unique
 
 
 def mentions_section(workspace, unit):
@@ -2972,8 +3110,38 @@ def scores_section(workspace, unit):
         parts.append("## The checker's report (13 Health check)\n" + demote_headings(plain, 2))
     reviews = workspace.records("REVIEW")
     if reviews:
-        parts.append("## The review answers so far\n" + records_block(workspace, reviews))
+        # the answers themselves stay in 13 Health check: the scores need each scene's counts and every "no" with its
+        # evidence (the full run's scoring handout was 175,000 tokens with all 2,033 answers in it)
+        parts.append("## The review answers so far, counted\nEach review's yes and no answers counted, every no "
+                     "answer whole with its evidence, and any scores already written. The yes answers are in 13 Health "
+                     "check.\n" + fenced("\n\n".join(review_summary(review) for review in reviews)))
     return "\n\n".join(parts)
+
+
+def split_advice(unit):
+    """What to do with a handout still over its ceiling, naming only splits that exist: a big scene's parts at step 7,
+    a smaller batch at step 8; for any other unit, read it in parts (no smaller unit exists)."""
+    if unit.step == 7 and not unit.part and not unit.list_unit:
+        return (f"design the scene in parts (U-07-{unit.scene}-P1, -P2 and -LIST: tell the user, then ask for "
+                f"stage.py handout U-07-{unit.scene}-P1).")
+    if unit.step == 8:
+        return "write the batch in two replies, each ending with its END line, and read the handout in parts."
+    return "no smaller unit exists for this work: read the handout in parts, from start to end."
+
+
+def review_summary(review):
+    """One review in brief: its ID and scope, how many answers said yes and no, each no answer whole, its scores."""
+    yes, no = 0, []
+    for value in review.get_all("answer"):
+        answer = re.search(r"\|\s*answer:\s*([a-z]+)", value)
+        if answer and answer.group(1).lower() == "no":
+            no.append(value)
+        elif answer:
+            yes += 1
+    lines = [f"{review.identifier} (scope {review.get('scope') or 'none'}): {yes} yes, {len(no)} no"]
+    lines += [f"- no: {value}" for value in no]
+    lines += [f"- score: {value}" for value in review.get_all("score")]
+    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------- building the handout
@@ -3063,6 +3231,12 @@ def example_section(workspace, unit):
     gold = gold_records(workspace)
     if not gold:
         return None
+    gold_scene = gold.get(("SCENE", "SC10"))
+    if unit.step in (7, 8) and unit.scene and gold_scene is not None and gold_scene.get("heading") and \
+            normalise_word(workspace.scene_heading(unit.scene) or "") == normalise_word(gold_scene.get("heading")):
+        # the gold is this very scene (The Catch, scene 10): printing it would hand the unit its answer
+        return ("## One example from the gold\nLeft out: the gold example is this very scene, so it would give the "
+                "answer away. Follow the step file and the template.")
     wanted = []
     if unit.step == 7:
         if not unit.list_unit:
@@ -3104,7 +3278,8 @@ def build_handout(workspace, unit, surface=None):
     handout.add("head", f"# Handout {unit.identifier}: {plain}\n\n"
                         f"**One-line task:** {task}\n\n"
                         "Quote the one-line task back, word for word, before you do anything else. "
-                        f"This handout is the one file to read for this unit ({counted}).")
+                        f"This handout is the one file to read for this unit ({counted}): read all of it, in "
+                        "parts from start to end when your file reader takes less at once.")
     handout.add("unit", unit_section(workspace, unit, step_entry, issued_text, check_command_for(unit, step_entry)))
     if unit.step == 7 and unit.scene:
         speeches = speech_lines(workspace, unit.scene)
@@ -3129,12 +3304,14 @@ def build_handout(workspace, unit, surface=None):
             shot.identifier for shot in workspace.records("SHOT") if scene_of(shot.identifier) == unit.scene}
         if unit.step == 8:
             design, batch_beats = scene_design_section(workspace, unit)
-            handout.add("batch", batch_section(workspace, unit))
+            handout.add("batch", batch_section(workspace, unit), kind="records",
+                        trimmed_text=batch_section(workspace, unit, brief=True))
             handout.add("camera", camera_choices_section(workspace, unit))
             handout.add("design", design)
         else:
             batch_beats = []
-        handout.add("records", scene_records_section(workspace, unit, own_shots))
+        handout.add("records", scene_records_section(workspace, unit, own_shots), kind="records",
+                    trimmed_text=scene_records_section(workspace, unit, own_shots, brief=True))
         lines = workspace.scene_lines(unit.scene)
         unit_lines = unit.lines
         if unit.step == 8 and batch_beats:
@@ -3155,13 +3332,15 @@ def build_handout(workspace, unit, surface=None):
                 source_note = "the story is not read into this project, so its lines are not shown"
     elif unit.step == 9:
         handout.add("records", judgement_section(workspace, unit))
-        handout.add("records more", generic_records_section(workspace, unit, step_entry))
+        handout.add("records more", generic_records_section(workspace, unit, step_entry), kind="records",
+                    trimmed_text=generic_records_section(workspace, unit, step_entry, brief=True))
     elif unit.step == 10 and "QUESTIONS" in unit.identifier:
         handout.add("records", questions_section(workspace, unit))
     elif unit.step == 10:
         handout.add("records", scores_section(workspace, unit))
     else:
-        handout.add("records", generic_records_section(workspace, unit, step_entry))
+        handout.add("records", generic_records_section(workspace, unit, step_entry), kind="records",
+                    trimmed_text=generic_records_section(workspace, unit, step_entry, brief=True))
         if unit.identifier == "U-01-ODDLINES":
             handout.add("odd lines", odd_lines_section(workspace))
         if unit.identifier == "U-04-MOTIFS" and not workspace.records("CHARACTER"):
@@ -3214,8 +3393,8 @@ def build_handout(workspace, unit, surface=None):
         if handout.left_out:
             notes.append("Left out to fit: " + "; ".join(handout.left_out) + ".")
         if handout.too_big:
-            notes.append(f"Still over the ceiling of {number_with_commas(handout.ceiling)} tokens: split this unit "
-                         "(a smaller batch, or the scene in parts).")
+            notes.append(f"Still over the ceiling of {number_with_commas(handout.ceiling)} tokens: "
+                         + split_advice(unit))
         for note in handout.notes:
             notes.append(note[:1].upper() + note[1:] + ".")
         unit_part.text = unit_text.rstrip() + ("\n\n" + "\n".join(f"- {note}" for note in notes) if notes else "") + "\n"
@@ -3245,6 +3424,9 @@ def write_handout(workspace, unit, surface=None):
         manifest = workspace.project.read_manifest()
         if handout.issued:
             manifest.setdefault("issued", {})[unit.identifier] = handout.issued
+        if unit.step == 7 and unit.scene:
+            # the scene's split is decided now, once (scene_is_big reads it back)
+            manifest.setdefault("scene_splits", {}).setdefault(unit.scene, bool(unit.part or unit.list_unit))
         if unit.step == 8 and unit.scene:
             # The checker compares a scene's stored records with every block issued for that scene: when no step-7
             # handout issued the scene's blocks (a folder adopted from a chat app), record them as step 7 does.
@@ -3354,15 +3536,20 @@ def run_next(context):
                     else "Only the first group of shots waits for the user; later groups are shown and the work "
                          "carries on.")
     if arguments.checkpoint_passed:
-        unit, _ = find_next_unit(workspace, pass_reported_checkpoints=True)
+        unit, reported = find_next_unit(workspace, pass_reported_checkpoints=True)
         if unit is None or unit.kind != "checkpoint":
-            raise StageStop("No checkpoint is waiting for the user now, so there is nothing to pass; run stage.py next.")
-        if unit.waiting:
+            # nothing waits: a group of shots that does not wait was already passed by next (its lists approved);
+            # carry on exactly as a plain next does
+            context.say("No checkpoint was waiting for the user"
+                        + (", and the groups of shots that do not wait are passed with their lists approved"
+                           if reported else "") + "; going on as stage.py next does.")
+        elif unit.waiting:
             raise StageStop(f"{unit.plain(workspace.steps).capitalize()} waits for choice records: pass the user's "
                             "answers through an inbox file and stage.py apply, then run stage.py next.")
-        changed = pass_checkpoint(workspace, unit, "the user replied next")
-        context.say(f"Passed: {unit.plain(workspace.steps)}"
-                    + (f"; approved the shot lists in {', '.join(changed)}" if changed else "") + ".")
+        else:
+            changed = pass_checkpoint(workspace, unit, "the user replied next")
+            context.say(f"Passed: {unit.plain(workspace.steps)}"
+                        + (f"; approved the shot lists in {', '.join(changed)}" if changed else "") + ".")
         workspace = Workspace(context.project, context.schema, context.words, context.constants)
     unit, reported = find_next_unit(workspace, pass_reported_checkpoints=True)
     if reported:
@@ -3373,10 +3560,10 @@ def run_next(context):
         unit, _ = find_next_unit(workspace, pass_reported_checkpoints=True)
     record_batch_plan(workspace, workspace.plan())
     if unit is None:
-        context.say("Nothing left in the 12 steps. The add-ons run when the user asks: storyboards (step 12), grey "
-                    "previews (step 13, Claude Code only), prompts for AI video (step 14), edit and finishing "
-                    "(step 15).")
-        context.summary = "nothing left"
+        context.say("Finished: the breakdown is done, the book and the exports are made. Nothing is left in the 12 "
+                    "steps. The add-ons run when the user asks: storyboards (step 12), grey previews (step 13, Claude "
+                    "Code only), prompts for AI video (step 14), edit and finishing (step 15).")
+        context.summary = "finished"
         return 0
     if unit.kind == "checkpoint":
         say_checkpoint(context, workspace, unit)
@@ -3415,8 +3602,7 @@ def say_handout(context, workspace, unit, handout, path):
     if handout.left_out:
         context.say("Left out to fit: " + "; ".join(handout.left_out) + ".")
     if handout.too_big:
-        context.say(f"The handout is still over its ceiling: split {unit.identifier} (a smaller batch, or the scene "
-                    "in parts).")
+        context.say(f"The handout is still over its ceiling: {split_advice(unit)}")
     step_entry = workspace.step_entry(unit.step)
     check = check_command_for(unit, step_entry)
     build = ", then stage.py build" if unit.step in (7, 8) else ""

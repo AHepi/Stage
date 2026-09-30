@@ -23,6 +23,9 @@ field that FORM-05 can ask for and no code fills is caught before a user meets i
 
 Nothing here changes a value on a locked record; a locked record only gains a field it lacks. Old copies of every
 file changed are kept in history/ (7.3). Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- a place's own words outweigh words many places share when a scene heading is matched to a place.
 """
 
 import re
@@ -159,19 +162,22 @@ def location_words(location):
 
 
 def best_location_for(place_text, locations):
-    """The place whose name (title and ID) shares the most words with a scene's place words, the one with fewest
-    other words on a tie; None when no place shares a word."""
+    """The place whose name (title and ID) shares the most words with a scene's place words, each word weighed by
+    how few places use it (a place's own word, "passage", outweighs "room", which half the places share), the one
+    with fewest other words on a tie; None when no place shares a word."""
     wanted = place_words(place_text)
+    named = [(location, location_words(location)) for location in locations if location.identifier]
+    uses = {}
+    for _, words in named:
+        for word in words:
+            uses[word] = uses.get(word, 0) + 1
     best = None
     best_score = (0, 0)
-    for location in locations:
-        if not location.identifier:
-            continue
-        words = location_words(location)
-        shared = len(wanted & words)
+    for location, words in named:
+        shared = wanted & words
         if not shared:
             continue
-        score = (shared, -len(words - wanted))
+        score = (round(sum(1.0 / uses[word] for word in shared), 6), -len(words - wanted))
         if score > best_score:
             best, best_score = location, score
     return best

@@ -249,7 +249,7 @@ One action and reaction (McKee's beat). ID: scene ID, -B and 2 digits (`SC10-B07
 | `core_word` | Detailed dialogue: the word carrying the line's meaning. | text | detailed | ai | step 7 | `mint` |
 | `cut_rule` | Detailed dialogue: how the cut treats the line. | cut_on_core_word, cut_early_split, hold, no_cut_two_shot | detailed | ai | step 7 | `hold` |
 | `fact` | Detailed: facts revealed or protected on this beat. | id_list; IDs of FACT; also none | detailed | ai | step 7 | `FT-03` |
-| `script_marked` | yes when the beat's lines already mark it: a capitalised sound, emphasis or text token, or a light, colour or darkness word that stage.py read found (B1 P11, B4 R17). CRAFT-10 and added_emphasis_per_beat_max read it. | yes_no | quick, worked out by code | code_derived | step 7 | `yes` |
+| `script_marked` | yes when the beat's lines already mark it: a capitalised sound, emphasis or text token, or a light, colour or darkness word that stage.py read found and that is light in its sentence, not a person's colour (B1 P11, B4 R17). CRAFT-10 and added_emphasis_per_beat_max read it. | yes_no | quick, worked out by code | code_derived | step 7 | `yes` |
 
 Status values: draft, approved, stale, omitted.
 
@@ -299,6 +299,7 @@ A camera position in a scene (shown to the user as camera A, B, C ... in order).
 | `at` | The camera position as a point (with a set plan). | point | standard | ai | step 7 | `[-3.5, 1.8, 1.45]` |
 | `at_words` | The camera position in words (without a set plan). | text | standard | ai | step 7 | `beside Saye's shoulder` |
 | `look_at` | The point the camera aims at. | point | standard | ai | step 7 | `[2.8, 1.8, 1.4]` |
+| `look_at_words` | Where the camera aims, in words (without a set plan). | text | standard | ai | step 7 | `Iona's hands on the gate` |
 | `lens_mm` | The lens (full-frame). | millimetres | standard | ai | step 7 | `85` |
 | `use` | What the setup is for. | text | standard | ai | step 7 | `the reflection two-shot through the wild wall` |
 | `side` | Which side of the line the camera is on. | a, b | standard | ai | step 7 | `a` |
@@ -328,7 +329,7 @@ One shot, written from its list item at standard and detailed, reason-first (pur
 | `purpose` | What the audience must get from the shot, one sentence. | text | quick | ai | step 8 | `Iona's body admits what her words denied; Saye's proof lands on her face.` |
 | `because` | The records that justify the shot (5.4 rule 3), or default on a normal shot with no departure. | because_list; IDs of SCENE, VALUE, PART, BEAT, SPEECH, MOVE, SETUP, SEQUENCE, PLAN, PLANT, FACT, CARDINAL, STRAND, CHAPTER, CHARACTER, VOICE, LOCATION, PROP, TEXT, MOTIF, CAMERA, STATE, WORLD, STYLE, RULE, CAMSYS, CAMRULE, RESERVE, LENS, LOOK, VISUAL, SOUNDPLAN, LADDER; also default | quick | ai | step 8 | `SC10-B07, SC10-V1, MO-MINT, CR-IONA` |
 | `role` | How much the scene depends on the shot. | turn, must_keep, normal | quick | ai | step 8 | `turn` |
-| `kind` | The kind of shot. | live, insert, pov, screen, card, black | quick | ai | step 8 | `live` |
+| `kind` | The kind of shot: live (filmed in the scene), insert (a thing close), pov (what a character sees with their own eyes), screen (the picture an in-story camera or device makes, at that camera's own lens; CRAFT-07), card (a title) or black. | live, insert, pov, screen, card, black | quick | ai | step 8 | `live` |
 | `why` | The story reason for any value on the list in 5.4 rule 11 that departs from its default, or for any departure from the camera system; always on turn shots. One sentence quoting a line, naming an object or action, or citing an ID. | text | standard | ai | step 8 | `"Her face changes." puts the turn inside her mouth, so the scene's closest frame is spent here and held while Saye's proof lands off screen.` |
 | `origin` | Where the shot's content comes from. | story, inferred, invented | quick | ai | step 8 | `story` |
 | `additions` | Inventions in frame (each also listed in the scene's additions). | text; also none | standard | ai | step 8 | `none` |
@@ -352,8 +353,8 @@ One shot, written from its list item at standard and detailed, reason-first (pur
 | `frame_in_frame` | A frame within the frame. | text; also none | detailed | ai | step 8 | `none` |
 | `device` | At most one expressive device. | text; also none | detailed | ai | step 8 | `none` |
 | `glass` | Every glass surface in frame. | sub_parts; first part: text; state: word (clear, marked, reflecting, screen, broken_open); camera: word (through, along, angled); one line each | standard | ai | step 8 | `window \| state: reflecting \| camera: angled` |
-| `subject` | Who is in frame, where, facing, doing. | sub_parts; first part: id (STATE, CHARACTER); at: word (left_edge, left_third, centre, right_third, right_edge); faces: word (frame_left, frame_right, camera, away, up, down); does: text; tactic: word; energy: word (still, held, rising, breaking, spent); display: number (1, 2, 3); still: word_list (head, eyes, mouth, hands, torso, whole_body); eyeline: text; dwell_s: seconds; travel: word (frame_left, frame_right, up, down, toward_camera, away, none); must_not: text; continues: id; also none; one line each | quick | ai | step 8 | `CH-IONA.S02 \| at: left_third \| faces: camera \| eyeline: CH-SAYE \| dwell_s: 15 \| does: chews slowly; stops chewing; a small frown \| tactic: discovering \| energy: held \| display: 1 \| still: head, hands, torso \| travel: none` |
-| `thing` | Register items in frame and how loud they are; plant or payoff on the shot that plants or pays off a PLANT. | sub_parts; first part: id (PROP, STATE, MOTIF, TEXT); emphasis: number; at: text; plant: id; payoff: id; also none; one line each | standard | ai | step 8 | `MO-MINT \| emphasis: 2` |
+| `subject` | Who is in frame, where, facing, doing. | sub_parts; first part: id (STATE, CHARACTER); at: word (left_edge, left_third, centre, right_third, right_edge); faces: word (frame_left, frame_right, camera, away, up, down); does: text; tactic: word; energy: word (still, held, rising, breaking, spent); display: number (1, 2, 3); still: word_list (head, eyes, mouth, hands, torso, whole_body); eyeline: text; dwell_s: seconds; travel: word (frame_left, frame_right, up, down, toward_camera, away, none); must_not: text; continues: id; recorded: text; also none; one line each | quick | ai | step 8 | `CH-IONA.S02 \| at: left_third \| faces: camera \| eyeline: CH-SAYE \| dwell_s: 15 \| does: chews slowly; stops chewing; a small frown \| tactic: discovering \| energy: held \| display: 1 \| still: head, hands, torso \| travel: none` |
+| `thing` | Register items in frame and how loud they are; plant or payoff on the shot that plants or pays off a PLANT. | sub_parts; first part: id (PROP, STATE, MOTIF, TEXT); emphasis: number; at: text; plant: id; payoff: id; recorded: text; also none; one line each | standard | ai | step 8 | `MO-MINT \| emphasis: 2` |
 | `text` | Text in picture in frame. | id_list; IDs of TEXT; also none | standard | ai | step 8 | `TX-GOODS-ONLY` |
 | `keep_hidden` | What stays out of view, the fact it protects, and how. | sub_parts; first part: id (FACT); how: word (frame_edge, focus, dark, obstruction, timing, sound_first); one line each | standard | ai | step 8 | `FT-03 \| how: frame_edge` |
 | `must_show` | What must appear. | id_list; IDs of CHARACTER, STATE, PROP, TEXT, MOTIF, LOCATION, CAMERA; also none | standard | ai | step 8 | `PR-FLASK` |
@@ -719,7 +720,7 @@ Readable words inside the picture; never generated, always composited from a tex
 | `reader` | Who reads it in the story. | id; IDs of CHARACTER; also none | standard | ai | step 4 | `CH-JUDE` |
 | `plot_critical` | The audience must read it. | yes_no | standard | ai | step 4 | `yes` |
 | `emphasis` | How loud it is, 0 to 3. | number; from 0 to 3 | standard | ai | step 4 | `2` |
-| `method` | How it gets into the picture. | composite, background_blur | standard | ai | step 4 | `composite` |
+| `method` | How it gets into the picture: composite (a text graphic laid in after, the default), background_blur (never read), or model_drawn (the video model draws it: only a single large letter or mark the shot is about, such as the toy carriage's F, checked in the take; GEN-06 allows it). | composite, background_blur, model_drawn | standard | ai | step 4 | `composite` |
 | `lettering` | How the letters look (font style, colour, size). Named lettering because 'look' belongs to LOOK records. | text | detailed | ai | step 4 | `red stencil capitals on a white tag` |
 | `animation` | How it moves, if it does. | text; also none | standard | ai | step 4 | `none` |
 | `translate` | Whether it goes on the text-to-translate list. | yes_no | detailed | ai | step 4 | `yes` |
@@ -826,7 +827,7 @@ A choice saved for special moments, with its uses rationed. Always includes the 
 | `choice` | The saved choice. | text | quick | ai | step 6 | `the non-insert extreme close-up (a film-level saved choice)` |
 | `match` | How code recognises a use: <field> = <value>, or manual. | text; pattern `^([a-z_]+ = [a-z0-9_.]+\|manual)$` | quick | ai | step 6 | `size = extreme_close_up` |
 | `max_uses` | Most uses: a whole number, 1_per_scene, or share with a fraction of scenes. | sub_parts; first part: text; fraction: number | quick | ai | step 6 | `3` |
-| `allowed_in` | Where it may be used. | text | quick | ai | step 6 | `main turns only; the first in SC13 (K05)` |
+| `allowed_in` | Where it may be used. The checker reads only scene IDs here (SC13); words are for people. | text | quick | ai | step 6 | `main turns only; the first in SC13 (K05)` |
 | `never_on` | Where it may never be used. | id_list; IDs of *; also none | quick | ai | step 6 | `CH-ELI` |
 | `because` | The records behind it. | id_list; IDs of * | quick | ai | step 6 | `PLAN, LADDER, CR-ELI` |
 

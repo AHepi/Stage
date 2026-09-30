@@ -4,17 +4,17 @@ Situation card for the tags `screens_and_text` and `in_story_footage`. Steps 7 a
 
 ## Situation
 
-Words the audience must read (signs, labels, displays, title cards), screens inside the frame, and footage recorded inside the story. Models draw text badly and change it between clips, so every readable word is drawn by code and laid in afterwards (K17; C3 §13A).
+Words the audience must read (signs, labels, displays, title cards), screens in the frame, and footage recorded in the story. Models draw text badly and change it between clips, so code draws every readable word and lays it in after (K17; C3 §13A).
 
 ## Questions in order
 
-1. **Must the audience read it?** Make a TEXT record with the exact words, case, orientation and surface, `method: composite`; only text too small to read is left to the model (A3 R11; K17).
+1. **Must the audience read it?** Make a TEXT record with the exact words, case, orientation and surface, `method: composite`; only text too small to read is left to the model (A3 R11; K17); a lone letter the shot is about may be `model_drawn`.
 2. **How long must it stay?** Code derives the reading floor from `text_floor`, doubled when mirrored (K09). If the shot is short, put the words up early and let the change come late (D12 Recipe 2).
-3. **How big?** Size a must-read word for the device's smallest appearance in frame (D12 R6, R10).
+3. **How big?** Size a must-read word for its smallest appearance in frame (D12 R6, R10).
 4. **Is its meaning taught first?** A display the plot will read gets one teaching appearance at emphasis 2 at least a scene earlier (D12 R2; B4 R7).
 5. **Who made it?** The maker decides its orientation in a mirrored scene ("Text orientation"; SIDE-05).
 6. **Is it footage recorded inside the story?** Give it a CAMERA record (position, lens, frame shape, frame rate, overlays, `moves`), record the event once as one continuous take, and cut every viewing from it (B1 §10.4, R22).
-7. **Is a screen in frame?** The device shot asks for a blank screen; its content is its own shot, pinned on afterwards (blueprint 8.5; C2 R6; C3 §13B).
+7. **Is a screen in frame?** The device shot asks for a blank screen; its content is its own shot, pinned on after (blueprint 8.5; C2 R6; C3 §13B).
 8. **Does a later scene replay this one?** Put the replaying camera into this scene's set plan as a named setup (A3 R9).
 9. **Does something appear or vanish on a fixed feed?** Between two frames: no camera move, no dissolve, no glow (B1 R20, §10.6).
 

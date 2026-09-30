@@ -15,6 +15,12 @@ Every check reads the derived fields of derive_fields.py (the Breakdown of the r
 Each is registered with check_records.register_check (see the note at the top of check_records.py).
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- a jump cut after a shot numbered below 100 is found (the CUT's number keeps its zeros); SIDE-01 skips a place's
+  state; SIDE-04 matches a side word to the right hand;
+- SIDE-03 counts the must_show and things that carry the feature; GEOM-05 knows when an object arrives in a later
+  scene.
 """
 
 import math
@@ -43,6 +49,28 @@ STORY_ACTION_TYPES = ("action", None)
 # Words after "wound" or "sling" that show a verb ("a scarf wound round her neck"), not a one-sided feature.
 NOUNS_THAT_ARE_ALSO_VERBS = ("wound", "sling")
 NOT_A_NOUN_AFTER = r"(?:round|around|into|up|about|tight|tightly|through|over|across)\b"
+
+
+# Body parts that come in pairs: a side word next to one of them may name the other of the pair, so a clause is
+# about a sided feature on one of them only when it also names what marks it ("the dressed palm", "the scar").
+PAIRED_BODY_NOUNS = {"hand", "hands", "palm", "palms", "arm", "arms", "wrist", "wrists", "eye", "eyes", "ear", "ears",
+                     "cheek", "cheeks", "shoulder", "shoulders", "foot", "feet", "leg", "legs", "knee", "knees",
+                     "temple", "temples", "hip", "hips", "thigh", "thighs", "sleeve", "sleeves", "finger", "fingers",
+                     "thumb", "thumbs", "boot", "boots", "shoe", "shoes", "glove", "gloves"}
+
+
+def clause_names_this_one(clause, feature):
+    """True when a clause is about this sided feature: always for a one-of-a-kind feature (a ring, a scar); for one
+    on a paired body part (a dressed palm), only when the clause also names what marks it (dressed)."""
+    words = re.findall(r"[a-z]+", (feature or "").lower())
+    if not words or words[-1] not in PAIRED_BODY_NOUNS:
+        return True
+    marks = [word for word in words[:-1] if word not in ("the", "a", "an", "her", "his", "their", "own", "left",
+                                                          "right")]
+    if not marks:
+        return True
+    lowered = clause.lower()
+    return any(re.search(r"\b" + re.escape(mark), lowered) for mark in marks)
 
 
 # ---------------------------------------------------------------- shared helpers
@@ -163,6 +191,8 @@ def check_side_01(run):
                         "picture shows is worked out per shot (5.4 rule 8)."))
             if type_name != "STATE":
                 continue
+            if (record.get("element") or record.identifier or "").startswith("LOC-"):
+                continue  # a place has no body side: "bullet scars in the roof grid" is not a scar on someone
             state_line = (record.get("state_line") or "").lower()
             covered = set()
             for item in items:
@@ -219,9 +249,35 @@ def sided_detail_of_insert(breakdown, shot):
             if element_of(item.first) == element_of(reference):
                 state_reference = item.first
         for feature, own, plot in sided_features(breakdown, state_reference, line):
-            if plot and not feature_hidden(breakdown, shot, feature):
+            if plot and not feature_hidden(breakdown, shot, feature) and insert_words_name(breakdown, shot, feature):
                 return element_of(reference), feature
     return None
+
+
+def insert_words_name(breakdown, shot, feature):
+    """True when an insert shows the sided feature: its own words (what it is for, its moments, what its people do,
+    where its things are, its end) name it, or its must_show or things name a record that carries it (MO-RINGS for
+    a wedding ring, read as feature_hidden reads must_not_show). An insert of Iona's boot on a rung does not show
+    her ring."""
+    nouns = feature_nouns(feature)
+    texts = [shot.get("purpose") or "", shot.get("end") or ""]
+    texts += [item.get("shows") or "" for item in breakdown.items(shot, "moment")]
+    texts += [item.get("does") or "" for item in subject_items(breakdown, shot)]
+    texts += [item.get("at") or "" for item in breakdown.items(shot, "thing")]
+    joined = " ".join(texts).lower()
+    if any(re.search(r"\b" + re.escape(noun) + r"\b", joined) for noun in nouns):
+        return True
+    shown = breakdown.id_list(shot, "must_show") + [item.first.strip() for item in breakdown.items(shot, "thing")
+                                                     if item.first and normalise_word(item.first) != "none"]
+    for identifier in shown:
+        record = breakdown.record(identifier) or breakdown.record(element_of(identifier))
+        words = set(re.findall(r"[a-z]+", identifier.lower()))
+        if record is not None:
+            words |= set(re.findall(r"[a-z]+", (record.title or "").lower()))
+            words |= set(re.findall(r"[a-z]+", (record.get("names") or "").lower()))
+        if nouns & words:
+            return True
+    return False
 
 
 @register_check("SIDE-03", level="E", build=1, title="A sided insert with flip other than never",
@@ -354,6 +410,8 @@ def check_side_04(run):
                         if own is None or not any(re.search(r"\b" + re.escape(noun) + r"\b", clause, re.IGNORECASE)
                                                   for noun in feature_nouns(feature)):
                             continue
+                        if not clause_names_this_one(clause, feature):
+                            continue  # "her left palm" is the other palm, not the dressed one
                         kind, side = claims[0][0], claims[0][1]
                         derived = own if kind == "own" else apparent_side(own, mirror)
                         if derived != side:
@@ -448,7 +506,8 @@ def cut_after(breakdown, shot):
     number = re.search(r"-SH(\d+)$", shot.identifier)
     if not number:
         return None
-    return breakdown.record(f"{scene_of(shot.identifier)}-C{int(number.group(1))}", "CUT")
+    # a CUT takes the three-digit number of the shot it follows: SC03-SH070 is followed by SC03-C070
+    return breakdown.record(f"{scene_of(shot.identifier)}-C{int(number.group(1)):03d}", "CUT")
 
 
 def angle_between_setups(breakdown, earlier, later, person):
@@ -525,8 +584,10 @@ def check_geom_04(run):
             problems.append(run.problem(
                 "W", "GEOM-04", shot, "size",
                 f"is {written}, but {shot.get('lens_mm') or 'the'} mm at {check.distance_m:.1f} m from "
-                f"{person_name(check.subject)} frames {check.visible_height_m:.2f} m of height, a {check.size}",
-                "Fix: change the size, or move the setup or the lens so the frame is the size written."))
+                f"{person_name(check.subject)} frames {check.visible_height_m:.2f} m of height, "
+                f"{'an' if check.size[:1] in 'aeiou' else 'a'} {check.size}",
+                "Fix: change the size, or move the setup or the lens so the frame is the size written (the step 8 "
+                "file, Camera, gives the sum)."))
     return problems
 
 
@@ -581,6 +642,9 @@ def check_geom_05(run):
             size = found.get("size") or ()
             if len(size) < 3:
                 continue
+            first = found.get("from_scene")
+            if first and sort_key_for_identifier(scene_of(setup.identifier)) < sort_key_for_identifier(first):
+                continue  # the object is not there yet in this scene (the tent comes in scene 29)
             centre = found["at"]
             inside = (abs(position[0] - centre[0]) < size[0] / 2 and abs(position[1] - centre[1]) < size[1] / 2
                       and found.get("base", 0.0) <= position[2] <= found.get("base", 0.0) + size[2])

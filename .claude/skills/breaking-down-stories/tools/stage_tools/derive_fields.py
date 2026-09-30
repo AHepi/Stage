@@ -35,6 +35,10 @@ Numbers come from rules/constants.json by name. The few layout numbers that are 
 the frame ends) are named below with a note.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- word swaps are made once and everywhere; the time floor counts text to read and owes a beat's pause on the last
+  shot naming it; light words are read in their sentence.
 """
 
 import json
@@ -595,6 +599,103 @@ def text_reading_seconds(breakdown, text_record, mirrored=False):
     return seconds, how
 
 
+# ---------------------------------------------------------------- word swaps for prompts (8.1 rule 5)
+
+def project_prompt_swaps(words, project_record):
+    """[(from, to)] of the prompt word swaps: words.json's prompt_substitutions that are plain words, and the project's
+    own PROJECT prompt_words (torch becomes flashlight, cage becomes open steel freight elevator car)."""
+    swaps = []
+    for swap in ((words or {}).get("prompt_substitutions") or {}).get("swaps") or []:
+        source, target = swap.get("from", ""), swap.get("to", "")
+        if source and target and "<" not in source and "(" not in target and "visible evidence" not in target:
+            swaps.append((source, target))
+    if project_record is not None:
+        for written in project_record.get_all("prompt_words"):
+            item = split_item(written)
+            if item.first and normalise_word(item.first) != "none" and item.get("use"):
+                swaps.append((item.first.strip(), item.get("use").strip()))
+    return swaps
+
+
+def swap_prompt_words(text, swaps):
+    """The text with every swap made once: a swap's target already in the text is kept as it is, so "a small steel
+    vacuum flask" never becomes "a small steel vacuum small steel vacuum flask"."""
+    text = str(text or "")
+    kept = {}
+    for number, (_, target) in enumerate(swaps):
+        marker = f"\u0000{number}\u0000"
+        pattern = re.compile(r"(?<!\w)" + re.escape(target) + r"(?!\w)", re.IGNORECASE)
+        if pattern.search(text):
+            text = pattern.sub(lambda match, key=marker: kept.setdefault(key, [])
+                               .append(match.group(0)) or key, text)
+    for source, target in swaps:
+        text = re.sub(r"(?<!\w)" + re.escape(source) + r"(?!\w)", target, text, flags=re.IGNORECASE)
+    for marker, originals in kept.items():
+        for original in originals:
+            text = text.replace(marker, original, 1)
+    return text
+
+
+def swap_sources_banned(swaps):
+    """The swap sources a prompt may not hold: not one whose own target holds it ("flask" becomes "small steel
+    vacuum flask", so "flask" inside the target is the user's own choice of words)."""
+    return [source for source, target in swaps
+            if not re.search(r"(?<!\w)" + re.escape(source) + r"(?!\w)", target, re.IGNORECASE)]
+
+
+def object_from_scene(item):
+    """The scene a set-plan object first stands in, when its material or meaning says so ("a tent ..., from scene
+    29", "from SC29"), else None (there from the start)."""
+    text = " ".join(str(item.get(key) or "") for key in ("material", "meaning"))
+    match = re.search(r"\bfrom\s+(?:scene\s+(\d{1,3})([A-Z]?)\b|(SC\d{2,3}[A-Z]?)\b)", text, re.IGNORECASE)
+    if not match:
+        return None
+    if match.group(3):
+        return match.group(3).upper()
+    return f"SC{int(match.group(1)):02d}{match.group(2) or ''}"
+
+
+def text_must_be_read(text_record):
+    """True when the audience must read a TEXT in picture, so its reading time counts in a floor: not when it is
+    blurred into the background (method background_blur), and not when it is neither plot-critical nor given any
+    emphasis (a shop sign seen in passing)."""
+    if normalise_word(text_record.get("method") or "") == "background_blur":
+        return False
+    critical = normalise_word(text_record.get("plot_critical") or "") == "yes"
+    return critical or (number_of(text_record.get("emphasis"), 0) or 0) > 0
+
+
+def texts_shown_by(breakdown, shot, shot_lines):
+    """[(TEXT ID, how it is shown)]: the texts a shot lists in `text` that the audience must read, and the
+    plot-critical texts it shows without listing them (their thing is in the shot's thing, must_show or subject
+    items, and the story line that writes their words is one of the shot's lines), so a reading floor is never
+    missed on a visor or a wrist display."""
+    found = [(identifier, "listed") for identifier in breakdown.id_list(shot, "text")
+             if breakdown.record(identifier, "TEXT") is not None
+             and text_must_be_read(breakdown.record(identifier, "TEXT"))]
+    shown = set()
+    for field_name in ("thing", "must_show", "subject"):
+        for item in breakdown.items(shot, field_name):
+            for piece in split_list(item.first or ""):
+                shown.add(element_of(piece.strip()))
+    if not shown or not shot_lines:
+        return found
+    for text_record in breakdown.records_of("TEXT"):
+        identifier = text_record.identifier
+        if any(identifier == listed for listed, _ in found) or identifier in breakdown.id_list(shot, "text"):
+            continue
+        if normalise_word(text_record.get("plot_critical") or "") != "yes" or not text_must_be_read(text_record):
+            continue
+        on = (text_record.get("on") or "").strip()
+        if not on or (on not in shown and identifier not in shown):
+            continue
+        source = breakdown.item(text_record, "words_from")
+        numbers = parse_line_numbers(source.first) if source is not None and source.first else None
+        if numbers and any(first <= line <= last for first, last in numbers for line in shot_lines):
+            found.append((identifier, f"shown on {on}"))
+    return found
+
+
 def speech_part(breakdown, speech_identifier, hear_words=None):
     """(speech ID, speaker, words, pace, seconds) for one heard speech, or None when its words are unknown."""
     extra = constant(breakdown.constants, "speech_floor_extra_s", 0.5)
@@ -625,16 +726,14 @@ def time_floor(breakdown, shot):
         else:
             speech_parts.append(part)
     speech_floor = sum(part[4] for part in speech_parts)
+    shot_lines = set(breakdown.lines_of(shot))
     text_parts = []
-    for text_identifier in breakdown.id_list(shot, "text"):
+    for text_identifier, shown_how in texts_shown_by(breakdown, shot, shot_lines):
         text_record = breakdown.record(text_identifier, "TEXT")
-        if text_record is None:
-            continue
         mirrored = text_orientation(breakdown, text_identifier, shot) == "mirrored"
         seconds, how = text_reading_seconds(breakdown, text_record, mirrored)
-        text_parts.append((text_identifier, seconds, how))
+        text_parts.append((text_identifier, seconds, how if shown_how == "listed" else f"{how}, {shown_how}"))
     text_floor = max((part[1] for part in text_parts), default=0.0)
-    shot_lines = set(breakdown.lines_of(shot))
     unresolved = [shot.identifier] if not shot_lines and lines_written(shot) else []
     pause_parts = []
     for beat_identifier in breakdown.id_list(shot, "beats"):
@@ -645,8 +744,9 @@ def time_floor(breakdown, shot):
         if not beat_numbers and lines_written(beat):
             unresolved.append(beat_identifier)
             continue
-        last = breakdown.last_story_line(beat_numbers)
-        if last is None or last not in shot_lines:
+        # the pause after a beat is owed once, by the last shot that names the beat (the same rule as the
+        # provisional floor of step 8's handout), never by every shot whose lines reach the beat's last line
+        if last_shot_naming_beat(breakdown, beat_identifier) != shot.identifier:
             continue
         seconds, _, why = pause_seconds(breakdown, beat)
         pause_parts.append((beat_identifier, seconds, why))
@@ -658,6 +758,33 @@ def time_floor(breakdown, shot):
     result.unresolved_lines = unresolved
     breakdown._cache[key] = result
     return result
+
+
+def last_shot_naming_beat(breakdown, beat_identifier):
+    """The last shot (in shot order) whose beats name this beat: written shots and list items together."""
+    key = ("last_shot_naming_beat", beat_identifier)
+    if key in breakdown._cache:
+        return breakdown._cache[key]
+    scene_identifier = scene_of(beat_identifier)
+    naming = {shot.identifier for shot in breakdown.shots_of(scene_identifier)
+              if beat_identifier in breakdown.id_list(shot, "beats")}
+    for identifier, item in list_items(breakdown, scene_identifier):
+        if identifier and beat_identifier in split_list(item.get("beats") or ""):
+            naming.add(identifier.strip())
+    found = max(naming, key=sort_key_for_identifier) if naming else None
+    breakdown._cache[key] = found
+    return found
+
+
+class ListItemStandIn:
+    """A list item read as a shot for text_orientation: its ID, and the lines of its first beat."""
+
+    def __init__(self, identifier, lines):
+        self.identifier = identifier
+        self._lines = lines
+
+    def get(self, name, default=None):
+        return self._lines if name == "lines" else default
 
 
 def lines_written(record):
@@ -729,8 +856,26 @@ def provisional_floor(breakdown, scene_identifier, shot_identifier):
             pause_parts.append((beat_identifier, seconds, why))
     speech_floor = sum(part[4] for part in speech_parts)
     pause_owed = sum(part[1] for part in pause_parts)
-    result = TimeFloor(shot_identifier, round_seconds(speech_floor + pause_owed), round_seconds(speech_floor), 0.0,
-                       round_seconds(pause_owed), speech_parts, [], pause_parts, unknown, provisional=True)
+    text_parts = []
+    shows = " ".join([item.get("shows") or "", item.get("subject") or ""])
+    first_beat = breakdown.record(beats_here[0], "BEAT") if beats_here else None
+    stand_in = ListItemStandIn(shot_identifier, first_beat.get("lines") if first_beat is not None else None)
+    for text_record in breakdown.records_of("TEXT"):
+        if not text_must_be_read(text_record):
+            continue
+        words = (text_record.get("words") or "").strip().strip('"')
+        named = text_record.identifier in shows or (words and any(
+            quote and (quote in words or words in quote) and len(quote) >= min(len(words), 4)
+            for quote in quoted_strings(shows)))
+        if not named:
+            continue
+        mirrored = text_orientation(breakdown, text_record.identifier, stand_in) == "mirrored"
+        seconds, how = text_reading_seconds(breakdown, text_record, mirrored)
+        text_parts.append((text_record.identifier, seconds, how))
+    text_floor = max((part[1] for part in text_parts), default=0.0)
+    result = TimeFloor(shot_identifier, round_seconds(max(speech_floor, text_floor) + pause_owed),
+                       round_seconds(speech_floor), round_seconds(text_floor), round_seconds(pause_owed), speech_parts,
+                       text_parts, pause_parts, unknown, provisional=True)
     result.extra_per_speech_s = constant(breakdown.constants, "speech_floor_extra_s", 0.5)
     result.shared_speeches = shared
     return result
@@ -1004,10 +1149,60 @@ def scene_eighths(breakdown, scene_identifier):
     return eighths, f"{plain} ({page_lines} page lines, an estimate from the line count)"
 
 
+# The light, colour and darkness words stage.py read finds (read_story.LIGHT_WORDS) are read in their sentence
+# before they count: a colour that describes a person ("DR SAYE, fifties, grey and tidy", "grey hair") and a word
+# inside a name for something that gives no light ("the fire door", "open fire") are not light (B2 P2 is about
+# light). COVER-08 and the beats the script marks (CRAFT-10, CRAFT-19) both read them through light_words_in_context.
+COLOUR_WORDS_OF_LIGHT = {"red", "green", "blue", "yellow", "orange", "white", "black", "grey", "gray", "gold",
+                         "golden", "silver", "amber", "purple", "violet", "pink", "brown", "pale"}
+PERSON_WORDS = {"hair", "hairs", "beard", "moustache", "eyes", "eye", "skin", "face", "lips", "cheeks", "brows",
+                "eyebrows", "suit", "coat", "coats", "uniform", "scrubs", "gown", "dress", "shirt", "jacket",
+                "overalls", "tie", "shoes", "boots", "gloves", "hat", "cap", "teeth", "temples", "stubble"}
+NOT_LIGHT_PHRASES = re.compile(
+    r"\bfire[- ](?:door|doors|shutter|shutters|curtain|wall|walls|stairs|stair|exit|exits|escape|alarm|alarms|"
+    r"extinguisher|hose|brigade|station|drill)\b|"
+    r"\b(?:open|opens|opened|opening|return|returns|returned|cease|hold|holds|held|under|crossfire|gun)\s+fire\b|"
+    r"\bgunfire\b", re.IGNORECASE)
+PERSON_INTRODUCTION = re.compile(r"(?:^|[.!?]\s+)((?:[A-Z][A-Z'.-]*\s?){1,4}),([^.!?]*)")
+
+
+def light_words_in_context(text, words):
+    """The words of a story line's light words that are light in this line: colours describing a person and words
+    inside a name for something that gives no light are left out."""
+    text = text or ""
+    lowered = text.lower()
+    blocked = set()
+    for match in NOT_LIGHT_PHRASES.finditer(text):
+        blocked.update(word.lower() for word in re.findall(r"[A-Za-z]+", match.group(0)))
+    introductions = [match.span(2) for match in PERSON_INTRODUCTION.finditer(text)
+                     if len(re.sub(r"[^A-Z]", "", match.group(1))) >= 2]
+    tokens = [(match.group(0).lower(), match.start()) for match in re.finditer(r"[A-Za-z]+", text)]
+    kept = []
+    for word in words or []:
+        word = word.lower()
+        if word in blocked and word in ("fire", "gunfire"):
+            continue
+        if word in COLOUR_WORDS_OF_LIGHT:
+            places = [position for position, (token, _) in enumerate(tokens) if token == word]
+            about_person = False
+            for position in places:
+                near = [token for token, _ in tokens[position + 1:position + 3]] + \
+                       [token for token, _ in tokens[max(0, position - 2):position]]
+                start = tokens[position][1]
+                if any(token in PERSON_WORDS for token in near) or \
+                        any(first <= start < last for first, last in introductions):
+                    about_person = True
+            if about_person:
+                continue
+        kept.append(word)
+    return kept
+
+
 def script_marked(breakdown, beat):
     """(yes or no, what marks it): a beat is marked by the script when its lines hold a capitalised sound, emphasis
-    or text token, or a light, colour or darkness word that stage.py read found (derived BEAT script_marked;
-    CRAFT-10 and added_emphasis_per_beat_max read it). None when the story map is not present."""
+    or text token, or a light, colour or darkness word that stage.py read found and that is light in its sentence
+    (light_words_in_context; derived BEAT script_marked; CRAFT-10 and added_emphasis_per_beat_max read it). None when
+    the story map is not present."""
     scenes = (breakdown.story_map or {}).get("scenes") or []
     scene_identifier = scene_of(beat.identifier)
     scene = next((entry for entry in scenes if entry.get("id") == scene_identifier), None)
@@ -1020,7 +1215,11 @@ def script_marked(breakdown, beat):
             marks.append(f'{token["class"]} "{token["text"]}" (line {token["line"]})')
     for entry in scene.get("light_lines") or []:
         if entry.get("line") in lines:
-            marks.append(f'light words {", ".join(entry.get("words") or [])} (line {entry["line"]})')
+            words = entry.get("words") or []
+            if breakdown.story is not None:
+                words = light_words_in_context(breakdown.story.line(entry["line"]), words)
+            if words:
+                marks.append(f'light words {", ".join(words)} (line {entry["line"]})')
     return ("yes" if marks else "no"), "; ".join(marks)
 
 
@@ -1487,7 +1686,8 @@ def set_plan(breakdown, location_identifier):
             if point:
                 objects[item.first] = {"at": point[:2], "size": point_of(item.get("size")) or (),
                                        "base": number_of(item.get("base"), 0.0),
-                                       "furniture": normalise_word(item.get("furniture") or "none")}
+                                       "furniture": normalise_word(item.get("furniture") or "none"),
+                                       "from_scene": object_from_scene(item)}
         if marks or objects:
             orientation = normalise_word(location.get("plan_orientation") or "original")
             result = SetPlan(location_identifier, size[0], size[1], size[2] if len(size) > 2 else 2.5,

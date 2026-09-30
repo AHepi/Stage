@@ -962,7 +962,7 @@ Glass stands between people, a shot needs a reflection, or a sided feature (a ri
 2. **What is each element's `handedness` in its STATE?** Code derives `mirror_state`: mirrored where it differs from the frame (K03; blueprint 5.6).
 3. **Which sided features are in frame?** Each needs an own side (SIDE-01); code derives the image side. Behaviour text says "hand nearest the camera"; state lines never say frame-left (blueprint 5.4 rule 8; SIDE-02).
 4. **Does the story state a side for a mirrored element?** That side is apparent: the own side is the opposite, `origin: inferred` (K03; SIDE-04).
-5. **In profile, which hand is nearest the camera?** A person facing frame-right shows their own right side; one facing frame-left shows their own left (B3 §8.2).
+5. **In profile, which hand is nearest the camera?** A person facing frame-right shows their own right side; facing frame-left, their own left (B3 §8.2).
 6. **Is there glass in frame?** Give it a `glass` item: state `clear`, `marked` (a smear, label or crack makes the pane visible), `reflecting`, `screen` or `broken_open`, and camera `through`, `along` or `angled` (B3 §8.1).
 7. **Which side of the glass is the camera on?** The side of the character whose scene it is (`whose_scene`); it crosses only when the point of view shifts (B3 R11).
 8. **Must a reflection lie over someone?** Check the twin and the light (B3 R28-R29).
@@ -1010,17 +1010,17 @@ Situation card for the tags `screens_and_text` and `in_story_footage`. Steps 7 a
 
 ## Situation
 
-Words the audience must read (signs, labels, displays, title cards), screens inside the frame, and footage recorded inside the story. Models draw text badly and change it between clips, so every readable word is drawn by code and laid in afterwards (K17; C3 §13A).
+Words the audience must read (signs, labels, displays, title cards), screens in the frame, and footage recorded in the story. Models draw text badly and change it between clips, so code draws every readable word and lays it in after (K17; C3 §13A).
 
 ## Questions in order
 
-1. **Must the audience read it?** Make a TEXT record with the exact words, case, orientation and surface, `method: composite`; only text too small to read is left to the model (A3 R11; K17).
+1. **Must the audience read it?** Make a TEXT record with the exact words, case, orientation and surface, `method: composite`; only text too small to read is left to the model (A3 R11; K17); a lone letter the shot is about may be `model_drawn`.
 2. **How long must it stay?** Code derives the reading floor from `text_floor`, doubled when mirrored (K09). If the shot is short, put the words up early and let the change come late (D12 Recipe 2).
-3. **How big?** Size a must-read word for the device's smallest appearance in frame (D12 R6, R10).
+3. **How big?** Size a must-read word for its smallest appearance in frame (D12 R6, R10).
 4. **Is its meaning taught first?** A display the plot will read gets one teaching appearance at emphasis 2 at least a scene earlier (D12 R2; B4 R7).
 5. **Who made it?** The maker decides its orientation in a mirrored scene ("Text orientation"; SIDE-05).
 6. **Is it footage recorded inside the story?** Give it a CAMERA record (position, lens, frame shape, frame rate, overlays, `moves`), record the event once as one continuous take, and cut every viewing from it (B1 §10.4, R22).
-7. **Is a screen in frame?** The device shot asks for a blank screen; its content is its own shot, pinned on afterwards (blueprint 8.5; C2 R6; C3 §13B).
+7. **Is a screen in frame?** The device shot asks for a blank screen; its content is its own shot, pinned on after (blueprint 8.5; C2 R6; C3 §13B).
 8. **Does a later scene replay this one?** Put the replaying camera into this scene's set plan as a named setup (A3 R9).
 9. **Does something appear or vanish on a fixed feed?** Between two frames: no camera move, no dissolve, no glow (B1 R20, §10.6).
 
@@ -1077,7 +1077,7 @@ Situation card for the tags `suspense_and_reveal` and `darkness`. Steps 7 and 8 
 
 ## Situation
 
-A fact matters and someone does not know it yet, a reveal is coming, or the scene is dark. FACT records hold who knows what, from when (A4 §6.5). What the frame keeps out is as authored as what it shows (B1 P7), and what stays dark is designed as carefully as what is lit (B2 P7).
+A fact matters and someone does not know it yet, a reveal is coming, or the scene is dark. FACT records hold who knows what, from when (A4 §6.5). What the frame keeps out is as authored as what it shows (B1 P7); what stays dark, as designed as what is lit (B2 P7).
 
 ## Questions in order
 
@@ -1099,14 +1099,14 @@ Example: in The Catch scene 6, "He has one hand she cannot see." (line 253): we 
 3. A large revelation lands hardest in the flattest light available (B2 R11).
 4. A growing threat is heard before it is seen (A4 SND1); no music under a reveal meant to stay open (A4 SND5).
 5. If a later scene replays this one on a screen, put that camera in this scene's set plan now (A3 R9).
-6. Release suspense in a way the audience accepts; do not punish it (A4 S6).
-7. Every dark line the story writes needs a `stays_dark`, a `light_cue` or a shot `light` (COVER-08).
+6. Release suspense so the audience accepts it; never punish it (A4 S6).
+7. Every dark line the story writes needs a `stays_dark`, a `light_cue` quoting it, or a shot `light` (COVER-08).
 
 ## Traps
 
 - **Faster cutting for suspense.** Test: the unaware character's shots average shorter than the scene's dialogue shots. Fix: hold (A4 S2; TIME-09).
 - **A reveal spoiled by coverage.** Test: a wide or reverse shows what a close shot keeps hidden. Fix: check `keep_hidden` against every shot (A4 §13).
-- **The camera finds the secret**, tilting down to the hidden hand. Fix: keep the frame edge (B1 Ex2).
+- **The camera finds the secret**, tilting to the hidden hand. Fix: keep the frame edge (B1 Ex2).
 - **A sting or push-in on a reveal the script already marks.** Fix: add nothing (`added_emphasis_per_beat_max`; CRAFT-10).
 - **Too dark to follow.** Fix: one readable element per shot (B2 R23).
 - **A darker face gone grey** beside a correct lighter one. Fix: reject it (B2 R24).

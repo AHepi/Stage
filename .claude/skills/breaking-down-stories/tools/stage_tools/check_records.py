@@ -147,6 +147,13 @@ check [--step N] [--scene SCnn] [--film] [--all] [--story <path>]
   it (FORM-11 on stored files: a locked value changed by hand is an error on the next check).
 - Exit (7.3): 0 when no error line was printed; 1 when error lines were printed (the AI fixes only those, at most
   3 rounds); 2 when the check could not run (a missing story file, a bad step or scene), with one plain line.
+
+After the full run on The Catch (Project notes 31 and 32):
+- a check that checks nothing leaves 13 Health check as it was; after a full check, a partial check keeps the plain
+  part and replaces only its own lines;
+- the plain part gives the quality scores in plain words and the three scenes to read, and its 'In short' line names
+  the problems first;
+- the check of a scene's last batch also runs the scene-wide checks.
 """
 
 import dataclasses
@@ -159,8 +166,8 @@ from pathlib import Path
 
 from .record_format import (DEPTH_RANK, DIVIDER_LINE, EndLine, Problem, Record, TextBlock, count_levels,
                             load_json, merge_copies, normalise_word, parse_file, parse_line_numbers,
-                            parse_quote_anchor, parse_text, record_lines, render_file, split_item, split_list,
-                            write_file)
+                            parse_quote_anchor, parse_text, record_lines, render_file, sort_key_for_identifier,
+                            split_item, split_list, write_file)
 from .project_files import (MACHINE_FOLDER, START_HERE, Project, StageStop, history_run_folder, keep_in_history,
                             today)
 
@@ -537,6 +544,7 @@ class CheckRun:
         if form_context is None:
             from .checks_form import FormContext
             form_context = FormContext.for_records(schema, words, self.record_files, step=step)
+            form_context.checkpoints = self.manifest.get("checkpoints") or {}
         self.form_context = form_context
         depth = (self.project_record.get("depth") if self.project_record else None) or "standard"
         self.depth = depth if depth in DEPTH_RANK else "standard"
@@ -835,6 +843,7 @@ def run_checks(record_files, schema, words, constants, story=None, manifest=None
     definitions, missing = select_checks(step, film, check_ids)
     result.checks_not_present = missing
     form_context = FormContext.for_records(schema, words, record_files, step=step)
+    form_context.checkpoints = (manifest or {}).get("checkpoints") or {}
     wanted_ids = {definition.check_id for definition in definitions}
     if "FORM-13" in wanted_ids or tidy:
         result.tidy_notes = FORM_CHECKS["FORM-13"](record_files, form_context)
@@ -844,6 +853,7 @@ def run_checks(record_files, schema, words, constants, story=None, manifest=None
         result.changed_files = [record_file.name for record_file in record_files
                                 if render_file(record_file, schema) != before[record_file.name]]
         form_context = FormContext.for_records(schema, words, record_files, step=step)
+        form_context.checkpoints = (manifest or {}).get("checkpoints") or {}
     run = CheckRun(record_files, schema, words, constants, story=story, manifest=manifest, step=step, scene=scene,
                    film=film, project=project, form_context=form_context, locked_baseline=locked_baseline)
     result.run = run
@@ -1064,16 +1074,21 @@ def plural(count, word, plural_word=None):
 
 
 def in_short_line(result, needs_you):
-    """The report's first line (step 10): 'In short: 2 things need you, 14 small fixes I made, 3 warnings'."""
+    """The report's first line (step 10): 'In short: 2 things need you, 14 small fixes I made, 3 warnings'. With
+    problems still to fix it says them first, and says that no question waits for the user rather than "nothing
+    needs you", which read as a contradiction next to them."""
     counts = result.counts
-    needs = "nothing needs you" if needs_you == 0 else \
-        (f"{plural(needs_you, 'thing')} {'needs' if needs_you == 1 else 'need'} you")
+    errors = counts.get("E", 0)
+    if needs_you:
+        needs = f"{plural(needs_you, 'thing')} {'needs' if needs_you == 1 else 'need'} you"
+    else:
+        needs = "no question waits for you" if errors else "nothing needs you"
     fixes = len(result.tidy_notes)
     warnings = counts.get("W", 0)
     parts = [needs, f"{plural(fixes, 'small fix', 'small fixes')} I made" if fixes else "no small fixes needed",
              plural(warnings, "warning") if warnings else "no warnings"]
-    if counts.get("E", 0):
-        parts.append(f"{plural(counts['E'], 'problem')} still to fix")
+    if errors:
+        parts.insert(0, f"{plural(errors, 'problem')} still to fix")
     return "In short: " + ", ".join(parts) + "."
 
 
@@ -1172,7 +1187,8 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
                          "AI below say which.")
         lines.append(f"{plural(len(result.skipped), 'check')} could not run in full; the reasons are below the line "
                      "for the AI.")
-    for section in REPORT_SECTIONS:
+    for section in [lambda project, result: quality_scores_plain_lines(result.run),
+                    lambda project, result: scenes_to_read_plain_lines(result.run)] + list(REPORT_SECTIONS):
         try:
             extra = section(project, result) or []
         except Exception:  # a report section must never stop the report
@@ -1207,6 +1223,108 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
     return lines
 
 
+# The ten scoring questions (reference/05 Quality rubric), in the user's words.
+RUBRIC_PLAIN_NAMES = {1: "being faithful to the story", 2: "reading the story", 3: "shots that serve the beats",
+                      4: "the reasons", 5: "restraint", 6: "continuity and sides", 7: "rhythm and time",
+                      8: "the film's visual plan", 9: "being ready for AI video", 10: "being easy to read"}
+
+
+def review_scores(run):
+    """{scene or 'film': {criterion number: score}} from the REVIEW records' score items."""
+    found = {}
+    for review in run.records("REVIEW"):
+        scope = (review.get("scope") or "").strip()
+        scores = {}
+        for value in review.get_all("score"):
+            numbers = re.findall(r"\d+", value.split("| evidence", 1)[0])
+            if len(numbers) >= 2:
+                scores[int(numbers[0])] = int(numbers[1])
+        if scores:
+            found[scope or review.identifier] = scores
+    return found
+
+
+def scene_passes(scores):
+    """The rubric's pass rule on one scene's scores (reference/05): no criterion at 0, criteria 1, 3 and 6 at 2 or
+    more, and a total of 20 or more of 30. The 'no error' part is the checker's, said on its own line."""
+    return (all(score > 0 for score in scores.values()) and all(scores.get(number, 0) >= 2 for number in (1, 3, 6))
+            and sum(scores.values()) >= 20)
+
+
+def quality_scores_plain_lines(run):
+    """The plain section "Quality scores" of 13 Health check once the scores exist: how many scenes pass, the
+    average, the scenes that do not pass and why, and whether the film passes. [] before any score is written."""
+    found = review_scores(run)
+    scenes = {scope: scores for scope, scores in found.items() if re.fullmatch(r"SC\d{2,3}[A-Z]?", scope)}
+    if not scenes:
+        return []
+    lines = ["## Quality scores", ""]
+    passing = [scope for scope, scores in scenes.items() if scene_passes(scores)]
+    totals = {scope: sum(scores.values()) for scope, scores in scenes.items()}
+    average = sum(totals.values()) / len(totals)
+    best = max(totals.values())
+    best_scenes = sorted((scope for scope, total in totals.items() if total == best), key=sort_key_for_identifier)
+    lines.append(f"Each scene is scored on 10 questions, each from 0 to 3; 20 of 30 is a pass. "
+                 f"{len(passing)} of {plural(len(scenes), 'scene')} pass; the average is {average:.0f} of 30; the best "
+                 f"{'is' if len(best_scenes) == 1 else 'are'} {join_words([scene_in_words(scope) for scope in best_scenes])}, "
+                 f"at {best}.")
+    for scope in sorted(set(scenes) - set(passing), key=sort_key_for_identifier):
+        scores = scenes[scope]
+        low = [RUBRIC_PLAIN_NAMES.get(number, f"question {number}") for number, score in sorted(scores.items())
+               if score < 2]
+        lines.append(f"- {scene_in_words(scope).capitalize()} does not pass yet: {totals[scope]} of 30"
+                     + (f"; it scores low on {join_words(low)}" if low else "") + ".")
+    film_passes = len(passing) == len(scenes)
+    lines.append("The whole film passes: every scene passes." if film_passes else
+                 "The whole film does not pass yet: it passes when every scene passes.")
+    return lines
+
+
+def scenes_to_read_plain_lines(run):
+    """The plain section "Three scenes to read": the climax, the scene with the most speeches and the biggest
+    action scene (step 10), each once. [] before the scene designs exist."""
+    scenes = [scene for scene in run.records("SCENE") if re.fullmatch(r"SC\d{2,3}[A-Z]?", scene.identifier or "")]
+    if not scenes or not run.records("SHOT"):
+        return []
+    plan = next(iter(run.records("PLAN")), None)
+    chosen = []
+    climax = split_item((plan.get("climax") or "") if plan is not None else "").first
+    climax = scene_of(climax) if climax else None
+    if climax and any(scene.identifier == climax for scene in scenes):
+        chosen.append((climax, "the climax"))
+    speeches = {}
+    for scene in scenes:
+        count = 0
+        for value in scene.get_all("speaking"):
+            number = re.search(r"cues:\s*(\d+)", value)
+            count += int(number.group(1)) if number else 0
+        speeches[scene.identifier] = count
+    shots = {}
+    for shot in run.records("SHOT"):
+        shots[scene_of(shot.identifier)] = shots.get(scene_of(shot.identifier), 0) + 1
+    talk = max((scene for scene in scenes if scene.identifier not in dict(chosen)),
+               key=lambda scene: speeches.get(scene.identifier, 0), default=None)
+    if talk is not None and speeches.get(talk.identifier):
+        chosen.append((talk.identifier, "the most talk"))
+    action = [scene for scene in scenes if "action" in [normalise_word(tag) for tag in split_list(scene.get("tags") or "")]
+              and scene.identifier not in dict(chosen)]
+    if action:
+        biggest = max(action, key=lambda scene: shots.get(scene.identifier, 0))
+        chosen.append((biggest.identifier, "the most action"))
+    if not chosen:
+        return []
+    return ["## Three scenes to read", "",
+            "Read these in 15 The breakdown, with the 10 questions in 05 How to read your breakdown: "
+            + join_words([f"{scene_in_words(scope)} ({why})" for scope, why in chosen]) + "."]
+
+
+def join_words(items):
+    items = list(items)
+    if len(items) <= 1:
+        return "".join(items)
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
+
 def checker_lines_block(result, command_line):
     """The checker's own lines, below the divider: for the AI, with IDs and codes."""
     lines = ["## The checker's lines", "", f"Command: {command_line}"]
@@ -1226,16 +1344,52 @@ def checker_lines_block(result, command_line):
     return lines
 
 
+FULL_CHECK_MARK = re.compile(r"^Checked: everything, on ")
+
+
+def plain_part_of(record_file):
+    """The lines above the divider of a parsed file, or [] when it has no divider."""
+    lines = []
+    for segment in record_file.segments:
+        if not isinstance(segment, TextBlock):
+            break
+        for line in segment.lines:
+            if line.strip() == DIVIDER_LINE:
+                return lines
+            lines.append(line)
+    return []
+
+
 def write_health_check(project, result, step, scene, film, all_checks, story, command_line):
-    """Write 13 Health check.md: a new plain part and checker lines; its REVIEW and FINDING records are kept."""
+    """Write 13 Health check.md: its plain part, the checker's lines below the divider; its REVIEW and FINDING
+    records are kept. Returns the path, or None when nothing was written.
+
+    Only a full check (check --all) writes the plain part the user reads once a full check has run: a check of one
+    step, one unit, one scene or the film keeps that plain part and replaces only the checker's lines for the AI,
+    so what the user reads never depends on which check ran last. Before any full check, a partial check writes the
+    plain part (there is nothing better to show). A check that ran no check at all writes nothing."""
+    if not result.checks_run and not getattr(result, "checks_not_present", None):
+        return None
     path = project.folder / HEALTH_CHECK_FILE
-    plain = health_check_plain_part(project, result, step, scene, film, all_checks, story)
+    existing = parse_file(path, HEALTH_CHECK_FILE, project.schema) if path.is_file() else None
+    full = all_checks and step is None and scene is None and not film
+    kept_plain = plain_part_of(existing) if existing is not None and not full else []
+    if kept_plain and any(FULL_CHECK_MARK.match(line) for line in kept_plain):
+        plain = list(kept_plain)
+        # the report sections still run: the film pass's writes the film strip and 12 Whole-film check
+        for section in REPORT_SECTIONS:
+            try:
+                section(project, result)
+            except Exception:  # a report section must never stop the report
+                pass
+    else:
+        plain = health_check_plain_part(project, result, step, scene, film, all_checks, story)
     block = TextBlock()
     for line in plain + [DIVIDER_LINE, ""] + checker_lines_block(result, command_line):
         block.lines.append(line)
         block.line_numbers.append(None)
-    if path.is_file():
-        record_file = parse_file(path, HEALTH_CHECK_FILE, project.schema)
+    if existing is not None:
+        record_file = existing
         kept = [segment for segment in record_file.segments if isinstance(segment, (Record, EndLine))]
         if not any(isinstance(segment, EndLine) for segment in kept):
             kept.append(EndLine(raw=None, what=HEALTH_CHECK_TITLE, count=0, changed=True))
@@ -1451,6 +1605,13 @@ class UnitView:
                             "check --step N.")
         keys = unit_records(workspace, unit)
         labels = {key[1] or key[0] for key in keys}
+        if unit.step == 8 and unit.scene:
+            # the scene's last batch also answers for the checks of the whole scene (the light the story writes,
+            # the time against the list, the suspense holds), which run once every batch is written
+            from .make_handout import plan_batches
+            batches = plan_batches(workspace, unit.scene)
+            if batches and batches[-1][0] == unit.identifier:
+                labels |= {unit.scene, f"{unit.scene}-LIST"}
         cited = set()
         known = {key[1] for key in workspace.index if key[1]}
         for key in keys:
@@ -1557,7 +1718,7 @@ def run_check(context):
         changed_project = False
         if all_checks and step is None and scene is None and not film:
             changed_project = set_checker_last_run(project, keep_old_copy)
-        write_health_check(project, result, step, scene, film, all_checks, story, command_line)
+        health_written = write_health_check(project, result, step, scene, film, all_checks, story, command_line)
         counts = result.counts
         if written:
             names = ", ".join(re.sub(r"\.md$", "", name) for name in written)
@@ -1591,7 +1752,11 @@ def run_check(context):
     for module_name, reason in result.families_broken.items():
         context.say(f"Could not load {module_name}: {reason}. Its checks did not run; report this line.")
     context.say(in_short_line(result, open_questions(result.run)))
-    context.say(f"Written: {HEALTH_CHECK_FILE}" + (f"; tidied: {', '.join(written)}" if written else ""))
+    if health_written is None:
+        context.say(f"Not written: {HEALTH_CHECK_FILE} is left as it was, because nothing was checked"
+                    + (f"; tidied: {', '.join(written)}" if written else "") + ".")
+    else:
+        context.say(f"Written: {HEALTH_CHECK_FILE}" + (f"; tidied: {', '.join(written)}" if written else ""))
     context.summary = (f"{counts.get('E', 0)} errors, {counts.get('W', 0)} warnings, {counts.get('N', 0)} notes, "
                        f"{len(result.tidy_notes)} tidy fixes")
     return 1 if counts.get("E", 0) else 0

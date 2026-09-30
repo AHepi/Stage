@@ -300,7 +300,10 @@ def group_the_catch(story, work):
     near(problems, "runtime with titles", data["runtime_s"]["central"], 2178, 1)
     page = (folder / "14 Time and cost.md").read_text(encoding="utf-8")
     PAGES["The Catch, the first estimate"] = page
-    for wanted in ("1,926", "2,118", "2,309", "In short: the film runs about 36 minutes (33 to 39)"):
+    # changed after the full run (Project notes 32, problem 18): one film length, the story's, then the same with
+    # titles and credits added
+    for wanted in ("1,926", "2,118", "2,309", "In short: the film runs about 35 minutes (32 to 38) of story, 36 minutes "
+                   "(33 to 39) with titles and credits"):
         if wanted not in page:
             problems.append(f"14 Time and cost does not say {wanted!r}")
     if "first estimate" not in output:

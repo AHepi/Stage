@@ -16,6 +16,9 @@ Record.get / get_all / set_field / set_items / remove_field, add_record, split_i
 examine_value, examine_field, merge_copies, Problem.
 
 Standard library only.
+
+After the full run on The Catch (Project notes 31 and 32):
+- quote_for_message cuts between whole words.
 """
 
 import datetime
@@ -137,10 +140,17 @@ def closest(word, choices, count=3):
 
 
 def quote_for_message(value, limit=60):
-    """A value in double quotes for a problem line, shortened in the middle only if very long."""
+    """A value in double quotes for a problem line, shortened in the middle only if very long, and only between
+    whole words ("she climbs on past the [shortened] will turn", never half a word)."""
     if len(value) <= limit:
         return '"' + value + '"'
-    return '"' + value[: limit - 20].rstrip() + " [shortened] " + value[-12:].lstrip() + '"'
+    head = value[: limit - 20]
+    if " " in head and not value[len(head)].isspace():
+        head = head.rsplit(" ", 1)[0]
+    tail = value[-12:]
+    if " " in tail and not value[-13].isspace():
+        tail = tail.split(" ", 1)[1]
+    return '"' + head.rstrip() + " [shortened] " + tail.lstrip() + '"'
 
 
 # ---------------------------------------------------------------- the schema

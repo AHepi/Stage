@@ -4,7 +4,7 @@ Situation card for the tags `suspense_and_reveal` and `darkness`. Steps 7 and 8 
 
 ## Situation
 
-A fact matters and someone does not know it yet, a reveal is coming, or the scene is dark. FACT records hold who knows what, from when (A4 §6.5). What the frame keeps out is as authored as what it shows (B1 P7), and what stays dark is designed as carefully as what is lit (B2 P7).
+A fact matters and someone does not know it yet, a reveal is coming, or the scene is dark. FACT records hold who knows what, from when (A4 §6.5). What the frame keeps out is as authored as what it shows (B1 P7); what stays dark, as designed as what is lit (B2 P7).
 
 ## Questions in order
 
@@ -26,14 +26,14 @@ Example: in The Catch scene 6, "He has one hand she cannot see." (line 253): we 
 3. A large revelation lands hardest in the flattest light available (B2 R11).
 4. A growing threat is heard before it is seen (A4 SND1); no music under a reveal meant to stay open (A4 SND5).
 5. If a later scene replays this one on a screen, put that camera in this scene's set plan now (A3 R9).
-6. Release suspense in a way the audience accepts; do not punish it (A4 S6).
-7. Every dark line the story writes needs a `stays_dark`, a `light_cue` or a shot `light` (COVER-08).
+6. Release suspense so the audience accepts it; never punish it (A4 S6).
+7. Every dark line the story writes needs a `stays_dark`, a `light_cue` quoting it, or a shot `light` (COVER-08).
 
 ## Traps
 
 - **Faster cutting for suspense.** Test: the unaware character's shots average shorter than the scene's dialogue shots. Fix: hold (A4 S2; TIME-09).
 - **A reveal spoiled by coverage.** Test: a wide or reverse shows what a close shot keeps hidden. Fix: check `keep_hidden` against every shot (A4 §13).
-- **The camera finds the secret**, tilting down to the hidden hand. Fix: keep the frame edge (B1 Ex2).
+- **The camera finds the secret**, tilting to the hidden hand. Fix: keep the frame edge (B1 Ex2).
 - **A sting or push-in on a reveal the script already marks.** Fix: add nothing (`added_emphasis_per_beat_max`; CRAFT-10).
 - **Too dark to follow.** Fix: one readable element per shot (B2 R23).
 - **A darker face gone grey** beside a correct lighter one. Fix: reject it (B2 R24).

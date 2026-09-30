@@ -2138,7 +2138,7 @@
      }
     ],
     "problems": [
-     "E FORM-09 SC03 event has different values in copies of this record: \"Mara made the lamp h [shortened] first time.\" (FORM-09 conflict - part 1.md, line 2) and \"Oskar put the lamp out.\" (FORM-09 conflict - part 2.md, line 2). Fix: keep one value; copies of a record in several files must agree (G10). [FORM-09 conflict - part 1.md, line 1]",
+     "E FORM-09 SC03 event has different values in copies of this record: \"Mara made the lamp [shortened] first time.\" (FORM-09 conflict - part 1.md, line 2) and \"Oskar put the lamp out.\" (FORM-09 conflict - part 2.md, line 2). Fix: keep one value; copies of a record in several files must agree (G10). [FORM-09 conflict - part 1.md, line 1]",
      "E FORM-09 SC03-SH130 size is written twice with different values: \"wide\" (line 6) and \"medium\". Fix: keep one line; this field takes one value. [FORM-09 conflict - part 1.md, line 8]",
      "N FORM-13 SC03 tags \"Dialogue duel\" read as dialogue_duel. [FORM-09 conflict - part 2.md, line 3]"
     ],
@@ -3980,7 +3980,7 @@
      }
     ],
     "problems": [
-     "E FORM-11 CH-MARA fixed_description changes a locked record (it was \"A small woman of six [shortened] white hair.\"). Fix: keep the locked value; changing it needs a choice the user answers, which unlocks it. [FORM-11 locked - inbox.md, line 2]",
+     "E FORM-11 CH-MARA fixed_description changes a locked record (it was \"A small woman of [shortened] white hair.\"). Fix: keep the locked value; changing it needs a choice the user answers, which unlocks it. [FORM-11 locked - inbox.md, line 2]",
      "E FORM-11 CH-MARA names changes a locked record (it was \"MARA\"). Fix: keep the locked value; changing it needs a choice the user answers, which unlocks it. [FORM-11 locked - inbox.md, line 4]"
     ]
    }
@@ -4118,7 +4118,7 @@
     ],
     "problems": [
      "E FORM-12 SC03-SH160 subject has an unnamed sub-part \"left_third\". Fix: name it, as \"at: left_third\"; sub-parts are always key: value. [FORM-12 sub-parts.md, line 6]",
-     "E FORM-12 SC03-SH160 subject has the unknown sub-part key position. Allowed: at, faces, does, tactic, energy, display, still, eyeline, dwell_s, travel, must_not, continues. [FORM-12 sub-parts.md, line 7]",
+     "E FORM-12 SC03-SH160 subject has the unknown sub-part key position. Allowed: at, faces, does, tactic, energy, display, still, eyeline, dwell_s, travel, must_not, continues, recorded. [FORM-12 sub-parts.md, line 7]",
      "E FORM-12 SC03-SH160 subject has the sub-part at twice in one item. Fix: keep one; a repeatable field takes one line per item. [FORM-12 sub-parts.md, line 8]",
      "E FORM-12 SC03-SH160 purpose has \" | \" inside a value of kind text. Fix: use a semicolon or a comma instead; a bar separates named sub-parts only. [FORM-12 sub-parts.md, line 9]",
      "E FORM-12 SC03-SH160 thing has no first part before its named sub-parts (\"emphasis: 2 | at: centre\"). Fix: start the item with its main value (usually an ID), then the named sub-parts. [FORM-12 sub-parts.md, line 10]",
