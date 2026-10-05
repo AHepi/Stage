@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 30 September 2026 (log entry 34).
+Last updated: 5 October 2026 (log entry 35).
 
 ## The goal
 
@@ -25,8 +25,10 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`.
 - **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
 
+- **The fixed kit on new writing (entry 35).** A fresh helper planned The Catch from scratch and wrote scenes 2, 13 and 26. Each scene ended with one warning: one was the helper's own slip, two were false alarms. None of the old rule arguments came back.
+
 **Not tested yet:**
-- A new scene written with the fixed kit. The Catch was only re-checked, so its records are still the ones written under the old rules.
+- The other 27 scenes with the fixed kit.
 - A real person answering the questions. In the tests, the answers were always "defaults" and "no changes".
 - The Long Places (you asked to leave it for later).
 - The chat-app route in the real ChatGPT and Gemini apps. It is designed and bundled, but was only simulated here.
@@ -35,6 +37,13 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 **Known issues:**
 - **The Catch still has 37 warnings.** They are real points in its records (for example 8 light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
 - **The light check reads words.** A change of light written in words it does not know would slip through.
+- **The three-scene test's list (entry 35):**
+  - some checks still show errors that belong to a later piece of work;
+  - an error about the video-model prices date appears before any step fills it;
+  - two false alarms;
+  - "pause after: none" is refused;
+  - the book's one-line list can contradict the full shot;
+  - the planning steps are still unclear in places.
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
@@ -178,7 +187,22 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - Final re-check of The Catch: no errors, 37 warnings (up from 29, because the repaired checks catch real faults again), 40 video-prompt problems, and "Finished" only after every export.
     - Tests: 19 of 20 files pass; the failing one is the old chat-kit size check, whose files are within 3 words of their size before all this.
     - Note 32 is corrected, and note 33 ends with what was done about each finding.
+35. **Tested the fixed kit on new writing, with one Opus 5.5 helper, as you asked.** It started The Catch from scratch in a test folder: 37 pieces of work to plan the whole film, then 13 for scenes 2, 13 and 26 (12, 37 and 20 shots). It took about 96 minutes. Your real breakdown was not touched.
+    - Each scene ended with exactly one warning: scene 2 a false alarm (two shots counted as alike because the check ignores camera height), scene 13 the helper's own slip at the design step, scene 26 a false alarm.
+    - Failure of mine: scene 26's false alarm comes partly from my repair in entry 34, which asks the sound plan to quote its moment, while step 6 never tells the writer to.
+    - Scene 13 was split into parts once and never planned again, so that fix works. The turn-size, light and secret-keeping arguments did not come back.
+    - The helper cut "Iona's husband" from Jude's role by itself, because the script never says it.
+    - The final check left 1 error, a code fault: the video-model prices date is asked for before any step fills it.
+    - New problems found: 43 of the 92 errors before repair belonged to later pieces of work. The book's one-line list can contradict the full shot below it. "Pause after: none" is refused. I confirmed the last two myself.
+    - File: `Project notes/35 Test - The Catch - three scenes with the fixed kit.md`.
 
 ## Next step
 
-Run a small fresh test of the fixed kit: one helper writes three scenes of The Catch from scratch (for example scenes 2, 13 and 26). That shows whether a helper following the new instructions really finishes scenes without warnings it cannot clear. It is the main thing still untested, and it costs a small share of what the full run did.
+Fix what the three-scene test found, myself, without helpers. The code faults come first:
+- errors shown before they are due;
+- the prices date;
+- the two false alarms;
+- "pause after: none";
+- the book's one-line list.
+
+Then the unclear planning instructions. Then re-run the tests, and re-check the test project to confirm its warnings clear.
