@@ -196,7 +196,7 @@ def handouts_and_instructions(scratch):
     assert "FILM-11" in next(step for step in steps["steps"] if step["step"] == 4)["checks"]
     phrases = {"steps/01 Read the story.md": "Only do scenes 2, 13 and 26 for now",
                "steps/06 Film rules.md": "quoting the story's words at its moment",
-               "steps/04 Characters, places and things.md": "One physical place is one LOCATION",
+               "steps/04 Characters, places and things.md": "the same at both ends",
                "steps/05 Continuity.md": "gets a state even if nothing else changes",
                "steps/08 Shot details.md": "(any time in scene 6)",
                "cards/13 Cutting, rhythm and sound.md": "each shot's `words:` the run it hears"}

@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 5 October 2026 (log entry 36).
+Last updated: 5 October 2026 (log entry 37).
 
 ## The goal
 
@@ -26,6 +26,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
 
 - **The fixed kit on new writing (entries 35 and 36).** A fresh helper planned The Catch from scratch and wrote scenes 2, 13 and 26. Each scene ended with one warning: one was the helper's own slip, two were false alarms. None of the old rule arguments came back. After this round's fixes, that test project ends with no errors and 2 warnings, both real slips by the helper.
+- **The same three-scene test again, with a fresh helper (entry 37):** all three scenes finished with no errors and no warnings, and so did the final full check. Errors before repair fell from 92 to 25.
 
 **Not tested yet:**
 - The other 27 scenes with the fixed kit.
@@ -37,11 +38,13 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 **Known issues:**
 - **The Catch still has 37 warnings.** They are real points in its records (for example 8 light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
 - **The light check reads words.** A change of light written in words it does not know would slip through.
-- **Left from the three-scene test (entry 36):**
-  - no check compares a turn's picture with its cameras, or a move's timing with its shots;
-  - "what's next" doesn't warn when the last check failed;
-  - the look description's length isn't checked;
-  - a rule's title can read like a name in the book.
+- **Left from the second three-scene test (entry 37):**
+  - a split scene's first part still shows 5 errors for the second part's beats;
+  - a few records a later piece may not change force workarounds;
+  - a split scene's handouts leave things out;
+  - the book still prints numbers a reader can't use ("emphasis 2", "beat 17"), and some one-line entries lose who acts;
+  - place headings are still matched loosely;
+  - no check compares cameras, moves and shots (the helper found three staging slips itself).
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
@@ -203,7 +206,21 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - Re-checks: the test project ends with no errors and 2 warnings, both real slips by the helper (before: 1 error, 4 warnings). Your full breakdown of The Catch: no errors, 36 warnings, "Finished".
     - New test file: 7 groups, all pass. The full suite: 20 of 21 test files pass; the failing one is the old chat-kit size check, whose files are within a few words of their size before all this.
     - File: `Project notes/36 Fixes - after the three-scene test.md`.
+37. **Ran the three-scene test again, with one fresh Opus 5.5 helper, as you asked.** Same scenes (2, 13 and 26), a new test folder, about 98 minutes and 48 pieces of work.
+    - All three scenes finished with no errors and no warnings, and so did the final full check. I re-ran that check myself on a copy: the same.
+    - Errors before repair fell from 92 (entry 35) to 25. Errors a piece was shown but could not fix fell from 43 to 5, all references from a split scene's first part to its second.
+    - The helper fixed every warning it met along the way.
+    - Mistake of mine: the step 4 example I wrote in entry 36 for a silent person's arc is a form the kit refuses. The helper caught it. I corrected the example and checked the kit accepts the new form.
+    - Still to fix: the 5 split-scene errors, a few records later pieces can't change, gaps in split-scene handouts, numbers in the book a reader can't use, loose place headings, and staging slips no check catches.
+    - File: `Project notes/37 Test - The Catch - three scenes again.md`.
 
 ## Next step
 
-Run the fresh three-scene test once more, with one Opus 5.5 helper on the same scenes (2, 13 and 26). That shows whether this round's fixes hold for a helper that has never seen them, before trying all 30 scenes again.
+Fix this round's shorter list myself, without helpers:
+- the split-scene errors;
+- the gaps in split-scene handouts;
+- the book's leftover numbers and who-acts wording;
+- the place headings;
+- the records that force workarounds.
+
+After that, the kit is ready for a second full run of all 30 scenes.
