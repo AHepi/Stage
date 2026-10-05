@@ -19,6 +19,9 @@ Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
 - quote_for_message cuts between whole words.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- a bare none is a value of a field whose first part may be none (pause_after).
 """
 
 import datetime
@@ -967,6 +970,8 @@ class ValueExaminer:
     def empty_word_issue(self, word, definition, field_definition, repeat):
         """None when the empty word (none, open, auto) is allowed here, else a FORM-04 issue (G7)."""
         allowed = [value.lower() for value in self.allowed_words(definition) + self.also_allowed(definition)]
+        first_part = definition.get("first_part") or {}
+        allowed += [str(value).lower() for value in (first_part.get("values") or [])]
         if word == "none":
             if (definition.get("kind") in ("text", "id_list", "text_list", "file") or repeat or "none" in allowed
                     or definition.get("kind") == "sub_parts" and repeat):

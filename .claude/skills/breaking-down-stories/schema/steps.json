@@ -900,10 +900,8 @@
      "scope": "the project",
      "batch_rule": "one reply: one finished shot line from a strong turn, the welcome with one question (rights)",
      "writes": [
-      "PROJECT",
-      "CHOICE-001",
-      "CHOICE-002",
-      "CHOICE-003"
+      "CHOICE-001 (the rights answer)",
+      "RIGHTS (RT-001 evidence)"
      ],
      "surfaces": "all"
     }
@@ -1126,7 +1124,7 @@
      "scope": "event_unit_scenes scenes",
      "batch_rule": "one unit per event_unit_scenes scenes; 3 units for The Catch",
      "writes": [
-      "SCENE (event, sequence, scene_intensity, whose_scene, story_day, rhythm_class, tone, tone_undercurrent, tags)"
+      "SCENE (event, scene_intensity, whose_scene, story_day, rhythm_class, tone, tone_undercurrent, tags)"
      ],
      "when": "screenplay",
      "surfaces": "all"
@@ -1139,6 +1137,7 @@
      "writes": [
       "PLAN",
       "SEQUENCE",
+      "SCENE (sequence)",
       "PLANT",
       "FACT",
       "CHOICE (a second climax reading)"
@@ -1520,7 +1519,9 @@
       "CAMERA",
       "SCENE",
       "FACT",
-      "CHARACTER (a non-human that acts in beats and that no unit wrote: tier non_human, voice none)"
+      "CHARACTER (a non-human that acts in beats and that no unit wrote: tier non_human, voice none)",
+      "RULE (governs lines of the text rules)",
+      "CHOICE (a small choice, such as likeness_basis)"
      ],
      "surfaces": "all",
      "cards": [
@@ -1590,7 +1591,7 @@
     "WORDS-02",
     "WORDS-03",
     "WORDS-05",
-    "CRAFT-20"
+    "CRAFT-20", "FILM-11"
    ],
    "check_command": "check --step 4",
    "checkpoint": {
@@ -1815,7 +1816,8 @@
       "VISUAL",
       "SOUNDPLAN",
       "LADDER",
-      "CHOICE (voice_policy)"
+      "CHOICE (voice_policy)",
+      "PROJECT.fps"
      ],
      "surfaces": "all",
      "cards": [

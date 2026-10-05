@@ -6,20 +6,20 @@
 
 ## States, one line each
 
-- Eli, state 3, from scene 7: a long charcoal wool coat over a creased pale shirt, dark trousers, one brown shoe on his right foot and a sock on the other, Jude's blood dried on his coat sleeve.
-- Iona, state 2, from scene 6: a faded mid-blue work shirt with its right sleeve torn away at the shoulder, dark grey canvas trousers, scuffed brown boots; her right palm raw, dried blood on both hands; a plain gold ring on her left hand.
-- Jude, state 2, from scene 6: an olive canvas work jacket hanging open, a grey T-shirt soaked dark red at the right shoulder, a blue cloth pressed into the wound, a plain gold ring on his left hand.
-- Jude, state 3, from scene 10: bare chest, the shirt cut away, a cleaned wound on the right shoulder, an old white scar low on the right of his belly, a plain gold ring on his left hand.
-- Dr Saye, state 1, from scene 10: dark grey trousers and flat black shoes, a stethoscope round her neck, a plain gold ring on her left hand.
-- Saye's kitchen, state 1, from scene 10: a bare, clean kitchen with nothing on the walls or the fridge door.
-- The water bottle, state 1, from scene 10: full, the cap on.
-- Saye's medical case, state 1, from scene 10: open, its instruments laid out.
-- The flask, state 3, from scene 7: a bare spring clip under its base, closed on nothing.
-- The lamp, state 1, from scene 10: lit, its shade warm.
-- The pot of mint, state 1, from scene 10: full and green, on the windowsill.
-- Saye's phone, state 1, from scene 10: lying on the counter, screen dark until it is picked up.
-- Saye's scissors, state 1, from scene 10: clean steel, in use.
-- Saye's stethoscope, state 1, from scene 10: hanging round her neck until she uses it.
+- Eli (the flask in his fist), from scene 7: a long charcoal wool coat over a creased pale shirt, dark trousers, one brown shoe on his right foot and a sock on the other, Jude's blood dried on his coat sleeve.
+- Iona (sleeve torn, palm skinned), from scene 6: a faded mid-blue work shirt with its right sleeve torn away at the shoulder, dark grey canvas trousers, scuffed brown boots; her right palm raw, dried blood on both hands; a plain gold ring on her left hand.
+- Jude (shot through the shoulder), from scene 6: an olive canvas work jacket hanging open, a grey T-shirt soaked dark red at the right shoulder, a blue cloth pressed into the wound, a plain gold ring on his left hand.
+- Jude (shirt cut away), from scene 10: bare chest, the shirt cut away, a cleaned wound on the right shoulder, an old white scar low on the right of his belly, a plain gold ring on his left hand.
+- Dr Saye (dressed at four in the morning), from scene 10: dark grey trousers and flat black shoes, a stethoscope round her neck, a plain gold ring on her left hand.
+- Saye's kitchen (bare before dawn), from scene 10: a bare, clean kitchen with nothing on the walls or the fridge door.
+- The water bottle (full, cap on), from scene 10: full, the cap on.
+- Saye's medical case (open), from scene 10: open, its instruments laid out.
+- The flask (the clip empty), from scene 7: a bare spring clip under its base, closed on nothing.
+- The lamp (lit), from scene 10: lit, its shade warm.
+- The pot of mint (on the sill), from scene 10: full and green, on the windowsill.
+- Saye's phone (on the counter), from scene 10: lying on the counter, screen dark until it is picked up.
+- Saye's scissors (in her hand), from scene 10: clean steel, in use.
+- Saye's stethoscope (round her neck), from scene 10: hanging round her neck until she uses it.
 
 Below this line: details for the AI and the checker. You never need to read them.
 

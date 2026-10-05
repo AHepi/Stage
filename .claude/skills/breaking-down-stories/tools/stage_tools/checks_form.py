@@ -16,6 +16,10 @@ Standard library only.
 After the full run on The Catch (Project notes 31 and 32):
 - FORM-08 never judges text code wrote, and reads 'as before' as English unless it stands for the value or points
   back; FORM-05 does not ask for a shot list's approved mark before its group of shots has passed.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- the big choices' fields wait for checkpoint B; the prices date is judged by GEN-11, not FORM-05; a missing user
+  field is asked through a choice.
 """
 
 import difflib
@@ -644,6 +648,9 @@ PREVIS_STUB_FIELDS = ("for", "level", "status", "locked")
 # Fields FORM-05 never asks the AI for, because the AI never writes them: PREVIS approved is written by code
 # (auto, or no until the checks pass) or by the user's answer at the grey previews checkpoint (schema writer_when).
 NEVER_ASKED_OF_THE_AI = {("PREVIS", "approved")}
+# Code fields FORM-05 never asks for, because another check judges them when they matter: the date of the video
+# models' prices is written by the estimate from the shots (step 10) and judged by GEN-11 when prompts are made.
+JUDGED_ELSEWHERE = {("PROJECT", "model_facts_date")}
 SEQUENCE_OR_SCENE_RANGE = re.compile(r"^(SC\d{2,3}[A-Z]?)\.\.(SC\d{2,3}[A-Z]?)$")
 
 
@@ -682,6 +689,17 @@ def scene_sort_key(identifier):
     return (int(match.group(1)), match.group(2)) if match else (10 ** 6, identifier or "")
 
 
+def checkpoint_not_yet_answered(definition, context):
+    """True for a field the user's answers at a checkpoint fill (filled_by_step a checkpoint letter, such as B for
+    the big choices) while that checkpoint's choices are not all answered or defaulted yet: it is not yet due."""
+    letter = str(definition.get("filled_by_step", "")).strip()
+    if not (len(letter) == 1 and letter.isalpha()):
+        return False
+    choices = [record for key, record in (context.index or {}).items() if key[0] == "CHOICE"
+               and normalise_word(record.get("checkpoint") or "") == letter.lower()]
+    return not choices or any(normalise_word(record.get("status") or "open") == "open" for record in choices)
+
+
 def approval_not_yet_due(record, name, context):
     """SHOTLIST approved is code's mark that the user passed the scene's group of shots (checkpoint C). Until the
     group passes it is not yet due: FORM-05 never asks for it (in a chat without code the AI writes it, so it is
@@ -716,8 +734,11 @@ def check_form_05(record_files, context):
             fields = {"target": fields["target"]}
         stub = is_previs_stub(key, record)
         for name, definition in fields.items():
-            if (key[0], name) in NEVER_ASKED_OF_THE_AI or (stub and name not in PREVIS_STUB_FIELDS) or \
-                    approval_not_yet_due(record, name, context):
+            if (key[0], name) in NEVER_ASKED_OF_THE_AI or (key[0], name) in JUDGED_ELSEWHERE or \
+                    (stub and name not in PREVIS_STUB_FIELDS) or approval_not_yet_due(record, name, context):
+                continue
+            if context.conditions.writer_for(definition, record) == "user" and \
+                    checkpoint_not_yet_answered(definition, context):
                 continue
             required, reason = field_is_required(record, definition, context, record_type)
             if not required:
@@ -732,6 +753,7 @@ def check_form_05(record_files, context):
                                                  f"is missing ({reason})", code_field_fix(key[0], name)))
                     continue
                 problems.append(make_problem("E", "FORM-05", record_file, first_copy, name, f"is missing ({reason})",
+                                             user_field_fix(definition) if writer == "user" else
                                              missing_field_fix(name, definition)))
                 continue
             if definition.get("kind") == "sub_parts":
@@ -755,6 +777,15 @@ def code_field_fix(type_name, name):
     path = code_fill_path(type_name, name)
     how = f" ({path[2]})" if path else ""
     return f"Fix: nothing for the AI to write; {FILL_COMMAND_WORDS}{how}"
+
+
+def user_field_fix(definition):
+    """The fix for a missing field only the user's answer writes (apply refuses it from the AI, FORM-10)."""
+    letter = str(definition.get("filled_by_step", "")).strip()
+    where = (f"the user's answer at checkpoint {letter.upper()}" if len(letter) == 1 and letter.isalpha()
+             else "the user's answer to a small choice")
+    return (f"Fix: this is the user's field: never type it; it is written when {where} is applied (write or answer "
+            "the CHOICE that sets it)")
 
 
 def missing_field_fix(name, definition):

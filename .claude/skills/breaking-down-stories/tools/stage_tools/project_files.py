@@ -19,6 +19,10 @@ After the full run on The Catch (Project notes 31 and 32):
 - '- field: none' clears a field the AI wrote, never on a locked record (FORM-11); notes sent on an existing record
   are kept; apply names the next command as the handout does;
 - made from.json notes which records code's outputs were made from.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- apply finds an inbox path written from the project folder, names an empty record, and after a checkpoint's answers
+  names the step's own check.
 """
 
 import datetime
@@ -1462,6 +1466,8 @@ def add_apply_arguments(parser):
 def resolve_inbox_path(project, written):
     path = Path(written).expanduser()
     candidates = [path if path.is_absolute() else Path(os.getcwd()) / path,
+                  project.folder / written,  # "For machines - do not edit/inbox/<unit>.md", from the project folder
+                  project.inbox_folder / path.name,
                   project.inbox_folder / written, project.inbox_folder / (written + ".md")]
     for candidate in candidates:
         if candidate.is_file():
@@ -1485,6 +1491,9 @@ def run_apply(context):
             context.summary = f"{inbox_path.name} refused, {errors} errors"
             return 1
         inbox_records = parse_file(inbox_path, inbox_path.name, project.schema).records
+        empty = [record.label for record in inbox_records if not record.fields and not record.notes]
+        if empty:
+            context.say(f"Note: {', '.join(empty)} had a heading and no fields, so nothing of it was applied.")
         applied_copy = result.history_folder / "inbox" / inbox_path.name
         applied_copy.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(inbox_path), applied_copy)
@@ -1553,7 +1562,7 @@ def next_after_apply(unit, steps):
         return "stage.py check --all, then stage.py next --checkpoint-passed"  # step 10's finished check
     match = UNIT_PATTERN.match(unit or "")
     if not match:
-        return "stage.py check --all, then stage.py next"
+        return "stage.py next"
     step = int(match.group(1))
     try:
         from .make_handout import pattern_expression
@@ -1563,7 +1572,9 @@ def next_after_apply(unit, steps):
     except ImportError:
         known = True
     if not known:
-        return "stage.py check --all, then stage.py next"
+        # the user's answers at a checkpoint of this step: the step's own checks, not a full check that would list
+        # every field later steps fill
+        return f"stage.py check --step {step}, then stage.py next"
     if step in (7, 8):
         return f"stage.py build, then stage.py check --unit {unit}"
     return f"stage.py check --unit {unit}"

@@ -39,6 +39,10 @@ Standard library only.
 After the full run on The Catch (Project notes 31 and 32):
 - word swaps are made once and everywhere; the time floor counts text to read and owes a beat's pause on the last
   shot naming it; light words are read in their sentence.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- a light at rest marks no beat (light_moves_in, here now, with LIGHT_MOVING_NEAR); a speech split at a phrase is
+  timed for the words a shot hears; one or two letters match a text only when its thing is in the scene.
 """
 
 import json
@@ -696,6 +700,19 @@ def texts_shown_by(breakdown, shot, shot_lines):
     return found
 
 
+def speech_word_list(text):
+    """A speech's words for comparing parts of it: lower case, curly quotes straight, punctuation left out."""
+    return re.findall(r"[a-z0-9']+", (text or "").lower().replace("\u2019", "'"))
+
+
+def speech_words_part(part, whole):
+    """True when part is a run of whole's words, in order, shorter than the whole (a speech split at a phrase)."""
+    wanted, every = speech_word_list(part), speech_word_list(whole)
+    if not wanted or len(wanted) >= len(every):
+        return False
+    return any(every[start:start + len(wanted)] == wanted for start in range(len(every) - len(wanted) + 1))
+
+
 def speech_part(breakdown, speech_identifier, hear_words=None):
     """(speech ID, speaker, words, pace, seconds) for one heard speech, or None when its words are unknown."""
     extra = constant(breakdown.constants, "speech_floor_extra_s", 0.5)
@@ -704,6 +721,8 @@ def speech_part(breakdown, speech_identifier, hear_words=None):
     speaker = entry.get("speaker") if entry else None
     if words is None and hear_words:
         words = count_words(hear_words)
+    elif hear_words and entry and speech_words_part(hear_words, entry.get("text") or ""):
+        words = count_words(hear_words)  # a speech split at a phrase: this shot hears only these words
     if words is None or speaker is None:
         return None
     pace = breakdown.pace_of(speaker)
@@ -860,13 +879,20 @@ def provisional_floor(breakdown, scene_identifier, shot_identifier):
     shows = " ".join([item.get("shows") or "", item.get("subject") or ""])
     first_beat = breakdown.record(beats_here[0], "BEAT") if beats_here else None
     stand_in = ListItemStandIn(shot_identifier, first_beat.get("lines") if first_beat is not None else None)
+    present = None
     for text_record in breakdown.records_of("TEXT"):
         if not text_must_be_read(text_record):
             continue
         words = (text_record.get("words") or "").strip().strip('"')
         named = text_record.identifier in shows or (words and any(
-            quote and (quote in words or words in quote) and len(quote) >= min(len(words), 4)
+            quote and (re.search(r"(?<!\w)" + re.escape(words) + r"(?!\w)", quote) or quote in words)
+            and len(quote) >= min(len(words), 4)
             for quote in quoted_strings(shows)))
+        if named and text_record.identifier not in shows and len(words) <= 2:
+            # one or two letters match many quotes: only a text on a thing that is in this scene counts
+            if present is None:
+                present = set(elements_present(breakdown, scene_identifier))
+            named = element_of(text_record.get("on") or "") in present
         if not named:
             continue
         mirrored = text_orientation(breakdown, text_record.identifier, stand_in) == "mirrored"
@@ -1166,6 +1192,57 @@ NOT_LIGHT_PHRASES = re.compile(
 PERSON_INTRODUCTION = re.compile(r"(?:^|[.!?]\s+)((?:[A-Z][A-Z'.-]*\s?){1,4}),([^.!?]*)")
 
 
+# How a light word reads in its sentence: at rest, or changing or moving (COVER-08 asks a light cue for the
+# second; script_marked counts only the second as the script marking a beat with light).
+LIGHT_BRIGHTNESS_WORDS = {"light", "lit", "bright", "brightness", "dim", "pale", "glow", "glows",
+                          "glowing", "beam", "beams", "shine", "shines", "shining", "glint", "gleam", "glare"}
+LIGHT_CHANGE_WORDS = {"dims", "flicker", "flickers", "flash", "flashes", "flare", "blaze", "strobe", "lightning",
+                      "blinding"}
+LIGHT_MOVING_WORDS = {"goes", "go", "going", "went", "gone", "out", "off", "dies", "died", "dying", "fades", "fade",
+                      "fading", "faded", "dimmed", "dimming", "brightens", "brightened", "floods", "flood", "flooded",
+                      "sweeps", "sweep", "swept", "swings", "swing", "swinging", "swung", "comes", "came", "onto",
+                      "across", "up", "brings", "bring", "brought", "raises", "raise", "raised", "lifts", "lift",
+                      "lifted", "holds", "hold", "held", "points", "pointed", "turns", "turned", "moves", "moved",
+                      "passes", "passed", "falls", "fell", "spills", "spilled", "catches", "caught", "snaps",
+                      "switches", "switched", "clicks", "blinks", "sparks", "rises", "rose", "drops", "dropped",
+                      "returns", "returned", "kills", "killed", "blows", "cuts", "cut", "stutters", "pulses",
+                      "carries", "carried", "carrying", "shifts", "shifted", "slides", "slid", "trails"}
+
+
+# A word that moves a light counts only this near it, in words: "comes round the cage with the torch" moves the
+# torch; "a screw rises off the deck beside her boot and hangs in her lamplight" does not move the lamplight.
+LIGHT_MOVING_NEAR = 6
+LIGHT_AS_PLACE = re.compile(r"\b(?:to|into|towards?|in|under)\s+(?:the|her|his|their|its)\s+$")
+
+
+def light_moves_in(sentence, word=None):
+    """True when a sentence of the story changes or moves its light (see the note above COVER-08's words). A light
+    that things move into or towards ("turns the tag to the light", "comes into the light") and a brightness word
+    that describes a surface ("the bright steel") are light at rest, unless a word of change is there too."""
+    lowered = (sentence or "").lower()
+    words = re.findall(r"[a-z]+", lowered)
+    if any(found in LIGHT_CHANGE_WORDS for found in words):
+        return True
+    light_words = [found for found in words if found in LIGHT_BRIGHTNESS_WORDS]
+    if len(light_words) != len(set(light_words)):
+        return True
+    if word:
+        match = re.search(r"\b" + re.escape(word) + r"\b", lowered)
+        if match:
+            after = re.findall(r"[a-z]+", lowered[match.end():])
+            if LIGHT_AS_PLACE.search(lowered[:match.start()]):
+                return False
+            if word in LIGHT_BRIGHTNESS_WORDS and word not in ("light", "glow", "beam", "beams") and after and \
+                    after[0] not in LIGHT_BRIGHTNESS_WORDS and after[0] not in LIGHT_MOVING_WORDS:
+                return False  # "the bright steel": the word describes a thing's surface
+    if word:
+        positions = [number for number, found in enumerate(words) if found == word]
+        return any(found in LIGHT_MOVING_WORDS and any(abs(number - at) <= LIGHT_MOVING_NEAR for at in positions)
+                   for number, found in enumerate(words))
+    return any(found in LIGHT_MOVING_WORDS for found in words)
+
+
+
 def light_words_in_context(text, words):
     """The words of a story line's light words that are light in this line: colours describing a person and words
     inside a name for something that gives no light are left out."""
@@ -1198,6 +1275,14 @@ def light_words_in_context(text, words):
     return kept
 
 
+def sentence_with_word(text, word):
+    """The sentence of a story line that holds a word (the whole line when none does)."""
+    for sentence in re.split(r"(?<=[.!?])\s+", (text or "").strip()):
+        if word.lower() in {found.lower() for found in re.findall(r"[A-Za-z]+", sentence)}:
+            return sentence
+    return text or ""
+
+
 def script_marked(breakdown, beat):
     """(yes or no, what marks it): a beat is marked by the script when its lines hold a capitalised sound, emphasis
     or text token, or a light, colour or darkness word that stage.py read found and that is light in its sentence
@@ -1217,7 +1302,10 @@ def script_marked(breakdown, beat):
         if entry.get("line") in lines:
             words = entry.get("words") or []
             if breakdown.story is not None:
-                words = light_words_in_context(breakdown.story.line(entry["line"]), words)
+                line_text = breakdown.story.line(entry["line"])
+                # a light at rest ("hangs in her lamplight") marks nothing; a light that changes or moves does
+                words = [word for word in light_words_in_context(line_text, words)
+                         if light_moves_in(sentence_with_word(line_text, word), word)]
             if words:
                 marks.append(f'light words {", ".join(words)} (line {entry["line"]})')
     return ("yes" if marks else "no"), "; ".join(marks)

@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 5 October 2026 (log entry 35).
+Last updated: 5 October 2026 (log entry 36).
 
 ## The goal
 
@@ -25,7 +25,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`.
 - **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
 
-- **The fixed kit on new writing (entry 35).** A fresh helper planned The Catch from scratch and wrote scenes 2, 13 and 26. Each scene ended with one warning: one was the helper's own slip, two were false alarms. None of the old rule arguments came back.
+- **The fixed kit on new writing (entries 35 and 36).** A fresh helper planned The Catch from scratch and wrote scenes 2, 13 and 26. Each scene ended with one warning: one was the helper's own slip, two were false alarms. None of the old rule arguments came back. After this round's fixes, that test project ends with no errors and 2 warnings, both real slips by the helper.
 
 **Not tested yet:**
 - The other 27 scenes with the fixed kit.
@@ -37,13 +37,11 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 **Known issues:**
 - **The Catch still has 37 warnings.** They are real points in its records (for example 8 light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
 - **The light check reads words.** A change of light written in words it does not know would slip through.
-- **The three-scene test's list (entry 35):**
-  - some checks still show errors that belong to a later piece of work;
-  - an error about the video-model prices date appears before any step fills it;
-  - two false alarms;
-  - "pause after: none" is refused;
-  - the book's one-line list can contradict the full shot;
-  - the planning steps are still unclear in places.
+- **Left from the three-scene test (entry 36):**
+  - no check compares a turn's picture with its cameras, or a move's timing with its shots;
+  - "what's next" doesn't warn when the last check failed;
+  - the look description's length isn't checked;
+  - a rule's title can read like a name in the book.
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
@@ -195,14 +193,17 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - The final check left 1 error, a code fault: the video-model prices date is asked for before any step fills it.
     - New problems found: 43 of the 92 errors before repair belonged to later pieces of work. The book's one-line list can contradict the full shot below it. "Pause after: none" is refused. I confirmed the last two myself.
     - File: `Project notes/35 Test - The Catch - three scenes with the fixed kit.md`.
+36. **Fixed what the three-scene test found, myself, without helpers, as you asked ("Make haste!").**
+    - Errors that belong to a later piece of work are now "not yet due" in each piece's own check. On a fresh project, a scene-plan piece now shows 9 lines "not yet due" and no errors, instead of 9 errors it could not fix.
+    - The prices-date error is gone.
+    - Both false alarms are fixed: a light word marks a moment only when the light changes or moves, and "two shots too alike" now counts camera height.
+    - The book's one-line list now follows the written shot. States are named by what they are ("Iona (palm dressed, banded)", not "Iona, state 6").
+    - "Pause after: none" is accepted, footage "recorded in scene 6" may show any moment of it, and a long speech can be split over two shots as card 13 says.
+    - The planning instructions now say what the test helper had to guess.
+    - Re-checks: the test project ends with no errors and 2 warnings, both real slips by the helper (before: 1 error, 4 warnings). Your full breakdown of The Catch: no errors, 36 warnings, "Finished".
+    - New test file: 7 groups, all pass. The full suite: 20 of 21 test files pass; the failing one is the old chat-kit size check, whose files are within a few words of their size before all this.
+    - File: `Project notes/36 Fixes - after the three-scene test.md`.
 
 ## Next step
 
-Fix what the three-scene test found, myself, without helpers. The code faults come first:
-- errors shown before they are due;
-- the prices date;
-- the two false alarms;
-- "pause after: none";
-- the book's one-line list.
-
-Then the unclear planning instructions. Then re-run the tests, and re-check the test project to confirm its warnings clear.
+Run the fresh three-scene test once more, with one Opus 5.5 helper on the same scenes (2, 13 and 26). That shows whether this round's fixes hold for a helper that has never seen them, before trying all 30 scenes again.

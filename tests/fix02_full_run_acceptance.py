@@ -795,7 +795,8 @@ def none_clears(scratch):
     assert next_after_apply("U-08-SC10-B1", steps).startswith("stage.py build, then")
     assert next_after_apply("U-06-CAMERA", steps) == "stage.py check --unit U-06-CAMERA"
     assert next_after_apply("acceptance", steps) == "stage.py check --all, then stage.py next --checkpoint-passed"
-    assert next_after_apply("notes from the user", steps) == "stage.py check --all, then stage.py next"
+    assert next_after_apply("notes from the user", steps) == "stage.py next"
+    assert next_after_apply("U-01-SCENELIST-ANSWERS", steps) == "stage.py check --step 1, then stage.py next"
     return "normal_lens_mm cleared, the note kept; build before check at steps 7 and 8"
 
 

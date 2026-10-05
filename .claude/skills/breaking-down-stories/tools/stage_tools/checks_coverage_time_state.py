@@ -34,6 +34,9 @@ After the full run on The Catch (Project notes 31 and 32):
   list (scene_total_tolerance) and warns a list far from its planned length (scene_target_far_ratio);
 - TIME-09 prints one line per character and leaves out a silent non-human character; STATE-01 reads a recording's
   state where it was recorded.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- footage recorded in a scene may show any state that held during that scene.
 """
 
 import math
@@ -42,7 +45,8 @@ from dataclasses import dataclass
 
 from .check_records import register_check, same_scene, scene_of
 from .derive_fields import (breakdown_for_run, constant, element_of, elements_present, focus_subject,
-                            light_words_in_context,
+                            light_words_in_context, LIGHT_BRIGHTNESS_WORDS, LIGHT_CHANGE_WORDS, LIGHT_MOVING_WORDS,
+                            light_moves_in,
                             is_insert_or_card, list_items, number_of, provisional_floor, resolve_story_point,
                             seconds_text, state_from, states_in_play, time_floor)
 from .record_format import (load_json, normalise_word, parse_line_numbers, parse_quote_anchor, parse_story_point,
@@ -861,47 +865,6 @@ def colours_kept(breakdown, scene, look):
 # flashlight). A sentence where the light changes or moves is never covered by the look alone: it needs a light cue.
 # That is a word of change (the light dims, flickers, dies, goes out, floods in), a person moving the light (holds,
 # lifts, brings it up, points it) or a beat of light repeated ("Light, brick, light, brick.").
-LIGHT_BRIGHTNESS_WORDS = {"light", "lit", "bright", "brightness", "dim", "pale", "glow", "glows",
-                          "glowing", "beam", "beams", "shine", "shines", "shining", "glint", "gleam", "glare"}
-LIGHT_CHANGE_WORDS = {"dims", "flicker", "flickers", "flash", "flashes", "flare", "blaze", "strobe", "lightning",
-                      "blinding"}
-LIGHT_MOVING_WORDS = {"goes", "go", "going", "went", "gone", "out", "off", "dies", "died", "dying", "fades", "fade",
-                      "fading", "faded", "dimmed", "dimming", "brightens", "brightened", "floods", "flood", "flooded",
-                      "sweeps", "sweep", "swept", "swings", "swing", "swinging", "swung", "comes", "came", "onto",
-                      "across", "up", "brings", "bring", "brought", "raises", "raise", "raised", "lifts", "lift",
-                      "lifted", "holds", "hold", "held", "points", "pointed", "turns", "turned", "moves", "moved",
-                      "passes", "passed", "falls", "fell", "spills", "spilled", "catches", "caught", "snaps",
-                      "switches", "switched", "clicks", "blinks", "sparks", "rises", "rose", "drops", "dropped",
-                      "returns", "returned", "kills", "killed", "blows", "cuts", "cut", "stutters", "pulses",
-                      "carries", "carried", "carrying", "shifts", "shifted", "slides", "slid", "trails"}
-
-
-LIGHT_AS_PLACE = re.compile(r"\b(?:to|into|towards?|in|under)\s+(?:the|her|his|their|its)\s+$")
-
-
-def light_moves_in(sentence, word=None):
-    """True when a sentence of the story changes or moves its light (see the note above COVER-08's words). A light
-    that things move into or towards ("turns the tag to the light", "comes into the light") and a brightness word
-    that describes a surface ("the bright steel") are light at rest, unless a word of change is there too."""
-    lowered = (sentence or "").lower()
-    words = re.findall(r"[a-z]+", lowered)
-    if any(found in LIGHT_CHANGE_WORDS for found in words):
-        return True
-    light_words = [found for found in words if found in LIGHT_BRIGHTNESS_WORDS]
-    if len(light_words) != len(set(light_words)):
-        return True
-    if word:
-        match = re.search(r"\b" + re.escape(word) + r"\b", lowered)
-        if match:
-            after = re.findall(r"[a-z]+", lowered[match.end():])
-            if LIGHT_AS_PLACE.search(lowered[:match.start()]):
-                return False
-            if word in LIGHT_BRIGHTNESS_WORDS and word not in ("light", "glow", "beam", "beams") and after and \
-                    after[0] not in LIGHT_BRIGHTNESS_WORDS and after[0] not in LIGHT_MOVING_WORDS:
-                return False  # "the bright steel": the word describes a thing's surface
-    return any(found in LIGHT_MOVING_WORDS for found in words)
-
-
 def look_light_words(breakdown, look):
     """The words of a LOOK's light text, with the project's word swaps read both ways (torch and flashlight)."""
     if look is None:
@@ -921,7 +884,7 @@ def look_light_words(breakdown, look):
 
 
 def light_word_carried_by_look(word, look, look_words):
-    """True when the LOOK already carries a light word of the story (see LIGHT_BRIGHTNESS_WORDS above)."""
+    """True when the LOOK already carries a light word of the story (the word lists are in derive_fields)."""
     if look is None or word in LIGHT_CHANGE_WORDS:
         return False
     if word in LIGHT_BRIGHTNESS_WORDS:
@@ -1838,8 +1801,9 @@ def check_state_01(run):
 
 def recorded_position(run, breakdown, value):
     """((scene key, line), (scene key, line)) of a subject's or thing's `recorded` sub-part (footage from an earlier
-    time): a story point ('SC06 "The cage drops."') gives its line; a scene ID alone gives the scene's last line (the
-    state as the scene ends). None when there is no such sub-part or it names no scene."""
+    time): a story point ('SC06 "The cage drops."') gives its line; a scene ID alone gives the whole scene (footage
+    from some time in it: any state that held during the scene fits, as for a shot's own lines). None when there is
+    no such sub-part or it names no scene."""
     value = (value or "").strip()
     if not value or normalise_word(value) in ("none", "no"):
         return None
@@ -1855,9 +1819,10 @@ def recorded_position(run, breakdown, value):
     if not match:
         return None
     span = breakdown.scene_range(match.group(0))
-    line = span[1] if span else None
-    position = (scene_key(match.group(0)), line)
-    return position, position
+    key = scene_key(match.group(0))
+    if not span:
+        return (key, None), (key, None)
+    return (key, span[0]), (key, span[1])
 
 
 def list_item_span(run, breakdown, scene, item):

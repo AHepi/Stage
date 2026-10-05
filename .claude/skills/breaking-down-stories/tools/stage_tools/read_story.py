@@ -21,6 +21,9 @@ spaces that hold at least one plain keyboard character, so a dash standing alone
 This gives The Long Places' 49,152 words and The Catch's 1,579 words of speech and 7,091 words of action.
 
 Standard library only. A PDF is read only when a converter (the pdftotext program or the pypdf package) exists.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- the self-test handout prints the allowed values of the fields it asks for.
 """
 
 import codecs
@@ -3043,6 +3046,7 @@ def selftest_shot_template(schema, skill_folder, scene):
         if match:
             placeholders[match.group(1)] = match.group(2)
     lines = [f"### SHOT {scene}-SH010 <a short plain title>"]
+    allowed = []
     for definition in schema.record_types["SHOT"]["fields"]:
         name = definition["name"]
         writers = schema.writers(definition)
@@ -3074,6 +3078,15 @@ def selftest_shot_template(schema, skill_folder, scene):
                     needed.append(f"{entry['key']} (only when {SELFTEST_CONDITION_WORDS.get(when, when)})")
             mark += "; every item needs these parts: " + ", ".join(needed)
         lines.append(f"- {name}: {placeholder}   [{mark}]")
+        values = [str(value) for value in (definition.get("values") or [])]
+        first_values = [str(value) for value in ((definition.get("first_part") or {}).get("values") or [])]
+        if values or first_values:
+            allowed.append(f"> - {name}: {', '.join(values or first_values)}")
+        for entry in parts:
+            if entry.get("values"):
+                allowed.append(f"> - {name} {entry['key']}: {', '.join(str(value) for value in entry['values'])}")
+    if allowed:
+        lines += ["", "> Allowed values (\"one word from the note\" means one of these):"] + allowed
     return "\n".join(lines)
 
 

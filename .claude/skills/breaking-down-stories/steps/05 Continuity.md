@@ -34,7 +34,7 @@ After characters, places and things: units of scenes in story order, then the bi
 
 1. **Walk the lines** of the unit's scenes in order. At each scene's start copy the previous exit state into the entry, exactly; under `CONTINUOUS` it must match (STATE-03).
 2. **Add each change** as a new STATE with its `cause` line quoted (STATE-02) and `from` naming where it starts (`from: SC06 | line: 263`). Code works out `until` from the next state; never type it.
-3. **Write each state line** from visible nouns: what is worn, carried, torn, bloodied. No image-side words ("frame left") ever (SIDE-02); a sided feature goes in a `side` item with `own: left` or `own: right` and `plot: yes` when the story needs that side (SIDE-01); with none, write `side: none`.
+3. **Write each state line** from visible nouns: what is worn, carried, torn, bloodied. No image-side words ("frame left") ever (SIDE-02); a thing whose side can show in a mirrored era gets a state even if nothing else changes; a sided feature goes in a `side` item you write, with `own: left` or `own: right` and `plot: yes` when the story needs that side (SIDE-01); with none, write `side: none`.
 4. **Apparent sides** (K03). A side the story states for an element that is mirrored on screen is an apparent side: record the own side and mark `origin: inferred`. The Catch, era b: "Saye's wedding ring. On her right hand." (line 436) is her own left:
 
    ```

@@ -21,6 +21,9 @@ After the full run on The Catch (Project notes 31 and 32):
   state; SIDE-04 matches a side word to the right hand;
 - SIDE-03 counts the must_show and things that carry the feature; GEOM-05 knows when an object arrives in a later
   scene.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- GEOM-02 measures the 3D angle between the cameras from the person's eyes.
 """
 
 import math
@@ -523,12 +526,22 @@ def angle_between_setups(breakdown, earlier, later, person):
     placements = projected_placement(breakdown, earlier).get(person)
     if not placements:
         return None
-    point = placements[-1].point
-    one = vector(point[:2], first_camera.position[:2])
-    two = vector(point[:2], second_camera.position[:2])
-    if length(one) < 1e-9 or length(two) < 1e-9:
+    placement = placements[-1]
+    point = placement.point
+    if len(point) >= 3 and len(first_camera.position) >= 3 and len(second_camera.position) >= 3:
+        # in 3D, from the person's eyes (the placement's point is the eye point, placed at her height on the set
+        # plan): a camera much lower or higher is a new angle too
+        eyes = point
+        one = [first_camera.position[index] - eyes[index] for index in range(3)]
+        two = [second_camera.position[index] - eyes[index] for index in range(3)]
+    else:
+        one = vector(point[:2], first_camera.position[:2])
+        two = vector(point[:2], second_camera.position[:2])
+    one_length = math.sqrt(sum(value * value for value in one))
+    two_length = math.sqrt(sum(value * value for value in two))
+    if one_length < 1e-9 or two_length < 1e-9:
         return None
-    cosine = max(-1.0, min(1.0, dot(one, two) / (length(one) * length(two))))
+    cosine = max(-1.0, min(1.0, sum(a * b for a, b in zip(one, two)) / (one_length * two_length)))
     return math.degrees(math.acos(cosine))
 
 

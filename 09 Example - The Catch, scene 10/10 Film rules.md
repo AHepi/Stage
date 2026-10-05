@@ -21,7 +21,7 @@ Music: none.
 
 ## Lens exceptions
 
-- Lens exception 1: the 85 millimetre lens, only in scene 10, camera A; the reflection two-shot needs the camera well back through the wild wall, on the same lens and distance as the rings shot in scene 29 that it rhymes with.
+- The early 85 (a lens exception): the 85 millimetre lens, only in scene 10, camera A; the reflection two-shot needs the camera well back through the wild wall, on the same lens and distance as the rings shot in scene 29 that it rhymes with.
 
 ## Looks
 

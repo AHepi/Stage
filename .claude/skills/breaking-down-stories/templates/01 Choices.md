@@ -23,7 +23,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - asked: <quick: yes or no>
 - checkpoint: <quick: one word from the note>
 - affects: <quick: IDs, or <ID>.<field> paths, separated by commas>
-- sets: <quick, one line each: <ID>.<field> or CHOICE-NNN-X> | value: <text> | when: <one word>
+- sets: <quick, one line each: <ID>.<field> or CHOICE-NNN-X, or none> | value: <text> | when: <one word>
 - locks: <optional: IDs of any record ID, separated by commas>
 - based_on: <standard: text>
 - status: <quick, code writes it; in a chat without code you write it: open, answered or defaulted>

@@ -154,6 +154,9 @@ After the full run on The Catch (Project notes 31 and 32):
 - the plain part gives the quality scores in plain words and the three scenes to read, and its 'In short' line names
   the problems first;
 - the check of a scene's last batch also runs the scene-wide checks.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- check --unit drops what is not yet due, and says when the unit's inbox is still unapplied.
 """
 
 import dataclasses
@@ -1690,6 +1693,12 @@ def run_check(context):
         left_to_others = 0
         if unit_view is not None:
             result.problems, cited_lines, left_to_others = unit_view.split(result.problems)
+            try:  # what a later unit of this step will write is not yet due here either
+                from .make_handout import Workspace, not_yet_due
+                result.problems, not_due = not_yet_due(Workspace(project.folder, context.schema, context.words,
+                                                                 context.constants), step, result.problems)
+            except StageStop:
+                not_due = []
         elif step is not None and not film:
             try:
                 from .make_handout import Workspace, not_yet_due
@@ -1732,6 +1741,14 @@ def run_check(context):
     for line in printable_lines(result):
         context.say(line)
     if unit_view is not None:
+        unit_name = unit_view.unit.identifier
+        waiting_inbox = sorted(path.name for path in project.inbox_folder.glob("*.md")
+                               if path.stem == unit_name or path.stem.startswith(f"{unit_name} - fix ")) \
+            if project.inbox_folder.is_dir() else []
+        if waiting_inbox:
+            context.say(f"Note: {', '.join(waiting_inbox)} is still in the inbox, not applied (apply refused it, or "
+                        "it was not run): this check read the records as they were before it. Fix it and apply it "
+                        "first.")
         context.say(f"Checked only {unit_view.unit.identifier}'s {plural(len(unit_view.labels), 'record')}, with "
                     f"step {unit_view.unit.step + 1} of 12's checks and only the fields filled by then.")
         if cited_lines:
@@ -1742,7 +1759,7 @@ def run_check(context):
             context.say(f"Left out: {plural(left_to_others, 'line')} about other units' records (check --all shows "
                         "them).")
     if not_due:
-        context.say(f"Not yet due: {plural(len(not_due), 'missing field')} that units of this step not yet written "
+        context.say(f"Not yet due: {plural(len(not_due), 'line')} about what units of this step not yet written "
                     "will fill (never errors; they are listed in 13 Health check.md).")
     scope_line = scope_line_for(result)
     if scope_line:

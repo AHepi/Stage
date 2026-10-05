@@ -258,7 +258,7 @@ Next: a short summary of each chapter, then three ways the book could become a f
 
 ## Checkpoint
 
-Checkpoint A, "the scene list" to the user; it blocks for a screenplay. The scene count is stated as a fact, never asked; anything genuinely odd goes under "Small choices I made". One question, length, with the first estimate as computed; default keep everything (`runtime_target_s: as_written`, `scope: all`). A target ("20 minutes") sets `runtime_target_s`, and step 2 runs its compression unit. Prose: the message only states chapters and words; length and scope are chosen at step 2.
+Checkpoint A, "the scene list" to the user; it blocks for a screenplay. The scene count is stated as a fact, never asked; anything genuinely odd goes under "Small choices I made". One question, length, with the first estimate as computed; default keep everything (`runtime_target_s: as_written`, `scope: all`). A target ("20 minutes") sets `runtime_target_s`, and step 2 runs its compression unit. "Only do scenes 2, 13 and 26 for now" is a CHOICE setting `scope` (SKILL.md), written after the scene list's answer in the same inbox, since the later choice wins. Prose: the message only states chapters and words; length and scope are chosen at step 2.
 
 ## How to redo
 

@@ -30,6 +30,10 @@ Standard library only.
 After the full run on The Catch (Project notes 31 and 32):
 - the one-of-a-kind records are named in plain words (the camera system, the sound plan, the ladder); a rung 'held
   past the longest pause'; one film length.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- the one-line list follows the written shot; states and saved choices are named by what they are; the floor is
+  rounded up to one decimal; seated and kneeling eye heights in words.
 """
 
 import datetime
@@ -506,6 +510,11 @@ class ProjectView:
 
 # ---------------------------------------------------------------- plain names for records
 
+# A state's title is printed after its element's name in short lists ("Because of", "In the frame") when it has at
+# most this many words; a longer one is left to the full lines.
+STATE_TITLE_WORDS_SHORT = 6
+
+
 class PlainNames:
     """Plain names for IDs ("shot 150", "Iona, state 2", "saved choice 1: the reflection two-shot") and a way to
     replace every ID inside a text with its plain name, leaving double-quoted story words alone."""
@@ -577,12 +586,12 @@ class PlainNames:
             return f"scene {scene_number(identifier)}"
         state = re.match(r"^((?:CH|PR|LOC)-[A-Z0-9-]+)\.S(\d{2})$", identifier)
         if state:
+            # a state is named by what it is ("Iona, her palm bandaged"), never by a number a reader cannot use
             element = self.name(state.group(1), short=True)
             title = self.title_of(identifier, "STATE")
-            text = f"{element}, state {int(state.group(2))}"
-            if title and not short:
-                text += f": {title[:1].lower() + title[1:]}"
-            return text
+            if title and (not short or len(title.split()) <= STATE_TITLE_WORDS_SHORT):
+                return f"{element} ({title[:1].lower() + title[1:]})"
+            return element
         choice = re.match(r"^CHOICE-(\d{3})(?:-([A-Z]))?$", identifier)
         if choice:
             text = f"choice {int(choice.group(1))}"
@@ -597,6 +606,8 @@ class PlainNames:
                 if type_name == "CHAPTER":
                     number_words = roman(int(found.group(1)))
                     return f"chapter {number_words}" + (f" ({title})" if title and not short else "")
+                if short and title and type_name in ("RESERVE", "LENS"):
+                    return f"{mid_sentence(title)} (a {word})"  # a name a reader can use, not "saved choice 4"
                 text = f"{word} {int(found.group(1))}"
                 return text + (f": {mid_sentence(title)}" if title and not short else "")
         sequence = re.match(r"^SQ(\d{2})$", identifier)
@@ -724,10 +735,10 @@ class PlainNames:
                 parts.append(f'story line {reference}' if re.match(r"^\d", reference) else f"the story at {reference}")
             else:
                 name = self.name(piece, scene, short=True)
+                if any(part.lower() == name.lower() for part in parts):
+                    continue  # a plant and its motif of the same name are said once
                 if piece.startswith("MO-") and any(name.lower() in part.lower() for part in parts):
                     name = f"{name} as a motif"
-                elif any(part.lower() == name.lower() for part in parts):
-                    continue
                 parts.append(name)
         return join_words(parts)
 
@@ -843,7 +854,8 @@ def replace_plain_part(record_file, lines):
 # ---------------------------------------------------------------- one line per record, per file
 
 def shot_line(view, shot_identifier, scene=None):
-    """'shot 150, close-up, 15 seconds, the turn: Iona chews, stops ...' from the shot and its list item."""
+    """'shot 150, close-up, 15 seconds, the turn: Iona chews, stops ...' from the written shot (its moments), else its
+    list item."""
     shot = view.record(shot_identifier, "SHOT")
     item = view.list_item(shot_identifier)
     kind = normalise_word((shot.get("kind") if shot is not None else None) or "live")
@@ -859,7 +871,11 @@ def shot_line(view, shot_identifier, scene=None):
         parts.append(seconds_words(seconds))
     if role == "turn":
         parts.append(turn_words(view, shot_identifier))
-    shows = item.get("shows") if item is not None else None
+    # a written shot speaks for itself: its moments, in order, are what the picture shows (the shot step may have
+    # changed what the approved list said); before it is written, the list's line
+    moments = [moment.get("shows") for moment in view.items(shot, "moment") if moment.get("shows")] \
+        if shot is not None else []
+    shows = "; ".join(moments) if moments else (item.get("shows") if item is not None else None)
     if not shows and shot is not None:
         shows = shot.get("purpose")
     head = ", ".join(part for part in parts if part)
@@ -2464,7 +2480,8 @@ def full_shot_rows(view, shot, scene_identifier):
     if shot.get("height") and not is_empty(shot.get("height")):
         height = shot.get("height")
         eye = re.match(r"^(eye|seated|kneeling):(.+)$", height)
-        camera.append(f"at {names.name(eye.group(2).strip(), short=True)}'s eye height" if eye and eye.group(1) == "eye"
+        posture = {"eye": "", "seated": "seated ", "kneeling": "kneeling "}
+        camera.append(f"at {names.name(eye.group(2).strip(), short=True)}'s {posture[eye.group(1)]}eye height" if eye
                       else f"{number_text(height)} metres high" if re.fullmatch(r"[\d.]+", height) else names.text(height))
     if shot.get("lens_mm") and not is_empty(shot.get("lens_mm")):
         camera.append(f"{number_text(shot.get('lens_mm'))} millimetre lens")
@@ -2535,7 +2552,7 @@ def full_shot_rows(view, shot, scene_identifier):
         try:
             floor = time_floor(view.breakdown, shot)
             if floor.floor and floor.complete:
-                text += f" (it cannot be shorter than {seconds_words(floor.floor)})"
+                text += f" (it cannot be shorter than {seconds_words(round(floor.floor + 0.049, 1))})"
         except Exception:  # the floor is a courtesy on the page; the checker reports floors properly
             pass
         add("Screen time", text)

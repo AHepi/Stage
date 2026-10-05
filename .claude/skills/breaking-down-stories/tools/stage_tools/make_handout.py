@@ -36,6 +36,10 @@ After the full run on The Catch (Project notes 31 and 32):
 - the scoring handout gives each review in brief; shot handouts list speeches with their cue and word lines and the
   lens family in force, and leave out the gold on its own scene;
 - what is done is judged by the records' fingerprint (made from.json), not by file times.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- a unit's own check counts what a later unit of its step writes as not yet due (sequences, scene lengths, a split
+  scene's later parts and list); step 12 is done only after export all.
 """
 
 import json
@@ -1256,7 +1260,18 @@ def record_units_found(project_folder, schema=None, words=None, constants=None):
 # The record a completeness check is about when the missing thing lives in another record type: a scene in no
 # group of scenes waits for the SEQUENCE records of the film unit (COVER-06).
 CHECK_WAITS_FOR = {"COVER-06": ("SEQUENCE", None), "COVER-05": ("CARDINAL", None)}
-COMPLETENESS_CHECKS = ("FORM-05",) + tuple(CHECK_WAITS_FOR)
+# Coverage of one scene that a later part (its beats) or the list unit (its one-line list) of the same scene writes:
+# while such a unit of that scene waits, these are not yet due (a split scene's part 1 cannot hold part 2's beats).
+SCENE_CHECK_WAITS_FOR = {"COVER-01": "BEAT", "COVER-02": "SHOTLIST", "COVER-04": "SHOTLIST"}
+# Fields code fills once a record type exists (the first estimate runs when the story plan's PLAN is applied): while
+# a unit that writes that type waits, the field is not yet due.
+CODE_FIELD_WAITS_FOR = {("SCENE", "target_duration_s"): "PLAN", ("PLAN", "runtime_estimate"): "PLAN",
+                        ("PLAN", "scene_budget"): "PLAN", ("PLAN", "shot_budget"): "PLAN"}
+COMPLETENESS_CHECKS = ("FORM-05",) + tuple(CHECK_WAITS_FOR) + tuple(SCENE_CHECK_WAITS_FOR)
+
+
+# Words in a steps.json writes list that name a group of fields ("SCENE (design)"), not one field.
+FIELD_GROUP_WORDS = {"design"}
 
 
 def writes_of(entry_of_unit):
@@ -1272,7 +1287,9 @@ def writes_of(entry_of_unit):
         if single:
             fields = {single}
         elif listed:
-            names = {piece.strip() for piece in listed.split(",") if re.fullmatch(r"[a-z_]+", piece.strip())}
+            # "SCENE (design)" names a group of fields, not one field: every field of the type
+            names = {piece.strip() for piece in listed.split(",") if re.fullmatch(r"[a-z_]+", piece.strip())
+                     and piece.strip() not in FIELD_GROUP_WORDS}
             fields = names or None
         found.append((type_name, fields))
     return found
@@ -1346,13 +1363,19 @@ def unit_records(workspace, unit):
 
 
 def not_yet_due(workspace, step, problems):
-    """(problems kept, problems not yet due): at check --step N, a missing field (FORM-05) or a missing record the
-    film unit writes (COVER-06) that belongs to an AI unit of steps up to N not yet applied is not yet due: it
-    counts, and is never an error (C7)."""
+    """(problems kept, problems not yet due): at check --step N or check --unit, a missing field (FORM-05) or a
+    missing record or coverage that an AI unit of steps up to N not yet applied will write is not yet due: it counts,
+    and is never an error (C7). That covers the film unit's sequences and the scene lengths code fills after it, and
+    a split scene's later parts and list unit (the three-scene test, Project notes 35)."""
     units = mark_done(workspace, workspace.plan())
     waiting = [unit for unit in units if unit.kind == "ai" and not unit.done and unit.step <= step]
     if not waiting:
         return list(problems), []
+
+    def writes_type(unit, wanted_type):
+        return any(written == wanted_type for written, _ in writes_of(unit.entry_of_unit or
+                                                                     unit_entry_for(workspace, unit.step,
+                                                                                    unit.identifier) or {}))
     kept, later = [], []
     for problem in problems:
         check_id = getattr(problem, "check_id", "")
@@ -1360,14 +1383,19 @@ def not_yet_due(workspace, step, problems):
             kept.append(problem)
             continue
         label = (getattr(problem, "record", "") or "").strip('"')
+        field_name = getattr(problem, "field_name", None)
         key = next((key for key in workspace.index if (key[1] or key[0]) == label), None)
         if check_id in CHECK_WAITS_FOR:
             wanted_type, _ = CHECK_WAITS_FOR[check_id]
-            due_later = any(any(written == wanted_type for written, _ in writes_of(unit.entry_of_unit or {}))
-                            for unit in waiting)
+            due_later = any(writes_type(unit, wanted_type) for unit in waiting)
+        elif check_id in SCENE_CHECK_WAITS_FOR:
+            scene = scene_of(label) if label else None
+            due_later = bool(scene) and any(unit.scene == scene and writes_type(unit, SCENE_CHECK_WAITS_FOR[check_id])
+                                            for unit in waiting)
+        elif key is not None and (key[0], field_name) in CODE_FIELD_WAITS_FOR:
+            due_later = any(writes_type(unit, CODE_FIELD_WAITS_FOR[(key[0], field_name)]) for unit in waiting)
         else:
-            due_later = key is not None and any(unit_covers(workspace, unit, key, getattr(problem, "field_name", None))
-                                                for unit in waiting)
+            due_later = key is not None and any(unit_covers(workspace, unit, key, field_name) for unit in waiting)
         (later if due_later else kept).append(problem)
     return kept, later
 

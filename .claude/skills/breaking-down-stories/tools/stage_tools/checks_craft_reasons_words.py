@@ -36,6 +36,10 @@ After the full run on The Catch (Project notes 31 and 32):
   sound plan's rupture points at the beat;
 - INFO-01 accepts a shot whose keep_hidden names the fact; retired words are found only in their retired senses;
   REASON-08 reads a thing's 'at' and the shot's end.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- a silence on the beat the scene's own rupture names is planned; an in-story camera's own angle, move or lens spends
+  no saved choice.
 """
 
 import re
@@ -1334,12 +1338,24 @@ def silence_planned(run, shot, silence, beat=None, lines=None):
             if rupture_points_at(run, item, lines or [], identifiers) or \
                     (kind in ("black", "card") and re.search(r"\b(black|blacks|card|cards|title)\b", device)):
                 return True
+    if scene_rupture_on(run, scene, identifiers, names_it):
+        return True
     for record in beats:
         if record is None or record.type_name != "BEAT":
             continue
         for pause in items(run, record, "pause_after"):
             if names_it(pause.get("sound")):
                 return True
+    return False
+
+
+def scene_rupture_on(run, scene, identifiers, device_test=None):
+    """True when the scene's own rupture (SCENE rupture: the beat | device: ...) sits on one of these beats, and,
+    with device_test, its device passes it (names the silence)."""
+    record = scene_record(run, scene)
+    for item in items(run, record, "rupture") if record is not None else []:
+        if (item.first or "").strip() in identifiers and (device_test is None or device_test(item.get("device"))):
+            return True
     return False
 
 
@@ -1421,7 +1437,7 @@ def rupture_planned(run, scene, beat=None, lines=None):
                 continue
             if beat is None or rupture_points_at(run, item, lines or [], [beat.identifier]):
                 return True
-    return False
+    return beat is not None and scene_rupture_on(run, scene, [beat.identifier])
 
 
 def script_marked_yes(breakdown, run, beat_identifier):
@@ -1441,6 +1457,10 @@ def reserve_match(run, reserve):
     return normalise_word(field_name).strip("_"), word_of(value)
 
 
+# The camera fields an in-story camera decides in a shot that is its own picture (kind screen).
+IN_STORY_CAMERA_FIELDS = {"angle", "move", "lens_mm", "travel"}
+
+
 def shots_using(run, reserve):
     matched = reserve_match(run, reserve)
     if matched is None:
@@ -1448,6 +1468,8 @@ def shots_using(run, reserve):
     field_name, value = matched
     found = []
     for shot in records_of(run, "SHOT"):
+        if field_name in IN_STORY_CAMERA_FIELDS and word_of(shot.get("kind")) == "screen":
+            continue  # the in-story camera's own angle, move or lens, not the film's choice
         if field_name == "subject" or field_name == "display":
             values = [word_of(item.get(field_name)) for item in items(run, shot, "subject")]
         else:

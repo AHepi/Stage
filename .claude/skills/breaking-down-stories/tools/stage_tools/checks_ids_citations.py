@@ -39,6 +39,9 @@ Standard library only.
 After the full run on The Catch (Project notes 31 and 32):
 - ID-02 waits for a choice whose record is not made yet; ID-03 warns only an end card or black numbered below 990;
   CITE-03 reads a speech across a stage direction.
+
+After the three-scene test of the fixed kit (Project notes 35 and 36):
+- CITE-04 accepts a run of a speech's words, in order, when the speech is split.
 """
 
 import re
@@ -1180,12 +1183,14 @@ def check_cite_04(run):
         written = words.strip()
         if len(written) >= 2 and written[0] in '"“' and written[-1] in '"”':
             written = written[1:-1]
-        if comparable_words(written) != comparable_words(text):
+        from .derive_fields import speech_words_part
+        if comparable_words(written) != comparable_words(text) and not speech_words_part(written, text):
             problems.append(run.problem("E", "CITE-04", record, "hear words",
                                         f"of {identifier} are {quote_for_message(written, 50)}, but the speech is "
                                         f"{quote_for_message(text, 50)}",
-                                        "Fix: copy the speech's words exactly (parentheticals left out), or leave "
-                                        "words out: code shows the speech", line_number=line.line_number,
+                                        "Fix: copy the speech's words exactly (parentheticals left out), or the run "
+                                        "of them this shot hears when the speech is split at a phrase, or leave words "
+                                        "out: code shows the speech", line_number=line.line_number,
                                         file_name=record_file.name))
     if unknown:
         run.skip("CITE-04", "speeches whose text is not present here (speeches.json missing, or not in the "
