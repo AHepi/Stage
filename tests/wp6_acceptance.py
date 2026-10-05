@@ -212,10 +212,11 @@ def plain_parts(workspace, story):
     assert "Checked by the checker: never." in start_text, "00 Start here does not say when the checker last ran"
     assert "## Lines to look at" in split_at_divider(after["04 Scene list.md"])[0], "04 lost its Lines to look at"
     scene_plain = split_at_divider(after[SCENE_FILE])[0]
+    # since Project notes 38 a one-line entry says who acts when its moments do not, and the main turn is called so
     for expected in ("## At a glance", "## The shots, one line each", "## Why it's shot this way",
-                     "## Small choices I made", "- shot 150, close-up, 15 seconds, the turn: ",
+                     "## Small choices I made", "- shot 150, close-up, 15 seconds, the turn, on Iona: ",
                      "- shot 990, title card, 5 seconds", "11 beats, 20 shots and the title card",
-                     "The turn is beat 7", "in shot 150"):
+                     "The main turn is beat 7", "in shot 150"):
         assert expected in scene_plain, f"the scene's plain part has no {expected!r}"
     shot_lines = [line for line in scene_plain.split("\n") if line.startswith("- shot ")]
     assert len(shot_lines) == 21, f"{len(shot_lines)} shot lines, not 21"

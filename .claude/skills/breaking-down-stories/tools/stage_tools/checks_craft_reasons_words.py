@@ -40,6 +40,9 @@ After the full run on The Catch (Project notes 31 and 32):
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - a silence on the beat the scene's own rupture names is planned; an in-story camera's own angle, move or lens spends
   no saved choice.
+
+After the second three-scene test (Project notes 37 and 38):
+- a saved choice's "never in scenes 26 and 27" keeps those scenes out, and "scenes 10 and 29" names both.
 """
 
 import re
@@ -890,9 +893,9 @@ def size_cap_for(run, scene, view):
 
 def size_allowed_by_saved_choices(run, scene, size):
     """The size itself, or the next wider one while a saved choice (a RESERVE matched on 'size = <size>') keeps that
-    size out of this scene: an extreme close-up saved for scenes 13 and 25 is never asked of scene 26. Only scene IDs
-    in allowed_in are read (SC13); words there ("the first in scene 13", "not in scenes 26 and 27") are for people,
-    since reading them as a list could turn their meaning round."""
+    size out of this scene: an extreme close-up saved for scenes 13 and 25 is never asked of scene 26. The scene IDs
+    in allowed_in (SC13) and the scenes it keeps out ("never in scenes 26 and 27") are read; other words there ("the
+    first in scene 13") are for people, since reading them as a list could turn their meaning round."""
     while size in SIZE_LADDER:
         reserved = False
         for reserve in records_of(run, "RESERVE"):
@@ -900,7 +903,9 @@ def size_allowed_by_saved_choices(run, scene, size):
             if not match or match.group(1) != size:
                 continue
             allowed = set(re.findall(r"\bSC\d{2,3}[A-Z]?\b", reserve.get("allowed_in") or ""))
-            if allowed and scene not in allowed:
+            from .film_pass import read_places
+            excluded = read_places(reserve.get("allowed_in") or "").excluded or set()
+            if (allowed - excluded and scene not in allowed) or scene in excluded:
                 reserved = True
         position = SIZE_LADDER.index(size)
         if not reserved or position == 0:
@@ -1483,7 +1488,10 @@ def reserve_places(run, reserve):
     """What a RESERVE's allowed_in names: IDs, scene numbers ('scene 29') and whether main turns are allowed."""
     text = reserve.get("allowed_in") or ""
     identifiers = {match.group(1) for match in ID_TOKEN.finditer(text)}
-    scenes = {f"SC{int(number):02d}" for number in re.findall(r"\bscenes?\s+(\d{1,3})\b", text, re.I)}
+    from .film_pass import NOT_IN
+    text = NOT_IN.sub(" ", text)  # scenes a choice keeps out are not places it is allowed
+    scenes = {f"SC{int(number):02d}" for listed in re.findall(r"\bscenes?\s+(\d{1,3}(?:\s*(?:,|and|or)\s*\d{1,3})*)",
+                                                            text, re.I) for number in re.findall(r"\d{1,3}", listed)}
     main_turns = bool(re.search(r"\bmain\s+turns?\b", text, re.I))
     turns = bool(re.search(r"(?<!main )\bturns?\b", text, re.I)) and not main_turns
     return identifiers, scenes, main_turns, turns
@@ -1494,6 +1502,9 @@ def use_is_allowed(run, reserve, shot):
     if not (identifiers or scenes or main_turns or turns):
         return None
     scene = scene_of(shot.identifier)
+    from .film_pass import read_places
+    if any(same_scene(scene, other) for other in (read_places(reserve.get("allowed_in") or "").excluded or ())):
+        return False  # "never in scenes 26 and 27"
     beats = id_list(shot, "beats")
     places = {shot.identifier, scene, (shot.get("setup") or "").strip()} | set(beats)
     if places & identifiers:

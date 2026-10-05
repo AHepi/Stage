@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 5 October 2026 (log entry 37).
+Last updated: 5 October 2026 (log entry 38).
 
 ## The goal
 
@@ -27,6 +27,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 
 - **The fixed kit on new writing (entries 35 and 36).** A fresh helper planned The Catch from scratch and wrote scenes 2, 13 and 26. Each scene ended with one warning: one was the helper's own slip, two were false alarms. None of the old rule arguments came back. After this round's fixes, that test project ends with no errors and 2 warnings, both real slips by the helper.
 - **The same three-scene test again, with a fresh helper (entry 37):** all three scenes finished with no errors and no warnings, and so did the final full check. Errors before repair fell from 92 to 25.
+- **What that second test found is fixed (entry 38):** a split scene's first part no longer shows errors for its second part, the split-scene handouts show what the earlier parts wrote, and the book says its numbers in words. Re-checks give the same results as before: the test project has no errors and no warnings; your full breakdown of The Catch has no errors and 36 warnings.
 
 **Not tested yet:**
 - The other 27 scenes with the fixed kit.
@@ -36,15 +37,11 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - Actually making pictures, videos or voices. This computer has no accounts for those services, so the prompt packs stop at "ready to send, checked and priced".
 
 **Known issues:**
-- **The Catch still has 37 warnings.** They are real points in its records (for example 8 light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
+- **The Catch still has 36 warnings.** They are real points in its records (for example 8 light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
 - **The light check reads words.** A change of light written in words it does not know would slip through.
-- **Left from the second three-scene test (entry 37):**
-  - a split scene's first part still shows 5 errors for the second part's beats;
-  - a few records a later piece may not change force workarounds;
-  - a split scene's handouts leave things out;
-  - the book still prints numbers a reader can't use ("emphasis 2", "beat 17"), and some one-line entries lose who acts;
-  - place headings are still matched loosely;
-  - no check compares cameras, moves and shots (the helper found three staging slips itself).
+- **Left from the second three-scene test (entries 37 and 38):**
+  - no check compares cameras, moves and shots (the helper found three staging slips itself). A first try flagged the model scene 10, where glass and reflections change the sides, so it waits;
+  - a record only an earlier step may change can still be wrong (a thing's state starting a line late); a later piece can only report it.
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
@@ -213,14 +210,18 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - Mistake of mine: the step 4 example I wrote in entry 36 for a silent person's arc is a form the kit refuses. The helper caught it. I corrected the example and checked the kit accepts the new form.
     - Still to fix: the 5 split-scene errors, a few records later pieces can't change, gaps in split-scene handouts, numbers in the book a reader can't use, loose place headings, and staging slips no check catches.
     - File: `Project notes/37 Test - The Catch - three scenes again.md`.
+38. **Fixed what the second three-scene test found, myself, without helpers, as you asked ("Yes please").**
+    - A split scene's first part no longer shows errors for references to its second part's beats. They wait until the second part is applied.
+    - A split scene's second part, and its shot-list piece, now see what the earlier parts wrote.
+    - The book: each scene lists its beats; "emphasis 2" reads "pointed out"; moves are named by who moves; a one-line entry says who acts ("on Saye: her finger draws straight down the paused shaft"); recordings say "as recorded in scene 6"; turns are named in story order; an addition is said once.
+    - Place headings: Iona's room now gets its own headings in the test project.
+    - Smaller points: one description length for a non-human everywhere; the mirror card reaches the world step; a character's handout no longer shows that character's own record as the example; "never in scenes 26 and 27" is understood; the length check runs when only some scenes are chosen; the choices file sorts small choices correctly.
+    - My own slip, caught before testing: my first words for the grey preview levels did not match the kit's own scale (card 22). Corrected.
+    - Not fixed: no check yet compares cameras, moves and shots. A first try at the line-crossing check flagged the model scene 10, where glass and reflections change the sides, so I put it back as planned.
+    - Re-checks on copies: the second test project still has no errors and no warnings; your full breakdown of The Catch still has no errors, 36 warnings, and "Finished".
+    - Tests: the new test file (7 groups) passes; one older test now expects the book's new wording. The full suite was still running at this save.
+    - File: `Project notes/38 Fixes - after the second three-scene test.md`.
 
 ## Next step
 
-Fix this round's shorter list myself, without helpers:
-- the split-scene errors;
-- the gaps in split-scene handouts;
-- the book's leftover numbers and who-acts wording;
-- the place headings;
-- the records that force workarounds.
-
-After that, the kit is ready for a second full run of all 30 scenes.
+Run the whole of The Catch again, all 30 scenes, from a fresh start with one helper, as in entries 28 to 31. It shows whether these fixes hold up on every scene, not just three.

@@ -84,7 +84,7 @@ One per project: the story, the app, the depth, the rights and the big settings.
 | `licensed_data_only` | Route only to models the adapter marks licensed_data (8.4). | yes_no; default no | add-on (C) | user | add-on C (prompts for AI video) | `no` |
 | `format` | The kind of finished work (CHOICE-004, asked: no; short under 40 minutes by the first estimate, feature otherwise). | short, feature, limited_series | quick | user | step 1 | `short` |
 | `runtime_target_s` | Target length with credits, in seconds, or as_written. | seconds; also as_written | quick | user | checkpoint A | `as_written` |
-| `scope` | The scenes the scene work, checks, film pass, estimates and exports cover; all by default (for prose, the scenes of chapter I). | id_list; IDs of SCENE; also all | quick | user | checkpoint P | `all` |
+| `scope` | The scenes the scene work, checks, film pass, estimates and exports cover; all by default (for prose, the scenes of chapter I). Set by a CHOICE: at the scene list (checkpoint A) for a screenplay, at the prose plan (checkpoint P) for prose. | id_list; IDs of SCENE; also all | quick | user | checkpoint P | `all` |
 | `frame_shape` | The delivery frame shape (aspect ratio), chosen once at checkpoint B (default 2.39). | 2.39, 1.85, 16_9, 4_3, 9_16 | quick | user | checkpoint B | `2.39` |
 | `fps` | Frames per second of the finished film. | number; 24, 25, 30 | quick | ai | step 6 | `24` |
 | `genre` | The named genre, copied from PLAN by code. | word | quick | code_state; in a chat without code: ai | step 2 | `thriller` |
@@ -620,7 +620,7 @@ A person or being the film shows more than once, with the design every prompt ke
 | `arc` | Where they start and end, and the turning scene. | sub_parts; start: text; end: text; turning_scene: id | standard | ai | step 4 | `start: certain \| end: shaken \| turning_scene: SC13` |
 | `thesis` | The design idea in one sentence. | text | standard | ai | step 4 | `tidy grey control with one living thing that becomes her proof` |
 | `evidence` | Lines the design rests on. | sub_parts; first part: lines; quote: quote; one line each | standard | ai | step 4 | `436 \| quote: "Saye's wedding ring. On her right hand."` |
-| `fixed_description` | The words pasted into every prompt with them: 25-40 words for principals, 20-30 for minor characters (constant fixed_description_words); visible nouns only; no expression words; no real person. Locked once approved. | text | quick | ai | step 4 | `Dr Saye, a slight, upright woman in her fifties, short neat grey hair, a pale lined face, a charcoal wool cardigan over a white collared blouse, dark trousers, flat black shoes.` |
+| `fixed_description` | The words pasted into every prompt with them: 25-40 words for principals and non-humans, 20-30 for minor characters and extras (constant fixed_description_words); visible nouns only; no expression words; no real person. Locked once approved. | text | quick | ai | step 4 | `Dr Saye, a slight, upright woman in her fifties, short neat grey hair, a pale lined face, a charcoal wool cardigan over a white collared blouse, dark trousers, flat black shoes.` |
 | `height_m` | Height. | metres | standard | ai | step 4 | `1.62` |
 | `build` | Body build. | text | standard | ai | step 4 | `slight, upright` |
 | `colour_identity` | The character's colour. | text | standard | ai | step 4 | `charcoal and white` |

@@ -40,6 +40,11 @@ After the full run on The Catch (Project notes 31 and 32):
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - a unit's own check counts what a later unit of its step writes as not yet due (sequences, scene lengths, a split
   scene's later parts and list); step 12 is done only after export all.
+
+After the second three-scene test (Project notes 37 and 38):
+- a split scene's part 1 is not asked for references to part 2's beats (ID-02); a later part and the list unit
+  are shown what the earlier parts wrote; card 16 reaches a scene tagged handedness; a character's unit never
+  gets its own character as the example; a saved choice kept out of a scene is not offered there.
 """
 
 import json
@@ -1262,7 +1267,8 @@ def record_units_found(project_folder, schema=None, words=None, constants=None):
 CHECK_WAITS_FOR = {"COVER-06": ("SEQUENCE", None), "COVER-05": ("CARDINAL", None)}
 # Coverage of one scene that a later part (its beats) or the list unit (its one-line list) of the same scene writes:
 # while such a unit of that scene waits, these are not yet due (a split scene's part 1 cannot hold part 2's beats).
-SCENE_CHECK_WAITS_FOR = {"COVER-01": "BEAT", "COVER-02": "SHOTLIST", "COVER-04": "SHOTLIST"}
+SCENE_CHECK_WAITS_FOR = {"COVER-01": "BEAT", "COVER-02": "SHOTLIST", "COVER-04": "SHOTLIST",
+                         "ID-02": "BEAT"}  # part 1's scene fields point at part 2's beats (the second test)
 # Fields code fills once a record type exists (the first estimate runs when the story plan's PLAN is applied): while
 # a unit that writes that type waits, the field is not yet due.
 CODE_FIELD_WAITS_FOR = {("SCENE", "target_duration_s"): "PLAN", ("PLAN", "runtime_estimate"): "PLAN",
@@ -1727,7 +1733,13 @@ def scene_tags(workspace, scene_identifier):
 
 
 def mirror_rule_exists(workspace):
-    return any(normalise_word(rule.get("kind") or "") == "mirror" for rule in workspace.records("RULE"))
+    """True when the story has a mirror rule, or will: the world unit writes the rule itself, so a scene the story
+    plan tagged handedness or mirror is enough for it to get card 16 (the second three-scene test found it left
+    out)."""
+    if any(normalise_word(rule.get("kind") or "") == "mirror" for rule in workspace.records("RULE")):
+        return True
+    return any({"handedness", "mirror"} & {normalise_word(tag) for tag in split_list(scene.get("tags") or "")}
+               for scene in workspace.records("SCENE"))
 
 
 def card_list(workspace, unit, step_entry):
@@ -2209,6 +2221,8 @@ def reserve_lines(workspace, scene_identifier, own_shots):
             here = any(scene_of(identifier) == scene_identifier for identifier in places.identifiers) or any(
                 film_pass.same_scene(scene_identifier, scene) for scene in places.scenes)
             allowed = allowed and here
+        if any(film_pass.same_scene(scene_identifier, scene) for scene in (places.excluded or ())):
+            allowed = False
         matched = film_pass.reserve_match(reserve)
         what = f"{matched[0]} = {matched[1]}" if matched else "by hand"
         uses = [record for record in (film_pass.reserve_uses(run, reserve) or [])
@@ -2388,6 +2402,23 @@ def scene_list_fields(workspace):
             if field.get("part_of") in ("list", "plan")]
 
 
+def earlier_parts_section(workspace, unit, scene, brief=False):
+    """For a split scene's later part or its list unit: what the earlier parts wrote. The scene's design fields (a
+    field sent again replaces all its stored lines, so a later part re-sends one whole), and for the list unit the
+    parts, beats, moves and setups the one-line list is built from (in brief, the beats only)."""
+    design = [definition["name"] for definition in workspace.schema.record_types["SCENE"]["fields"]
+              if definition.get("part_of") == "design"]
+    lines = ["### What the earlier parts of this scene wrote",
+             "Read-only. A scene field you send again replaces all its stored lines: re-send it whole, its earlier "
+             "lines included.", records_block(workspace, [scene], fields=design)]
+    kinds = ("PART", "BEAT", "MOVE", "SETUP") if unit.list_unit and not brief else ("PART", "BEAT")
+    written = [record for kind in kinds for record in workspace.records(kind)
+               if scene_of(record.identifier) == unit.scene]
+    if written:
+        lines.append(records_block(workspace, written))
+    return "\n".join(line for line in lines if line)
+
+
 def scene_records_section(workspace, unit, own_shots, brief=False):
     """The records a step-7 or step-8 unit reads (blueprint 3, step 7's inputs), as one Markdown section. brief=True
     is the text used when the handout is over its ceiling: people, things, texts and motifs in brief, and at step 8
@@ -2460,6 +2491,8 @@ def scene_records_section(workspace, unit, own_shots, brief=False):
                 story_point_in_scene(value, scene_identifier)))
     if len(rules) > 1:
         parts.append("\n\n".join(rules))
+    if unit.step == 7 and scene is not None and (unit.list_unit or (unit.part or 1) > 1):
+        parts.append(earlier_parts_section(workspace, unit, scene, brief))
     people = [workspace.record(character, "CHARACTER") for character in present]
     people = [record for record in people if record is not None]
     if people:
@@ -3275,7 +3308,8 @@ def example_section(workspace, unit):
         wanted.append(("SHOT", "SC10-SH150"))
     else:
         for type_name in [kind for kind in written_types(unit, workspace) if kind not in ("CHOICE", "SETVALUE")][:2]:
-            first = next((key for key in gold if key[0] == type_name), None)
+            # never the unit's own answer: Iona's unit gets another character as its example
+            first = next((key for key in gold if key[0] == type_name and key[1] not in (unit.characters or [])), None)
             if first:
                 wanted.append(first)
     records = [gold[key] for key in wanted if key in gold]

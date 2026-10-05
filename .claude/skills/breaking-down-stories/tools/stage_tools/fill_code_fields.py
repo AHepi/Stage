@@ -26,6 +26,9 @@ file changed are kept in history/ (7.3). Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
 - a place's own words outweigh words many places share when a scene heading is matched to a place.
+
+After the second three-scene test (Project notes 37 and 38):
+- the heading's most specific part counts double, and a word most places share is no match on its own.
 """
 
 import re
@@ -161,11 +164,27 @@ def location_words(location):
     return place_words(location.title) | place_words(identifier.replace("-", " "))
 
 
+# A word this many places use ("room") is too common to match a heading to a place on its own.
+COMMON_PLACE_WORD_USES = 3
+# Parts of a scene heading that say when, not where ("RECEIVING ROOM - CONTINUOUS").
+HEADING_TIME_PARTS = {"continuous", "later", "moments later", "same", "same time", "night", "day", "dawn", "dusk",
+                      "morning", "evening", "afternoon", "earlier"}
+
+
+def specific_part(place_text):
+    """The most specific part of a heading's place: the last part after a dash that names a place."""
+    pieces = [piece.strip() for piece in re.split(r"\s+[-\u2013\u2014]\s+", place_text or "") if piece.strip()]
+    pieces = [piece for piece in pieces if piece.lower() not in HEADING_TIME_PARTS]
+    return pieces[-1] if pieces else (place_text or "")
+
+
 def best_location_for(place_text, locations):
     """The place whose name (title and ID) shares the most words with a scene's place words, each word weighed by
-    how few places use it (a place's own word, "passage", outweighs "room", which half the places share), the one
-    with fewest other words on a tie; None when no place shares a word."""
+    how few places use it (a place's own word, "passage", outweighs "room", which half the places share) and doubled
+    in the heading's most specific part ("IONA'S ROOM" in "QUARANTINE - IONA'S ROOM"), the one with fewest other
+    words on a tie; None when no place shares a word."""
     wanted = place_words(place_text)
+    specific = place_words(specific_part(place_text))
     named = [(location, location_words(location)) for location in locations if location.identifier]
     uses = {}
     for _, words in named:
@@ -173,11 +192,13 @@ def best_location_for(place_text, locations):
             uses[word] = uses.get(word, 0) + 1
     best = None
     best_score = (0, 0)
+    common = {word for word, count in uses.items() if count >= COMMON_PLACE_WORD_USES}
     for location, words in named:
         shared = wanted & words
-        if not shared:
-            continue
-        score = (round(sum(1.0 / uses[word] for word in shared), 6), -len(words - wanted))
+        if not shared or shared <= common:
+            continue  # sharing only "room", which many places use, is no match ("RECEIVING ROOM" is not Eli's room)
+        score = (round(sum((2.0 if word in specific else 1.0) / uses[word] for word in shared), 6),
+                 -len(words - wanted))
         if score > best_score:
             best, best_score = location, score
     return best

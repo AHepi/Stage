@@ -24,6 +24,9 @@ After the full run on The Catch (Project notes 31 and 32):
 
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - GEOM-02 measures the 3D angle between the cameras from the person's eyes.
+
+After the second three-scene test (Project notes 37 and 38):
+- GEOM-03 stays planned: a first try by plan positions alone flagged the model scene 10 (glass and reflections).
 """
 
 import math
@@ -575,7 +578,8 @@ def check_geom_02(run):
                 plain="crosses the line between two people inside one part, which flips who is on which side")
 def check_geom_03(run):
     run.skip("GEOM-03", "planned for the second build: the side of the line each camera stands on is worked out "
-                        "by build, but crossings inside a part are not checked yet")
+                        "by build, but crossings inside a part are not checked yet (a first try, by plan positions "
+                        "alone, flagged the model scene 10, where glass and reflections change the sides)")
     return []
 
 

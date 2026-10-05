@@ -48,6 +48,9 @@ Standard library only.
 After the full run on The Catch (Project notes 31 and 32):
 - GEN-05 leaves the room sound out; GEN-06 lets the model draw only one short mark (model_drawn) and finds capitals
   written with a capital on every word; GEN-15 leaves quoted script lines out.
+
+After the second three-scene test (Project notes 37 and 38):
+- PLAN-04 runs when only some scenes are chosen, as long as the whole film's scenes are there.
 """
 
 import datetime
@@ -286,11 +289,11 @@ def check_plan_04(run):
     if target is None or target <= 0:
         run.skip("PLAN-04", "no runtime target or first estimate to compare with yet")
         return []
-    if run.scope_scenes is not None:
-        run.skip("PLAN-04", "needs the whole film's scenes, and the project's scope is part of the film "
-                            "(not in the excerpt)")
-        return []
     scenes = film_scenes(run)
+    if run.scope_scenes is not None and len(scenes) <= len(run.scope_scenes):
+        run.skip("PLAN-04", "needs the whole film's scenes, and only the scenes in scope are here (not in the "
+                            "excerpt)")
+        return []
     missing = [scene.identifier for scene in scenes if number_of(scene.get("target_duration_s")) is None]
     if not scenes or missing:
         run.skip("PLAN-04", "runs once every kept scene has its planned length (target_duration_s)"

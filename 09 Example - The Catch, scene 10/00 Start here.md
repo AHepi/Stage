@@ -5,7 +5,7 @@
 Last saved: step 9 of 12, writing the shots, scene 10, batch 2, on 2026-10-05.
 This breakdown covers 1 of 1 scene: 1 designed, 1 with their shots written (21 shots).
 Checked by the checker: 2026-10-05.
-5 small additions to the story kept; the list is in 01 Choices.
+4 small additions to the story kept; the list is in 01 Choices.
 Waiting for you: nothing.
 
 ## Next step

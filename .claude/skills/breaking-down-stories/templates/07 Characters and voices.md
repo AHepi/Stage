@@ -22,7 +22,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - arc: start: <standard: text> | end: <text> | turning_scene: <an ID of SCENE (SC10)>
 - thesis: <standard: text>
 - evidence: <standard, one line each: line numbers like 449-463, or a quote anchor "<exact story words>" ("<first>" to "<last>" for a range)> | quote: <"exact story words">
-- fixed_description: <quick: text; 25-40 words for a principal, 20-30 for others; appearance only: no expression and no image sides>
+- fixed_description: <quick: text; 25-40 words for a principal or non-human, 20-30 for others; appearance only: no expression and no image sides>
 - height_m: <standard: metres>
 - build: <standard: text>
 - colour_identity: <standard: text>

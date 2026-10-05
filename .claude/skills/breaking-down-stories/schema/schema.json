@@ -860,7 +860,7 @@
     {
      "name": "scope",
      "label": "Scope",
-     "meaning": "The scenes the scene work, checks, film pass, estimates and exports cover; all by default (for prose, the scenes of chapter I).",
+     "meaning": "The scenes the scene work, checks, film pass, estimates and exports cover; all by default (for prose, the scenes of chapter I). Set by a CHOICE: at the scene list (checkpoint A) for a screenplay, at the prose plan (checkpoint P) for prose.",
      "kind": "id_list",
      "depth": "q",
      "writer": "user",
@@ -7963,7 +7963,7 @@
     {
      "name": "fixed_description",
      "label": "Fixed description",
-     "meaning": "The words pasted into every prompt with them: 25-40 words for principals, 20-30 for minor characters (constant fixed_description_words); visible nouns only; no expression words; no real person. Locked once approved.",
+     "meaning": "The words pasted into every prompt with them: 25-40 words for principals and non-humans, 20-30 for minor characters and extras (constant fixed_description_words); visible nouns only; no expression words; no real person. Locked once approved.",
      "kind": "text",
      "depth": "q",
      "writer": "ai",

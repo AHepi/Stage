@@ -37,6 +37,9 @@ After the full run on The Catch (Project notes 31 and 32):
 
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - footage recorded in a scene may show any state that held during that scene.
+
+After the second three-scene test (Project notes 37 and 38):
+- TIME-09's fix says to report a fact whose known_by is wrong, since the shots cannot correct it.
 """
 
 import math
@@ -1626,7 +1629,9 @@ def check_time_09(run):
                                    f" shorter than the scene's dialogue shots ({seconds_text(round(dialogue_average, 2))}"
                                    " s), and none gives a why (A4 S2)",
                                    f"Fix: hold longer on {character} while the audience knows and they do not, or "
-                                   "give those shots a why.", place_of(run, scene, "tags")))
+                                   "give those shots a why; if the fact's known_by is wrong (they do know it), say so "
+                                   "in the report: the story plan's facts are corrected there, not in the shots.",
+                                   place_of(run, scene, "tags")))
     return problems
 
 

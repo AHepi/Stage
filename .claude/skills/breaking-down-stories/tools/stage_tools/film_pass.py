@@ -34,6 +34,9 @@ Standard library only.
 After the full run on The Catch (Project notes 31 and 32):
 - the film pass writes no '...' into what it stores, rewrites the old stored wording, refreshes the evidence and fix
   of findings found again, and notes which records the film strip was made from.
+
+After the second three-scene test (Project notes 37 and 38):
+- a saved choice's places read "never in scenes 26 and 27" as scenes kept out, and "scenes 10 and 29" as both.
 """
 
 import datetime
@@ -63,7 +66,11 @@ FINDING_NUMBER = re.compile(r"^FIND-(\d+)$")
 RESERVE_MATCH = re.compile(r"^\s*([a-z_]+)\s*=\s*([a-z0-9_.]+)\s*$")
 # IDs that name a place in a RESERVE's allowed_in: a scene, or a setup, beat, part or shot of one.
 PLACE_IDENTIFIER = re.compile(r"\bSC\d{2,3}[A-Z]?(?:-(?:SU|B|SH|P)\d+)?\b")
-SCENE_IN_WORDS = re.compile(r"\bscenes?\s+(\d{1,3}[A-Z]?)\b", re.IGNORECASE)
+# "never in scenes 26 and 27", "not in SC26", "not allowed in scene 5 or 6": scenes a saved choice keeps out.
+NOT_IN = re.compile(r"\b(?:never|not|not allowed|nowhere)\s+(?:in|for|during)\s+((?:(?:scenes?\s+)?(?:\d{1,3}[A-Z]?|"
+                    r"SC\d{2,3}[A-Z]?)(?:\s*(?:,|and|or)\s*)?)+)", re.IGNORECASE)
+# "scene 29", "scenes 10 and 29", "scenes 4, 5 or 6": the scenes a saved choice names in words.
+NUMBER_LIST = re.compile(r"\bscenes?\s+(\d{1,3}[A-Z]?(?:\s*(?:,|and|or)\s*\d{1,3}[A-Z]?)*)", re.IGNORECASE)
 # "the first in scene 13" / "the first in SC13": a use before that scene is outside the saved choice's places.
 FIRST_IN = re.compile(r"\bfirst\s+(?:one\s+|use\s+)?in\s+(?:scene\s+(\d{1,3}[A-Z]?)|(SC\d{2,3}[A-Z]?))\b",
                       re.IGNORECASE)
@@ -947,6 +954,7 @@ class Places:
     scenes: set
     turn: str = None          # 'main_turn' or 'turn' when only turn beats may spend it
     not_before: str = None    # 'the first in scene 13': nothing before that scene
+    excluded: set = None      # 'never in scenes 26 and 27': scenes kept out
 
 
 def scene_identifier_from_number(number_text, digits=2):
@@ -957,9 +965,17 @@ def scene_identifier_from_number(number_text, digits=2):
 
 
 def read_places(text, digits=2):
-    """Places from a RESERVE allowed_in: IDs (scenes, setups, beats, parts, shots), 'scene 29' words, 'main turns',
-    'turns', and 'the first in scene 13' (read as: nothing before scene 13)."""
+    """Places from a RESERVE allowed_in: IDs (scenes, setups, beats, parts, shots), 'scene 29' or 'scenes 10 and 29'
+    words, 'main turns', 'turns', 'the first in scene 13' (read as: nothing before scene 13) and 'never in scenes 26
+    and 27' (those scenes kept out)."""
     text = text or ""
+    excluded = set()
+    for match in NOT_IN.finditer(text):
+        for number in re.findall(r"(?:SC)?(\d{1,3}[A-Z]?)", match.group(1), re.IGNORECASE):
+            found = scene_identifier_from_number(number, digits)
+            if found:
+                excluded.add(found)
+    text = NOT_IN.sub(" ", text)
     not_before = None
     first = FIRST_IN.search(text)
     if first:
@@ -968,13 +984,14 @@ def read_places(text, digits=2):
     identifiers = set(PLACE_IDENTIFIER.findall(text))
     scenes = {identifier for identifier in identifiers if SCENE_IDENTIFIER.match(identifier)}
     identifiers -= scenes
-    for match in SCENE_IN_WORDS.finditer(text):
-        found = scene_identifier_from_number(match.group(1), digits)
-        if found:
-            scenes.add(found)
+    for match in NUMBER_LIST.finditer(text):
+        for number in re.findall(r"\d{1,3}[A-Z]?", match.group(1)):
+            found = scene_identifier_from_number(number, digits)
+            if found:
+                scenes.add(found)
     lowered = text.lower()
     turn = "main_turn" if re.search(r"\bmain turns?\b", lowered) else ("turn" if re.search(r"\bturns?\b", lowered) else None)
-    return Places(identifiers, scenes, turn, not_before)
+    return Places(identifiers, scenes, turn, not_before, excluded)
 
 
 def turn_beats_of(run, record):

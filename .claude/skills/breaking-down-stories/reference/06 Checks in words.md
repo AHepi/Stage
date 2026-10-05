@@ -124,7 +124,7 @@ Without code there is no `rules/constants.json`; the step files name these numbe
 | `style_words_count` | 8 to 15 style words |
 | `minor_characters_per_unit`, `places_per_unit` | 4; 2 |
 | `lineup_columns_differ_min` | 3 of the six lineup columns |
-| `fixed_description_words` | principals 25 to 40 words; minor characters 20 to 30 |
+| `fixed_description_words` | principals and non-humans 25 to 40 words; minor characters and extras 20 to 30 |
 | `voice_description_words` | 30 to 50 words |
 | `motif_spines_max`, `sound_motif_max`, `body_motif_max` | a short 3 to 5, a feature 5 to 8 spine motifs; 1 sound motif; 1 body motif |
 | `loud_sets_max` | a short 2, a feature 3 |

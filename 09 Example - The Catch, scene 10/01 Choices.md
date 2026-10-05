@@ -2,8 +2,8 @@
 
 ## At a glance
 
-16 choices: 0 waiting for you, 11 big choices made and 5 small choices. Type defaults to accept every default.
-5 additions to the story, listed at the end: keep or cut each one.
+16 choices: 0 waiting for you, 8 big choices made and 8 small choices. Type defaults to accept every default.
+4 additions to the story, listed at the end: keep or cut each one.
 
 ## Waiting for you
 
@@ -18,9 +18,6 @@ Nothing is waiting for you.
 - Place and time: an unnamed British city, today, cars on the left (choice 8, the default).
 - Music: none (choice 9, the default).
 - The mirror world: as written (choice 10, the default).
-- Faces: invented faces for everyone (choice 11, the default).
-- How the voices are made: designed voices (choice 12, the default).
-- Iona's sleeve and palm: her own right (choice 14, the default).
 - The lamp set down: keep it (choice 16, the default).
 
 ## Small choices I made
@@ -28,7 +25,10 @@ Nothing is waiting for you.
 - Depth: standard (choice 2).
 - Privacy setting: Yes, it is off (choice 3).
 - Format: a short, under 40 minutes (choice 4).
+- Faces: invented faces for everyone (choice 11).
+- How the voices are made: designed voices (choice 12).
 - Voice rule for the film: designed voices only (choice 13).
+- Iona's sleeve and palm: her own right (choice 14).
 - Where everyone stands in the kitchen: far back along the table's line on the long lens, Eli small in the middle behind the women, the bottle cap in the same frame (choice 15).
 
 ## Additions to the story
@@ -37,7 +37,6 @@ Nothing is waiting for you.
 - Scene 10: the three arrive at the back door, which opens into the kitchen.
 - Scene 10: Eli stands at the far end of the table by the fridge, on the table's line.
 - Scene 10: Saye's phone lies on the counter beside the flask.
-- Scene 10, shot 070: Iona sets the lamp back on the table between them.
 
 Below this line: details for the AI and the checker. You never need to read them.
 

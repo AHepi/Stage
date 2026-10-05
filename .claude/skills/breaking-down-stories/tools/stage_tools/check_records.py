@@ -157,6 +157,9 @@ After the full run on The Catch (Project notes 31 and 32):
 
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - check --unit drops what is not yet due, and says when the unit's inbox is still unapplied.
+
+After the second three-scene test (Project notes 37 and 38):
+- the scenes to read point to the guide "05 How to read your breakdown" and say where it is.
 """
 
 import dataclasses
@@ -1317,7 +1320,8 @@ def scenes_to_read_plain_lines(run):
     if not chosen:
         return []
     return ["## Three scenes to read", "",
-            "Read these in 15 The breakdown, with the 10 questions in 05 How to read your breakdown: "
+            "Read these in 15 The breakdown, with the 10 questions in the guide \"05 How to read your breakdown\" "
+            "(in the Stage folder, beside 01 Read me first): "
             + join_words([f"{scene_in_words(scope)} ({why})" for scope, why in chosen]) + "."]
 
 

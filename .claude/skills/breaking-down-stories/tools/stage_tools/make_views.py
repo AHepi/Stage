@@ -34,6 +34,11 @@ After the full run on The Catch (Project notes 31 and 32):
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - the one-line list follows the written shot; states and saved choices are named by what they are; the floor is
   rounded up to one decimal; seated and kneeling eye heights in words.
+
+After the second three-scene test (Project notes 37 and 38):
+- the book lists the beats, one line each; emphasis and grey preview levels in words; a one-line entry says who
+  acts; recordings and screens are said; turns are named in story order and moves by who moves; an addition
+  the scene already lists is said once; small choices shown at checkpoint B are listed as small.
 """
 
 import datetime
@@ -48,7 +53,7 @@ from .record_format import (DIVIDER_LINE, FieldLine, Record, TextBlock, load_ski
                             sort_key_for_identifier, split_item, split_list)
 from .project_files import (CHOICES_FILE, FILES_IN_THIS_FOLDER, SCENE_LIST_FILE, SCENES_FOLDER, START_HERE, Project,
                             load_steps, unit_in_plain_words)
-from .derive_fields import Breakdown, scene_duration, time_floor
+from .derive_fields import Breakdown, element_of, scene_duration, time_floor
 
 SUMMARY_FILE = "02 Whole-film summary.md"
 BOOK_FOLDER = "15 The breakdown"
@@ -116,6 +121,17 @@ KEY_WORDS = {
     "meaning_kept": "meaning kept", "posture": "posture", "treatment": "sound", "value": "value",
 }
 WHOLE_WORD_UNITS = {"mm": "millimetre"}
+# Numbers in the records said in words in the book (the second three-scene test: "emphasis 2" meant nothing).
+EMPHASIS_WORDS = {"0": "in the background", "1": "seen plainly", "2": "pointed out", "3": "what the shot is about"}
+SOUND_EMPHASIS_WORDS = {"0": "under everything", "1": "heard plainly", "2": "brought forward",
+                        "3": "what the sound is about"}
+# The grey preview ladder of card 22: 0 no 3D at all, 2 a layout check, 3 a guide video, 4 a captured performance.
+PREVIS_LEVEL_WORDS = {"0": "no grey preview", "1": "posed grey stills", "2": "a grey layout check in 3D",
+                      "3": "a grey guide video the model copies", "4": "a performance filmed on a phone",
+                      "5": "a grey preview from open models"}
+# An eyeline that is a direction reads "eyes down ...", not "eyes on down ...".
+EYELINE_DIRECTION_WORDS = {"up", "down", "away", "ahead", "forward", "back", "left", "right", "out", "off", "frame",
+                           "sideways", "inward", "nowhere"}
 
 TYPE_WORDS = {
     "MOTIF": "motif", "PLANT": "plant", "FACT": "fact the audience learns", "RULE": "story-world rule",
@@ -551,8 +567,12 @@ class PlainNames:
                 return prefix + f"the cut after shot {number}"
             if kind == "M":
                 title = self.title_of(identifier, "MOVE")
-                return prefix + (f"the move where {mid_sentence(title)}" if title and not short else
-                                 f"floor-plan move {int(number)}")
+                if title and not short:
+                    return prefix + f"the move where {mid_sentence(title)}"
+                move = view.record(identifier, "MOVE")
+                mover = self.name(move.get("who"), scene, short=True) if move is not None and move.get("who") else ""
+                return prefix + (f"{mover}'s move" + (f" ({mid_sentence(title)})" if title else "") if mover
+                                 else "a move of the scene" + (f" ({mid_sentence(title)})" if title else ""))
             if kind == "SU":
                 title = self.title_of(identifier, "SETUP")
                 if title:
@@ -589,9 +609,10 @@ class PlainNames:
             # a state is named by what it is ("Iona, her palm bandaged"), never by a number a reader cannot use
             element = self.name(state.group(1), short=True)
             title = self.title_of(identifier, "STATE")
-            if title and (not short or len(title.split()) <= STATE_TITLE_WORDS_SHORT):
+            if title and normalise_word(title) != normalise_word(element) and \
+                    (not short or len(title.split()) <= STATE_TITLE_WORDS_SHORT):
                 return f"{element} ({title[:1].lower() + title[1:]})"
-            return element
+            return element  # a state titled as its thing says nothing more ("Jude's water (jude's water)")
         choice = re.match(r"^CHOICE-(\d{3})(?:-([A-Z]))?$", identifier)
         if choice:
             text = f"choice {int(choice.group(1))}"
@@ -694,6 +715,8 @@ class PlainNames:
         text = FIELD_WORD_IN_TEXT.sub(lambda match: plain_value(match.group(0)), text)
         text = re.sub(r"(\d)\s?mm\b", r"\1 millimetre", text)
         text = re.sub(r"\bline:\s*(\d+)", r"story line \1", text)
+        # a cited ID that names what the sentence just said: "stays with Iona (CR-IONA)" reads "stays with Iona"
+        text = NAME_REPEATED_IN_BRACKETS.sub(r"\1", text)
         return text
 
     def story_point(self, value, scene=None):
@@ -871,6 +894,8 @@ def shot_line(view, shot_identifier, scene=None):
         parts.append(seconds_words(seconds))
     if role == "turn":
         parts.append(turn_words(view, shot_identifier))
+    if kind == "screen":
+        parts.append("on a screen")
     # a written shot speaks for itself: its moments, in order, are what the picture shows (the shot step may have
     # changed what the approved list said); before it is written, the list's line
     moments = [moment.get("shows") for moment in view.items(shot, "moment") if moment.get("shows")] \
@@ -878,6 +903,13 @@ def shot_line(view, shot_identifier, scene=None):
     shows = "; ".join(moments) if moments else (item.get("shows") if item is not None else None)
     if not shows and shot is not None:
         shows = shot.get("purpose")
+    if moments and shot is not None:
+        # moments lean on the shot's subject ("her finger draws ..."): say who, when the words do not
+        who = next((view.names.name(element_of(subject.first), scene, short=True)
+                    for subject in view.items(shot, "subject")
+                    if subject.first and element_of(subject.first).startswith("CH-")), None)
+        if who and who.lower() not in view.names.text(shows, scene).lower():
+            parts.append(f"on {who}")
     head = ", ".join(part for part in parts if part)
     return f"{head}: {view.names.text(shows, scene)}" if shows else head
 
@@ -941,10 +973,18 @@ def scene_at_a_glance(view, scene_identifier):
     if sentence:
         sentence = sentence[:1].upper() + sentence[1:] + "."
     turn_sentences = []
-    for position, (beat, kind) in enumerate(view.turn_beats(scene_identifier)):
+    turns = view.turn_beats(scene_identifier)
+    turns = sorted(turns, key=lambda pair: sort_key_for_identifier(pair[0].identifier))
+    others = [beat for beat, kind in turns if kind != "main"]
+    for beat, kind in turns:
         shot = view.turn_shot_for(beat.identifier)
         shot_identifier = shot.identifier if isinstance(shot, Record) else shot
-        label = "The turn" if kind == "main" else ("The second turn" if position == 1 else "Another turn")
+        if kind == "main":
+            label = "The main turn"
+        else:
+            # earlier turns in story order: "A first turn", "A second turn" (the second test read them backwards)
+            label = f"A {ORDINAL_WORDS[min(others.index(beat), len(ORDINAL_WORDS) - 1)]} turn" if len(others) > 1 \
+                else "Another turn"
         quote = turn_quote(view, beat, shot_identifier)
         text = f"{label} is beat {int(beat.identifier.rsplit('-B', 1)[1])}"
         if quote:
@@ -958,6 +998,9 @@ def scene_at_a_glance(view, scene_identifier):
     if not lines:
         lines.append("Nothing designed yet for this scene.")
     return lines
+
+
+ORDINAL_WORDS = ["first", "second", "third", "fourth", "fifth", "later"]
 
 
 def turn_quote(view, beat, shot_identifier):
@@ -1097,18 +1140,48 @@ def additions_of_scene(view, scene_identifier, with_meaning=False):
     """[(where, what)] of the additions to the story in a scene: SCENE additions and shots' additions. With
     with_meaning, [(where, what, changes meaning: True or False)] (only additions that change what the scene means
     go to the user to keep or cut; the rest are kept and counted)."""
+    from .checks_craft_reasons_words import content_words
     names = view.names
     found = []
+    cited = set()
+    said = []
     scene = view.record(scene_identifier, "SCENE")
     for item in view.items(scene, "additions"):
         if item.first and not is_empty(item.first):
             changes = normalise_word(item.get("changes_meaning") or "yes") != "no"
             found.append((None, names.text(item.first, scene_identifier), changes))
+            cited |= set(ID_IN_TEXT.findall(item.first))
+            said.append(set(content_words(item.first)))
     for shot in view.shots(scene_identifier):
         value = shot.get("additions")
         if value and not is_empty(value):
+            words = set(content_words(value))
+            if set(ID_IN_TEXT.findall(value)) & cited or (words and any(
+                    len(words & scene_words) >= ADDITION_SAME_SHARE * len(words) for scene_words in said)):
+                continue  # the scene's own additions already say it (the second test listed it twice)
             found.append((shot.identifier, names.text(value, scene_identifier), True))
     return found if with_meaning else [(where, what) for where, what, _ in found]
+
+
+# "Iona (Iona)": a name followed by itself in brackets, once an ID has been put into plain words.
+NAME_REPEATED_IN_BRACKETS = re.compile(r"\b([A-Z][\w'’]*(?: [\w'’]+){0,3}) \(\1\)", re.IGNORECASE)
+# A shot's addition that shares this much of its main words with one of the scene's additions is the same addition.
+ADDITION_SAME_SHARE = 0.8
+
+
+def scene_beat_lines(view, scene_identifier):
+    """'beat 7: Iona chews the leaf; she cannot taste the mint (the main turn)', one line for each beat, so that
+    "beat 7" elsewhere in the book leads somewhere."""
+    names = view.names
+    turns = {beat.identifier: kind for beat, kind in view.turn_beats(scene_identifier)}
+    lines = []
+    for beat in sorted(view.breakdown.beats_of(scene_identifier), key=lambda record: sort_key_for_identifier(
+            record.identifier)):
+        words = beat.title or "; ".join(part for part in (beat.get("action"), beat.get("reaction")) if part)
+        turn = {"main": " (the main turn)"}.get(turns.get(beat.identifier), " (a turn)" if beat.identifier in turns
+                                                 else "")
+        lines.append(f"- {names.name(beat.identifier, scene_identifier)}: {names.text(words, scene_identifier)}{turn}")
+    return lines
 
 
 def scene_small_choice_lines(view, scene_identifier):
@@ -1310,7 +1383,7 @@ def choices_plain_part(view, existing):
             continue
         letter, text, how = choice_answer(choice)
         line = f"- {names.text(choice_title(choice))}: {names.text(text) or 'as the default'} ({names.name(choice.identifier)}"
-        if is_asked(choice) or normalise_word(choice.get("checkpoint") or "none") == "b":
+        if is_asked(choice):  # a small choice shown at checkpoint B (asked: no) is still a small choice (SKILL.md)
             big.append(line + f", {how}).")
         else:
             small.append(line + ").")
@@ -2506,6 +2579,10 @@ def full_shot_rows(view, shot, scene_identifier):
                     value = names.name(value, scene_identifier, short=True) if ID_IN_TEXT.fullmatch(value) else plain_value(value)
                 elif key == "eyeline":
                     value = names.name(value, scene_identifier, short=True) if ID_IN_TEXT.fullmatch(value) else plain_value(value)
+                    first_word = (re.findall(r"[a-z]+", value.lower()) or [""])[0]
+                    if first_word in EYELINE_DIRECTION_WORDS:
+                        parts.append(f"eyes {value}")  # "eyes down into the dark", not "eyes on down ..."
+                        continue
                 elif key == "still":
                     value = plain_words_list(value)
                 else:
@@ -2514,11 +2591,16 @@ def full_shot_rows(view, shot, scene_identifier):
                     parts.append(value)  # a verb phrase of its own: "settles behind the wheel" (C18)
                 else:
                     parts.append(f"{KEY_WORDS.get(key, key)} {value}")
+        if item.get("recorded") and not is_empty(item.get("recorded")):
+            parts.append(f"as recorded in {names.text(item.get('recorded'), scene_identifier)}")
         add("In the frame", "; ".join(parts))
     for item in view.items(shot, "thing"):
         text = names.name(item.first, scene_identifier, short=True)
+        if item.get("recorded") and not is_empty(item.get("recorded")):
+            text += f", as recorded in {names.text(item.get('recorded'), scene_identifier)}"
         if item.get("emphasis"):
-            text += f", emphasis {item.get('emphasis')}"
+            emphasis = str(item.get("emphasis")).strip()
+            text += f", {EMPHASIS_WORDS.get(emphasis, 'emphasis ' + emphasis)}"
         if item.get("at"):
             text += f", {names.text(item.get('at'), scene_identifier)}"
         add("Thing", text)
@@ -2539,8 +2621,9 @@ def full_shot_rows(view, shot, scene_identifier):
         where = plain_value(item.get("speaker")) if item.get("speaker") else ""
         add("We hear", speech + (f" ({where})" if where else ""))
     for item in view.items(shot, "effect"):
+        loudness = str(item.get("sound_emphasis") or "").strip()
         add("Sound", names.text(item.first, scene_identifier)
-            + (f", sound emphasis {item.get('sound_emphasis')}" if item.get("sound_emphasis") else ""))
+            + (f", {SOUND_EMPHASIS_WORDS.get(loudness, 'sound emphasis ' + loudness)}" if loudness else ""))
     room = shot.get("room_sound")
     add("Room sound", plain_value(room) if room and re.fullmatch(r"[a-z_]+", room) else names.text(room, scene_identifier))
     if shot.get("silence") and normalise_word(shot.get("silence")) != "none":
@@ -2566,7 +2649,8 @@ def full_shot_rows(view, shot, scene_identifier):
     if shot.get("storyboard"):
         making.append(f"storyboard: {plain_value(shot.get('storyboard'))}")
     if shot.get("previs_level") and not is_empty(shot.get("previs_level")):
-        making.append(f"grey preview level {shot.get('previs_level')}")
+        level = str(shot.get("previs_level")).strip()
+        making.append(PREVIS_LEVEL_WORDS.get(level, f"grey preview level {level}"))
     if shot.get("route") and not is_empty(shot.get("route")):
         making.append(ROUTE_WORDS.get(normalise_word(shot.get("route")), f"made from {plain_value(shot.get('route'))}"))
     if normalise_word(shot.get("held") or "no") == "yes":
@@ -2769,6 +2853,7 @@ def write_book(project_folder, schema=None, words=None, constants=None, view=Non
         heading = view.scene_heading_words(scene)
         book.heading(heading)
         add_section_to_book(book, scene_at_a_glance(view, scene), "At a glance")
+        add_section_to_book(book, scene_beat_lines(view, scene), "The beats, one line each")
         add_section_to_book(book, scene_shot_lines(view, scene), "The shots, one line each")
         shots = view.shots(scene)
         if shots:
