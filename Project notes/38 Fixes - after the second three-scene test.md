@@ -59,7 +59,7 @@ My first words for the grey preview levels did not match the kit's own scale. Ca
 
 - New: `tests/fix04_second_three_scene_test_acceptance.py`, 7 groups, on small copies of the model scene only. All pass.
 - Changed: one older test expected the book's old words ("The turn is beat 7"); it now expects the new ones.
-- The full suite: see the project story, entry 38.
+- The full suite on the final code: 21 of 22 test files pass. The failing one is the old check of the chat-kit files' sizes (the same three files as before).
 - Re-checks on copies: the second test project (no errors, no warnings), your full breakdown of The Catch (no errors, 36 warnings, "Finished").
 
 ## What was not tested

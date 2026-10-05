@@ -20,7 +20,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - There is one finished model scene (The Catch, scene 10, Saye's kitchen) and its 3D mock-up.
 
 **Tested:**
-- The automatic tests pass in 18 of 19 groups. The failing group is a size target, explained under "Known issues".
+- The automatic tests: 21 of 22 test files pass. The failing one checks a size target, explained under "Known issues".
 - A fresh AI with only the kit planned the whole of The Catch and broke down three scenes (entries 23 to 25). Its 36 problems are fixed.
 - **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`.
 - **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
@@ -219,7 +219,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - My own slip, caught before testing: my first words for the grey preview levels did not match the kit's own scale (card 22). Corrected.
     - Not fixed: no check yet compares cameras, moves and shots. A first try at the line-crossing check flagged the model scene 10, where glass and reflections change the sides, so I put it back as planned.
     - Re-checks on copies: the second test project still has no errors and no warnings; your full breakdown of The Catch still has no errors, 36 warnings, and "Finished".
-    - Tests: the new test file (7 groups) passes; one older test now expects the book's new wording. The full suite was still running at this save.
+    - Tests: the new test file (7 groups) passes; one older test now expects the book's new wording. The full suite on the final code: 21 of 22 test files pass. The failing one is the old chat-kit size check, unchanged from before.
     - File: `Project notes/38 Fixes - after the second three-scene test.md`.
 
 ## Next step
