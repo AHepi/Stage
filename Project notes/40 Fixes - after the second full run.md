@@ -92,7 +92,7 @@ Still running at this save: one Opus 5.5 helper is carrying the test project on 
 
 - New: `tests/fix05_second_full_run_acceptance.py`, 57 groups (41 for the fixes, 16 for the repairs). The repair helper checked that each repair's group fails on the kit without that repair.
 - Changed to the new behaviour: three older tests (wp4f's question wording, wp5's drop order, fix02's estimate warning).
-- The full suite: still running at this save.
+- The full suite on the revised kit: 22 of 23 test files pass, the picture-making test included. The failing one is the old check of the chat-kit files' sizes, now 26% to 49% over their targets (the same three files as before). My own change to the short hold came during that run, so I re-ran the five test files it touches afterwards: all pass.
 
 ## What was not tested
 

@@ -20,7 +20,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - There is one finished model scene (The Catch, scene 10, Saye's kitchen) and its 3D mock-up.
 
 **Tested:**
-- The automatic tests: 21 of 22 test files passed before entry 40; the run for entry 40 was still going at this save. The failing one checks a size target, explained under "Known issues".
+- The automatic tests: 22 of 23 test files pass (entry 40). The failing one checks a size target, explained under "Known issues".
 - A fresh AI with only the kit planned the whole of The Catch and broke down three scenes (entries 23 to 25). Its 36 problems are fixed.
 - **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`.
 - **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
@@ -236,7 +236,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - My own change: a rule the fixes added turned your finished breakdown's 4 "short" holds into errors. An old "short" is now read as "medium", with a note.
     - Your full breakdown of The Catch, re-checked on a copy: no errors, 31 warnings and 4 kept on purpose (36 before).
     - A helper is carrying the second run's test project on to "Finished" with the revised kit; its result was not in at this save.
-    - Tests: the new test file (57 groups) passes; the full suite was still running at this save.
+    - Tests: the new test file (57 groups) passes. The full suite: 22 of 23 test files pass; the failing one is the old chat-kit size check.
     - File: `Project notes/40 Fixes - after the second full run.md`.
 41. **Gathered everything still open into one list,** as promised: 43 items, from the notes, the project story, the blueprint and the code, each with where it came from and how much it matters. From now on it is kept up to date each round.
     - File: `Project notes/41 Improvements to scope later.md`.
