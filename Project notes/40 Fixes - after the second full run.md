@@ -86,11 +86,17 @@ The checker now refused a "short" hold on a ladder rung (F25), and both full run
 
 ## The test project, carried on
 
-Still running at this save: one Opus 5.5 helper is carrying the test project on to "Finished" with the revised kit.
+One Opus 5.5 helper carried the second run's test project on with the revised kit, as you would after a kit update ("Continue my breakdown."). It took about 27 minutes.
+- **The kit sent it back to the whole-film pass,** where the revised checks run. It found one real error the old kit missed: in scene 23, the power cell was named in the state it was in before it burned out. The helper fixed it through the kit's normal loop.
+- **The export flagged reader-facing labels in 28 shots' "why" lines** (card numbers, set-plan names in capitals). The helper rewrote them through the loop. One was left in scene 18, whose piece of work had used all its repair rounds.
+- **Result:** no errors, 2 warnings and 3 kept on purpose, all 30 scenes still passing, and "what's next" says "Finished". I re-ran the final check on a copy myself: the same.
+- **Still in the book, because no check asked for them:** lens shorthand ("the 40") about 440 times, about 36 one-word names in capitals (some are the story's own words), and "emphasis 2" 6 times. They are on the improvements list (Project notes 41).
+
+**One more fix of mine, from that run:** the audio description read "Iona one finger goes into a bright bolt hole". A line that starts with a body part or a count now puts a colon after the name: "Iona: one finger goes into a bright bolt hole". It has a test, and the remade exports have none of the old lines.
 
 ## Tests
 
-- New: `tests/fix05_second_full_run_acceptance.py`, 57 groups (41 for the fixes, 16 for the repairs). The repair helper checked that each repair's group fails on the kit without that repair.
+- New: `tests/fix05_second_full_run_acceptance.py`, 58 groups (41 for the fixes, 16 for the repairs, 1 for the audio description). The repair helper checked that each repair's group fails on the kit without that repair.
 - Changed to the new behaviour: three older tests (wp4f's question wording, wp5's drop order, fix02's estimate warning).
 - The full suite on the revised kit: 22 of 23 test files pass, the picture-making test included. The failing one is the old check of the chat-kit files' sizes, now 26% to 49% over their targets (the same three files as before). My own change to the short hold came during that run, so I re-ran the five test files it touches afterwards: all pass.
 

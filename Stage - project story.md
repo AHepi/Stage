@@ -235,12 +235,12 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - The cross-examination found 16 problems in the fixes, among them prompts that lost "the red button". All repaired, some in part.
     - My own change: a rule the fixes added turned your finished breakdown's 4 "short" holds into errors. An old "short" is now read as "medium", with a note.
     - Your full breakdown of The Catch, re-checked on a copy: no errors, 31 warnings and 4 kept on purpose (36 before).
-    - A helper is carrying the second run's test project on to "Finished" with the revised kit; its result was not in at this save.
+    - One helper carried the second run's test project on with the revised kit, as you would after an update: it fixed the one real error the revised checks found and 28 shots' reader-facing labels, and ended with no errors, 2 warnings, 3 kept on purpose and "Finished". I re-checked it myself, fixed an audio description glitch it spotted ("Iona one finger goes..."), and sent you the remade production plan as a zip.
     - Tests: the new test file (57 groups) passes. The full suite: 22 of 23 test files pass; the failing one is the old chat-kit size check.
     - File: `Project notes/40 Fixes - after the second full run.md`.
-41. **Gathered everything still open into one list,** as promised: 43 items, from the notes, the project story, the blueprint and the code, each with where it came from and how much it matters. From now on it is kept up to date each round.
+41. **Gathered everything still open into one list,** as promised: 49 items, from the notes, the project story, the blueprint, the code and the update run, each with where it came from and how much it matters. From now on it is kept up to date each round.
     - File: `Project notes/41 Improvements to scope later.md`.
 
 ## Next step
 
-Finish checking entry 40's results (the full tests, and the test project carried on to "Finished"), then remake The Catch's production plan with the revised kit.
+Decide one design question: may the shot details step add a camera or move a person, as an addition you see (item 1 of `Project notes/41 Improvements to scope later.md`)? It would clear the most repair work. Once you decide, I build it and test it.

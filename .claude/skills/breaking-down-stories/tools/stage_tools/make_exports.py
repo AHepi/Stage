@@ -35,7 +35,8 @@ After the full run on The Catch (Project notes 31 and 32):
 
 After the second full run (Project notes 39 and 40):
 - export all writes a log line and remakes 00 Start here; the book's own check also flags card numbers, set-plan names
-  in capitals and coordinates.
+  in capitals and coordinates; an audio description line that starts with a body part or a count puts a colon after
+  the name ("Iona: one finger goes ...").
 """
 
 import csv
@@ -627,6 +628,13 @@ def speech_gaps(entry, cues):
     return sorted(gaps, key=lambda gap: gap[1] - gap[0], reverse=True)
 
 
+# A behaviour that starts with one of these words is not something the person does but a part of them or a count,
+# so the description puts a colon after the name: "Iona: hand, foot, hand, foot".
+WORDS_AFTER_A_COLON = {"his", "her", "their", "its", "the", "a", "an", "one", "two", "both", "each", "hand", "hands",
+                       "foot", "feet", "eyes", "eye", "head", "face", "arm", "arms", "finger", "fingers", "mouth",
+                       "lips", "knees", "shoulder", "shoulders", "back", "legs", "body"}
+
+
 def fitted_description(sentences, words_allowed):
     """As many whole clauses as fit the words allowed, the first person first (D18 R9, R11)."""
     parts = []
@@ -646,12 +654,12 @@ def fitted_description(sentences, words_allowed):
             used += count
         if taken:
             joined = "; ".join(taken)
-            first_word = joined.split()[0].lower() if joined.split() else ""
+            first_word = joined.split()[0].lower().strip(",;:.") if joined.split() else ""
             if name is None:  # a shot with no people: what its moments show, as a sentence of its own
                 parts.append(joined[:1].upper() + joined[1:].rstrip(".") + ".")
             else:
-                parts.append(f"{name}: {joined}." if first_word in ("his", "her", "their", "its", "the", "a", "an")
-                             else f"{name} {joined}.")
+                # "Iona: one finger goes into ...", never "Iona one finger goes into ..." (the second full run)
+                parts.append(f"{name}: {joined}." if first_word in WORDS_AFTER_A_COLON else f"{name} {joined}.")
         if used >= words_allowed:
             break
     return " ".join(parts)

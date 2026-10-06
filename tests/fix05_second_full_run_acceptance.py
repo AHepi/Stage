@@ -1492,6 +1492,21 @@ def says_it_in_the_frame(scratch):
     return "Dr Saye's row says the line's words"
 
 
+# ---------------------------------------------------------------- after the update run: audio description
+
+@group("Update run: an audio description line that starts with a body part or a count puts a colon after the name; "
+       "a line that starts with what the person does keeps the plain form")
+def description_after_name(scratch):
+    from stage_tools.make_exports import fitted_description
+    assert fitted_description([("Iona", ["one finger goes into a bright bolt hole"])], 20) == \
+        "Iona: one finger goes into a bright bolt hole."
+    assert fitted_description([("Iona", ["hand, foot, hand, foot", "her lips move round the torch"])], 20) == \
+        "Iona: hand, foot, hand, foot; her lips move round the torch."
+    assert fitted_description([("Iona", ["stands square to the window"])], 20) == "Iona stands square to the window."
+    assert fitted_description([("Iona", ["in the foreground"])], 20) == "Iona in the foreground."
+    return "a colon after the name only where the line names a part of the person or a count"
+
+
 def main():
     with tempfile.TemporaryDirectory(prefix="stage fix05 ") as temporary:
         scratch = Path(temporary)
@@ -1552,6 +1567,7 @@ def main():
         move_marks_checked(scratch)
         instruction_wording_after_cross_examination(scratch)
         says_it_in_the_frame(scratch)
+        description_after_name(scratch)
     failing = RESULTS.count(False)
     print(f"RESULT: {'PASS' if not failing else 'FAIL'} ({RESULTS.count(True)} passed, {failing} failing groups)")
     return 0 if not failing else 1

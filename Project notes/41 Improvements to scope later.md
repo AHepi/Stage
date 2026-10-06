@@ -26,7 +26,7 @@ These need you or me to decide how the kit should work before any code changes.
 
 ## 3. Left over from the fixes
 
-10. **Reader-facing shorthand already in finished books.** *Medium.* The "why" lines written before entry 40 still hold "the 40" for a lens (hundreds of times in the test book), card numbers and set-plan names in capitals. The export now flags them and step 8 forbids them, but an existing book keeps them until those shots are written again.
+10. **Reader-facing shorthand in the "why" lines.** *Medium.* After the update run (Project notes 40), the test book still holds lens shorthand ("the 40") about 440 times, about 36 one-word names in capitals (some are the story's own words) and "emphasis 2" 6 times. Step 8 forbids them, but no check flags lens shorthand, and the full check does not flag the others: only the export does, two names at a time.
 11. **The mid-crawl false alarm** (F20 a, c, d). *Low.* Shot size is measured where a person is part-way through a move the cut skips. Fixing it needs moves timed to the cut, a test of what is in frame from top to bottom, and a "leaning" posture.
 12. **Who writes a scene's list of people** (F06, part). *Low.* People who never speak now reach the handouts. The scene's own list is still written by the AI, and can miss them.
 13. **Scene files named from the place, not the script's heading** (F60). *Low.* Changing it would rename every project's files and the kit's example.
@@ -40,7 +40,7 @@ These need you or me to decide how the kit should work before any code changes.
 From Project notes 32 and 36; some may have been fixed along the way.
 
 18. A finding of the whole-film pass stays open after its problem goes away. *Medium.*
-19. "What's next" names the next piece even when the last check failed. *Medium.*
+19. "What's next" names the next piece even when the last check failed. *Medium.* Seen again in the update run: after the film pass it offered the exports while the full check had an error, and nothing pointed back to the piece that wrote the record.
 20. The look description's 2 to 3 sentences are not checked. *Low.*
 21. A story rule's title can read like a name inside the book's sentences. *Low.*
 22. The whole-film summary says it leaves out record types it has room for. *Low.*
@@ -74,3 +74,12 @@ From Project notes 32 and 36; some may have been fixed along the way.
 41. The Long Places, or any story other than The Catch, end to end.
 42. The chat apps for real (ChatGPT, Gemini, Claude on the web).
 43. Making pictures, video or voices from the prompts.
+
+## 8. Found while carrying the test project on (Project notes 40)
+
+44. **Repair rounds carry over between runs.** *Medium.* A piece of work that used its 3 repair rounds in the first run has none left for a new fault a revised kit finds. One label in scene 18 stayed for that reason.
+45. **Repair file numbers.** *Low.* apply accepts a repair file whose number was already used, and suggests "fix 4" after the third and last round.
+46. **The export names only two labels of each kind at a time.** *Low.* The helper found the rest by exporting again, or by counting by hand.
+47. **The size check offers no "kept on purpose" route** when the cause is a move in an earlier step. *Low.*
+48. **Shot numbers are printed with their zeros** ("shot 010") in the book and the health check, 523 times. *Low.* This is the film-industry habit, but a reader may not expect it.
+49. **A piece of work's own check takes about 15 seconds.** *Low.*
