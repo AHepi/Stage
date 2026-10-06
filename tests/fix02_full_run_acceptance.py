@@ -1025,11 +1025,18 @@ def non_human_needs_silence(scratch):
 @group("X08: TIME-03 warns when a scene's list is more than twice, or under half, its planned length")
 def design_against_target(scratch):
     far = edit(gold_texts(), "context", "SCENE SC10", "- target_duration_s: 110", "- target_duration_s: 40")
+    # changed after the second full run (Project notes 39, F19): the first estimate is named as such, and the far
+    # list is a warning until the user approves the list, then a note
     found = lines_of(checked(far, ["TIME-03"]), "TIME-03")
-    assert any("times its planned 40 s" in str(problem) for problem in found), [str(problem) for problem in found]
+    assert any("times the first estimate's 40 s" in str(problem) and problem.level == "N" for problem in found), \
+        [str(problem) for problem in found]
+    draft = edit(far, "scene", "SHOTLIST SC10-LIST", "- approved: yes", "- approved: no")
+    found = lines_of(checked(draft, ["TIME-03"]), "TIME-03")
+    assert any("times the first estimate's 40 s" in str(problem) and problem.level == "W" for problem in found), \
+        [str(problem) for problem in found]
     near = lines_of(checked(gold_texts(), ["TIME-03"]), "TIME-03")
-    assert not any("planned" in str(problem) for problem in near), [str(problem) for problem in near]
-    return "a list 2.8 times its plan warned; the gold's own plan silent"
+    assert not any("first estimate" in str(problem) for problem in near), [str(problem) for problem in near]
+    return "a list 2.8 times its first estimate warned, then a note once approved; the gold's own estimate silent"
 
 
 @group("X09: GEN-06 allows model_drawn only for one short mark, and finds capitals written with a capital on every "

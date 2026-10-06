@@ -592,7 +592,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - origin_corner: <standard, when set_plan_needed, always at detailed: text>
 - axes: <standard, when set_plan_needed, always at detailed: text>
 - wild_walls: <standard, when set_plan_needed, always at detailed: the compass names of the walls the camera may pass through (north, south, east or west, separated by commas), or none>
-- object: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres> | size: <[width, depth, height] in metres> | base: <metres> | material: <text> | meaning: <text> | furniture: <seat, bed or none>
+- object: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres> | size: <[width, depth, height] in metres> | base: <metres> | material: <text; "from scene NN" when it arrives later> | meaning: <text> | furniture: <seat, bed or none>
 - mark: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>
@@ -632,7 +632,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - words: <quick, code copies it from the story lines of words_from when origin is story; you write it when origin is inferred or invented: text>
 - on: <quick: an ID of PROP (PR-FLASK) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP) or CHARACTER (CH-IONA), or none>
 - origin: <quick: story, inferred or invented>
-- words_from: <quick, when text_in_story, one line each: the story line that writes the words (a line number, or a quote anchor in a chat without code)> | quote: <the exact words inside the line, when the line holds more than the text>
+- words_from: <quick, when text_in_story, one line each: the story line that writes the words (a line number, or a quote anchor in a chat without code)> | quote: "<the exact words inside the line, in double quotes, when the line holds more than the text>"
 - reader: <standard: an ID of CHARACTER (CH-IONA), or none>
 - plot_critical: <standard: yes or no>
 - emphasis: <standard: a number from 0 to 3>
@@ -871,7 +871,7 @@ Below this line: details for the AI and the checker. You never need to read them
 > status: draft, approved, stale, omitted.
 
 ### SOUNDPLAN
-- music_policy: <quick, the user's answer, set through a choice: none, sparse, scored or source_only>
+- music_policy: <quick, the user's answer, set through a choice; code writes it from that choice, never type it on a code surface: none, sparse, scored or source_only>
 - clip_audio: <quick, code writes it; in a chat without code you write it: text>
 - voice_policy: <quick, the user's answer, set through a choice: designed_only, designed_plus_own_clone or designed_plus_consented_clones; default designed_only>
 - device_budget: <standard, one line each: cut_to_black, true_silence or freeze> | max: <a number>
@@ -885,7 +885,7 @@ Below this line: details for the AI and the checker. You never need to read them
 > status: draft, approved, stale, omitted.
 
 ### LADDER
-- rung: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"> | size: <one word from the note> | hold: <short, medium, long or hold> | why: <text>
+- rung: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"> | size: <one word from the note> | hold: <medium, long or hold> | why: <text>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>
 - note: <optional, one line each: text>
@@ -993,7 +993,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - charge: <standard, one line each: an ID of VALUE (SC10-V1)> | charge: <---, --, -, 0, +, ++ or +++>
 - flag: <standard, when when_used, one line each: one word from the note> | line: <an ID of SPEECH (SC10-D11)>
 - engaged_pair: <standard, when tag_three_or_more: IDs of CHARACTER (CH-IONA), separated by commas>
-- silent_third: <standard, when tag_three_or_more: an ID of CHARACTER (CH-IONA)>
+- silent_third: <standard, when tag_three_or_more: an ID of CHARACTER (CH-IONA), or none when nobody is left to witness>
 - five_steps: <standard, when turn_or_intense_beat, one line each: desire, obstacle, choice, action or expression> | shows: <text>
 - landing_face: <standard, when dialogue_pass_beat, always at detailed: a character ID, insert:<ID>, or wide>
 - unsaid: <standard, when turn_beat, always at detailed: an ID of CHARACTER (CH-IONA)> | thought: <text>
@@ -1048,7 +1048,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - who: <standard: an ID of CHARACTER (CH-IONA)>
 - from: <standard: MARK_NAME or [x, y]>
 - to: <standard: MARK_NAME or [x, y]>
-- via: <standard: [x, y] or [x, y, z] in metres, or none>
+- via: <standard: MARK_NAME, [x, y] or [x, y, z] in metres, or none>
 - start_s: <standard: seconds>
 - dur_s: <standard: seconds>
 - faces: <standard: ID or [x, y]>
@@ -1134,7 +1134,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - light_cue: <standard: text> | when: <seconds> | why: <text>
 - dark: <detailed: text>
 - eye_light: <detailed: yes or no>
-- hear: <quick, one line each: an ID of SPEECH (SC10-D11); write none when there is nothing> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words">
+- hear: <quick, one line each: an ID of SPEECH (SC10-D11); write none when there is nothing> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words"> | plant: <an ID of PLANT, when a line plants it> | payoff: <an ID of PLANT>
 - effect: <standard, one line each: text; write none when there is nothing> | at: <seconds> | sound_emphasis: <a number from 0 to 3>
 - room_sound: <standard: text, or as_place; default as_place>
 - silence: <standard: none, room_sound_only, drop_out or true_silence; default none>
@@ -1451,7 +1451,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - clearance: <add-on, AI video, earlier when rights_subject_source, the user's answer, set through a choice: text>
 - holder: <add-on, AI video, earlier when rights_subject_source, the user's answer, set through a choice: text>
 - licence: <add-on, AI video, the user's answer, set through a choice: a file name, or none>
-- evidence: <add-on, AI video: text>
+- evidence: <add-on, AI video, but step 0 already writes it: text, such as: the user said: It's mine>
 - commercial_ok: <add-on, AI video, the user's answer, set through a choice: yes, no or check>
 - attribution: <add-on, AI video: text>
 - disclosure: <add-on, AI video: text>
@@ -1531,7 +1531,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 **G9. The END line.** Every file ends with exactly one END line: `END OF FILE | <what the file holds> | <n> records`, for example `END OF FILE | Scene 10 shots 130-200 | 8 records`. `n` counts the file's `###` records. A missing END line or a wrong count means a cut-off reply or a dropped record.
 
-**G10. Merging.** Records with the same TYPE and ID in several files merge field by field: a scene's list fields in `04 Scene list.md` and its design fields in its scene file; a scene's shots across batch files. The same field with two different values is an error. Items of a repeatable field are combined and exact duplicates removed.
+**G10. Merging.** Records with the same TYPE and ID in several files merge field by field: a scene's list fields in `04 Scene list.md` and its design fields in its scene file; a scene's shots across batch files. The same field with two different values is an error. Items of a repeatable field are combined and exact duplicates removed. On a code surface, `apply` replaces each field you send whole, except a review's answers and a side choice's sides, which it merges by their first part.
 
 **G11. No shortening.** Shortening markers inside a record ("...", "…", "etc.", "and so on", "same as above", "as before", "remaining shots", "omitted for brevity", a line starting `//`) are errors, unless inside double quotes that match the story.
 

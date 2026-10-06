@@ -1721,7 +1721,7 @@
     {
      "name": "story_day",
      "label": "Story day",
-     "meaning": "Which day or night of the story (D1, N1 ...).",
+     "meaning": "Which day or night of the story (D1, N1 ...); a night takes the number of the day before it (N1 follows D1).",
      "kind": "text",
      "depth": "s",
      "writer": "ai",
@@ -3183,13 +3183,16 @@
     {
      "name": "silent_third",
      "label": "Silent third",
-     "meaning": "In a three-person scene, the witness.",
+     "meaning": "In a three-person scene, the witness; none for a beat where nobody is left to witness.",
      "kind": "id",
      "depth": "s",
      "writer": "ai",
      "example": "CH-ELI",
      "id_types": [
       "CHARACTER"
+     ],
+     "also_allowed": [
+      "none"
      ],
      "required_when": "tag_three_or_more",
      "filled_by_step": 7,
@@ -3784,11 +3787,12 @@
     {
      "name": "via",
      "label": "Via",
-     "meaning": "A point the path passes through, or none when the move goes straight.",
-     "kind": "point",
+     "meaning": "A mark or a point the path passes through, or none when the move goes straight; a change of height is a posture change, not a via.",
+     "kind": "text",
      "depth": "s",
      "writer": "ai",
      "example": "[3.4, 2.4]",
+     "syntax": "MARK_NAME, [x, y] or [x, y, z]",
      "also_allowed": [
       "none"
      ],
@@ -5235,7 +5239,23 @@
       {
        "key": "words",
        "kind": "quote",
-       "meaning": "Only in chat: the words, which code later verifies (CITE-04)."
+       "meaning": "The words heard in this shot when a speech is split across shots (on any surface), and in chat the words of every speech; code verifies them (CITE-04)."
+      },
+      {
+       "key": "plant",
+       "kind": "id",
+       "id_types": [
+        "PLANT"
+       ],
+       "meaning": "The PLANT this spoken line plants (a plant made by a line, not a thing)."
+      },
+      {
+       "key": "payoff",
+       "kind": "id",
+       "id_types": [
+        "PLANT"
+       ],
+       "meaning": "The PLANT this spoken line pays off."
       }
      ],
      "filled_by_step": 8
@@ -11059,9 +11079,8 @@
       {
        "key": "hold",
        "kind": "word",
-       "meaning": "Planned hold, by pause tier.",
+       "meaning": "Planned hold, by pause tier: medium or longer, since a turn owes turn_reaction_min_s.",
        "values": [
-        "short",
         "medium",
         "long",
         "hold"

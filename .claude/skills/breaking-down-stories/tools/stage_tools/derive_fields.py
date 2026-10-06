@@ -43,6 +43,13 @@ After the full run on The Catch (Project notes 31 and 32):
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - a light at rest marks no beat (light_moves_in, here now, with LIGHT_MOVING_NEAR); a speech split at a phrase is
   timed for the words a shot hears; one or two letters match a text only when its thing is in the scene.
+
+After the second full run (Project notes 39 and 40):
+- printed words on nothing that a text rule governs follow the scene's place; the states in play take the things a
+  handout names; eyeline sides are read when the line is spoken; a shot that writes "text: none" owes no reading time;
+  a list item that quotes part of a speech owes only that part.
+- after its cross-examination: "text: none" still owes reading time for a text whose thing the shot shows at
+  emphasis 2 or whose words it quotes.
 """
 
 import json
@@ -673,10 +680,14 @@ def texts_shown_by(breakdown, shot, shot_lines):
     """[(TEXT ID, how it is shown)]: the texts a shot lists in `text` that the audience must read, and the
     plot-critical texts it shows without listing them (their thing is in the shot's thing, must_show or subject
     items, and the story line that writes their words is one of the shot's lines), so a reading floor is never
-    missed on a visor or a wrist display."""
+    missed on a visor or a wrist display. A shot that writes text: none says nothing in it is read (a monitor too
+    small to read; the second full run, Project notes 39): it owes no time for such a text when the text's thing is
+    at emphasis 0 or 1 and the shot's moments, purpose and why do not quote its words (its cross-examination: the
+    F the scene is about, quoted in the shot, lost its floor)."""
     found = [(identifier, "listed") for identifier in breakdown.id_list(shot, "text")
              if breakdown.record(identifier, "TEXT") is not None
              and text_must_be_read(breakdown.record(identifier, "TEXT"))]
+    text_none = shot.get("text") is not None and normalise_word(shot.get("text") or "") == "none"
     shown = set()
     for field_name in ("thing", "must_show", "subject"):
         for item in breakdown.items(shot, field_name):
@@ -695,9 +706,28 @@ def texts_shown_by(breakdown, shot, shot_lines):
             continue
         source = breakdown.item(text_record, "words_from")
         numbers = parse_line_numbers(source.first) if source is not None and source.first else None
-        if numbers and any(first <= line <= last for first, last in numbers for line in shot_lines):
-            found.append((identifier, f"shown on {on}"))
+        if not numbers or not any(first <= line <= last for first, last in numbers for line in shot_lines):
+            continue
+        if text_none and not text_featured_in_shot(breakdown, shot, text_record, on):
+            continue
+        found.append((identifier, f"shown on {on}"))
     return found
+
+
+def text_featured_in_shot(breakdown, shot, text_record, on):
+    """True when a shot that writes text: none still features an unlisted text: its thing is at emphasis 2 or more
+    in the shot, or the shot's moments, purpose or why quote its words (capitals matched as written)."""
+    for item in breakdown.items(shot, "thing"):
+        if any(element_of(piece.strip()) in (on, text_record.identifier) for piece in split_list(item.first or "")) \
+                and (number_of(item.get("emphasis"), 0) or 0) >= 2:
+            return True
+    words = (text_record.get("words") or "").strip().strip('"').strip()
+    if not words or normalise_word(words) == "none":
+        return False
+    written = " ".join([shot.get("purpose") or "", shot.get("why") or ""]
+                       + [item.get("shows") or "" for item in breakdown.items(shot, "moment")])
+    capitals = words == words.upper() and re.search(r"[A-Z]", words)
+    return bool(re.search(r"(?<!\w)" + re.escape(words) + r"(?!\w)", written, 0 if capitals else re.IGNORECASE))
 
 
 def speech_word_list(text):
@@ -865,7 +895,15 @@ def provisional_floor(breakdown, scene_identifier, shot_identifier):
                     continue
                 if not quoting:
                     shared.append((entry["id"], [identifier for identifier in sharing if identifier != shot_identifier]))
-            part = speech_part(breakdown, entry["id"])
+            # an item that quotes part of the speech hears that part only, as its shot's hear words will say (the
+            # second full run, Project notes 39: it was given the whole speech's floor)
+            quoted = [quote for quote in quoted_strings(item.get("shows"))
+                      if quote and speech_words_part(quote, entry.get("text") or "")]
+            part = speech_part(breakdown, entry["id"], " ".join(quoted) if len(quoted) == 1 else None)
+            if part is not None and len(quoted) > 1:
+                words = sum(count_words(quote) for quote in quoted)
+                part = (part[0], part[1], words, part[3],
+                        words / part[3] + constant(breakdown.constants, "speech_floor_extra_s", 0.5))
             if part is None:
                 unknown.append(entry["id"])
             else:
@@ -1583,13 +1621,16 @@ def elements_present(breakdown, scene_identifier):
     return unique
 
 
-def states_in_play(breakdown, scene_identifier):
-    """The states valid in a scene for the elements present in it (derived SCENE states_in_play)."""
+def states_in_play(breakdown, scene_identifier, more_elements=()):
+    """The states valid in a scene for the elements present in it (derived SCENE states_in_play); more_elements adds
+    elements a handout found by name in the scene's lines."""
     scope = breakdown.scene_range(scene_identifier)
     if scope is None:
         return []
     found = []
-    for element in elements_present(breakdown, scene_identifier):
+    elements = list(elements_present(breakdown, scene_identifier))
+    elements += [element for element in more_elements if element not in elements]
+    for element in elements:
         for state in states_of(breakdown, element):
             start = state_from(breakdown, state)[1]
             end = state_until(breakdown, state)[1]
@@ -1670,8 +1711,9 @@ NEVER_MIRRORED_TEXT_KINDS = ("title_card", "caption")
 
 def text_orientation(breakdown, text_identifier, shot):
     """normal or mirrored for one TEXT in a shot: a title card or caption always reads normally; a rule exception
-    that names it decides; a titles rule reads it normally; otherwise it follows the thing it is on (or the frame
-    when it is on nothing)."""
+    that names it decides; a titles rule reads it normally; otherwise it follows the thing it is on. Text on nothing
+    that a text rule governs (a street sign) follows the world, the scene's place; other text on nothing follows the
+    frame."""
     text_record = breakdown.record(text_identifier, "TEXT")
     if text_record is None:
         return None
@@ -1679,15 +1721,22 @@ def text_orientation(breakdown, text_identifier, shot):
         return "normal"
     on = text_record.get("on")
     on = None if not on or normalise_word(on) == "none" else on
+    world_text = False
     for rule in rules_governing(breakdown, [text_identifier] + ([on] if on else [])):
         for item in breakdown.items(rule, "exception"):
             if item.first == text_identifier and item.get("reads"):
                 return normalise_word(item.get("reads"))
         if normalise_word(rule.get("kind") or "") == "titles" and text_identifier in breakdown.id_list(rule, "governs"):
             return "normal"
+        if normalise_word(rule.get("kind") or "") == "text" and text_identifier in breakdown.id_list(rule, "governs"):
+            world_text = True
     line = shot_first_line(breakdown, shot)
     if on:
         return mirror_state_at(breakdown, on, line)
+    place = scene_location(breakdown, scene_of(getattr(shot, "identifier", None))) if world_text else None
+    if place:
+        # The second full run (Project notes 39): a bus number on nothing read normally in the mirrored era.
+        return mirror_state_at(breakdown, place, line)
     return "mirrored" if frame_at(breakdown, line) == "reversed" else "normal"
 
 
@@ -2253,10 +2302,11 @@ def facing_in_shot(breakdown, shot, item):
     return written if written in FACING_ROUND + ["up", "down"] else None
 
 
-def eyeline_sides(breakdown, shot):
+def eyeline_sides(breakdown, shot, share=0.0):
     """{element: side} for every subject whose eyeline names someone or something the set plan places: the side of
-    the frame the look goes to (frame_left or frame_right), from the shot's first moment (5.6)."""
-    key = ("eyelines", shot.identifier)
+    the frame the look goes to (frame_left or frame_right), from the shot's first moment (5.6), or from the share of
+    the shot given (0.5: its middle; GEOM-01 reads it when the line is spoken)."""
+    key = ("eyelines", shot.identifier, round(share, 3))
     if key in breakdown._cache:
         return breakdown._cache[key]
     result = {}
@@ -2264,7 +2314,8 @@ def eyeline_sides(breakdown, shot):
     camera = camera_for(breakdown, shot, plan)
     if plan is not None and camera is not None:
         staging = scene_staging(breakdown, scene_of(shot.identifier))
-        begin = staging.intervals.get(shot.identifier, (0.0, 0.0))[0]
+        start, end = staging.intervals.get(shot.identifier, (0.0, 0.0))
+        begin = start + (end - start) * min(max(share, 0.0), 1.0)
         for item in subject_items(breakdown, shot):
             element = element_of(item.first)
             eyeline = item.get("eyeline")

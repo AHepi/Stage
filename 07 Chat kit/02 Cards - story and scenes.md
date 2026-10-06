@@ -33,7 +33,7 @@ Step 1 confirms the scene list and asks the length question. Step 2 plans the wh
 3. What does the story turn on? The core value with two poles; the theme as a question the story tests, not a moral; the core opposition as two nouns (B4 §3.1 steps 1-2).
 4. Where does the core value turn for good? Chart two or three candidate values across all scenes; keep the one whose last big turn is the last major reversal, caused by the protagonist, answering the story's question (D16 R3).
 5. How intense is each scene across the film? Go from the top: 10 only for the climax; 8 or 9 a life at stake or a reversal that changes the whole plan (9 for at most the one or two biggest before the climax); 6 or 7 a turn that changes a relationship or the plan; 4 or 5 a minor turn, a test or needed information; 2 or 3 set-up, travel, aftermath; 1 nothing at stake. Never derive it from beat scores (B3 §2.6).
-6. Where do the sequences break? Test the author's own breaks first, such as a cut to black followed by a title card (D16 R8); each sequence ends inside its act and answers one question with a quoted line (D16 R12).
+6. Where do the sequences break? Test the author's own breaks first, such as a cut to black followed by a title card (D16 R8); each sequence ends inside its act and answers one question with a quoted line, written in its `story_job` (D16 R12).
 7. What is planted, and where is it paid off? Every scene is both (A2 P12); write both ends as story points (PLAN-02).
 8. Who knows what, from when? Only for suspense, mystery and dramatic irony, write a FACT naming the `element` that would give it away in frame (A4 §6.5; A3 R4).
 9. **Whose scene** is it: whose place and knowledge does the camera share (A3 §7.3)?
@@ -553,7 +553,7 @@ Design every person the film shows more than once so that a video model can rebu
 7. **What status and distance?** Status (`status_play`) is how a person raises or lowers themselves against another, played, not held (B5 §5.3). High by stillness breaks once, leaning toward something (B5 R15). Distance: default and closest in metres, with the scenes that change them (B5 §5.5).
 8. **What do they wear?** Answer B4's five questions first, in nouns and materials: choice, means and job, history, what the story did to it, what an institution put on them. Name the wear; change costume only at a turning point or a forced circumstance; keep one chosen thing through imposed clothes (B4 §6.1, R19; B5 R7).
 9. **Not human?** Fear from silhouette, sound first and wrong proportions in a human plan; pity from damage suffered and care shown; every clue strange, never hidden; with no face, its thinking goes to head direction, hands and the order of its looks (B5 §6.2-§6.4, R10-R12).
-10. **What stays open?** Skin tone and ethnicity the story does not state, with a marked placeholder and a small choice (B5 R19). Apparent sex and age band are always fixed (B5 §7.2 rule 7).
+10. **What stays open?** Skin tone and ethnicity the story does not state, with a marked placeholder (`skin_light: open` until the casting choice) and a small choice (B5 R19). Apparent sex and age band are always fixed (B5 §7.2 rule 7).
 
 ## State lines
 
@@ -624,7 +624,7 @@ Tests: the **any-film test** (would it fit any film with this theme?), the **moo
 
 ### The Catch: CH-SAYE at step 4
 
-Evidence: "DR SAYE, fifties, grey and tidy, fully dressed at four in the morning" (line 399); "quick flat hands" (line 408). Thesis: upright and fully fastened, dressed and waiting for years, her one living thing a pot of mint (B5 §10.4). Lineup: `height: average | mass: slight | shape: long | value: light | colour: grey | tempo: fast`. Nell shares her mass, shape and value; tempo written fast, from the quick hands, keeps them apart in height, colour and tempo, exactly `lineup_columns_differ_min` (B5 §10.11). Gesture: "She waits until Iona steps aside. | line: 481". `status_play`: `default: high | flips: SC17 "Leans in until her face is almost on the screen."`. Fixed description, no expression, her age in the story's word (B5 §7.2 rule 2; K26): "Dr Saye, a slim, upright woman in her fifties, short neat grey hair, a long pale lined face, thin straight brows, level grey eyes, a light grey cardigan buttoned to the collar over a white blouse." Her ring goes to the state line (K26).
+Evidence: "DR SAYE, fifties, grey and tidy, fully dressed at four in the morning" (line 399); "quick flat hands" (line 408). Thesis: upright and fully fastened, dressed and waiting for years, her one living thing a pot of mint (B5 §10.4). Lineup: `height: average | mass: slight | shape: long | value: light | colour: grey | tempo: slow` (the body's tempo; the field `tempo` says "fast hands, slow body"). Nell shares her mass, shape and value; height, colour and tempo keep them apart, exactly `lineup_columns_differ_min` (B5 §10.11). Gesture: "She waits until Iona steps aside. | line: 481". `status_play`: `default: high | flips: SC17 "Leans in until her face is almost on the screen."`. Fixed description, no expression, her age in the story's word (B5 §7.2 rule 2; K26): "Dr Saye, a slim, upright woman in her fifties, short neat grey hair, a long pale lined face, thin straight brows, level grey eyes, a light grey cardigan buttoned to the collar over a white blouse." Her ring goes to the state line (K26).
 
 ### The Long Places: Melek, a prose portrait
 
@@ -802,7 +802,7 @@ Turn the things a story names into records the camera can point at with the righ
 
 ## Emphasis
 
-**Emphasis** is how loudly the camera points at a thing, on its own scale, never converted to another (B4 §3.4; K14): 0 present (small, part of the set); 1 placed (on a strong point, catching a highlight); 2 featured (an insert or medium close-up, handled or looked at); 3 spent (the beat turns on it: the only sharp or moving thing, or a rhyme: the plant's side, height, size and light repeated). A sound motif has its own **sound emphasis**, from buried under other sounds to heard alone (B4 §3.4). At step 7 write `emphasis` items and `added_emphasis` on each beat.
+**Emphasis** is how loudly the camera points at a thing, on its own scale, never converted to another (B4 §3.4; K14): 0 present (small, part of the set); 1 placed (on a strong point, catching a highlight); 2 featured (an insert or medium close-up, handled or looked at); 3 spent (the beat turns on it: the only sharp or moving thing, or a rhyme: the plant's side, height, size and light repeated). A sound motif has its own **sound emphasis**, from buried under other sounds to heard alone (B4 §3.4). At step 7 write `emphasis` items and `added_emphasis` on each beat. On its own shot a plant's or payoff's emphasis wins; the beat's emphasis covers the rest.
 
 1. **Plants stay within `plant_emphasis_max`,** made clear by composition and light, not size; a plant that is itself a plot event (a rung breaks, a sign is read aloud) may use its plot-event value, with nothing pointing forward (B4 R6; K11; CRAFT-08).
 2. **Emphasis 3 is a budget:** `emphasis_3_rules`. A second 3 for one motif only as a deliberate inversion of the first (B4 P5; CRAFT-09).
@@ -1022,7 +1022,7 @@ Words the audience must read (signs, labels, displays, title cards), screens in 
 6. **Is it footage recorded inside the story?** Give it a CAMERA record (position, lens, frame shape, frame rate, overlays, `moves`), record the event once as one continuous take, and cut every viewing from it (B1 §10.4, R22).
 7. **Is a screen in frame?** The device shot asks for a blank screen; its content is its own shot, pinned on after (blueprint 8.5; C2 R6; C3 §13B).
 8. **Does a later scene replay this one?** Put the replaying camera into this scene's set plan as a named setup (A3 R9).
-9. **Does something appear or vanish on a fixed feed?** Between two frames: no camera move, no dissolve, no glow (B1 R20, §10.6).
+9. **Does something appear or vanish on a fixed feed?** Between two frames: no camera move, no dissolve, no glow (B1 R20, §10.6). Chained pieces of one feed are joined by a `continue` CUT; a `kind: screen` shot's `height` is the in-story camera's, in metres.
 
 ## Rules
 

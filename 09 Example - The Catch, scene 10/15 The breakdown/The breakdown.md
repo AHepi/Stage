@@ -2,7 +2,7 @@
 
 Scope: 1 of 1 scene (scene 10).
 
-1 scene, 21 shots, about 1 minute 53 seconds of story. Made from the records on 2026-10-05; if it looks wrong, the record is fixed and the book is made again.
+1 scene, 21 shots, about 1 minute 53 seconds of story. Made from the records on 2026-10-06; if it looks wrong, the record is fixed and the book is made again.
 
 ## Contents
 
@@ -45,7 +45,7 @@ The crisis is scene 24, "She deletes the way home."; the climax is scenes 26 to 
 
 **Groups of scenes**
 
-- Group of scenes 3: the wrong world, scenes 7 to 10: shows the three of them that everything reads backwards, then proves the change is in them.
+- Group of scenes 3: The wrong world, scenes 7 to 10: shows the three of them that everything reads backwards, then proves the change is in them.
 
 **Plants and payoffs**
 
@@ -220,7 +220,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - shot 160, medium close-up, 4 seconds, on Dr Saye: she looks at Iona once, then turns to the counter and takes up the phone; its screen lights her hand
 - shot 170, medium close-up, 6 seconds, on Iona: she asks; the answer comes from off the frame; her eyes go past Saye to Eli
 - shot 180, medium wide, 4 seconds: Iona crosses round the end of the table and stops between them, facing Saye
-- shot 190, wide, 9 seconds, the second turn: Saye speaks, level, from the counter; nobody moves; Saye waits; Iona's eyes go to Jude and she steps aside, toward him; Eli is in plain sight again
+- shot 190, wide, 9 seconds, another turn: Saye speaks, level, from the counter; nobody moves; Saye waits; Iona's eyes go to Jude and she steps aside, toward him; Eli is in plain sight again
 - shot 200, medium, 3 seconds, on Dr Saye: Saye says it, still, and holds
 - shot 990, title card, 5 seconds: the title appears on black and holds
 
@@ -265,7 +265,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 399 to 402
 - **Camera:** camera G (the flask on the step), insert, single, high, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on the flask (the clip empty)
-- **In the frame:** Eli (the flask in his fist); at the centre; facing Dr Saye; eyes on Dr Saye; his fist holds the flask against his coat, knuckles white, dried blood on the sleeve; his other arm stays round Jude; still hands and torso
+- **In the frame:** Eli; at the centre; facing Dr Saye; eyes on Dr Saye; his fist holds the flask against his coat, knuckles white, dried blood on the sleeve; his other arm stays round Jude; still hands and torso
 - **Thing:** the flask (the clip empty), seen plainly, centre, in Eli's fist
 - **Must show:** the flask (the clip empty)
 - **Light:** as the look
@@ -289,10 +289,10 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 404 to 406
 - **Camera:** camera F (the high corner), medium wide, group, high, 2.1 metres high, 35 millimetre lens, static
 - **Focus:** deep focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the right third; facing Jude; eyes on Jude; bends over Jude, her case open on the counter behind her, and starts to cut his shirt; still head
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing Dr Saye; eyes on Jude; holds the lamp out over Jude's chest at arm's length, so Saye can see; still hands and head
-- **In the frame:** Jude (shot through the shoulder); at the right third; facing up; eyes on Iona; lies on his back on the table, one hand over the blue cloth on his shoulder; still whole body
-- **In the frame:** Eli (the flask in his fist); at the left third; facing Dr Saye; eyes on Dr Saye; stands back by the bare fridge, empty-handed, arms at his sides; still whole body
+- **In the frame:** Dr Saye; at the right third; facing Jude; eyes on Jude; bends over Jude, her case open on the counter behind her, and starts to cut his shirt; still head
+- **In the frame:** Iona; at the left third; facing Dr Saye; eyes on Jude; holds the lamp out over Jude's chest at arm's length, so Saye can see; still hands and head
+- **In the frame:** Jude; at the right third; facing up; eyes on Iona; lies on his back on the table, one hand over the blue cloth on his shoulder; still whole body
+- **In the frame:** Eli; at the left third; facing Dr Saye; eyes on Dr Saye; stands back by the bare fridge, empty-handed, arms at his sides; still whole body
 - **Thing:** the pot of mint (on the sill), seen plainly, right edge, on the sill in the window
 - **Thing:** the flask (the clip empty), in the background, on the counter under the window
 - **Thing:** the lamp (lit), in the background, in Iona's hand over the table
@@ -323,7 +323,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 408
 - **Camera:** camera H (over Jude), insert, near point of view, high, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the centre; facing down; eyes on Jude (shirt cut away); cuts the shirt open, wipes the wound, runs two flat hands down his chest and stops them over an old white scar low on his belly; still torso
+- **In the frame:** Dr Saye; at the centre; facing down; eyes on Jude (shirt cut away); cuts the shirt open, wipes the wound, runs two flat hands down his chest and stops them over an old white scar low on his belly; still torso
 - **In the frame:** Jude (shirt cut away); at the centre; facing up; eyes up; his bare chest rises and falls under her hands; still whole body
 - **Thing:** Saye's scissors (in her hand), seen plainly, in Saye's hand at the start
 - **Must show:** Jude (shirt cut away)
@@ -349,8 +349,8 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 410 to 414
 - **Camera:** camera C (Saye), medium close-up, over the shoulder, eye level, at Dr Saye's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the centre; facing the camera; eyes on Jude (shirt cut away); looks from the scar to Jude's face and asks it without looking up; hears his answer and her face stays as it was; still head and torso
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing away; eyes on Dr Saye; her shoulder and the lamp in her hand, soft at the edge of the frame; still whole body
+- **In the frame:** Dr Saye; at the centre; facing the camera; eyes on Jude (shirt cut away); looks from the scar to Jude's face and asks it without looking up; hears his answer and her face stays as it was; still head and torso
+- **In the frame:** Iona; at the left third; facing away; eyes on Dr Saye; her shoulder and the lamp in her hand, soft at the edge of the frame; still whole body
 - **Thing:** the lamp (lit), in the background, bottom left, in Iona's hand
 - **Glass:** window, clear, seen straight through
 - **Light:** as the look
@@ -377,8 +377,8 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 416
 - **Camera:** camera H (over Jude), insert, near point of view, high, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Saye's stethoscope (round her neck)
-- **In the frame:** Dr Saye (dressed at four in the morning); at the centre; facing down; eyes on Jude (shirt cut away); sets the stethoscope on his chest and holds it; lifts it across to the other side and holds it there much longer; still torso
-- **In the frame:** Jude (shirt cut away); at the centre; facing up; eyes up; his chest rises and falls under the disc; still whole body
+- **In the frame:** Dr Saye; at the centre; facing down; eyes on Jude (shirt cut away); sets the stethoscope on his chest and holds it; lifts it across to the other side and holds it there much longer; still torso
+- **In the frame:** Jude; at the centre; facing up; eyes up; his chest rises and falls under the disc; still whole body
 - **Thing:** Saye's stethoscope (round her neck), seen plainly, centre, on his chest
 - **Must show:** Saye's stethoscope (round her neck)
 - **Must not show:** the rings
@@ -403,7 +403,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 418 to 419
 - **Camera:** camera D (Iona), medium close-up, single, eye level, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Iona
-- **In the frame:** Iona (sleeve torn, palm skinned); at the centre; facing the camera; eyes on Dr Saye; leans across the corner of the table and sets the lamp down by Jude's hip, straightens with both hands free, and says it plainly; still head
+- **In the frame:** Iona; at the centre; facing the camera; eyes on Dr Saye; leans across the corner of the table and sets the lamp down by Jude's hip, straightens with both hands free, and says it plainly; still head
 - **Thing:** the lamp (lit), seen plainly, bottom of the frame, set down on the table
 - **Must show:** the lamp (lit)
 - **Light:** as the look
@@ -426,16 +426,16 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 <summary>shot 080, medium, 9 seconds: Saye looks up from Jude to Iona and speaks; Iona raises the hand nearest the camera; Saye raises hers to the same height; both hold; the two short lines pass between them; neither hand comes down</summary>
 
 - **What it is for:** The two women face each other across Jude and raise the same-side hand like a woman and her reflection; the audience sees the mirror before Iona will admit it.
-- **Why:** The script draws this frame ("like a woman and her reflection"), so it gets the film's first saved symmetrical profile two-shot (the reflection two-shot (a saved choice)): camera A far back through the wild wall on the 85 exception (the early 85 (a lens exception)), level between the women at 1.45 metres, both profiles the same distance from the centre line.
+- **Why:** The script draws this frame ("like a woman and her reflection"), so it gets the film's first saved symmetrical profile two-shot (the reflection two-shot, a saved choice): camera A far back through the wild wall on the 85 exception (the early 85, a lens exception), level between the women at 1.45 metres, both profiles the same distance from the centre line.
 - **Because of:** beat 4, the value normal or altered, the reflection two-shot (a saved choice), the early 85 (a lens exception), the rings and Turned, not the world
 - **Beats:** beat 4
 - **Story lines:** 421 to 434
 - **Camera:** camera A (down the table's line), medium, two-shot, eye level, 1.45 metres high, 85 millimetre lens, static
 - **Focus:** moderate focus, sharp on Iona
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing frame-right; eyes on Dr Saye; raises the hand nearest the camera, palm out, level with her face, and holds it there; answers without lowering it; still head and torso
-- **In the frame:** Dr Saye (dressed at four in the morning); at the right third; facing frame-left; eyes on Iona; looks up from Jude to Iona, raises the hand nearest the camera to the same height, palm out, and holds it while she speaks; still head and torso
-- **In the frame:** Jude (shirt cut away); at the centre; facing up; eyes up; lies still between them, his head toward the camera; still whole body
-- **In the frame:** Eli (the flask in his fist); at the centre; facing Dr Saye; eyes on Dr Saye; stands small and still by the fridge far behind them, a water bottle in his hands; still whole body
+- **In the frame:** Iona; at the left third; facing frame-right; eyes on Dr Saye; raises the hand nearest the camera, palm out, level with her face, and holds it there; answers without lowering it; still head and torso
+- **In the frame:** Dr Saye; at the right third; facing frame-left; eyes on Iona; looks up from Jude to Iona, raises the hand nearest the camera to the same height, palm out, and holds it while she speaks; still head and torso
+- **In the frame:** Jude; at the centre; facing up; eyes up; lies still between them, his head toward the camera; still whole body
+- **In the frame:** Eli; at the centre; facing Dr Saye; eyes on Dr Saye; stands small and still by the fridge far behind them, a water bottle in his hands; still whole body
 - **Thing:** the rings, in the background, on the lowered far hands, out of sight
 - **Thing:** the lamp (lit), in the background, centre, low on the table between them
 - **Thing:** the water bottle (full, cap on), in the background, deep centre, in Eli's hands
@@ -466,7 +466,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 436
 - **Camera:** camera I (Saye's ring), insert, near point of view, high, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the centre; facing down; eyes on Iona; her lowered hand rests flat on the table's edge by Jude's shoulder, a plain gold ring on it; still hands
+- **In the frame:** Dr Saye; at the centre; facing down; eyes on Iona; her lowered hand rests flat on the table's edge by Jude's shoulder, a plain gold ring on it; still hands
 - **Thing:** the rings, pointed out, centre, on Saye's lowered hand
 - **Must show:** the rings
 - **Light:** as the look
@@ -489,7 +489,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 438
 - **Camera:** camera J (Iona's ring), insert, near point of view, high, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Iona
-- **In the frame:** Iona (sleeve torn, palm skinned); at the centre; facing down; eyes on the rings; her left hand rests on the table's edge, the plain gold ring on it; the fingers do not move; still hands
+- **In the frame:** Iona; at the centre; facing down; eyes on the rings; her left hand rests on the table's edge, the plain gold ring on it; the fingers do not move; still hands
 - **Thing:** the rings, pointed out, centre, on Iona's own left hand
 - **Must show:** the rings
 - **Light:** as the look
@@ -506,16 +506,16 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 <summary>shot 110, medium wide, 6 seconds, on Eli: he twists the cap; it will not turn; he stops; he twists it the other way and it comes off; his eyes come up to Saye</summary>
 
 - **What it is for:** Across the room Eli's hands find the mirror before anyone names it: the cap will not give, and he twists it the other way without thinking.
-- **Why:** The script puts it "Across the room", so it plays deep in camera A's far frame on the 85 exception (the early 85 (a lens exception)) with the focus moved from the women to Eli; the rack focus is split into two shots (this and shot 080) because a video model cannot be trusted to rack.
+- **Why:** The script puts it "Across the room", so it plays deep in camera A's far frame on the 85 exception (the early 85, a lens exception) with the focus moved from the women to Eli; the rack focus is split into two shots (this and shot 080) because a video model cannot be trusted to rack.
 - **Because of:** beat 5, Eli, Turned, not the world, the water bottle (full, cap on) and the early 85 (a lens exception)
 - **Beats:** beat 5
 - **Story lines:** 440
 - **Camera:** camera A (down the table's line), medium wide, group, eye level, 1.45 metres high, 85 millimetre lens, static
 - **Focus:** moderate focus, sharp on Eli
-- **In the frame:** Eli (the flask in his fist); at the centre; facing Dr Saye; eyes on the water bottle (full, cap on); twists the cap of a water bottle; it does not turn; he stops, twists it the other way, and it comes off; his eyes come up to Saye; still head
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing frame-right; eyes on Dr Saye; soft at the left of the frame, her raised hand lowered now; still whole body
-- **In the frame:** Dr Saye (dressed at four in the morning); at the right third; facing Eli; eyes on Eli; soft at the right of the frame; her head turns toward the far end of the room and stays turned; still torso
-- **In the frame:** Jude (shirt cut away); at the centre; facing up; eyes up; lies still on the table between them; still whole body
+- **In the frame:** Eli; at the centre; facing Dr Saye; eyes on the water bottle (full, cap on); twists the cap of a water bottle; it does not turn; he stops, twists it the other way, and it comes off; his eyes come up to Saye; still head
+- **In the frame:** Iona; at the left third; facing frame-right; eyes on Dr Saye; soft at the left of the frame, her raised hand lowered now; still whole body
+- **In the frame:** Dr Saye; at the right third; facing Eli; eyes on Eli; soft at the right of the frame; her head turns toward the far end of the room and stays turned; still torso
+- **In the frame:** Jude; at the centre; facing up; eyes up; lies still on the table between them; still whole body
 - **Thing:** the water bottle (full, cap on), seen plainly, centre, in Eli's hands
 - **Must show:** the water bottle (full, cap on)
 - **Light:** as the look
@@ -539,8 +539,8 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 442
 - **Camera:** camera C (Saye), medium close-up, over the shoulder, eye level, at Dr Saye's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the centre; facing frame-left; eyes on Eli; her head stays turned toward Eli; then it turns further, to the counter behind her where the flask stands; still torso and hands
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing away; eyes on Dr Saye; her shoulder, soft at the edge of the frame; still whole body
+- **In the frame:** Dr Saye; at the centre; facing frame-left; eyes on Eli; her head stays turned toward Eli; then it turns further, to the counter behind her where the flask stands; still torso and hands
+- **In the frame:** Iona; at the left third; facing away; eyes on Dr Saye; her shoulder, soft at the edge of the frame; still whole body
 - **Thing:** the flask (the clip empty), in the background, left third, soft on the counter behind Saye
 - **Glass:** window, clear, seen straight through
 - **Light:** as the look
@@ -563,7 +563,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 442 to 445
 - **Camera:** camera K (the counter), insert, single, high, at Dr Saye's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on the flask (the clip empty)
-- **In the frame:** Dr Saye (dressed at four in the morning); at the left edge; facing frame-right; eyes on the flask (the clip empty); her hand comes in from the left toward the flask and stops a short way from it; still torso; travel frame-right
+- **In the frame:** Dr Saye; at the left edge; facing frame-right; eyes on the flask (the clip empty); her hand comes in from the left toward the flask and stops a short way from it; still torso; travel frame-right
 - **Thing:** the flask (the clip empty), pointed out, centre, on the counter
 - **Thing:** Saye's phone (on the counter), in the background, right third, on the counter beside the flask
 - **Must show:** the flask (the clip empty)
@@ -589,10 +589,10 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 447 to 452
 - **Camera:** camera F (the high corner), medium wide, group, high, 2.1 metres high, 35 millimetre lens, static
 - **Focus:** deep focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the right third; facing Iona; eyes on the pot of mint (on the sill); sets her scissors down on the counter, crosses to the sill with her back to the room, tears a leaf from the pot, comes back to the table and holds it out to Iona; still head; travel frame-right
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing Dr Saye; eyes on Dr Saye; waits at the table with her hands empty, and takes the leaf when it reaches her; still head and torso
-- **In the frame:** Eli (the flask in his fist); at the left third; facing Dr Saye; eyes on the pot of mint (on the sill); stands by the fridge with the open bottle and watches the leaf, not the women; still whole body
-- **In the frame:** Jude (shirt cut away); at the right third; facing up; eyes on Iona; lies still on the table; still whole body
+- **In the frame:** Dr Saye; at the right third; facing Iona; eyes on the pot of mint (on the sill); sets her scissors down on the counter, crosses to the sill with her back to the room, tears a leaf from the pot, comes back to the table and holds it out to Iona; still head; travel frame-right
+- **In the frame:** Iona; at the left third; facing Dr Saye; eyes on Dr Saye; waits at the table with her hands empty, and takes the leaf when it reaches her; still head and torso
+- **In the frame:** Eli; at the left third; facing Dr Saye; eyes on the pot of mint (on the sill); stands by the fridge with the open bottle and watches the leaf, not the women; still whole body
+- **In the frame:** Jude; at the right third; facing up; eyes on Iona; lies still on the table; still whole body
 - **Thing:** the pot of mint (on the sill), pointed out, right edge, on the sill; then the leaf in Saye's hand
 - **Thing:** Saye's scissors (in her hand), in the background, set down on the counter
 - **Thing:** the lamp (lit), in the background, on the table between them
@@ -622,7 +622,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 454 to 466
 - **Camera:** camera B (Iona close), close-up, single, eye level, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Iona
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing the camera; eyes on Dr Saye; chews slowly; stops chewing; a small frown; chews once more, slowly; then listens; still head, hands and torso
+- **In the frame:** Iona; at the left third; facing the camera; eyes on Dr Saye; chews slowly; stops chewing; a small frown; chews once more, slowly; then listens; still head, hands and torso
 - **Thing:** the mint, pointed out
 - **Must not show:** Dr Saye (dressed at four in the morning)
 - **Light:** as the look
@@ -653,8 +653,8 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 468
 - **Camera:** camera C (Saye), medium close-up, over the shoulder, eye level, at Dr Saye's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the centre; facing the camera; eyes on Iona; holds her eyes on Iona for a moment, then turns to the counter, takes up her phone, and its screen lights her hand; still head; travel frame-left
-- **In the frame:** Iona (sleeve torn, palm skinned); at the left third; facing away; eyes on Dr Saye; her shoulder, soft at the edge of the frame, not moving; still whole body
+- **In the frame:** Dr Saye; at the centre; facing the camera; eyes on Iona; holds her eyes on Iona for a moment, then turns to the counter, takes up her phone, and its screen lights her hand; still head; travel frame-left
+- **In the frame:** Iona; at the left third; facing away; eyes on Dr Saye; her shoulder, soft at the edge of the frame, not moving; still whole body
 - **Thing:** Saye's phone (on the counter), seen plainly, left third, on the counter, then in her hand
 - **Thing:** the flask (the clip empty), in the background, on the counter beside the phone
 - **Must show:** Saye's phone (on the counter)
@@ -680,7 +680,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 470 to 474
 - **Camera:** camera D (Iona), medium close-up, single, eye level, at Iona's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Iona
-- **In the frame:** Iona (sleeve torn, palm skinned); at the centre; facing the camera; eyes on Dr Saye; asks it straight; hears the answer; her eyes go past Saye to Eli at the far end; still torso
+- **In the frame:** Iona; at the centre; facing the camera; eyes on Dr Saye; asks it straight; hears the answer; her eyes go past Saye to Eli at the far end; still torso
 - **Light:** as the look
 - **We hear:** line 13 of the speeches (on screen)
 - **We hear:** line 14 of the speeches (off screen)
@@ -698,16 +698,16 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 <summary>shot 180, medium wide, 4 seconds: Iona crosses round the end of the table and stops between them, facing Saye</summary>
 
 - **What it is for:** Iona puts her body between Saye and Eli, in a frame that holds all three.
-- **Why:** A body in the way needs a frame that sees both people it separates ("Iona moves between her and Eli."), so the scene goes back to camera A's far frame on the 85 (the early 85 (a lens exception)) with deep focus: the table's line where the two women stood like reflections now has Iona standing in it.
+- **Why:** A body in the way needs a frame that sees both people it separates ("Iona moves between her and Eli."), so the scene goes back to camera A's far frame on the 85 (the early 85, a lens exception) with deep focus: the table's line where the two women stood like reflections now has Iona standing in it.
 - **Because of:** beat 10, the value free or contained, the value trust or doubt, Iona and the early 85 (a lens exception)
 - **Beats:** beat 10
 - **Story lines:** 476
 - **Camera:** camera A (down the table's line), medium wide, group, eye level, 1.45 metres high, 85 millimetre lens, static
 - **Focus:** deep focus, sharp on Iona
-- **In the frame:** Iona (sleeve torn, palm skinned); at the right third; facing Dr Saye; eyes on Dr Saye; walks round the end of the table and stops square between Saye and Eli, facing Saye, her hands open at her sides; still head; travel frame-right
-- **In the frame:** Dr Saye (dressed at four in the morning); at the right third; facing Iona; eyes on Iona; stands at the counter with the lit phone and does not move; still whole body
-- **In the frame:** Eli (the flask in his fist); at the centre; facing Dr Saye; eyes on Iona; stays by the fridge, the open bottle still in his hand; still whole body
-- **In the frame:** Jude (shirt cut away); at the centre; facing up; eyes on Iona; lies on the table in the front of the frame; still whole body
+- **In the frame:** Iona; at the right third; facing Dr Saye; eyes on Dr Saye; walks round the end of the table and stops square between Saye and Eli, facing Saye, her hands open at her sides; still head; travel frame-right
+- **In the frame:** Dr Saye; at the right third; facing Iona; eyes on Iona; stands at the counter with the lit phone and does not move; still whole body
+- **In the frame:** Eli; at the centre; facing Dr Saye; eyes on Iona; stays by the fridge, the open bottle still in his hand; still whole body
+- **In the frame:** Jude; at the centre; facing up; eyes on Iona; lies on the table in the front of the frame; still whole body
 - **Thing:** Saye's phone (on the counter), seen plainly, lit, in Saye's hand
 - **Must show:** Eli (the flask in his fist) and Dr Saye (dressed at four in the morning)
 - **Light:** as the look
@@ -722,7 +722,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 </details>
 
 <details>
-<summary>shot 190, wide, 9 seconds, the second turn: Saye speaks, level, from the counter; nobody moves; Saye waits; Iona's eyes go to Jude and she steps aside, toward him; Eli is in plain sight again</summary>
+<summary>shot 190, wide, 9 seconds, another turn: Saye speaks, level, from the counter; nobody moves; Saye waits; Iona's eyes go to Jude and she steps aside, toward him; Eli is in plain sight again</summary>
 
 - **What it is for:** Saye does not argue; she waits, and the wait moves Iona out of the way. The scene turns on nothing but time.
 - **Why:** "She waits until Iona steps aside." makes waiting the tactic, so the frame waits too: the high corner wide on the 35 holds all four without a cut through the long pause, room sound only, the camera above them as Saye takes charge of the room.
@@ -731,10 +731,10 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 478 to 481
 - **Camera:** camera F (the high corner), wide, group, high, 2.1 metres high, 35 millimetre lens, static
 - **Focus:** deep focus, sharp on Iona
-- **In the frame:** Iona (sleeve torn, palm skinned); at the centre; facing Dr Saye; eyes on Dr Saye; stands square between them through the line and the wait; her eyes go to Jude on the table; she steps aside, toward him; still head and hands; travel frame-left
-- **In the frame:** Dr Saye (dressed at four in the morning); at the right third; facing Iona; eyes on Iona; says it once, level, then waits with the phone in her hand and does not move at all; still whole body
-- **In the frame:** Eli (the flask in his fist); at the left third; facing Dr Saye; eyes on Iona; stays by the fridge behind his sister; when she steps aside he is in plain sight again; still whole body
-- **In the frame:** Jude (shirt cut away); at the right third; facing up; eyes on Iona; lies on the table in the front of the frame; still whole body
+- **In the frame:** Iona; at the centre; facing Dr Saye; eyes on Dr Saye; stands square between them through the line and the wait; her eyes go to Jude on the table; she steps aside, toward him; still head and hands; travel frame-left
+- **In the frame:** Dr Saye; at the right third; facing Iona; eyes on Iona; says it once, level, then waits with the phone in her hand and does not move at all; still whole body
+- **In the frame:** Eli; at the left third; facing Dr Saye; eyes on Iona; stays by the fridge behind his sister; when she steps aside he is in plain sight again; still whole body
+- **In the frame:** Jude; at the right third; facing up; eyes on Iona; lies on the table in the front of the frame; still whole body
 - **Thing:** Saye's phone (on the counter), seen plainly, in Saye's hand, lit
 - **Must show:** Jude (shirt cut away) and Eli (the flask in his fist)
 - **Glass:** window, clear, seen straight through
@@ -761,7 +761,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - **Story lines:** 483 to 484
 - **Camera:** camera C (Saye), medium, single, eye level, at Dr Saye's eye height, 50 millimetre lens, static
 - **Focus:** moderate focus, sharp on Dr Saye
-- **In the frame:** Dr Saye (dressed at four in the morning); at the left third; facing frame-left; eyes on Iona; says it once, without raising her voice, the lit phone at her side; still whole body
+- **In the frame:** Dr Saye; at the left third; facing frame-left; eyes on Iona; says it once, without raising her voice, the lit phone at her side; still whole body
 - **Thing:** Saye's phone (on the counter), in the background, in her hand at her side
 - **Thing:** the flask (the clip empty), in the background, on the counter behind her
 - **Glass:** window, clear, seen straight through
@@ -806,8 +806,8 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 **Why it's shot this way**
 
 - Shot 150, the turn: "Her face changes." puts the turn inside her mouth, so the scene's closest frame is spent here and held while Saye's proof lands off screen, on its target.
-- Shot 190, the second turn: "She waits until Iona steps aside." makes waiting the tactic, so the frame waits too: the high corner wide on the 35 holds all four without a cut through the long pause, room sound only, the camera above them as Saye takes charge of the room.
-- Shot 080 spends saved choice 1, the reflection two-shot: The script draws this frame ("like a woman and her reflection"), so it gets the film's first saved symmetrical profile two-shot (the reflection two-shot (a saved choice)): camera A far back through the wild wall on the 85 exception (the early 85 (a lens exception)), level between the women at 1.45 metres, both profiles the same distance from the centre line.
+- Shot 190, another turn: "She waits until Iona steps aside." makes waiting the tactic, so the frame waits too: the high corner wide on the 35 holds all four without a cut through the long pause, room sound only, the camera above them as Saye takes charge of the room.
+- Shot 080 spends saved choice 1, the reflection two-shot: The script draws this frame ("like a woman and her reflection"), so it gets the film's first saved symmetrical profile two-shot (the reflection two-shot, a saved choice): camera A far back through the wild wall on the 85 exception (the early 85, a lens exception), level between the women at 1.45 metres, both profiles the same distance from the centre line.
 - Camera: Level, static and at Iona's eye height throughout; the one long lens is the far frame down the table (the reflection, the cap, the body in the way); the one close-up is spent on the turn and held.
 - Staging: The women face each other across Jude like reflections while Eli, the one who already knows, stands at the centre of the mirror on the table's line; at the second turn Iona's body stands in that line, then leaves it.
 - Sound: The room's hum under everything; the scissors set down and the chewing are the loudest sounds, and everything but the room drops away under the turn and under the wait.
@@ -834,5 +834,7 @@ Saye proved to Iona with a mint leaf that the three of them had turned and the w
 - state: how a person or thing looks at a point in the story: clothes, wounds, condition.
 - grey preview: a grey 3D picture that fixes where the camera and the people are.
 - addition: something the story does not say, added to make a shot work; you may keep or cut it.
+- value: what a scene puts at stake, named by its two ends, such as trust or distrust; each scene moves it one way.
+- ladder of closest shots: the film's plan of how close the camera comes on each scene's turn, keeping the closest and longest for the climax.
 - step: one of the 12 steps of the work, counted from 1.
 - choice: a question for you with a default answer; the word defaults accepts every default.

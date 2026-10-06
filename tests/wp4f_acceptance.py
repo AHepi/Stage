@@ -720,8 +720,13 @@ def question_groups(workspace, excerpt, state):
                                                                 for number in range(1, len(sizes) + 1)]
         heard = [question["question"] for question in by_record["SC10-SH150"] if "off screen" in question["question"]]
         if excerpt is not None:
-            example = [question for question in heard if "Nothing has happened to the mint..." in question]
-            assert example, "no question on Saye's 'Nothing has happened to the mint...' heard off screen (11.2's example)"
+            # changed after the second full run (Project notes 39, F26): a long speech is named by the line it
+            # starts with, never with "...", which apply refuses when the answer copies the question
+            example = [question for question in heard
+                       if "line that starts 'Nothing has happened to the mint.'" in question]
+            assert example, "no question on Saye's line that starts 'Nothing has happened to the mint.' heard off " \
+                            "screen (11.2's example)"
+            assert not any("..." in question["question"] for question in questions), "a question holds '...'"
         else:
             example = [question for question in heard if "speech SC10-D12" in question]
             assert example, "no question on speech SC10-D12 heard off screen (the speeches are not known without a story)"

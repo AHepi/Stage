@@ -29,6 +29,13 @@ Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
 - the project's word swaps are made in pasted place, look and subject text too, once.
+
+After the second full run (Project notes 39 and 40):
+- a split speech sends only its own words; a speaking shot stays whole on a model long enough to hold it; a motion-
+  only prompt leaves the picture's description out; words composited later are never asked of the model.
+- after its cross-examination: words that stand for their thing become the thing the TEXT's title names, a single
+  mark a letter or a number with the right article, a quoted cue "that line"; a speaking shot is kept whole only
+  when chaining it would cut through its line.
 """
 
 import datetime
@@ -38,10 +45,12 @@ import re
 from dataclasses import dataclass, field as dataclass_field, replace as dataclass_replace
 from pathlib import Path
 
-from .derive_fields import (Breakdown, allowed_lengths, clip_plan, constant, element_name, element_of, feature_hidden,
-                            flipped_after, held_take, image_sides, is_yes, mirror_route, number_of, person_name,
+from .derive_fields import (Breakdown, allowed_lengths, clip_plan, constant, cut_points, element_name, element_of,
+                            feature_hidden, flipped_after, held_take, image_sides, is_yes, mirror_route, number_of,
+                            person_name,
                             project_prompt_swaps, round_up_to, scene_label, scene_of, seconds_text, set_plan,
-                            shot_mirror_states, shot_number, subject_items, swap_prompt_words, swap_sources_banned)
+                            shot_mirror_states, shot_number, speech_part, speech_words_part, subject_items,
+                            swap_prompt_words, swap_sources_banned)
 from .record_format import load_json, normalise_word, sort_key_for_identifier, split_item, split_list
 
 MACHINE_FOLDER = "For machines - do not edit"
@@ -300,6 +309,137 @@ CUTAWAY_WORDS = re.compile(r"(?:^|(?<=[;,.]))\s*(?:(?:after|at|on|from) the |a )
                            re.IGNORECASE)
 
 
+def heard_line(item, entry):
+    """The words a shot hears of a speech: the hear item's words when they split the speech at a phrase (time floors
+    count them so), else the whole speech (the second full run, Project notes 39: the whole speech was sent)."""
+    whole = re.sub(r"\s*\([^)]*\)\s*", " ", straight_quotes(str((entry or {}).get("text") or ""))).strip()
+    part = straight_quotes(str(item.get("words") or "")).strip().strip('"').strip()
+    return part if part and whole and speech_words_part(part, whole) else whole
+
+
+def without_quoted_speech(shows, spoken):
+    """A moment's words without a quotation of part of a heard speech: the line is sent once, as the line (the second
+    full run, Project notes 39: a speech quoted across two moments was pasted twice)."""
+    def without_quotation(match):
+        if not any(speech_words_part(match.group(2), line) for line in spoken):
+            return match.group(0)
+        # a quoted cue ('at "Jude's blood" her eyes go down') keeps its place as "at that line" (the cross-examination)
+        return f"{match.group(1)}that line" if match.group(1) else ""
+    shows = re.sub(r'(\b(?:at|on|after)\s+)?"([^"]+)"', without_quotation, shows)
+    return re.sub(r"\s*[:,]\s*(?=;|$)", "", shows)
+
+
+# A start picture carries the look and the people's descriptions: with one, a moment's or the end's piece that
+# repeats them (a clause of at least this many words, as GEN-05 reads it) is left out, so the prompt is the action.
+PICTURE_CLAUSE_WORDS_MIN = 4
+
+
+def picture_clauses(texts):
+    """The clauses of the look block and descriptions a start picture carries, as GEN-05 splits them."""
+    found = []
+    for text in texts:
+        for piece in re.split(r"[.;,:!?]\s*|\s+[-–—]\s+|\(|\)", straight_quotes(str(text or ""))):
+            words = piece.split()
+            if len(words) >= PICTURE_CLAUSE_WORDS_MIN:
+                found.append(" ".join(words).casefold())
+    return found
+
+
+def action_only(words, clauses):
+    """A moment's words without the pieces (between semicolons and commas) that hold a clause the start picture
+    carries: "The ship's dark side, stars on every side; the woman comes out" keeps "The ship's dark side; the woman
+    comes out" when the look block says "stars on every side"."""
+    if not clauses or not words:
+        return words
+    kept_parts = []
+    for part in words.split(";"):
+        pieces = [piece for piece in part.split(",")
+                  if not any(clause in " ".join(piece.split()).casefold() for clause in clauses)]
+        if pieces:
+            kept_parts.append(",".join(pieces).strip())
+    return "; ".join(part for part in kept_parts if part).strip(" ;,")
+
+
+# Composited text (8.5, K17): the model draws a plain surface and the words are laid on after. The second full run
+# (Project notes 39) found the compiler writing "Plain, unmarked surfaces." and then the shot's own "a toy carriage
+# marked F". In a moment, the end or a thing's description, words after a marking or reading word are said as words
+# added later; words that stand for their thing ("her elbow hits the red STOP", "level with PASSAGE FLOOR") become
+# the thing the TEXT's title names ("the red button"), and a single mark becomes a letter or a number (its
+# cross-examination: "the red label with words added later" lost the button, and "an mark" its article).
+WORDS_ADDED_LATER = "with words added later"
+MARKING_WORDS = ("marked", "labelled", "labeled", "printed", "stitched", "stamped", "stencilled", "stenciled",
+                 "written", "lettered")
+LETTER_WORDS = ("letter", "letters", "word", "words", "number", "numbers")
+TEXT_KIND_NOUNS = {"sign": "sign", "label": "label", "stencil": "stencil", "screen": "screen", "monitor": "screen",
+                   "document": "page", "visor": "readout", "tag": "tag"}
+DETERMINERS = ("the", "a", "an", "its", "her", "his", "their", "this", "that", "one")
+READING_WORDS = ("reading", "reads", "saying", "says", "spelling", "spells")
+LEVEL_WITH_WORDS = ("level", "even", "flush", "line")  # "level with PASSAGE FLOOR": a place, not words it bears
+REPLACED = "\x00"  # marks a replacement until its article is fitted ("an F" becomes "a letter")
+BACKWARDS_WORDS = re.compile(r"\b(?:backwards?|reversed|mirror(?:ed)?)\s+(?:text|writing|letters|lettering|words)\b"
+                             r"|\b(?:text|writing|letters|lettering|words)\s+(?:backwards?|reversed|in reverse)\b",
+                             re.IGNORECASE)
+
+
+def thing_named_by_title(title, words):
+    """The thing a TEXT's words are on, from its title without the words ("The STOP button" gives "button", "The
+    diagram's line label" gives "diagram's line label"), or "" when the title says no more than the words, ends
+    on a possessive, or holds a name in capitals."""
+    rest = re.sub(r"(?<!\w)" + re.escape(words) + r"(?!\w)", " ", str(title or ""), flags=re.IGNORECASE)
+    rest = re.sub(r"^(?:the|a|an)\s+", "", " ".join(rest.split()).strip(" ,;:."), flags=re.IGNORECASE)
+    rest = rest[:1].lower() + rest[1:]
+    if not re.search(r"[a-z]{3}", rest) or re.search(r"['\u2019]s?$|^['\u2019]", rest) or re.search(r"[A-Z]", rest) \
+            or len(rest.split()) > 6:
+        return ""
+    return rest
+
+
+def leave_words_for_later(text, texts_composited):
+    """text with the words of each composited TEXT [(words, kind) or (words, kind, thing)] said as words added
+    later, as the thing they stand for, or, for a single mark, as a letter or a number."""
+    if not text or not texts_composited:
+        return text
+    for composited in texts_composited:
+        words, kind = composited[0], composited[1]
+        thing = composited[2] if len(composited) > 2 else ""
+        flags = re.IGNORECASE if words != words.upper() or not re.search(r"[A-Z]", words) else 0
+        pattern = re.compile(r"(?:\b(?:" + "|".join(READING_WORDS) + r")\s+)?(?<!\w)" + re.escape(words) + r"(?!\w)",
+                             flags)
+        single_mark = len(words.split()) == 1 and len(words) <= 3
+        source = text
+
+        def replacement(match):
+            before = [word.lower() for word in re.findall(r"[A-Za-z']+", source[:match.start()])[-3:]]
+            if match.group(0).split()[0].lower() in READING_WORDS:
+                return WORDS_ADDED_LATER
+            if before[-1:] == ["with"] and before[-2:-1] and before[-2] in LEVEL_WITH_WORDS:
+                before = before + ["of"]  # "level with PASSAGE FLOOR" names the thing, below
+            elif before[-1:] == ["with"]:
+                return WORDS_ADDED_LATER[len("with "):]
+            if before[-1:] in (["and"], ["or"]) and re.search(r"added later,? (?:and|or)\s*$", source[:match.start()]):
+                return WORDS_ADDED_LATER  # "labelled CONTROL and VALE": one phrase, joined below
+            if before[-1:] and before[-1] in LETTER_WORDS:
+                return ""  # "a large black letter F painted on its side": the letter, without its words
+            if before[-1:] and (before[-1] in MARKING_WORDS or before[-1] in TEXT_KIND_NOUNS
+                                or before[-1] in TEXT_KIND_NOUNS.values()):
+                return WORDS_ADDED_LATER
+            determined = any(word in DETERMINERS for word in before[-2:])
+            if single_mark:
+                noun = "number" if re.search(r"[0-9]", words) else "letter" if words.isalpha() else "mark"
+                return REPLACED + (noun if determined else f"a {noun}")
+            if thing:
+                return REPLACED + (thing if determined else f"the {thing}")
+            noun = f"{TEXT_KIND_NOUNS.get(normalise_word(kind or ''), 'surface')} {WORDS_ADDED_LATER}"
+            return REPLACED + (noun if determined else f"a {noun}")
+        text = pattern.sub(replacement, source)
+    text = re.sub(r"\b([Aa])n(\s+)" + REPLACED + r"(?=[^aeiouAEIOU])", r"\1\2", text)
+    text = re.sub(r"\b([Aa])(\s+)" + REPLACED + r"(?=[aeiouAEIOU])", r"\1n\2", text)
+    text = text.replace(REPLACED, "")
+    text = BACKWARDS_WORDS.sub("words added later", text)
+    text = re.sub(r"(with words added later)(?:,? (?:and|or) \1)+", r"\1", text)
+    return re.sub(r"[ \t]{2,}", " ", text)
+
+
 class WordFixer:
     """Word swaps (torch becomes flashlight), negation rewrites and banned-word guards for the prompt's own words.
     Pasted keys (fixed descriptions, state lines, the look block) get the word swaps only (key_words): the project's
@@ -439,6 +579,9 @@ class ShotPlan:
     faces_to_reference: int = 0
     author_model: str = None
     author_model_why: str = ""
+    whole_for_speech: bool = False
+    speech_spans: list = None  # [(from, to)] seconds of the shot's speeches; None when a time is not known
+    handles_s: float = 0.75
 
     @property
     def sends_speech(self):
@@ -632,6 +775,22 @@ def analyse_shot(breakdown, adapters, shot, raw_speeches):
         plan.silent_picture = True
         plan.silent_why = (f"{len(speakers_on)} people are seen speaking in one clip, so the picture is made silent, each "
                            "line is laid in from its voice take and the mouths are fitted after (C1 R2; D3 §12)")
+    if plan.video and plan.sends_speech and not plan.held and not cut_points(breakdown, shot):
+        # The second full run (Project notes 39): a shot with no planned cutaway, longer than its model's clip, was
+        # chained through its speech. Like a held take, it goes whole to a model whose clip is long enough, when one
+        # exists; a shot with a planned cutaway is still split there.
+        plan.whole_for_speech = any(is_candidate(facts) and round_up_to(plan.needed_s, allowed_lengths(facts) or [])
+                                    is not None for facts in adapters.video.values())
+        plan.handles_s = constant(constants, "handles_s", 0.75)
+        plan.speech_spans = []
+        for identifier_speech, item, _ in plan.on_screen + plan.off_screen:
+            at = number_of(item.get("at"))
+            words = item.get("words")
+            part = speech_part(breakdown, identifier_speech, words.strip('"\u201c\u201d') if words else None)
+            if at is None or part is None:
+                plan.speech_spans = None  # when a line is spoken is not known: the shot is kept whole
+                break
+            plan.speech_spans.append((at, at + part[4]))
     plan.recurring = any(character_is_recurring(breakdown, person.element) for person in plan.people if person.is_person)
     plan.faces_to_reference = len([person for person in plan.people if person.is_person])
     written_model = shot.get("model")
@@ -711,6 +870,20 @@ def is_candidate(facts):
             and bool(allowed_lengths(facts)))
 
 
+def chain_cuts_speech(plan, lengths):
+    """True when chaining the shot on a model with these clip lengths (as clip_plan chains it) would cut through one
+    of its speeches, or when that cannot be told: only then is a speaking shot kept whole (its cross-examination: a
+    20-second shot whose line ends long before the first cut is chained on the scene's model as before)."""
+    spans = getattr(plan, "speech_spans", None)
+    handles = getattr(plan, "handles_s", 0.75)
+    screen_time = getattr(plan, "screen_time", None)
+    if spans is None or not screen_time or not lengths or max(lengths) - 2 * handles <= 0:
+        return True
+    count = math.ceil(screen_time / (max(lengths) - 2 * handles))
+    splits = [screen_time / count * index for index in range(1, count)]
+    return any(start + 1e-9 < split < end - 1e-9 for split in splits for start, end in spans)
+
+
 def able(adapters, name, facts, plan, licensed_only=False):
     """(True, '') when the model can make the shot; else (False, why in plain words)."""
     display = adapters.display(name)
@@ -728,6 +901,10 @@ def able(adapters, name, facts, plan, licensed_only=False):
     if plan.held and round_up_to(plan.needed_s, lengths) is None:
         return False, (f"a held take ({plan.held_why}) of {number_text(plan.needed_s)} seconds with its handles is longer "
                        f"than {display} allows ({number_text(max(lengths))} seconds), and a held take is never split")
+    if plan.whole_for_speech and round_up_to(plan.needed_s, lengths) is None and chain_cuts_speech(plan, lengths):
+        return False, (f"a line is seen spoken in this shot of {number_text(plan.needed_s)} seconds with its handles, "
+                       f"longer than {display} allows ({number_text(max(lengths))} seconds), and a shot is never split "
+                       "through its speech")
     inputs = facts.get("inputs") or {}
     if plan.start_picture and not inputs.get("start_picture"):
         return False, f"{display} takes no start picture"
@@ -969,6 +1146,28 @@ def state_words_of(reference):
     """' - state 2' for a state reference like CH-JUDE.S02, so two states of one element never share a file name."""
     found = re.search(r"\.S(\d{2})$", str(reference or ""))
     return f" - state {int(found.group(1))}" if found else ""
+
+
+def composited_texts(breakdown, shot):
+    """[(words, kind, thing)] of the TEXT records in the shot's frame (its text field, text things, and text on a thing it
+    shows) whose words are laid on after, as GEN-06 reads them: every one but a single mark the model draws."""
+    found = []
+    things = {element_of(split_item(written).first or "") for written in shot.get_all("thing")}
+    identifiers = list(text_in_frame(breakdown, shot))
+    for record in breakdown.records_of("TEXT"):
+        on = element_of(record.get("on") or "")
+        if on and not is_none(on) and on in things and record.identifier not in identifiers:
+            identifiers.append(record.identifier)
+    for identifier in identifiers:
+        record = breakdown.record(identifier, "TEXT")
+        words = (record.get("words") or "").strip().strip('"') if record is not None else ""
+        if not words or is_none(words):
+            continue
+        drawn = normalise_word(record.get("method") or "") == "model_drawn"
+        if drawn and len(words.split()) == 1 and len(words) <= 3:
+            continue
+        found.append((words, record.get("kind") or "", thing_named_by_title(record.title, words)))
+    return found
 
 
 def text_in_frame(breakdown, shot):
@@ -1383,6 +1582,7 @@ class PromptWriter:
             else:
                 text = name + (f", {state_line}" if state_line else "")
             text = sentence(text + (f", {where}" if where else ""))
+            text = leave_words_for_later(text, composited_texts(self.breakdown, shot))
             segments.append(Segment(self.fixer.fix(text, clip.left_out, f"{name}")))
         for written in (shot.get_all("glass") if glass else []):
             item = split_item(written)
@@ -1415,12 +1615,15 @@ class PromptWriter:
             if end <= start + 1e-9:
                 continue
             shows = straight_quotes(item.get("shows") or "")
+            spoken = []
             for identifier, _, entry in clip.plan.on_screen + clip.plan.off_screen:
                 line = re.sub(r"\s*\([^)]*\)\s*", " ", straight_quotes(str(entry.get("text") or ""))).strip()
                 if line:
+                    spoken.append(line)
                     # the spoken words are sent as the line itself, never inside the picture's words; matched as
                     # whole words, so a short line ("No") never cuts a word ("Nothing") apart
                     shows = re.sub(r'(?<!\w)"?' + re.escape(line) + r'"?(?!\w)', "", shows)
+            shows = without_quoted_speech(shows, spoken)
             # a planned cutaway belongs to the edit, not to this picture (8.4): its words never reach the model
             shows = re.sub(r"\s*\b(?:and|then)\s*$", "", CUTAWAY_WORDS.sub(" ", shows).strip())
             shows = re.sub(r"\s*;\s*;", ";", re.sub(r"\s+([;,.])", r"\1", shows)).strip(" ;,")
@@ -1471,7 +1674,7 @@ class PromptWriter:
     def speaker_line(self, facts, style, clip, cast, identifier, item, entry, index):
         """One sent line in the model's speaker form (GEN-09): Veo and Omni colon, no quotation marks; Kling, Wan
         and LTX a name, the delivery and the line in quotation marks; H3 its structured form."""
-        line = re.sub(r"\s*\([^)]*\)\s*", " ", straight_quotes(str(entry.get("text") or ""))).strip()
+        line = heard_line(item, entry)
         speaker = element_of(entry.get("speaker") or "")
         who = cast.label(speaker) or "someone"
         who_capital = who[:1].upper() + who[1:]
@@ -1607,6 +1810,19 @@ class PromptWriter:
             setting.append(Segment(sentence(self.phrase("text", "surfaces", default="plain, unmarked surfaces"))))
         moments = self.moments(clip, cast)
         end_state = self.clean(shot.get("end") or "", cast, plan.prompt_flipped_all, clip, "the end") if clip.piece.number == clip.piece.count else ""
+        if motion_only:
+            # a start picture carries the look and the descriptions: the prompt is the action only (GEN-05)
+            look = look_of(self.breakdown, shot)
+            clauses = picture_clauses([look.get("look_block") if look is not None else ""]
+                                      + [person.fixed_description for person in people]
+                                      + [person.state_line for person in people])
+            moments = [(start, end, action_only(words, clauses)) for start, end, words in moments]
+            moments = [(start, end, words) for start, end, words in moments if words]
+            end_state = action_only(end_state, clauses)
+        composited = composited_texts(self.breakdown, shot)
+        if composited:
+            moments = [(start, end, leave_words_for_later(words, composited)) for start, end, words in moments]
+            end_state = leave_words_for_later(end_state, composited)
         effect_sentences, room, sounds = ([], "", []) if silent_model else self.audio_parts(clip, cast, facts)
         clip.sounds = sounds
         # the negative field (K18)

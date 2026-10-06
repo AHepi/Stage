@@ -90,7 +90,7 @@ WORLD: an unnamed British city, present day, driving on the left, British Englis
 - Is every WORLD value the story does not state `inferred` from a quoted cue, or a CHOICE with a default?
 - Is every conflicting cue a question, not a quiet change?
 - Are real institutions renamed, with their grammar kept?
-- Are the style words within `style_words_count`, visible, positive, and free of names, light sources, feelings and banned words, with STYLE `provisional`?
+- Are the style words within `style_words_count`, visible, positive, and free of names, of any one scene's light, of feelings and of banned words ("practical light from lamps and windows" is a whole-film style), with STYLE `provisional`?
 - Does the frame shape have a story reason?
 - Does every scene have one tone, at most one undercurrent, and quoted evidence?
 - Does every story-world rule have start and end lines and a list of what it governs?

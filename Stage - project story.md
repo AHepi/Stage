@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 5 October 2026 (log entry 38).
+Last updated: 6 October 2026 (log entry 41).
 
 ## The goal
 
@@ -20,7 +20,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - There is one finished model scene (The Catch, scene 10, Saye's kitchen) and its 3D mock-up.
 
 **Tested:**
-- The automatic tests: 21 of 22 test files pass. The failing one checks a size target, explained under "Known issues".
+- The automatic tests: 21 of 22 test files passed before entry 40; the run for entry 40 was still going at this save. The failing one checks a size target, explained under "Known issues".
 - A fresh AI with only the kit planned the whole of The Catch and broke down three scenes (entries 23 to 25). Its 36 problems are fixed.
 - **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`.
 - **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
@@ -28,20 +28,23 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - **The fixed kit on new writing (entries 35 and 36).** A fresh helper planned The Catch from scratch and wrote scenes 2, 13 and 26. Each scene ended with one warning: one was the helper's own slip, two were false alarms. None of the old rule arguments came back. After this round's fixes, that test project ends with no errors and 2 warnings, both real slips by the helper.
 - **The same three-scene test again, with a fresh helper (entry 37):** all three scenes finished with no errors and no warnings, and so did the final full check. Errors before repair fell from 92 to 25.
 - **What that second test found is fixed (entry 38):** a split scene's first part no longer shows errors for its second part, the split-scene handouts show what the earlier parts wrote, and the book says its numbers in words. Re-checks give the same results as before: the test project has no errors and no warnings; your full breakdown of The Catch has no errors and 36 warnings.
+- **A second full run of all 30 scenes (entry 39):** the final check ended with no errors and 6 warnings (the first full run: 1 error, 126 warnings), and all 30 scenes pass the scores. The scene work had about one error per piece of work before repair.
+- **What it found is fixed (entry 40):** 62 of 63 real faults, each cross-examined, with one helper at a time. Your full breakdown of The Catch, re-checked with the revised kit: no errors, 31 warnings and 4 more kept on purpose.
+- **Everything still open is in one list (entry 41):** `Project notes/41 Improvements to scope later.md`.
 
 **Not tested yet:**
-- The other 27 scenes with the fixed kit.
+- A fresh start on a new story with the revised kit of entry 40.
 - A real person answering the questions. In the tests, the answers were always "defaults" and "no changes".
 - The Long Places (you asked to leave it for later).
 - The chat-app route in the real ChatGPT and Gemini apps. It is designed and bundled, but was only simulated here.
 - Actually making pictures, videos or voices. This computer has no accounts for those services, so the prompt packs stop at "ready to send, checked and priced".
 
 **Known issues:**
-- **The Catch still has 36 warnings.** They are real points in its records (for example 8 light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
+- **Everything open is listed in `Project notes/41 Improvements to scope later.md`,** with where it came from and how much it matters. The main points are below.
+- **The Catch still has 31 warnings** (and 4 kept on purpose). They are real points in its records (for example light moments with no light cue), not faults in the kit. They can only be cleared by redoing those scenes through the kit's steps.
 - **The light check reads words.** A change of light written in words it does not know would slip through.
-- **Left from the second three-scene test (entries 37 and 38):**
-  - no check compares cameras, moves and shots (the helper found three staging slips itself). A first try flagged the model scene 10, where glass and reflections change the sides, so it waits;
-  - a record only an earlier step may change can still be wrong (a thing's state starting a line late); a later piece can only report it.
+- **Five things need a design decision first** (entry 40): whether the shot step may add a camera or move; set plans with more than one room; action inside moving things; review questions that grow to the whole film; slips in earlier steps that no check compares.
+- **No check compares cameras, moves and shots** across the line between two people. A first try flagged the model scene 10, where glass and reflections change the sides, so it waits.
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
@@ -221,7 +224,23 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - Re-checks on copies: the second test project still has no errors and no warnings; your full breakdown of The Catch still has no errors, 36 warnings, and "Finished".
     - Tests: the new test file (7 groups) passes; one older test now expects the book's new wording. The full suite on the final code: 21 of 22 test files pass. The failing one is the old chat-kit size check, unchanged from before.
     - File: `Project notes/38 Fixes - after the second three-scene test.md`.
+39. **Ran the whole of The Catch again, all 30 scenes, as you asked ("Go!").** One Opus 5.5 helper at a time: one planned, nine took a group of scenes each, one finished. About 12 hours and 20 minutes, 181 pieces of work.
+    - Final check: no errors and 6 warnings (first full run: 1 error and 126). All 30 scenes pass the scores.
+    - Errors before repair: 292 (first full run: 455). The scenes themselves had 76 over 76 pieces of work; most of the rest came at the end, in the review questions, the scores and the prompt check.
+    - The helpers reported 230 things. I started a big checking run with many helpers at once; you stopped it, and asked for one helper at a time instead.
+    - The finished plan went to you as a zip, without your screenplay in it. Printing your whole screenplay into the chat was refused by your Stage folder's privacy rule.
+    - File: `Project notes/39 Test - The Catch - second full run.md`.
+40. **Revised the kit with one Opus 5.5 helper at a time, as you asked.** One sorted the 230 reports (90 distinct problems: 63 real, 22 not kit faults, 5 needing a design decision), one fixed, one cross-examined, one repaired.
+    - Fixed: 62 of the 63, in full or in part. The worst: a side question deleting a moment's other sides; signs in the mirrored world reading the wrong way; review answers lost between batches; the scores never able to start; handouts missing silent people, motifs and the scene's look; all 46 video-prompt problems.
+    - The cross-examination found 16 problems in the fixes, among them prompts that lost "the red button". All repaired, some in part.
+    - My own change: a rule the fixes added turned your finished breakdown's 4 "short" holds into errors. An old "short" is now read as "medium", with a note.
+    - Your full breakdown of The Catch, re-checked on a copy: no errors, 31 warnings and 4 kept on purpose (36 before).
+    - A helper is carrying the second run's test project on to "Finished" with the revised kit; its result was not in at this save.
+    - Tests: the new test file (57 groups) passes; the full suite was still running at this save.
+    - File: `Project notes/40 Fixes - after the second full run.md`.
+41. **Gathered everything still open into one list,** as promised: 43 items, from the notes, the project story, the blueprint and the code, each with where it came from and how much it matters. From now on it is kept up to date each round.
+    - File: `Project notes/41 Improvements to scope later.md`.
 
 ## Next step
 
-Run the whole of The Catch again, all 30 scenes, from a fresh start with one helper, as in entries 28 to 31. It shows whether these fixes hold up on every scene, not just three.
+Finish checking entry 40's results (the full tests, and the test project carried on to "Finished"), then remake The Catch's production plan with the revised kit.

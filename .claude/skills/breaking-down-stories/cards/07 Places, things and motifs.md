@@ -21,7 +21,7 @@ Turn the things a story names into records the camera can point at with the righ
 
 ## Emphasis
 
-**Emphasis** is how loudly the camera points at a thing, on its own scale, never converted to another (B4 §3.4; K14): 0 present (small, part of the set); 1 placed (on a strong point, catching a highlight); 2 featured (an insert or medium close-up, handled or looked at); 3 spent (the beat turns on it: the only sharp or moving thing, or a rhyme: the plant's side, height, size and light repeated). A sound motif has its own **sound emphasis**, from buried under other sounds to heard alone (B4 §3.4). At step 7 write `emphasis` items and `added_emphasis` on each beat.
+**Emphasis** is how loudly the camera points at a thing, on its own scale, never converted to another (B4 §3.4; K14): 0 present (small, part of the set); 1 placed (on a strong point, catching a highlight); 2 featured (an insert or medium close-up, handled or looked at); 3 spent (the beat turns on it: the only sharp or moving thing, or a rhyme: the plant's side, height, size and light repeated). A sound motif has its own **sound emphasis**, from buried under other sounds to heard alone (B4 §3.4). At step 7 write `emphasis` items and `added_emphasis` on each beat. On its own shot a plant's or payoff's emphasis wins; the beat's emphasis covers the rest.
 
 1. **Plants stay within `plant_emphasis_max`,** made clear by composition and light, not size; a plant that is itself a plot event (a rung breaks, a sign is read aloud) may use its plot-event value, with nothing pointing forward (B4 R6; K11; CRAFT-08).
 2. **Emphasis 3 is a budget:** `emphasis_3_rules`. A second 3 for one motif only as a deliberate inversion of the first (B4 P5; CRAFT-09).

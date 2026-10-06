@@ -23,7 +23,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - clearance: <add-on, AI video, earlier when rights_subject_source, the user's answer, set through a choice: text>
 - holder: <add-on, AI video, earlier when rights_subject_source, the user's answer, set through a choice: text>
 - licence: <add-on, AI video, the user's answer, set through a choice: a file name, or none>
-- evidence: <add-on, AI video: text>
+- evidence: <add-on, AI video, but step 0 already writes it: text, such as: the user said: It's mine>
 - commercial_ok: <add-on, AI video, the user's answer, set through a choice: yes, no or check>
 - attribution: <add-on, AI video: text>
 - disclosure: <add-on, AI video: text>

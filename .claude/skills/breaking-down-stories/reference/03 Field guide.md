@@ -154,7 +154,7 @@ One scene: its list and plan fields live in 04 Scene list.md, its design fields 
 | `sequence` | The group of scenes it belongs to. | id; IDs of SEQUENCE | quick | ai | step 2 | `SQ03` |
 | `scene_intensity` | Pressure across the whole film, 1 to 10; exactly one 10 (or one 10 range) on the climax. | number; from 1 to 10 | quick | ai | step 2 | `7` |
 | `whose_scene` | Whose point of view the scene holds. | id; IDs of CHARACTER | standard | ai | step 2 | `CH-IONA` |
-| `story_day` | Which day or night of the story (D1, N1 ...). | text; pattern `^[DN]\d+$` | standard | ai | step 2 | `N2` |
+| `story_day` | Which day or night of the story (D1, N1 ...); a night takes the number of the day before it (N1 follows D1). | text; pattern `^[DN]\d+$` | standard | ai | step 2 | `N2` |
 | `rhythm_class` | The scene's pace class, used only by the estimate, never as a design target. | action_peak, suspense, mixed, dialogue, contemplative | standard | ai | step 2 | `dialogue` |
 | `tone` | The scene's main tone (D10 §2.1). | grave, tense, dread, enigmatic, comic_light, comic_dark, romantic, kinetic, lyric, wonder, contemplative | standard | ai | step 2 | `tense` |
 | `tone_undercurrent` | An optional second tone carried by lines and acting, never by the camera (D10 TN1). | grave, tense, dread, enigmatic, comic_light, comic_dark, romantic, kinetic, lyric, wonder, contemplative, none | standard | ai | step 2 | `comic_dark` |
@@ -236,7 +236,7 @@ One action and reaction (McKee's beat). ID: scene ID, -B and 2 digits (`SC10-B07
 | `charge` | Each value's charge after the beat. | sub_parts; first part: id (VALUE); charge: charge; one line each | standard | ai | step 7 | `SC10-V1 \| charge: ---` |
 | `flag` | A flaw in one line, flagged, never fixed (A1). | sub_parts; first part: word (on_the_nose, melodrama, forced_exposition, monologue, repetitious, can_play_silent, interrupted); line: id; one line each | standard | ai | step 7 | `can_play_silent \| line: SC10-D05` |
 | `engaged_pair` | In a three-person scene, the two engaged (B3 R25, A1 R5). | id_list; IDs of CHARACTER | standard | ai | step 7 | `CH-SAYE, CH-IONA` |
-| `silent_third` | In a three-person scene, the witness. | id; IDs of CHARACTER | standard | ai | step 7 | `CH-ELI` |
+| `silent_third` | In a three-person scene, the witness; none for a beat where nobody is left to witness. | id; IDs of CHARACTER; also none | standard | ai | step 7 | `CH-ELI` |
 | `five_steps` | Desire, obstacle, choice, action, expression as visible moments (five items). | sub_parts; first part: word (desire, obstacle, choice, action, expression); shows: text; one line each | standard | ai | step 7 | `choice \| shows: she takes the leaf from Saye's fingers` |
 | `landing_face` | Who the audience watches when the line lands. | id; pattern `^(CH-[A-Z0-9-]+\|insert:\S+\|wide)$`; IDs of CHARACTER; also wide | standard | ai | step 7 | `CH-IONA` |
 | `unsaid` | What a character thinks and does not say. | sub_parts; first part: id (CHARACTER); thought: text | standard | ai | step 7 | `CH-IONA \| thought: then we are not home` |
@@ -280,7 +280,7 @@ A character's move on the set plan (never a camera move). ID: scene ID, -M and 2
 | `who` | The character who moves. | id; IDs of CHARACTER | standard | ai | step 7 | `CH-IONA` |
 | `from` | Where the move starts: a mark or a point. | text | standard | ai | step 7 | `IONA_MARK` |
 | `to` | Where the move ends: a mark or a point. | text | standard | ai | step 7 | `[2.8, 2.2]` |
-| `via` | A point the path passes through, or none when the move goes straight. | point; also none | standard | ai | step 7 | `[3.4, 2.4]` |
+| `via` | A mark or a point the path passes through, or none when the move goes straight; a change of height is a posture change, not a via. | text; also none | standard | ai | step 7 | `[3.4, 2.4]` |
 | `start_s` | When it starts, counted from the start of the first shot that shows its beat. | seconds | standard | ai | step 7 | `1.5` |
 | `dur_s` | How long the move takes. | seconds | standard | ai | step 7 | `2` |
 | `faces` | What the character faces at the end: an ID or a point. | text | standard | ai | step 7 | `CH-SAYE` |
@@ -365,7 +365,7 @@ One shot, written from its list item at standard and detailed, reason-first (pur
 | `light_cue` | A light change during the shot. | sub_parts; first part: text; when: seconds; why: text; also none | standard | ai | step 8 | `the beam stops moving \| when: 3 \| why: "She stays on her knees. One breath."` |
 | `dark` | What stays dark. | text | detailed | ai | step 8 | `the far corner behind Saye` |
 | `eye_light` | A catchlight in the eyes. | yes_no | detailed | ai | step 8 | `yes` |
-| `hear` | A speech heard in the shot. | sub_parts; first part: id (SPEECH); speaker: word (on_screen, off_screen, hidden); path: word (direct, off_screen, earpiece, radio, intercom, phone, device_speaker, recording, helmet_inside, helmet_outside, through_glass, voice_over, thought); at: seconds; words: quote; also none; one line each | quick | ai | step 8 | `SC10-D11 \| speaker: on_screen` |
+| `hear` | A speech heard in the shot. | sub_parts; first part: id (SPEECH); speaker: word (on_screen, off_screen, hidden); path: word (direct, off_screen, earpiece, radio, intercom, phone, device_speaker, recording, helmet_inside, helmet_outside, through_glass, voice_over, thought); at: seconds; words: quote; plant: id; payoff: id; also none; one line each | quick | ai | step 8 | `SC10-D11 \| speaker: on_screen` |
 | `effect` | A sound tied to an action. | sub_parts; first part: text; at: seconds; sound_emphasis: number; also none; one line each | standard | ai | step 8 | `the pump \| at: 2 \| sound_emphasis: 1` |
 | `room_sound` | The background. | text; also as_place; default as_place | standard | ai | step 8 | `as_place` |
 | `silence` | The silence grade. | none, room_sound_only, drop_out, true_silence; default none | standard | ai | step 8 | `room_sound_only` |
@@ -910,7 +910,7 @@ Each scene's main turn with planned size and hold; the ladder escalates by size 
 
 | Field | Meaning | Values | Depth | Writer | Filled at | Example |
 |---|---|---|---|---|---|---|
-| `rung` | One scene's main turn: a story point (code adds the resolved beat at step 7), planned size and hold. | sub_parts; first part: story_point; size: word (extreme_wide, wide, medium_wide, medium, medium_close_up, close_up, extreme_close_up, insert); hold: word (short, medium, long, hold); why: text; one line each | standard | ai | step 6 | `SC10 "Her face changes." \| size: close_up \| hold: long \| why: the turn happens inside her mouth` |
+| `rung` | One scene's main turn: a story point (code adds the resolved beat at step 7), planned size and hold. | sub_parts; first part: story_point; size: word (extreme_wide, wide, medium_wide, medium, medium_close_up, close_up, extreme_close_up, insert); hold: word (medium, long, hold); why: text; one line each | standard | ai | step 6 | `SC10 "Her face changes." \| size: close_up \| hold: long \| why: the turn happens inside her mouth` |
 
 Status values: draft, approved, stale, omitted.
 

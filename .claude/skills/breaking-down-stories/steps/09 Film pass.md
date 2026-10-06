@@ -37,14 +37,14 @@ At every depth: card 09, part "Film pass".
 
 1. **Code audits.** Run `stage.py check --film`. It builds the film strip and runs FILM-01 to FILM-12 and TIME-07; card 09, "Film pass", says what each one catches. Two are errors: FILM-03 (a character camera rule broken: Eli closer than `medium_close_up` before scene 13) and FILM-08 (a saved choice over its uses or outside its places, including the film-level extreme close-up and push-in). The rest are warnings. Code writes one FINDING per problem.
 2. **Fix what the checker found.** Every error is fixed. Every warning is fixed or accepted with a `reason` that quotes the story or cites a record: FILM-02's warning on scene 29 is accepted because the sides are reversed on purpose, Iona being turned back (B3 P8). `stage.py impact <ID>` names what a fix touches; redo only those units of steps 7 and 8. Fix only the lines printed, at most `repair_rounds_max` rounds (C5 R13), then trace the fault to its earliest wrong record or ask one plain question.
-3. **Judgement unit** (U-09-JUDGE). A fresh unit that wrote none of the shots answers these questions, one scene or turn at a time, each naming and quoting its record (C5 R12; D7 R3):
+3. **Judgement unit** (U-09-JUDGE; `next` may hand it out before or after the item 2 fixes). A fresh unit that wrote none of the shots answers these questions, one scene or turn at a time, each naming and quoting its record (C5 R12; D7 R3):
    - **Sound-off test:** with the sound off, does each turn picture tell its beat (B3 §10.1)? "Does shot 150's picture (Iona chews, stops, frowns) tell beat 7, 'Her face changes.', without her line?"
    - **Stranger test:** could someone who has not read the story say what changes in each scene from its turn pictures and purposes alone (D7 §7)?
    - **Heavy-handedness:** a symbol the story does not hold (B3 R24; B4 R25)? More than `plant_inserts_per_scene_max` inserts of plants in one scene? Music under a beat whose meaning is unsaid (A4 §7.6)? A light cue timed to the line that states the point (B2 §12)? A rhyme the story does not support (B3 P8)?
    - **Different film:** does any shot feel as if it belongs to a different film (B3 R26)?
 4. **Write the findings.** Each "no" becomes a FINDING: `record` (the shot, scene or film rule), `rule` (the check ID, or the question as asked), `evidence` (the record's words and the story line they rest on), `fix`, `source: film_pass`, `status: open`. A finding with no quoted evidence is dropped (D7 R4).
 5. **Sort the findings.** A fix that only brings a shot back inside the film rules is made and logged, and its FINDING set `fixed`. A finding that changes a creative choice (a peak moved, a saved choice spent somewhere else, a rhyme dropped, a scene played in a different tone) becomes a CHOICE with a default and its reason, `asked: yes`, `checkpoint: acceptance`, and the FINDING stays `open` until it is answered.
-6. **Check.** Run `stage.py check --step 9`: every FILM error fixed, every FINDING `fixed` or `accepted` with a reason, or `open` behind an open CHOICE.
+6. **Check.** Run `stage.py check --step 9` (`next` waits on it until it passes): every FILM error fixed, every FINDING `fixed` or `accepted` with a reason, or `open` behind an open CHOICE.
 
 ## Record template
 

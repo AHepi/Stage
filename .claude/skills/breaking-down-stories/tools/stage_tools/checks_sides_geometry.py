@@ -27,6 +27,13 @@ After the three-scene test of the fixed kit (Project notes 35 and 36):
 
 After the second three-scene test (Project notes 37 and 38):
 - GEOM-03 stays planned: a first try by plan positions alone flagged the model scene 10 (glass and reflections).
+
+After the second full run (Project notes 39 and 40):
+- GEOM-01 pairs singles within one part of a scene, read when the line is spoken; GEOM-04 skips a camera mounted on a
+  person; SIDE-01 reads every word of a side item and wants no side for a ring not worn on a finger; GEOM-05 warns
+  about a mark inside a table-high object.
+- after its cross-examination: GEOM-01 also pairs two singles on a straight cut between parts; GEOM-04 measures a
+  camera on the scene's own place; a seal ring is a finger ring; GEOM-05 warns about a move's mark the plan lacks.
 """
 
 import math
@@ -54,6 +61,9 @@ TURNING_WORDS = re.compile(r"\b(turns?|turning|turned|comes back|goes back|back 
 STORY_ACTION_TYPES = ("action", None)
 # Words after "wound" or "sling" that show a verb ("a scarf wound round her neck"), not a one-sided feature.
 NOUNS_THAT_ARE_ALSO_VERBS = ("wound", "sling")
+# A ring that is no finger ring: the helmet ring at the neck of a suit (the second full run, Project notes 39). A
+# "seal ring" is a signet ring, worn on a finger, so it is not here (its cross-examination).
+NOT_A_FINGER_RING = re.compile(r"\b(?:helmet|neck|collar|key|sealing)\s+rings?\b")
 NOT_A_NOUN_AFTER = r"(?:round|around|into|up|about|tight|tightly|through|over|across)\b"
 
 
@@ -155,9 +165,13 @@ def singles_with_eyelines(breakdown, scene_identifier):
 
 
 def paired_singles(breakdown, scene_identifier, same_part=False):
-    """Pairs of singles (A looking at B, B looking at A) in a scene, optionally within one part."""
+    """Pairs of singles (A looking at B, B looking at A) in a scene, optionally within one part; with same_part, two
+    singles in different parts are still paired when one cuts straight to the other (the cross-examination of the
+    second full run: a crossed eyeline on the cut from part 1 to part 2 was no longer seen)."""
     singles = singles_with_eyelines(breakdown, scene_identifier)
     parts = scene_parts(breakdown, scene_identifier) if same_part else {}
+    order = {shot.identifier: index for index, shot in enumerate(breakdown.shots_of(scene_identifier))} \
+        if same_part else {}
     pairs = []
     for index, (first, looker, looked_at, side) in enumerate(singles):
         for second, other_looker, other_looked_at, other_side in singles[index + 1:]:
@@ -166,7 +180,8 @@ def paired_singles(breakdown, scene_identifier, same_part=False):
             if same_part:
                 first_parts = {parts.get(beat) for beat in breakdown.id_list(first, "beats")} - {None}
                 second_parts = {parts.get(beat) for beat in breakdown.id_list(second, "beats")} - {None}
-                if not first_parts & second_parts:
+                straight_cut = abs(order.get(first.identifier, -9) - order.get(second.identifier, 9)) == 1
+                if not first_parts & second_parts and not straight_cut:
                     continue
             pairs.append(((first, looker, side), (second, other_looker, other_side)))
     return pairs
@@ -199,10 +214,12 @@ def check_side_01(run):
                 continue
             if (record.get("element") or record.identifier or "").startswith("LOC-"):
                 continue  # a place has no body side: "bullet scars in the roof grid" is not a scar on someone
-            state_line = (record.get("state_line") or "").lower()
+            state_line = NOT_A_FINGER_RING.sub(" ", (record.get("state_line") or "").lower())
             covered = set()
             for item in items:
-                covered |= feature_nouns(item.first)
+                # every word of the side item: "ring hand" covers a ring (the second full run, Project notes 39)
+                for word in re.findall(r"[a-z]+", (item.first or "").lower()):
+                    covered |= feature_nouns(word)
             for noun in ONE_SIDED_NOUNS:
                 verb_guard = rf"(?!\s+{NOT_A_NOUN_AFTER})" if noun in NOUNS_THAT_ARE_ALSO_VERBS else ""
                 if not re.search(rf"\b{noun}s?\b{verb_guard}", state_line):
@@ -467,16 +484,32 @@ def check_side_05(run):
 
 # ---------------------------------------------------------------- GEOM
 
+def spoken_share(breakdown, shot):
+    """Where in a shot its line is spoken, as a share of its screen time: the first hear item's at, else the middle."""
+    screen_time = number_of(shot.get("screen_time"), 0) or 0
+    for item in breakdown.items(shot, "hear"):
+        at = number_of(item.get("at"))
+        if at is not None and screen_time > 0:
+            return min(max(at / screen_time, 0.0), 1.0)
+    return 0.5
+
+
 @register_check("GEOM-01", level="E", build=1, title="Paired singles in dialogue without opposite eyeline sides",
                 plain="has two people's singles looking to the same side of the frame, so they seem not to face each other")
 def check_geom_01(run):
+    """Paired singles in one part of a scene (the whole scene when it has no parts) look opposite ways, read when the
+    line is spoken. The second full run (Project notes 39) paired a shot with one a part and 60 seconds later, read
+    while the person was still walking in."""
     breakdown = breakdown_of(run)
     problems = []
     for scene_identifier in breakdown.scene_identifiers():
-        for (first, looker, side), (second, other, other_side) in paired_singles(breakdown, scene_identifier):
-            if side is None or other_side is None or "centre" in (side, other_side):
-                continue
+        same_part = bool(scene_parts(breakdown, scene_identifier))
+        for (first, looker, _), (second, other, _) in paired_singles(breakdown, scene_identifier, same_part):
             if not (breakdown.items(first, "hear") or breakdown.items(second, "hear")):
+                continue
+            side = eyeline_sides(breakdown, first, spoken_share(breakdown, first)).get(looker)
+            other_side = eyeline_sides(breakdown, second, spoken_share(breakdown, second)).get(other)
+            if side is None or other_side is None or "centre" in (side, other_side):
                 continue
             if side == other_side:
                 problems.append(run.problem(
@@ -589,9 +622,18 @@ def check_geom_04(run):
     breakdown = breakdown_of(run)
     limit = constant(breakdown.constants, "size_step_difference_warning", 2)
     problems = []
+    mounted = []
     for shot in run.records("SHOT"):
         written = normalise_word(shot.get("size") or "")
         if written not in SIZE_LADDER:
+            continue
+        setup = breakdown.record(shot.get("setup"), "SETUP") if shot.get("setup") else None
+        mount = ((setup.get("mount") if setup is not None else "") or "world").strip()
+        own_place = scene_location(breakdown, scene_of(shot.identifier))
+        if normalise_word(mount) not in ("world", "none") and not (own_place and element_of(mount) == own_place):
+            # The second full run (Project notes 39): a camera mounted on a person was measured from its fixed point.
+            # A camera on the scene's own place (the freight cage) moves with its set plan, so it is measured.
+            mounted.append(shot.identifier)
             continue
         check = size_check(breakdown, shot)
         if check is None:
@@ -605,6 +647,11 @@ def check_geom_04(run):
                 f"{'an' if check.size[:1] in 'aeiou' else 'a'} {check.size}",
                 "Fix: change the size, or move the setup or the lens so the frame is the size written (the step 8 "
                 "file, Camera, gives the sum)."))
+    if mounted:
+        # one line for all of them, so the health check counts one check that could not run in full
+        shown = ", ".join(mounted[:4]) + (f" and {len(mounted) - 4} more" if len(mounted) > 4 else "")
+        run.skip("GEOM-04", f"{len(mounted)} shot{'s' if len(mounted) != 1 else ''} ({shown}) with a camera mounted "
+                            "on a person or a thing, so the distance from a fixed point is not its distance")
     return problems
 
 
@@ -642,6 +689,15 @@ def check_geom_05(run):
                 problems.append(run.problem("E", "GEOM-05", location, "mark", f"{name} at {list(point)} is outside the room",
                                             "Fix: move the mark inside the plan's size, or place the person with a "
                                             "point in the scene's start or a move."))
+                continue
+            inside = object_holding_mark(plan, name, point)
+            if inside:
+                # the second full run (Project notes 39): a mark inside the table; a warning, since a mark is a floor
+                # point and the plan cannot say when a thing that moves stands there
+                problems.append(run.problem("W", "GEOM-05", location, "mark",
+                                            f"{name} at {list(point)} is inside the {inside.lower().replace('_', ' ')}",
+                                            "Fix: move the mark beside the object, or say the object is a seat or a "
+                                            "bed (furniture) when people sit or lie on it."))
     for setup in run.records("SETUP"):
         location = scene_location(breakdown, scene_of(setup.identifier))
         plan = set_plan(breakdown, location) if location else None
@@ -669,7 +725,47 @@ def check_geom_05(run):
                 problems.append(run.problem("E", "GEOM-05", setup, "at",
                                             f"{list(position)} is inside the {name.lower().replace('_', ' ')}",
                                             "Fix: move the camera out of the object."))
+    for move in run.records("MOVE"):
+        # a move's from, via and to are marks, objects or points of the set plan; a misspelt mark was dropped
+        # without a word (the cross-examination of the second full run, once via took marks)
+        location = scene_location(breakdown, scene_of(move.identifier))
+        plan = set_plan(breakdown, location) if location else None
+        if plan is None:
+            continue
+        for field_name in ("from", "via", "to"):
+            value = (move.get(field_name) or "").strip()
+            if not value or normalise_word(value) == "none" or point_of(value) or value in plan.marks \
+                    or value in plan.objects:
+                continue
+            problems.append(run.problem("W", "GEOM-05", move, field_name,
+                                        f"{value} is no mark or object of the place's set plan, so the move is not "
+                                        "placed", "Fix: write one of the plan's mark or object names, or a point "
+                                        "[x, y]."))
     return problems
+
+
+# A mark inside a set-plan object is a fault only for a solid of table height: a floor surface (a painted line,
+# padding, a grid floor) is stood on, and a taller object may be an enclosure people stand in (a tent, a cage).
+MARK_OBSTACLE_TOP_M = (0.3, 1.2)
+
+
+def object_holding_mark(plan, name, point):
+    """The name of a table-high set-plan object a mark stands inside (on the floor, under the object's top), or
+    None: objects people sit or lie on (furniture seat or bed) and objects that arrive later are left out."""
+    height = plan.mark_heights.get(name)
+    for object_name, found in plan.objects.items():
+        size = found.get("size") or ()
+        if len(size) < 3 or found.get("furniture") in ("seat", "bed") or found.get("from_scene"):
+            continue
+        centre = found["at"]
+        top = found.get("base", 0.0) + size[2]
+        if not MARK_OBSTACLE_TOP_M[0] < top <= MARK_OBSTACLE_TOP_M[1]:
+            continue
+        if height is not None and height >= top - 1e-9:
+            continue  # standing on it
+        if abs(point[0] - centre[0]) < size[0] / 2 and abs(point[1] - centre[1]) < size[1] / 2:
+            return object_name
+    return None
 
 
 def placement_distance(first, second):

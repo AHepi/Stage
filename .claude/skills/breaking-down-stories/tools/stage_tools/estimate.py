@@ -37,6 +37,10 @@ Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
 - one film length: the story's, then with titles and credits.
+
+After the second full run (Project notes 39 and 40):
+- the weeks are rounded before they are compared; the page check names the estimate from the story's words; a scene's
+  planned length is called its first estimate; a film longer than the short film the user chose is warned about.
 """
 
 import datetime
@@ -1036,6 +1040,15 @@ def film_checks(film, breakdown, constants, prices, pages=None):
             film.warnings.append(
                 f"The film runs about {whole(central / 60)} minutes, more than {whole(tolerance * 100)}% away from "
                 f"your target of {whole(film.target_s / 60)} minutes.")
+    short_max = float(constant(constants, "short_runtime_max_s", 2400))
+    chose_short = normalise_word(project_value(breakdown, "format") or "") == "short"
+    if chose_short and film.runtime_s and not film.partial and round(film.runtime_s[1] / 60) > round(short_max / 60):
+        # the format choice and the estimate disagree: say so (the second full run: a 50-minute film stood against
+        # "A short film (40 minutes or less)" and nothing said it)
+        film.warnings.append(
+            f"The film runs about {whole(film.runtime_s[1] / 60)} minutes, longer than the short film you chose "
+            f"({whole(short_max / 60)} minutes or less): choose a feature, or cut scenes, before trusting the "
+            "short film's budgets.")
     if pages and film.source_kind == "screenplay" and not film.partial:
         per_minute = float(prices.warning_band("pages_per_minute", 1.1))
         short_rate = float(prices.warning_band("pages_per_minute_short_script", 0.8))
@@ -1045,7 +1058,8 @@ def film_checks(film, breakdown, constants, prices, pages=None):
         difference = (central - page_seconds) / page_seconds
         line = (f"The page check: the script is about {one_place(pages)} pages; at {one_place(per_minute)} pages a "
                 f"minute it plays about {whole(page_seconds / 60)} minutes, {whole(abs(difference) * 100)}% "
-                f"{'more' if difference < 0 else 'less'} than this estimate from the words")
+                f"{'more' if difference < 0 else 'less'} than the estimate from the story's words "
+                f"({whole(central / 60)} minutes)")
         if abs(difference) > share:
             film.warnings.append(line + f", more than the {whole(share * 100)}% the check allows: look for missing "
                                  "scenes, speech counted twice or wrong pace classes before trusting either.")
@@ -1082,7 +1096,8 @@ def film_checks(film, breakdown, constants, prices, pages=None):
                                                        if factor > band[1] else ": check the takes per shot."))
     limits = prices.warning_band("weeks_central_max", {"short": 26, "other": 52})
     limit = limits.get("short" if film.format == "short" else "other", 52)
-    if film.hours_shown and film.weeks.get("central", 0) > limit:
+    # rounded before comparing, so it never says "about 26 weeks, longer than 26" (the second full run)
+    if film.hours_shown and round(film.weeks.get("central", 0)) > limit:
         film.warnings.append(
             f"At {whole(film.hours_per_week)} hours a week this takes about {whole(film.weeks['central'])} weeks, "
             f"longer than {whole(limit)}: a shorter film, or a first part made to the end before the rest, is worth "
@@ -1701,7 +1716,7 @@ def scene_line(film, block):
     label = block.label
     if block.basis == "shots":
         text = (f"{label}: {whole(block.runtime_s[1])} seconds in {plural(block.total_shots, 'shot')}"
-                + (f" (planned {whole(block.target_s)})" if block.target_s else ""))
+                + (f" (first estimate {whole(block.target_s)})" if block.target_s else ""))
     elif block.basis == "list":
         text = (f"{label}: {whole(block.runtime_s[1])} seconds in {plural(block.total_shots, 'listed shot')}, "
                 "counted by the pace's shares until the shots are written")

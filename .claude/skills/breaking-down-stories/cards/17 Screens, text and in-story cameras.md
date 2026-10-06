@@ -16,7 +16,7 @@ Words the audience must read (signs, labels, displays, title cards), screens in 
 6. **Is it footage recorded inside the story?** Give it a CAMERA record (position, lens, frame shape, frame rate, overlays, `moves`), record the event once as one continuous take, and cut every viewing from it (B1 §10.4, R22).
 7. **Is a screen in frame?** The device shot asks for a blank screen; its content is its own shot, pinned on after (blueprint 8.5; C2 R6; C3 §13B).
 8. **Does a later scene replay this one?** Put the replaying camera into this scene's set plan as a named setup (A3 R9).
-9. **Does something appear or vanish on a fixed feed?** Between two frames: no camera move, no dissolve, no glow (B1 R20, §10.6).
+9. **Does something appear or vanish on a fixed feed?** Between two frames: no camera move, no dissolve, no glow (B1 R20, §10.6). Chained pieces of one feed are joined by a `continue` CUT; a `kind: screen` shot's `height` is the in-story camera's, in metres.
 
 ## Rules
 

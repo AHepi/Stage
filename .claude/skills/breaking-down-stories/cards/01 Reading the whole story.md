@@ -25,7 +25,7 @@ Step 1 confirms the scene list and asks the length question. Step 2 plans the wh
 3. What does the story turn on? The core value with two poles; the theme as a question the story tests, not a moral; the core opposition as two nouns (B4 §3.1 steps 1-2).
 4. Where does the core value turn for good? Chart two or three candidate values across all scenes; keep the one whose last big turn is the last major reversal, caused by the protagonist, answering the story's question (D16 R3).
 5. How intense is each scene across the film? Go from the top: 10 only for the climax; 8 or 9 a life at stake or a reversal that changes the whole plan (9 for at most the one or two biggest before the climax); 6 or 7 a turn that changes a relationship or the plan; 4 or 5 a minor turn, a test or needed information; 2 or 3 set-up, travel, aftermath; 1 nothing at stake. Never derive it from beat scores (B3 §2.6).
-6. Where do the sequences break? Test the author's own breaks first, such as a cut to black followed by a title card (D16 R8); each sequence ends inside its act and answers one question with a quoted line (D16 R12).
+6. Where do the sequences break? Test the author's own breaks first, such as a cut to black followed by a title card (D16 R8); each sequence ends inside its act and answers one question with a quoted line, written in its `story_job` (D16 R12).
 7. What is planted, and where is it paid off? Every scene is both (A2 P12); write both ends as story points (PLAN-02).
 8. Who knows what, from when? Only for suspense, mystery and dramatic irony, write a FACT naming the `element` that would give it away in frame (A4 §6.5; A3 R4).
 9. **Whose scene** is it: whose place and knowledge does the camera share (A3 §7.3)?

@@ -40,6 +40,11 @@ After the three-scene test of the fixed kit (Project notes 35 and 36):
 
 After the second three-scene test (Project notes 37 and 38):
 - TIME-09's fix says to report a fact whose known_by is wrong, since the shots cannot correct it.
+
+After the second full run (Project notes 39 and 40):
+- COVER-07 and COVER-08 wait for the scene's last batch; a list far from the first estimate is a note once the list is
+  approved; TIME-01 reads list items at every depth (an error only at quick depth); STATE-01 reads the states a beat's
+  emphasis names; a light word is compared in the singular too.
 """
 
 import math
@@ -775,6 +780,10 @@ def check_cover_07(run):
             continue
         if run.story_missing("COVER-07"):
             return problems
+        if batch_beats(run, breakdown, scene.identifier) is not None:
+            # a scene-wide check: a later batch may hold the sound (the second full run, Project notes 39)
+            run.skip("COVER-07", f"{scene.identifier}: runs after the scene's last batch")
+            continue
         entry = story_map_scene(breakdown, scene.identifier)
         if entry is None:
             run.skip("COVER-07", f"{scene.identifier}: not in the excerpt of the story given (no capitalised words "
@@ -894,8 +903,11 @@ def light_word_carried_by_look(word, look, look_words):
         return bool(look.get("main_light")) and normalise_word(look.get("main_light") or "none") != "none"
     if word in look_words:
         return True
-    return any(word.startswith(stem) and len(stem) >= 4 for stem in look_words) or \
-        any(stem.startswith(word) and len(word) >= 4 for stem in look_words)
+    # the look's words in the singular too: "lamplight" against the look's "lamps" (the second full run, Project
+    # notes 39)
+    stems = set(look_words) | {stem[:-1] for stem in look_words if stem.endswith("s") and not stem.endswith("ss")}
+    return any(word.startswith(stem) and len(stem) >= 4 for stem in stems) or \
+        any(stem.startswith(word) and len(word) >= 4 for stem in stems)
 
 
 @register_check("COVER-08", level="W", build=1,
@@ -910,6 +922,9 @@ def check_cover_08(run):
             continue
         if run.story_missing("COVER-08"):
             return problems
+        if batch_beats(run, breakdown, scene.identifier) is not None:
+            run.skip("COVER-08", f"{scene.identifier}: runs after the scene's last batch")
+            continue
         entry = story_map_scene(breakdown, scene.identifier)
         if entry is None:
             run.skip("COVER-08", f"{scene.identifier}: not in the excerpt of the story given (no light lines read "
@@ -1017,7 +1032,11 @@ def check_time_01(run):
                                        f"{seconds_words(screen_time)} is under its floor {seconds_text(floor.floor)} s "
                                        f"({floor.short_reason()})", fix + ".",
                                        place_of(run, shot, "screen_time")))
-        elif run.depth_rank(scene) <= 1:
+        else:
+            # the one-line list's times against their provisional floors: the final plan at quick depth (an error);
+            # at standard and detailed depth a warning, so step 8 does not find it a round later (the second full run,
+            # Project notes 39)
+            level = "E" if run.depth_rank(scene) <= 1 else "W"
             shot_list = breakdown.record(f"{scene.identifier}-LIST", "SHOTLIST")
             for identifier, item in list_items(breakdown, scene.identifier):
                 time = number_of(item.get("time"))
@@ -1029,7 +1048,7 @@ def check_time_01(run):
                 least, words = provisional_least(floor)
                 if time + TIME_TOLERANCE_S >= least:
                     continue
-                problems.append(report(run, "E", "TIME-01", shot_list, "item",
+                problems.append(report(run, level, "TIME-01", shot_list, "item",
                                        f"{identifier} time {seconds_words(time)} is under its floor: {words}",
                                        f"Fix: raise its time to {suggested_seconds(least)}, or give part of its "
                                        "beats to the next item.", place_of(run, shot_list, "item", identifier)))
@@ -1172,15 +1191,21 @@ def design_far_from_target(run, breakdown, scene, far):
     design = sum(times) if times else None
     if not design or 1 / far <= design / target <= far:
         return []
-    record = breakdown.record(f"{scene.identifier}-LIST", "SHOTLIST") or scene
+    shot_list = breakdown.record(f"{scene.identifier}-LIST", "SHOTLIST")
+    record = shot_list or scene
     how = f"{design / target:.1f} times" if design > target else f"{round(design / target * 100)}% of"
-    return [report(run, "W", "TIME-03", record, "item",
-                   f"the scene's one-line list totals {seconds_text(round(design, 2))} s, {how} its planned "
-                   f"{round(target, 2):g} s (target_duration_s; more than {far:g} times or under "
-                   f"1/{far:g} of it is warned, scene_target_far_ratio)",
-                   "Fix: check the list's times against the scene's lines; when the scene really needs this length, "
-                   "keep it and say so in the report to the user, since it changes the film's length.",
-                   place_of(run, record, "item"))]
+    # The second full run (Project notes 39): once the user has passed the list, the first estimate (a guess, not
+    # judged; step 10) is no longer a warning, only a note.
+    approved = shot_list is not None and normalise_word(shot_list.get("approved") or "") == "yes"
+    problem = report(run, "N" if approved else "W", "TIME-03", record, "item",
+                     f"the scene's one-line list totals {seconds_text(round(design, 2))} s, {how} the first "
+                     f"estimate's {round(target, 2):g} s (target_duration_s; more than {far:g} times or under "
+                     f"1/{far:g} of it is warned until the list is approved, scene_target_far_ratio)",
+                     "Fix: check the list's times against the scene's lines; when the scene really needs this length, "
+                     "keep it and say so in the report to the user, since it changes the film's length.",
+                     place_of(run, record, "item"))
+    problem.plain_detail = f"runs {round(design):g} seconds, {how} the first estimate of {round(target):g} seconds"
+    return [problem]
 
 
 # ---------------------------------------------------------------- pauses (TIME-04, TIME-05, TIME-08)
@@ -1786,6 +1811,17 @@ def check_state_01(run):
                         item_first, item_last = recorded
                     problems.extend(state_reference_problems(run, breakdown, scene, shot, field_name,
                                                              (item.first or "").strip(), item_first, item_last))
+        for beat in breakdown.beats_of(scene.identifier):
+            # a beat's emphasis may name a state; it must hold during the beat (the second full run, Project notes
+            # 39: a beat named a state that ended before it)
+            first, last = shot_span(breakdown, beat)
+            if first[1] is None:
+                continue
+            for item in breakdown.items(beat, "emphasis"):
+                reference = (item.first or "").strip()
+                if STATE_REFERENCE.match(reference):
+                    problems.extend(state_reference_problems(run, breakdown, scene, beat, "emphasis", reference,
+                                                             first, last))
         shot_list = run.record(f"{scene.identifier}-LIST")
         if shot_list is None or shot_list.type_name != "SHOTLIST":
             continue

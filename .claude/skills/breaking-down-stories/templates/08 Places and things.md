@@ -35,7 +35,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - origin_corner: <standard, when set_plan_needed, always at detailed: text>
 - axes: <standard, when set_plan_needed, always at detailed: text>
 - wild_walls: <standard, when set_plan_needed, always at detailed: the compass names of the walls the camera may pass through (north, south, east or west, separated by commas), or none>
-- object: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres> | size: <[width, depth, height] in metres> | base: <metres> | material: <text> | meaning: <text> | furniture: <seat, bed or none>
+- object: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres> | size: <[width, depth, height] in metres> | base: <metres> | material: <text; "from scene NN" when it arrives later> | meaning: <text> | furniture: <seat, bed or none>
 - mark: <standard, when set_plan_needed, always at detailed, one line each: one word> | at: <[x, y] or [x, y, z] in metres>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>
@@ -75,7 +75,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - words: <quick, code copies it from the story lines of words_from when origin is story; you write it when origin is inferred or invented: text>
 - on: <quick: an ID of PROP (PR-FLASK) or LOCATION (LOC-SAYE-KITCHEN) or CAMERA (CAM-SHAFT-TOP) or CHARACTER (CH-IONA), or none>
 - origin: <quick: story, inferred or invented>
-- words_from: <quick, when text_in_story, one line each: the story line that writes the words (a line number, or a quote anchor in a chat without code)> | quote: <the exact words inside the line, when the line holds more than the text>
+- words_from: <quick, when text_in_story, one line each: the story line that writes the words (a line number, or a quote anchor in a chat without code)> | quote: "<the exact words inside the line, in double quotes, when the line holds more than the text>"
 - reader: <standard: an ID of CHARACTER (CH-IONA), or none>
 - plot_critical: <standard: yes or no>
 - emphasis: <standard: a number from 0 to 3>

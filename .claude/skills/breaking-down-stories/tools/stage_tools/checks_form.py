@@ -20,6 +20,12 @@ After the full run on The Catch (Project notes 31 and 32):
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - the big choices' fields wait for checkpoint B; the prices date is judged by GEN-11, not FORM-05; a missing user
   field is asked through a choice.
+
+After the second full run (Project notes 39 and 40):
+- FORM-11 counts the sides a choice leaves alone as backed; FORM-08 reads "as before" followed by a word as a time
+  phrase.
+- after its cross-examination: FORM-08 still finds "as before" followed by a joining word ("but", "and"); FORM-04
+  refuses a side choice's SETVALUE that says none; FORM-11's kept sides are a state's sides only.
 """
 
 import difflib
@@ -565,6 +571,17 @@ def check_form_04(record_files, context):
     FACT element may no longer be a story point: step 4's things unit re-points it to IDs (C23)."""
     analysis, _ = analyse(record_files, context)
     problems = [problem for problem in analysis if problem.check_id == "FORM-04"]
+    for record_file in record_files:
+        for record in record_file.records:
+            if record.type_name != "SETVALUE" or setvalue_target_type(context.schema, record) != "STATE":
+                continue
+            for line in record.field_lines("side"):
+                if normalise_word(line.value) in ("none", "open"):
+                    # a side choice sets only the sides it names (the cross-examination of the second full run)
+                    problems.append(make_problem(
+                        "E", "FORM-04", record_file, record, "side",
+                        f"is {normalise_word(line.value)} in a side choice's SETVALUE, which sets no side",
+                        "Fix: name the sides this choice decides, one '- side:' line each", line.line_number))
     step_rank = context.schema.step_rank(context.step) if context.step is not None else None
     if not context.written_by_ai and (step_rank is None or step_rank >= 5):
         for record_file in record_files:
@@ -904,6 +921,10 @@ def remove_quoted(value):
 MARKERS_ALSO_ENGLISH = {"as before"}
 MARKER_VALUE_WORDS_MAX = 5
 POINTING_BACK_WORDS = {"same", "identical", "unchanged", "previous", "earlier", "above"}
+# "as before" is a time phrase ("as before the fire", "as before she wakes") only when a noun phrase or a clause
+# follows it: a word that starts one, or a number. A joining word after it ("but", "and", "with") is no such start.
+TIME_PHRASE_AFTER_MARKER = (r"\s+(?:(?:the|a|an|her|his|their|its|my|our|your|this|that|these|those|she|he|they|we|it|"
+                            r"i|you|him|them)(?![a-z'])|[0-9])")
 
 
 def marker_clause_points_back(lowered, start):
@@ -918,6 +939,11 @@ def find_marker(text, markers):
         if marker[0].isalpha():
             found = re.search(r"(?<![a-z])" + re.escape(marker.lower()) + r"(?![a-z])", lowered)
             if found:
+                if marker.lower() in MARKERS_ALSO_ENGLISH and \
+                        re.match(TIME_PHRASE_AFTER_MARKER, lowered[found.end():]):
+                    # "as before the fire": a time phrase, never a marker (the second full run, Project notes 39);
+                    # "as before but wetter" or "as before and the lamp lit" still shortens (its cross-examination)
+                    continue
                 if marker.lower() in MARKERS_ALSO_ENGLISH and lowered[:found.start()].strip(" \t\"'(") and \
                         len(re.findall(r"[a-z']+", lowered)) > MARKER_VALUE_WORDS_MAX and \
                         not marker_clause_points_back(lowered, found.start()):
@@ -1259,6 +1285,8 @@ def check_form_11(record_files, context):
                 elif same_value(new_values[0], old_values[0]):
                     continue
                 found, values = book.backing(stored, target, schema)
+                if found and values and stored.type_name == "STATE" and target == "side":
+                    values = values + old_values  # a side choice sets only the sides it names; the others are kept
                 if found and values and all(any(same_value(new, value) for value in values) for new in new_values):
                     continue
                 line = record.field_lines(name)[0]

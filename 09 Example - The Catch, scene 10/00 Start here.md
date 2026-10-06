@@ -2,9 +2,9 @@
 
 ## Where things stand
 
-Last saved: step 9 of 12, writing the shots, scene 10, batch 2, on 2026-10-05.
+Last saved: step 9 of 12, writing the shots, scene 10, batch 2, on 2026-10-06.
 This breakdown covers 1 of 1 scene: 1 designed, 1 with their shots written (21 shots).
-Checked by the checker: 2026-10-05.
+Checked by the checker: 2026-10-06.
 4 small additions to the story kept; the list is in 01 Choices.
 Waiting for you: nothing.
 
@@ -66,9 +66,9 @@ Each file's number is its place in the list Files in this folder; the log below 
 
 ## Log
 
-001 2026-10-05 Scene 10 designed and its shots written: 11 beats, 20 shots and the title card; one added detail to keep or cut (Iona sets the lamp down).
-002 2026-10-05 Checked everything: 0 problems, 0 warnings.
-003 2026-10-05 The book made: 15 The breakdown.
+001 2026-10-06 Scene 10 designed and its shots written: 11 beats, 20 shots and the title card; one added detail to keep or cut (Iona sets the lamp down).
+002 2026-10-06 Checked everything: 0 problems, 0 warnings.
+003 2026-10-06 The book made: 15 The breakdown.
 
 Below this line: details for the AI and the checker. You never need to read them.
 
@@ -96,7 +96,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - scene_id_digits: 2
 - prompt_words: torch | use: flashlight
 - schema_version: 1.0
-- checker_last_run: 2026-10-05
+- checker_last_run: 2026-10-06
 - model_facts_date: none
 - status: approved
 - locked: yes

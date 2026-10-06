@@ -88,7 +88,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - charge: <standard, one line each: an ID of VALUE (SC10-V1)> | charge: <---, --, -, 0, +, ++ or +++>
 - flag: <standard, when when_used, one line each: one word from the note> | line: <an ID of SPEECH (SC10-D11)>
 - engaged_pair: <standard, when tag_three_or_more: IDs of CHARACTER (CH-IONA), separated by commas>
-- silent_third: <standard, when tag_three_or_more: an ID of CHARACTER (CH-IONA)>
+- silent_third: <standard, when tag_three_or_more: an ID of CHARACTER (CH-IONA), or none when nobody is left to witness>
 - five_steps: <standard, when turn_or_intense_beat, one line each: desire, obstacle, choice, action or expression> | shows: <text>
 - landing_face: <standard, when dialogue_pass_beat, always at detailed: a character ID, insert:<ID>, or wide>
 - unsaid: <standard, when turn_beat, always at detailed: an ID of CHARACTER (CH-IONA)> | thought: <text>
@@ -143,7 +143,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - who: <standard: an ID of CHARACTER (CH-IONA)>
 - from: <standard: MARK_NAME or [x, y]>
 - to: <standard: MARK_NAME or [x, y]>
-- via: <standard: [x, y] or [x, y, z] in metres, or none>
+- via: <standard: MARK_NAME, [x, y] or [x, y, z] in metres, or none>
 - start_s: <standard: seconds>
 - dur_s: <standard: seconds>
 - faces: <standard: ID or [x, y]>
@@ -229,7 +229,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - light_cue: <standard: text> | when: <seconds> | why: <text>
 - dark: <detailed: text>
 - eye_light: <detailed: yes or no>
-- hear: <quick, one line each: an ID of SPEECH (SC10-D11); write none when there is nothing> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words">
+- hear: <quick, one line each: an ID of SPEECH (SC10-D11); write none when there is nothing> | speaker: <on_screen, off_screen or hidden> | path: <one word from the note> | at: <seconds> | words: <"exact story words"> | plant: <an ID of PLANT, when a line plants it> | payoff: <an ID of PLANT>
 - effect: <standard, one line each: text; write none when there is nothing> | at: <seconds> | sound_emphasis: <a number from 0 to 3>
 - room_sound: <standard: text, or as_place; default as_place>
 - silence: <standard: none, room_sound_only, drop_out or true_silence; default none>

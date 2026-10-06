@@ -160,6 +160,14 @@ After the three-scene test of the fixed kit (Project notes 35 and 36):
 
 After the second three-scene test (Project notes 37 and 38):
 - the scenes to read point to the guide "05 How to read your breakdown" and say where it is.
+
+After the second full run (Project notes 39 and 40):
+- check --all before the scores unit counts missing scores as not yet due, and check --unit passes the lines on
+  records it cites through the same test; the health check lists warnings a finding accepts as kept on purpose; a
+  clean check --step 9 is recorded for next; the 'In short' line names what waits for the user; check --unit says the
+  records sent apart from the scene and list a last batch adds, names the step both ways, counts left-out lines on the
+  scene and ends with "not applied yet" when the unit's inbox file waits.
+- after its cross-examination: a passed list far from the first estimate is listed under "Kept on purpose".
 """
 
 import dataclasses
@@ -1046,6 +1054,7 @@ def plain_problem_line(problem, run):
     """One line of the plain part: where it is and what is wrong, in plain words."""
     definition = REGISTRY.get(getattr(problem, "check_id", ""))
     plain = definition.plain if definition else "has a problem the checker found"
+    plain = getattr(problem, "plain_detail", None) or plain  # a check may say the size and the direction
     record = getattr(problem, "record", "") or ""
     file_name = re.sub(r"\.md$", "", getattr(problem, "file_name", None) or "")
     name = plain_name_of(record, run)
@@ -1079,20 +1088,44 @@ def plural(count, word, plural_word=None):
     return f"{count} {word if count == 1 else (plural_word or word + 's')}"
 
 
-def in_short_line(result, needs_you):
-    """The report's first line (step 10): 'In short: 2 things need you, 14 small fixes I made, 3 warnings'. With
-    problems still to fix it says them first, and says that no question waits for the user rather than "nothing
-    needs you", which read as a contradiction next to them."""
+def kept_on_purpose(result):
+    """[(warning, finding)]: the warnings a FINDING with status accepted names (its record and its rule), kept on
+    purpose with a reason. The second full run (Project notes 39): the health check listed them as plain warnings."""
+    accepted = {}
+    for finding in result.run.records("FINDING"):
+        if normalise_word(finding.get("status") or "") == "accepted":
+            accepted[((finding.get("record") or "").strip(), (finding.get("rule") or "").strip())] = finding
+    found = []
+    for problem in result.problems:
+        if getattr(problem, "level", "") != "W":
+            continue
+        finding = accepted.get(((getattr(problem, "record", "") or "").strip('"'), getattr(problem, "check_id", "")))
+        if finding is not None:
+            found.append((problem, finding))
+    return found
+
+
+def in_short_line(result, needs_you, what_needs_you=()):
+    """The report's first line (step 10): 'In short: 2 things need you (reading three scenes; choice 4), 14 small
+    fixes I made, 3 warnings'. With problems still to fix it says them first, and says that no question waits for the
+    user rather than "nothing needs you", which read as a contradiction next to them. Warnings kept on purpose are
+    counted apart. what_needs_you names the things counted (the second full run, Project notes 39: "nothing needs
+    you" stood above "Three scenes to read", and "1 thing needs you" never said what)."""
     counts = result.counts
     errors = counts.get("E", 0)
     if needs_you:
         needs = f"{plural(needs_you, 'thing')} {'needs' if needs_you == 1 else 'need'} you"
+        if what_needs_you:
+            needs += f" ({'; '.join(what_needs_you)})"
     else:
         needs = "no question waits for you" if errors else "nothing needs you"
     fixes = len(result.tidy_notes)
-    warnings = counts.get("W", 0)
+    kept = len(kept_on_purpose(result)) if getattr(result, "run", None) is not None else 0
+    warnings = counts.get("W", 0) - kept
     parts = [needs, f"{plural(fixes, 'small fix', 'small fixes')} I made" if fixes else "no small fixes needed",
              plural(warnings, "warning") if warnings else "no warnings"]
+    if kept:
+        parts.append(f"{plural(kept, 'warning')} kept on purpose")
     if errors:
         parts.insert(0, f"{plural(errors, 'problem')} still to fix")
     return "In short: " + ", ".join(parts) + "."
@@ -1105,6 +1138,25 @@ def open_questions(run):
         if normalise_word(choice.get("status") or "open") == "open" and normalise_word(choice.get("asked") or "no") == "yes":
             count += 1
     return count
+
+
+def what_needs_you(run):
+    """(count, names) of what waits for the user, for the 'In short' line: each open asked choice ('choice 4'), and
+    the three scenes to read once the scores are written and the finished check is not yet passed."""
+    names = []
+    for choice in run.records("CHOICE"):
+        if normalise_word(choice.get("status") or "open") == "open" and normalise_word(choice.get("asked") or "no") == "yes":
+            number = re.match(r"^CHOICE-0*(\d+)", choice.identifier or "")
+            names.append(f"choice {number.group(1)}" if number else "a choice")
+    count = len(names)
+    if len(names) > 3:
+        names = names[:3] + [f"{len(names) - 3} more"]
+    checkpoints = (getattr(run, "manifest", None) or {}).get("checkpoints") or {}
+    scored = any(re.fullmatch(r"SC\d{2,3}[A-Z]?", scope) for scope in review_scores(run))
+    if scored and "CHECKPOINT-ACCEPTANCE" not in checkpoints and scenes_to_read_plain_lines(run):
+        names.insert(0, "reading three scenes")
+        count += 1
+    return count, names
 
 
 ADD_ON_STEP_WORDS = {12: "the storyboards", 13: "the grey previews", 14: "the prompts for AI video",
@@ -1140,7 +1192,7 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
     not be checked, the sections other modules add (quality scores, the three scenes to read) and the details by
     file. Plain words only: no check IDs, record IDs or abbreviations (WORDS-04)."""
     run = result.run
-    lines = [in_short_line(result, open_questions(run)), "", f"# {HEALTH_CHECK_TITLE}", "", "## At a glance", ""]
+    lines = [in_short_line(result, *what_needs_you(run)), "", f"# {HEALTH_CHECK_TITLE}", "", "## At a glance", ""]
     stamp = datetime.datetime.now()
     lines.append(f"Checked: {what_was_checked(step, scene, film, all_checks)}, on "
                  f"{stamp.day} {stamp.strftime('%B %Y')} at {stamp.strftime('%H:%M')}.")
@@ -1168,6 +1220,9 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
     else:
         lines.append("Nothing: no problem was found.")
     lines.append("")
+    kept = kept_on_purpose(result)
+    kept_ids = {id(problem) for problem, _ in kept}
+    warnings = [problem for problem in warnings if id(problem) not in kept_ids]
     lines.append("## Warnings")
     lines.append("")
     if warnings:
@@ -1175,6 +1230,20 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
     else:
         lines.append("None.")
     lines.append("")
+    # a scene whose passed list runs far from the first estimate (a note once approved) keeps its line here, with
+    # the size and the direction (the cross-examination of the second full run: it vanished from the plain part)
+    passed_lists = [problem for problem in result.problems
+                    if getattr(problem, "level", "") == "N" and getattr(problem, "check_id", "") == "TIME-03"]
+    if kept or passed_lists:
+        lines.append("## Kept on purpose")
+        lines.append("")
+        for problem, finding in kept:
+            line = plain_problem_line(problem, run)
+            lines.append(f"{line[:-1]}: kept on purpose; {plain_name_of(finding.identifier, run)} in 12 Whole-film "
+                         "check gives the reason.")
+        for problem in passed_lists:
+            lines.append(f"{plain_problem_line(problem, run)[:-1]}: kept on purpose; you passed this list.")
+        lines.append("")
     lines.append("## Small fixes I made")
     lines.append("")
     if result.tidy_notes:
@@ -1191,8 +1260,8 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
             lines.append(f"{plural(len(result.crashed), 'check')} stopped with a fault in the tools, so what "
                          f"{'it' if len(result.crashed) == 1 else 'they'} would find is not known; the lines for the "
                          "AI below say which.")
-        lines.append(f"{plural(len(result.skipped), 'check')} could not run in full; the reasons are below the line "
-                     "for the AI.")
+        lines.append(f"{plural(len(result.skipped), 'check')} could not run in full; nothing here needs you (the "
+                     "reasons are for the AI, below the line).")
     for section in [lambda project, result: quality_scores_plain_lines(result.run),
                     lambda project, result: scenes_to_read_plain_lines(result.run)] + list(REPORT_SECTIONS):
         try:
@@ -1572,6 +1641,13 @@ def update_manifest_after_check(project, result, command_line, record_files):
     manifest["last_check"] = {"time": datetime.datetime.now().isoformat(timespec="seconds"), "command": command_line,
                               "errors": counts.get("E", 0), "warnings": counts.get("W", 0),
                               "notes": counts.get("N", 0), "tidy_fixes": len(result.tidy_notes)}
+    if re.search(r"--step 9\b|--all\b", command_line or "") and "--scene" not in (command_line or ""):
+        # the film pass's own check, which next waits on (make_handout.film_pass_checked)
+        passed = manifest.setdefault("checks_passed", {})
+        if counts.get("E", 0):
+            passed.pop("step 9", None)
+        else:
+            passed["step 9"] = manifest["last_check"]["time"]
     project.refresh_manifest(manifest, record_files)
     project.write_manifest(manifest)
     write_locked_records(project.folder, next_locked_records(result, read_locked_records(project.folder),
@@ -1597,10 +1673,12 @@ def set_checker_last_run(project, keep_old_copy):
 class UnitView:
     """check --unit (C7): the records one unit wrote, and the records they cite."""
 
-    def __init__(self, unit, labels, cited):
+    def __init__(self, unit, labels, cited, added=()):
         self.unit = unit
         self.labels = labels
         self.cited = cited
+        self.added = set(added)   # the scene and its list, which a scene's last batch also answers for
+        self.scene_wide_left_out = 0
 
     @classmethod
     def for_unit(cls, project_folder, identifier, context):
@@ -1612,13 +1690,15 @@ class UnitView:
                             "check --step N.")
         keys = unit_records(workspace, unit)
         labels = {key[1] or key[0] for key in keys}
+        added = set()
         if unit.step == 8 and unit.scene:
             # the scene's last batch also answers for the checks of the whole scene (the light the story writes,
             # the time against the list, the suspense holds), which run once every batch is written
             from .make_handout import plan_batches
             batches = plan_batches(workspace, unit.scene)
             if batches and batches[-1][0] == unit.identifier:
-                labels |= {unit.scene, f"{unit.scene}-LIST"}
+                added = {unit.scene, f"{unit.scene}-LIST"} - labels
+                labels |= added
         cited = set()
         known = {key[1] for key in workspace.index if key[1]}
         for key in keys:
@@ -1629,11 +1709,14 @@ class UnitView:
                 for token in re.findall(r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+(?:\.S\d{2})?", line.value or ""):
                     if token in known and token not in labels:
                         cited.add(token)
-        return cls(unit, labels, cited)
+        return cls(unit, labels, cited, added)
 
     def split(self, problems):
-        """(the unit's own problems, errors on the records it cites, how many other lines were left out)."""
+        """(the unit's own problems, errors on the records it cites, how many other lines were left out). How many
+        of the left-out lines are on the unit's scene or its list is kept in scene_wide_left_out."""
         own, cited, others = [], [], 0
+        scene_wide = {self.unit.scene, f"{self.unit.scene}-LIST"} if getattr(self.unit, "scene", None) else set()
+        self.scene_wide_left_out = 0
         for problem in problems:
             label = (getattr(problem, "record", "") or "").strip('"')
             if label in self.labels:
@@ -1643,6 +1726,8 @@ class UnitView:
                 cited.append(problem)
             else:
                 others += 1
+                if label in scene_wide:
+                    self.scene_wide_left_out += 1
         return own, cited, others
 
 
@@ -1653,6 +1738,26 @@ def scope_line_for(result):
         return scope_words(result.run.index)
     except (ImportError, AttributeError):
         return ""
+
+
+def scores_not_yet_due(project, context, result):
+    """At check --all, a review's missing scores (FORM-05 on REVIEW score) wait for the scores unit, which step 10
+    runs only after check --all has no error (the second full run, Project notes 39: that gate could never be met).
+    Takes them out of result.problems and returns them; every other missing field stays an error."""
+    scores = [problem for problem in result.problems if getattr(problem, "check_id", "") == "FORM-05"
+              and getattr(problem, "field_name", None) == "score"
+              and (getattr(problem, "record", "") or "").strip('"').startswith("RV-")]
+    if not scores:
+        return []
+    try:
+        from .make_handout import Workspace, not_yet_due
+        _, waiting = not_yet_due(Workspace(project.folder, context.schema, context.words, context.constants), 10,
+                                 scores)
+    except StageStop:
+        return []
+    taken = {id(problem) for problem in waiting}
+    result.problems = [problem for problem in result.problems if id(problem) not in taken]
+    return waiting
 
 
 def run_check(context):
@@ -1699,8 +1804,12 @@ def run_check(context):
             result.problems, cited_lines, left_to_others = unit_view.split(result.problems)
             try:  # what a later unit of this step will write is not yet due here either
                 from .make_handout import Workspace, not_yet_due
-                result.problems, not_due = not_yet_due(Workspace(project.folder, context.schema, context.words,
-                                                                 context.constants), step, result.problems)
+                workspace = Workspace(project.folder, context.schema, context.words, context.constants)
+                result.problems, not_due = not_yet_due(workspace, step, result.problems)
+                # so are the lines about records it cites (the second full run, Project notes 39: a split scene's
+                # part 2 was shown ten coverage errors only its list unit can clear)
+                cited_lines, cited_not_due = not_yet_due(workspace, step, cited_lines)
+                not_due = not_due + cited_not_due
             except StageStop:
                 not_due = []
         elif step is not None and not film:
@@ -1710,6 +1819,8 @@ def run_check(context):
                                                                  context.constants), step, result.problems)
             except StageStop:
                 not_due = []
+        elif all_checks and not film:
+            not_due = scores_not_yet_due(project, context, result)
         written = []
         history = []
         kept_names = set()
@@ -1753,18 +1864,30 @@ def run_check(context):
             context.say(f"Note: {', '.join(waiting_inbox)} is still in the inbox, not applied (apply refused it, or "
                         "it was not run): this check read the records as they were before it. Fix it and apply it "
                         "first.")
-        context.say(f"Checked only {unit_view.unit.identifier}'s {plural(len(unit_view.labels), 'record')}, with "
-                    f"step {unit_view.unit.step + 1} of 12's checks and only the fields filled by then.")
+        # the records sent, then the scene and its list a last batch adds; the step as the user counts it and as
+        # the check command names it (the second full run: "6 records" for 4 sent, "step 8 of 12" beside --step 7)
+        sent = len(unit_view.labels - unit_view.added)
+        context.say(f"Checked only {unit_view.unit.identifier}'s {plural(sent, 'record')}"
+                    + (", plus the scene and its list (its last batch answers for the whole scene)"
+                       if unit_view.added else "")
+                    + f", with the checks of step {unit_view.unit.step + 1} of 12 (check --step "
+                    f"{unit_view.unit.step}) and only the fields filled by then.")
         if cited_lines:
             context.say("About records it cites (fix them only if your records caused them; they do not count here):")
             for line in cited_lines[:NOTE_LINES_PRINTED]:
                 context.say(str(line))
         if left_to_others:
-            context.say(f"Left out: {plural(left_to_others, 'line')} about other units' records (check --all shows "
-                        "them).")
-    if not_due:
+            scene_wide = unit_view.scene_wide_left_out
+            context.say(f"Left out: {plural(left_to_others, 'line')} about other units' records"
+                        + (f", {scene_wide} of them on the scene or its list, whose checks of the whole scene wait "
+                           "for its last batch" if scene_wide else "") + " (check --all shows them).")
+    if not_due and step is None:
+        context.say(f"Not yet due: {plural(len(not_due), 'line')} about the scores, which the scores unit "
+                    "(U-10-SCORES) writes after this check (never errors).")
+    elif not_due:
         context.say(f"Not yet due: {plural(len(not_due), 'line')} about what units of this step not yet written "
-                    "will fill (never errors; they are listed in 13 Health check.md).")
+                    "will fill (never errors here; the step's own check shows any still missing once they are "
+                    "written).")
     scope_line = scope_line_for(result)
     if scope_line:
         context.say(scope_line)
@@ -1772,12 +1895,15 @@ def run_check(context):
         context.say("No check of the checker is listed for this step in steps.json, so nothing was checked.")
     for module_name, reason in result.families_broken.items():
         context.say(f"Could not load {module_name}: {reason}. Its checks did not run; report this line.")
-    context.say(in_short_line(result, open_questions(result.run)))
+    context.say(in_short_line(result, *what_needs_you(result.run)))
     if health_written is None:
         context.say(f"Not written: {HEALTH_CHECK_FILE} is left as it was, because nothing was checked"
                     + (f"; tidied: {', '.join(written)}" if written else "") + ".")
     else:
         context.say(f"Written: {HEALTH_CHECK_FILE}" + (f"; tidied: {', '.join(written)}" if written else ""))
+    if unit_view is not None and waiting_inbox:
+        # the last line, so "nothing needs you" never closes a check whose unit was refused (the second full run)
+        context.say(f"Not applied yet: {', '.join(waiting_inbox)} still waits in the inbox.")
     context.summary = (f"{counts.get('E', 0)} errors, {counts.get('W', 0)} warnings, {counts.get('N', 0)} notes, "
                        f"{len(result.tidy_notes)} tidy fixes")
     return 1 if counts.get("E", 0) else 0

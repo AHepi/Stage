@@ -23,6 +23,13 @@ After the full run on The Catch (Project notes 31 and 32):
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - apply finds an inbox path written from the project folder, names an empty record, and after a checkpoint's answers
   names the step's own check.
+
+After the second full run (Project notes 39 and 40):
+- a side choice sets only the sides it names and keeps the rest; a choice sent again with a corrected value is applied
+  again; review answers from several batches are all kept; apply says where it kept the inbox file.
+- after its cross-examination: only a state's sides are merged by a choice (an era is replaced whole), a changed
+  answer takes out the sides the earlier option named, a corrected SETVALUE keeps all its lines, and apply names the
+  next repair file's number.
 """
 
 import datetime
@@ -36,7 +43,7 @@ import zipfile
 from pathlib import Path
 
 from .checks_form import (INBOX_CHECKS, ChoiceBook, FormContext, apply_tidy_fixes, locked, make_problem,
-                          resolve_field, run_form_checks)
+                          resolve_field, run_form_checks, setvalue_target_type)
 from .record_format import (DIVIDER_LINE, FieldLine, OtherLine, Record, TextBlock, add_record, ensure_end_line,
                             load_json, load_skill_data, merge_copies, new_record_file, normalise_word, parse_file,
                             quote_for_message, split_item, split_list, write_file)
@@ -899,7 +906,8 @@ class ApplyResult:
 
 def merge_fields_into(existing, incoming_lines, schema):
     """Set each field the incoming record names: its lines replace the existing lines of that field (a redo
-    replaces the whole field). Fields the incoming record does not name are kept."""
+    replaces the whole field), except a review's answers, which are added by question. Fields the incoming record
+    does not name are kept."""
     names = []
     for line in incoming_lines:
         if line.name not in names:
@@ -908,9 +916,17 @@ def merge_fields_into(existing, incoming_lines, schema):
         values = [line.value for line in incoming_lines if line.name == name and not line.missing]
         if not values:
             continue
-        definition = schema.field(existing.type_name, name) or {}
+        type_name = existing.type_name
+        if type_name == "SETVALUE" and name != "target":
+            # a SETVALUE's fields are its target's: a corrected one keeps all its sides or eras, not just the first
+            type_name = setvalue_target_type(schema, existing) or type_name
+        definition = schema.field(type_name, name) or {}
         if not definition.get("repeat"):
             values = values[:1]
+        if existing.type_name == "REVIEW" and name == "answer":
+            # The second full run (Project notes 39): a scene's questions come in several batches; each batch adds
+            # its answers, replacing only a question it answers again, so batch 2 no longer wipes batch 1.
+            values = items_by_first_part(existing.get_all(name), values)
         existing.set_items(name, values, schema)
 
 
@@ -1141,11 +1157,86 @@ def same_answer_as_before(answer, before):
     return written == old_answer
 
 
+def items_by_first_part(old_values, new_values):
+    """A repeated sub-part field (a state's sides) after a choice sets some of its items: an old item whose first
+    part a new item names is replaced in place, the other old items are kept, the remaining new items are added.
+    The second full run (Project notes 39): replacing the whole field lost the sides the choice did not decide."""
+    def first_part(value):
+        return normalise_word(split_item(value).first)
+    new_by_first = {}
+    for value in new_values:
+        new_by_first.setdefault(first_part(value), value)
+    merged, used = [], set()
+    for value in old_values:
+        if normalise_word(value) in ("", "none", "open"):
+            continue
+        name = first_part(value)
+        if name in new_by_first:
+            if name not in used:
+                merged.append(new_by_first[name])
+                used.add(name)
+            continue
+        merged.append(value)
+    merged.extend(value for value in new_values if first_part(value) not in used)
+    return merged
+
+
+def set_value_lines(target, name, set_value, schema, earlier_set_value=None):
+    """The lines a SETVALUE's field gives its target: the whole field, or, for a state's sides only, the items it
+    names, the others kept (items_by_first_part). When the user changed their answer, the sides the earlier
+    option's SETVALUE named and the new one does not are taken out first. Every other repeated field (an era, an
+    act, a rung) is replaced whole, as before (the cross-examination of the second full run)."""
+    if target.type_name != "STATE" or name != "side":
+        return set_value.get_all(name)
+    old_values = target.get_all(name)
+    if earlier_set_value is not None and earlier_set_value is not set_value:
+        def first_part(value):
+            return normalise_word(split_item(value).first)
+        named_now = {first_part(value) for value in set_value.get_all(name)}
+        named_before = {first_part(value) for value in earlier_set_value.get_all(name)} - named_now
+        old_values = [value for value in old_values if first_part(value) not in named_before]
+    return items_by_first_part(old_values, set_value.get_all(name))
+
+
+def earlier_option_set_value(choice, earlier_letter, target_reference, book):
+    """The SETVALUE the choice's earlier answer wrote on the same target, or None."""
+    if not earlier_letter or not re.fullmatch(r"[a-z]", earlier_letter):
+        return None
+    for item_text in choice.get_all("sets"):
+        item = split_item(item_text)
+        if (item.get("when") or "").lower() != earlier_letter:
+            continue
+        set_value = book.set_values.get(item.first.strip())
+        if set_value is not None and (set_value.get("target") or "").strip() == target_reference.strip():
+            return set_value
+    return None
+
+
+def set_value_sent_again(inbox, choice, letter, book, all_records, schema):
+    """True when this inbox carries a SETVALUE of the choice's chosen letter whose lines its target does not hold
+    yet: the same answer sent with a corrected SETVALUE is applied again (the second full run)."""
+    sent = {record.identifier for record in inbox.records if record.type_name == "SETVALUE"}
+    for item_text in choice.get_all("sets"):
+        item = split_item(item_text)
+        first = item.first.strip()
+        if first not in sent or first not in book.set_values or (item.get("when") or "").lower() != letter:
+            continue
+        set_value = book.set_values[first]
+        target = find_record(all_records, set_value.get("target") or "", schema)
+        if target is None:
+            continue
+        for name in set_value.field_names():
+            if name not in ("target", "status", "locked") and \
+                    target.get_all(name) != set_value_lines(target, name, set_value, schema):
+                return True
+    return False
+
+
 def apply_choice_answers(project, inbox, files_by_name, changed_files, result, answers_before=None):
     """When the AI passes on a user's answer to a choice: code sets its status and date, writes what the answer
     sets (sets lines and SETVALUE records) and locks what it names. A new answer to a choice already answered or
-    defaulted is applied the same way (the user changed their mind); the same answer again changes nothing.
-    Returns plain notes for the report."""
+    defaulted is applied the same way (the user changed their mind); the same answer again changes nothing, unless
+    the inbox also sends a corrected SETVALUE for it, which is then written. Returns plain notes for the report."""
     schema = project.schema
     notes = []
     all_records = [record for record_file in files_by_name.values() for record in record_file.records]
@@ -1160,6 +1251,12 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
         if stored is None:
             continue
         status = normalise_word(stored.get("status") or "open")
+        again = False
+        earlier_letter = None  # the letter the choice took before this inbox, if it had one
+        if answers_before and answers_before.get(stored.key, ("", ""))[1] in ("answered", "defaulted"):
+            earlier_letter = answers_before[stored.key][0]
+            if not re.fullmatch(r"[a-z]", earlier_letter) and answers_before[stored.key][1] == "defaulted":
+                earlier_letter = split_item(stored.get("default") or "").first.strip().lower()
         if answers_before is None:
             if status in ("answered", "defaulted"):
                 continue
@@ -1167,7 +1264,9 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
             before_answer = answers_before[stored.key][0]
             if (stored.get("answer") or "").strip().lower() != before_answer:
                 stored.set_field("answer", before_answer, schema)  # 'defaults' again keeps the letter it took
-            continue
+            if not set_value_sent_again(inbox, stored, before_answer, book, all_records, schema):
+                continue
+            again = True
         choice_label = f"choice {int(stored.identifier.split('-')[1])}"
         default_letter = split_item(stored.get("default") or "").first.strip().lower()
         if answer.lower() in ("default", "defaults"):
@@ -1179,7 +1278,8 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
             stored.set_field("status", "defaulted", schema)
         else:
             letter = answer.lower() if re.fullmatch(r"[a-zA-Z]", answer) else None
-            stored.set_field("status", "answered", schema)
+            if not again:  # the same answer with a corrected SETVALUE keeps its status
+                stored.set_field("status", "answered", schema)
         stored.set_field("date", today(), schema)
         changed_files.add(stored.file_name)
         waiting = []
@@ -1197,7 +1297,8 @@ def apply_choice_answers(project, inbox, files_by_name, changed_files, result, a
                 for name in set_value.field_names():
                     if name == "target" or name in ("status", "locked"):
                         continue
-                    target.set_items(name, set_value.get_all(name), schema)
+                    earlier = earlier_option_set_value(stored, earlier_letter, set_value.get("target") or "", book)
+                    target.set_items(name, set_value_lines(target, name, set_value, schema, earlier), schema)
                 target.set_field("locked", "yes", schema)
                 changed_files.add(target.file_name)
                 continue
@@ -1547,9 +1648,16 @@ def run_apply(context):
             if views_note:
                 context.say(views_note)
         after = next_after_apply(unit, steps)
+        # the next repair's number, from the repairs the manifest counts, so it carries on across sessions (the
+        # cross-examination of the second full run: no log the AI reads showed it)
+        repairs = next((int(entry.get("repairs") or 0) for entry in manifest.get("units_done") or []
+                        if isinstance(entry, dict) and entry.get("unit") == unit), 0) if unit else 0
         context.say(f"Applied {inbox_path.name}: {result.new_records} new and {result.changed_records} changed "
                     f"records in {', '.join(result.files_written) or 'no file'}. Next: {after}."
-                    + (f' A repair of it goes in "{unit} - fix <N>.md".' if unit and repair is None else ""))
+                    + (f' A{"nother" if repair is not None else ""} repair of it goes in "{unit} - fix '
+                       f'{repairs + 1}.md".' if unit else ""))
+        # where the inbox went (the second full run, Project notes 39: helpers looked for it)
+        context.say(f"The inbox file is kept in {applied_copy.relative_to(project.folder).as_posix()}.")
         context.summary = f"{inbox_path.name} applied"
     return 0
 

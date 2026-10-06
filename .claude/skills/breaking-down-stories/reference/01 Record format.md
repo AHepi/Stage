@@ -58,7 +58,7 @@ Quote anchors are allowed wherever a line number is: `line:` in `because`, STATE
 
 **G9. The END line.** Every file ends with exactly one END line: `END OF FILE | <what the file holds> | <n> records`, for example `END OF FILE | Scene 10 shots 130-200 | 8 records`. `n` counts the file's `###` records. A missing END line or a wrong count means a cut-off reply or a dropped record.
 
-**G10. Merging.** Records with the same TYPE and ID in several files merge field by field: a scene's list fields in `04 Scene list.md` and its design fields in its scene file; a scene's shots across batch files. The same field with two different values is an error. Items of a repeatable field are combined and exact duplicates removed.
+**G10. Merging.** Records with the same TYPE and ID in several files merge field by field: a scene's list fields in `04 Scene list.md` and its design fields in its scene file; a scene's shots across batch files. The same field with two different values is an error. Items of a repeatable field are combined and exact duplicates removed. On a code surface, `apply` replaces each field you send whole, except a review's answers and a side choice's sides, which it merges by their first part.
 
 **G11. No shortening.** Shortening markers inside a record ("...", "…", "etc.", "and so on", "same as above", "as before", "remaining shots", "omitted for brevity", a line starting `//`) are errors, unless inside double quotes that match the story.
 

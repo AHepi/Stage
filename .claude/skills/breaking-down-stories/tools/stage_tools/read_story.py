@@ -24,6 +24,10 @@ Standard library only. A PDF is read only when a converter (the pdftotext progra
 
 After the three-scene test of the fixed kit (Project notes 35 and 36):
 - the self-test handout prints the allowed values of the fields it asks for.
+
+After the second full run (Project notes 39 and 40):
+- read remakes the plain part of 01 Choices from its records, so its At a glance counts the choices just added; the
+  self-test's note gives the allowed values of every sub-part (the hear item's path).
 """
 
 import codecs
@@ -2749,6 +2753,14 @@ def read_into_project(project, context=None, story_path=None, write_records=True
     project.add_log_entry(f"Read the story: {summary}." if write_records else
                           f"Numbered the story again from the story file: {summary}.")
     written += write_first_estimate_file(project)
+    if CHOICES_FILE in written:
+        # 01 Choices is remade from its records, so its At a glance counts the choices just added (the second full
+        # run, Project notes 39: "0 waiting for you" stood above the length question)
+        try:
+            from .make_views import remake_plain_part
+            remake_plain_part(project.folder, CHOICES_FILE, schema, context.words if context else None, constants)
+        except Exception:  # the views are remade at the next build; read never stops on them
+            pass
     return reading, written, summary
 
 
@@ -3082,7 +3094,9 @@ def selftest_shot_template(schema, skill_folder, scene):
         first_values = [str(value) for value in ((definition.get("first_part") or {}).get("values") or [])]
         if values or first_values:
             allowed.append(f"> - {name}: {', '.join(values or first_values)}")
-        for entry in parts:
+        # every sub-part the line may carry, whatever its depth: the hear item's path has values too (the second
+        # full run, Project notes 39: the self-test's note left them out, while step 8's handout gives them)
+        for entry in definition.get("sub_parts") or []:
             if entry.get("values"):
                 allowed.append(f"> - {name} {entry['key']}: {', '.join(str(value) for value in entry['values'])}")
     if allowed:

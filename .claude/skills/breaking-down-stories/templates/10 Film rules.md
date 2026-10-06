@@ -130,7 +130,7 @@ Below this line: details for the AI and the checker. You never need to read them
 > status: draft, approved, stale, omitted.
 
 ### SOUNDPLAN
-- music_policy: <quick, the user's answer, set through a choice: none, sparse, scored or source_only>
+- music_policy: <quick, the user's answer, set through a choice; code writes it from that choice, never type it on a code surface: none, sparse, scored or source_only>
 - clip_audio: <quick, code writes it; in a chat without code you write it: text>
 - voice_policy: <quick, the user's answer, set through a choice: designed_only, designed_plus_own_clone or designed_plus_consented_clones; default designed_only>
 - device_budget: <standard, one line each: cut_to_black, true_silence or freeze> | max: <a number>
@@ -144,7 +144,7 @@ Below this line: details for the AI and the checker. You never need to read them
 > status: draft, approved, stale, omitted.
 
 ### LADDER
-- rung: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"> | size: <one word from the note> | hold: <short, medium, long or hold> | why: <text>
+- rung: <standard, one line each: SCnn "<exact story words, 3 or more, found once in that scene>"> | size: <one word from the note> | hold: <medium, long or hold> | why: <text>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>
 - locked: <quick, code writes it; in a chat without code you write it: yes or no>
 - note: <optional, one line each: text>

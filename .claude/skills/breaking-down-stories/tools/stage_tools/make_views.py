@@ -39,6 +39,15 @@ After the second three-scene test (Project notes 37 and 38):
 - the book lists the beats, one line each; emphasis and grey preview levels in words; a one-line entry says who
   acts; recordings and screens are said; turns are named in story order and moves by who moves; an addition
   the scene already lists is said once; small choices shown at checkpoint B are listed as small.
+
+After the second full run (Project notes 39 and 40):
+- 00 Start here says the breakdown is finished once the book and exports are made; the book names an eyeline point by
+  the nearest mark or object, never nests a bracket, names a turn the same way in At a glance and the one-line list,
+  starts copied story plan lines with a capital, joins moments with one mark, gives "says it" its words, shows a
+  state's label where it first shows, lists a scene's addition once, and adds value and the ladder to its word list;
+  remake_plain_part remakes one file's plain part.
+- after its cross-examination: an eyeline point is never named after a person's mark or a thing farther than 1.5
+  metres; the frame's rows give "says it" its words too.
 """
 
 import datetime
@@ -53,7 +62,7 @@ from .record_format import (DIVIDER_LINE, FieldLine, Record, TextBlock, load_ski
                             sort_key_for_identifier, split_item, split_list)
 from .project_files import (CHOICES_FILE, FILES_IN_THIS_FOLDER, SCENE_LIST_FILE, SCENES_FOLDER, START_HERE, Project,
                             load_steps, unit_in_plain_words)
-from .derive_fields import Breakdown, element_of, scene_duration, time_floor
+from .derive_fields import Breakdown, element_of, point_of, scene_duration, scene_location, set_plan, time_floor
 
 SUMMARY_FILE = "02 Whole-film summary.md"
 BOOK_FOLDER = "15 The breakdown"
@@ -705,6 +714,8 @@ class PlainNames:
 
     def _plain_piece(self, text, scene):
         text = UNIT_IN_TEXT.sub(lambda match: unit_in_plain_words(match.group(0), self.view.steps), text)
+        text = ID_ALONE_IN_BRACKETS.sub(
+            lambda match: f"({without_inner_bracket(self.name(match.group(1), scene, short=True))})", text)
         text = ID_IN_TEXT.sub(lambda match: self.name(match.group(0), scene, short=True), text)
         # the one-of-a-kind film records, named by their type in a why ("(PLAN peak tightest_size, Iona)",
         # "(CAMSYS break)", "A break from LADDER"), in the user's words
@@ -900,7 +911,12 @@ def shot_line(view, shot_identifier, scene=None):
     # changed what the approved list said); before it is written, the list's line
     moments = [moment.get("shows") for moment in view.items(shot, "moment") if moment.get("shows")] \
         if shot is not None else []
+    # one mark between moments: "her mouth opens; held", never "her mouth opens.; held" (the second full run)
+    moments = [re.sub(r"(?<!\.)\.\s*$", "", moment.rstrip()) if position < len(moments) - 1 else moment
+               for position, moment in enumerate(moments)]
     shows = "; ".join(moments) if moments else (item.get("shows") if item is not None else None)
+    if shows and shot is not None:
+        shows = says_it_with_words(view, shot, shows)
     if not shows and shot is not None:
         shows = shot.get("purpose")
     if moments and shot is not None:
@@ -914,18 +930,47 @@ def shot_line(view, shot_identifier, scene=None):
     return f"{head}: {view.names.text(shows, scene)}" if shows else head
 
 
+SAYS_IT = re.compile(r"\bsays it\b(?![,:]? ?[\"\u201c])")
+
+
+def says_it_with_words(view, shot, shows):
+    """'she says it' in a one-line item reads 'she says "Not mint."' when the shot hears one speech, so the line says
+    what is said (the second full run, Project notes 39: seven items said "says it" with no words)."""
+    if not SAYS_IT.search(shows):
+        return shows
+    heard = [item for item in view.items(shot, "hear") if item.first]
+    if len(heard) != 1:
+        return shows
+    entry = view.speech(heard[0].first) or {}
+    words = (heard[0].get("words") or entry.get("text") or "").strip().strip('"\u201c\u201d')
+    if not words:
+        return shows
+    return SAYS_IT.sub(lambda match: f'says "{words}"', shows, count=1)
+
+
+def other_turn_words(others, beat):
+    """A turn that is not the main turn, as At a glance and the one-line list both name it: 'a first turn', 'a second
+    turn' in story order when the scene has several, else 'another turn' (the second full run, Project notes 39:
+    the list counted the main turn among them and the two disagreed)."""
+    if len(others) > 1:
+        return f"a {ORDINAL_WORDS[min(others.index(beat), len(ORDINAL_WORDS) - 1)]} turn"
+    return "another turn"
+
+
 def turn_words(view, shot_identifier):
-    """'the turn' for the main turn's shot, 'the second turn' for a later turn, 'a turn' otherwise."""
+    """'the turn' for the main turn's shot, else the other turn's words (other_turn_words)."""
     scene = scene_of(shot_identifier)
     shot = view.record(shot_identifier, "SHOT")
     item = view.list_item(shot_identifier)
     beats = split_list((shot.get("beats") if shot is not None else None) or (item.get("beats") if item else "") or "")
     turns = view.turn_beats(scene)
-    for position, (beat, kind) in enumerate(turns):
+    others = sorted((beat for beat, kind in turns if kind != "main"),
+                    key=lambda beat: sort_key_for_identifier(beat.identifier))
+    for beat, kind in turns:
         if beat.identifier in beats:
             if kind == "main":
                 return "the turn"
-            return "the second turn" if position == 1 else "a turn"
+            return other_turn_words(others, beat)
     return "the turn"
 
 
@@ -983,8 +1028,7 @@ def scene_at_a_glance(view, scene_identifier):
             label = "The main turn"
         else:
             # earlier turns in story order: "A first turn", "A second turn" (the second test read them backwards)
-            label = f"A {ORDINAL_WORDS[min(others.index(beat), len(ORDINAL_WORDS) - 1)]} turn" if len(others) > 1 \
-                else "Another turn"
+            label = sentence_start(other_turn_words(others, beat))
         quote = turn_quote(view, beat, shot_identifier)
         text = f"{label} is beat {int(beat.identifier.rsplit('-B', 1)[1])}"
         if quote:
@@ -1155,6 +1199,8 @@ def additions_of_scene(view, scene_identifier, with_meaning=False):
     for shot in view.shots(scene_identifier):
         value = shot.get("additions")
         if value and not is_empty(value):
+            if SAID_IN_SCENE_ADDITIONS.search(value):
+                continue  # "(listed in the scene's additions)": the scene's line says it (the second full run)
             words = set(content_words(value))
             if set(ID_IN_TEXT.findall(value)) & cited or (words and any(
                     len(words & scene_words) >= ADDITION_SAME_SHARE * len(words) for scene_words in said)):
@@ -1163,10 +1209,55 @@ def additions_of_scene(view, scene_identifier, with_meaning=False):
     return found if with_meaning else [(where, what) for where, what, _ in found]
 
 
+# A point named by the set plan's mark or object this close to it (metres) is "on" it, "near" it up to the second
+# distance, and beyond that just "a fixed point".
+POINT_ON_PLAN_NAME_M = 0.5
+POINT_NEAR_PLAN_NAME_M = 1.5
+
+
+def point_in_words(view, scene_identifier, value):
+    """An eyeline written as a set-plan point ("[2.0, 4.0]"), named by the nearest object or mark of the scene's place
+    in plain words ("a point near the rail"), never by its numbers (the second full run, Project notes 39). A mark
+    named after a person ("IONA_PUSH") is never used, nor anything farther than POINT_NEAR_PLAN_NAME_M (its
+    cross-examination: "a point near the iona push", 2.9 metres away)."""
+    point = point_of(value)
+    location = scene_location(view.breakdown, scene_identifier)
+    plan = set_plan(view.breakdown, location) if location else None
+    places = []
+    if plan is not None:
+        person_words = set()
+        for record in view.breakdown.records_of("CHARACTER"):
+            identifier = record.identifier or ""
+            person_words |= set(identifier[3:].lower().split("-")) if identifier.startswith("CH-") else set()
+            person_words |= set(re.findall(r"[a-z]+", (record.get("names") or "").lower()))
+        places = [(name, at) for name, at in plan.marks.items()
+                  if not set(name.lower().replace("-", "_").split("_")) & person_words]
+        places += [(name, found["at"]) for name, found in plan.objects.items()]
+    if not point or not places:
+        return "a fixed point"
+    name, at = min(places, key=lambda place: (place[1][0] - point[0]) ** 2 + (place[1][1] - point[1]) ** 2)
+    distance = ((at[0] - point[0]) ** 2 + (at[1] - point[1]) ** 2) ** 0.5
+    words = " ".join(name.lower().replace("_", " ").split())
+    if distance > POINT_NEAR_PLAN_NAME_M:
+        return "a fixed point"
+    return f"the {words}" if distance <= POINT_ON_PLAN_NAME_M else f"a point near the {words}"
+
+
+# An ID that fills a bracket on its own ("(LX-01)") whose plain name carries its own bracket ("24 in the cage (a lens
+# exception)") reads "(24 in the cage, a lens exception)": never a bracket inside a bracket.
+ID_ALONE_IN_BRACKETS = re.compile(r"\((" + ID_IN_TEXT.pattern + r")\)")
+
+
+def without_inner_bracket(name):
+    return re.sub(r"^(.*\S) \(([^()]*)\)$", r"\1, \2", name)
+
+
 # "Iona (Iona)": a name followed by itself in brackets, once an ID has been put into plain words.
 NAME_REPEATED_IN_BRACKETS = re.compile(r"\b([A-Z][\w'’]*(?: [\w'’]+){0,3}) \(\1\)", re.IGNORECASE)
 # A shot's addition that shares this much of its main words with one of the scene's additions is the same addition.
 ADDITION_SAME_SHARE = 0.8
+# A shot's addition that says it is the scene's own addition, already listed with the scene.
+SAID_IN_SCENE_ADDITIONS = re.compile(r"\blisted (?:in|with|among) the scene['\u2019]?s additions\b", re.IGNORECASE)
 
 
 def scene_beat_lines(view, scene_identifier):
@@ -1246,6 +1337,34 @@ def scene_from_file_name(view, record_file):
     return None
 
 
+FINISHED_LINE = ("Finished: the book and the exports are made; the add-ons (storyboards, grey previews, prompts for "
+                 "AI video, the edit plan) run when you ask.")
+
+
+def remake_start_here(project_folder, schema=None, words=None, constants=None):
+    """Remake only the plain part of 00 Start here (export all calls it once the book and the exports are made).
+    Returns True when the file changed."""
+    return remake_plain_part(project_folder, START_HERE, schema, words, constants)
+
+
+def remake_plain_part(project_folder, file_name, schema=None, words=None, constants=None):
+    """Remake only the plain part of one record file from its records (read calls it for 01 Choices, so the file
+    never patches new lines under an old At a glance). Returns True when the file changed."""
+    view = ProjectView(project_folder, schema, words, constants)
+    record_file = next((each for each in view.record_files if each.name == file_name), None)
+    if record_file is None:
+        return False
+    lines = plain_part_for(view, record_file)
+    if lines is None:
+        return False
+    path = view.folder / file_name
+    fresh = parse_file(path, file_name, view.schema)
+    if not replace_plain_part(fresh, lines):
+        return False
+    write_text_exactly(path, render_file(fresh, recount=False))
+    return True
+
+
 def start_here_plain_part(view, existing):
     names = view.names
     manifest = view.project.read_manifest()
@@ -1298,7 +1417,12 @@ def start_here_plain_part(view, existing):
                           "Or type: defaults.")
     else:
         found = next_unit_words(view)
-        if found:
+        if "the breakdown is finished" in found.lower():
+            # after export all (the second full run, Project notes 39: 00 still named the book as the next step)
+            next_lines.append(FINISHED_LINE)
+            if where and where[0].startswith("Last saved:"):
+                where[0] = "Last saved: step 12 of 12, the book and exports."
+        elif found:
             next_lines.append(f"Next piece of work: {found}")
     next_lines += [
         "In Claude Code or Claude desktop with this folder, type: Continue my breakdown.",
@@ -1512,7 +1636,9 @@ def story_plan_plain_part(view, existing):
     owned = [("At a glance", glance)]
     groups = []
     for sequence in view.records("SEQUENCE"):
-        text = sentence_start(names.name(sequence.identifier))
+        # "Group of scenes 3: The wrong world", the title copied with its capital (the second full run)
+        text = re.sub(r"^(.*?: )([a-z])", lambda match: match.group(1) + match.group(2).upper(),
+                      sentence_start(names.name(sequence.identifier)), count=1)
         if sequence.get("scenes"):
             text += f", {names.story_point(sequence.get('scenes'))}"
         if sequence.get("story_job"):
@@ -1531,7 +1657,8 @@ def story_plan_plain_part(view, existing):
             text += ": " + "; ".join(where)
         plants.append(f"- {end_sentence(text)}")
     owned.append(("Plants and payoffs", plants or None))
-    facts = [f"- {end_sentence(names.text(fact.get('what') or fact.title))}" for fact in view.records("FACT")]
+    facts = [f"- {sentence_start(end_sentence(names.text(fact.get('what') or fact.title)))}"
+             for fact in view.records("FACT")]
     owned.append(("What the audience knows", facts or None))
     chapters = []
     for chapter in view.records("CHAPTER"):
@@ -1969,7 +2096,7 @@ def rung_words(view, value):
         parts.append(plain_value(item.get("size")))
     if item.get("hold"):
         hold = normalise_word(item.get("hold"))
-        # the rung's hold values are short, medium, long and hold (held past the longest pause)
+        # the rung's hold values are medium, long and hold (held past the longest pause)
         parts.append("held past the longest pause" if hold == "hold" else f"held {plain_value(item.get('hold'))}")
     text = where + (": " + ", ".join(parts) if parts else "")
     if item.get("why"):
@@ -2527,7 +2654,21 @@ BOOK_WORDS = [
     ("state", "how a person or thing looks at a point in the story: clothes, wounds, condition."),
     ("grey preview", "a grey 3D picture that fixes where the camera and the people are."),
     ("addition", "something the story does not say, added to make a shot work; you may keep or cut it."),
+    ("value", "what a scene puts at stake, named by its two ends, such as trust or distrust; each scene moves it "
+              "one way."),
+    ("ladder of closest shots", "the film's plan of how close the camera comes on each scene's turn, keeping the "
+                                "closest and longest for the climax."),
 ]
+
+
+def states_shown_before(view, scene_identifier, shot_identifier):
+    """The subject items (states and elements) the scene's earlier shots already showed, in shot order."""
+    seen = set()
+    for earlier in view.shots(scene_identifier):
+        if earlier.identifier == shot_identifier:
+            break
+        seen.update(item.first for item in view.items(earlier, "subject") if item.first)
+    return seen
 
 
 def full_shot_rows(view, shot, scene_identifier):
@@ -2568,8 +2709,13 @@ def full_shot_rows(view, shot, scene_identifier):
         focus.append(f"sharp on {names.name(shot.get('focus_on'), scene_identifier, short=True)}")
     add("Focus", ", ".join(focus))
     add("Why the camera moves", names.text(shot.get("move_reason"), scene_identifier))
+    shown_before = states_shown_before(view, scene_identifier, shot.identifier)
     for item in view.items(shot, "subject"):
-        parts = [names.name(item.first, scene_identifier, short=True)]
+        first = item.first or ""
+        # a state's label ("Iona (the vessel on her chest)") only where it first shows in the scene (the second
+        # full run: all 708 lines repeated it); later shots name the person alone while the state holds
+        first = element_of(first) if first in shown_before and element_of(first) != first else first
+        parts = [names.name(first, scene_identifier, short=True)]
         for key in ("at", "faces", "eyeline", "does", "still", "travel"):
             value = item.get(key)
             if value and not is_empty(value):
@@ -2577,6 +2723,8 @@ def full_shot_rows(view, shot, scene_identifier):
                     value = "the camera"
                 elif key in ("at", "faces", "travel"):
                     value = names.name(value, scene_identifier, short=True) if ID_IN_TEXT.fullmatch(value) else plain_value(value)
+                elif key == "eyeline" and point_of(value):
+                    value = point_in_words(view, scene_identifier, value)
                 elif key == "eyeline":
                     value = names.name(value, scene_identifier, short=True) if ID_IN_TEXT.fullmatch(value) else plain_value(value)
                     first_word = (re.findall(r"[a-z]+", value.lower()) or [""])[0]
@@ -2588,7 +2736,9 @@ def full_shot_rows(view, shot, scene_identifier):
                 else:
                     value = names.text(value, scene_identifier)
                 if key == "does":
-                    parts.append(value)  # a verb phrase of its own: "settles behind the wheel" (C18)
+                    # a verb phrase of its own: "settles behind the wheel" (C18); "says it" gets its words, as in
+                    # the one-line list (the cross-examination of the second full run)
+                    parts.append(says_it_with_words(view, shot, value))
                 else:
                     parts.append(f"{KEY_WORDS.get(key, key)} {value}")
         if item.get("recorded") and not is_empty(item.get("recorded")):

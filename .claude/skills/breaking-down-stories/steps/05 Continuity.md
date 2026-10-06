@@ -49,7 +49,7 @@ After characters, places and things: units of scenes in story order, then the bi
    - origin: inferred
    ```
 
-5. **Gaps.** A difference the story does not explain is recorded `origin: inferred` at first sight with the gap named in `changes`, or raised as a CHOICE. An unconfirmed side becomes a small choice for checkpoint B.
+5. **Gaps.** A difference the story does not explain is recorded `origin: inferred` at first sight with the gap named in `changes`, or raised as a CHOICE. An unconfirmed side becomes a small choice for checkpoint B; its SETVALUE names only the sides it decides, and the state keeps its other sides.
 6. **Check.** Run `stage.py check --unit <unit>`, and after the last unit `stage.py check --step 5`; fix only the lines printed, at most `repair_rounds_max` rounds.
 7. **Checkpoint B** (below). Then the whole-film summary: code writes it; in chat the AI writes it as unit U-05-SUMMARY.
 

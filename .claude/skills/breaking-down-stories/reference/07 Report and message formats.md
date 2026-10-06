@@ -139,6 +139,7 @@ Done: group 3, scenes 7 to 10 (step 8 of 12). 58 shots, about 4 minutes.
 Example: shot 150 is the turn of scene 10: Iona's close-up held 15 seconds.
 Made: 11 Scenes/Scene 07 to Scene 10. Checked: no problems. One added detail changes
   a scene, to keep or cut: Iona sets the lamp down (scene 10). 6 small additions kept.
+Left from group 2: 2 warnings, in 13 Health check: scene 6 runs long; shot 120's ring.
 Scene 10 - Saye's kitchen - 20 shots and a title card - about 1 minute 53 seconds
  shot 150, 15 seconds: the turn: close-up, Iona chews, stops, chews once more; "Not mint."
  (the other 19 shots and the title card are in the scene file)

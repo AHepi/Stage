@@ -37,6 +37,9 @@ After the full run on The Catch (Project notes 31 and 32):
 
 After the second three-scene test (Project notes 37 and 38):
 - a saved choice's places read "never in scenes 26 and 27" as scenes kept out, and "scenes 10 and 29" as both.
+
+After the second full run (Project notes 39 and 40):
+- the film's count of a saved choice skips in-story footage; a spoken line may plant and pay off.
 """
 
 import datetime
@@ -343,7 +346,11 @@ def reserve_uses(run, reserve):
         return None
     field_name, value = matched
     if run.schema.field("SHOT", field_name) is not None:
-        return [shot for shot in film_shots(run) if value_matches(shot, field_name, value)]
+        from .checks_craft_reasons_words import IN_STORY_CAMERA_FIELDS
+        # In-story footage (kind screen) has the in-story camera's own angle, move, lens and travel, not a use of
+        # the film's saved choice: the scene-level count already skipped it (the second full run, Project notes 39).
+        return [shot for shot in film_shots(run) if value_matches(shot, field_name, value)
+                and not (field_name in IN_STORY_CAMERA_FIELDS and normalise_word(shot.get("kind") or "") == "screen")]
     if run.schema.field("BEAT", field_name) is not None:
         beats = [beat for beat in run.records("BEAT") if beat.identifier
                  and not scene_is_cut(run, scene_of(beat.identifier))]
@@ -624,13 +631,18 @@ def framing_differences(plant_shot, payoff_shot, element, side_reversed=False):
 
 
 def shots_linking(run, key, plant_identifier):
-    """(shot, thing element) for every shot whose thing item carries `plant:` or `payoff:` naming the plant."""
+    """(shot, thing element) for every shot whose thing item carries `plant:` or `payoff:` naming the plant; a hear
+    item may carry it too, for a plant made by a spoken line (the second full run, Project notes 39), with no thing
+    whose frame side is compared."""
     found = []
     for shot in film_shots(run):
         for written in shot.get_all("thing"):
             item = split_item(written)
             if (item.get(key) or "").strip() == plant_identifier:
                 found.append((shot, item.first))
+        for written in shot.get_all("hear"):
+            if (split_item(written).get(key) or "").strip() == plant_identifier:
+                found.append((shot, None))
     return found
 
 

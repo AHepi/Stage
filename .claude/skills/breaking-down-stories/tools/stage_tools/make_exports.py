@@ -32,6 +32,10 @@ Standard library only.
 After the full run on The Catch (Project notes 31 and 32):
 - export all notes which records it was made from, so step 12 counts as done only after it; WORDS-04 runs on the
   book; the audio description speaks of inserts with no people.
+
+After the second full run (Project notes 39 and 40):
+- export all writes a log line and remakes 00 Start here; the book's own check also flags card numbers, set-plan names
+  in capitals and coordinates.
 """
 
 import csv
@@ -1856,9 +1860,22 @@ def run_export(context):
     if what == "all":
         # step 11 is done only when every export was made, and checked, from the records as they are now
         from .project_files import remember_made_from
+        from .make_views import remake_start_here
         remember_made_from(view.folder, EXPORT_ALL_MARK)
+        # 00 Start here says so, with a line in its log (the second full run, Project notes 39)
+        from .make_handout import next_unit
+        finished = "the breakdown is finished" in str(next_unit(view.folder)).lower()
+        Project(view.folder, context.schema, context.words).add_log_entry(
+            "Made the book and the exports" + (" (step 12 of 12): the breakdown is finished." if finished else "."))
+        remake_start_here(view.folder, context.schema, context.words, context.constants)
     context.summary = f"export {what}: {len(written)} files, formats checked"
     return 0
+
+
+# What a reader cannot use, besides IDs and codes: a card number ("card 17"), a set-plan name in capitals joined by
+# underscores ("CONTROL_BOX") and a list of coordinates ("[2.0, 4.0]") (the second full run, Project notes 39).
+BOOK_READER_FAULTS = (re.compile(r"\bcard \d+"), re.compile(r"\b[A-Z]{2,}(?:_[A-Z0-9]+)+\b"),
+                      re.compile(r"\[-?\d+(?:\.\d+)?, ?-?\d+(?:\.\d+)?(?:, ?-?\d+(?:\.\d+)?)?\]"))
 
 
 def book_code_notes(view):
@@ -1876,6 +1893,8 @@ def book_code_notes(view):
     found = sorted({match.group(0) for match in SINGLETON_IN_TEXT.finditer(text)})
     found += sorted({written for written, kind in abbreviations_in_text(text, view.words or {})
                      if kind != "abbreviation"} - set(found))
+    for pattern in BOOK_READER_FAULTS:
+        found += sorted({match.group(0) for match in pattern.finditer(text)} - set(found))[:2]
     if not found:
         return []
     return [f"the book still holds internal names or codes ({', '.join(found[:6])}); trace each to the record "

@@ -24,6 +24,11 @@ Numbers come from rules/constants.json by name. Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
 - every shot that keeps a fact hidden gets a review question about the hiding.
+
+After the second full run (Project notes 39 and 40):
+- impact of a scene stops at the records that name it only as a place in the story (the story plan's acts and peaks, a
+  group's scenes, the ladder, saved choices, motifs) and lists them to read again by hand; a review question names a
+  long speech by the line it starts with, never with "...".
 """
 
 import argparse
@@ -1315,6 +1320,7 @@ class ImpactResult:
     stale: list = dataclass_field(default_factory=list)
     upstream: list = dataclass_field(default_factory=list)
     units: list = dataclass_field(default_factory=list)
+    by_hand: list = dataclass_field(default_factory=list)
 
     def shots_citing(self):
         """The shots that cite the ID themselves, or through their shot-list item."""
@@ -1332,7 +1338,8 @@ class ImpactResult:
         return {"id": self.identifier, "type": self.type_name, "file": self.file_name, "unit": self.unit,
                 "cited_by": [entry.as_dict() for entry in self.direct], "shots_citing": self.shots_citing(),
                 "stale": [entry.as_dict() for entry in self.stale],
-                "earlier_in_the_work": [entry.as_dict() for entry in self.upstream], "units": self.units}
+                "earlier_in_the_work": [entry.as_dict() for entry in self.upstream], "units": self.units,
+                "read_again_by_hand": [entry.as_dict() for entry in self.by_hand]}
 
 
 def field_step(schema, type_name, name):
@@ -1467,6 +1474,14 @@ def unit_for(key, step, manifest, index):
     return UNIT_OF_TYPE.get(type_name, "none (code keeps it)")
 
 
+# The whole-film records that cite a scene only as a place in the story (its act, its group, its rung of the ladder,
+# where a saved choice is allowed, where a motif appears). When that scene changes they are read again by hand, and
+# the work is not followed through them: the second full run (Project notes 39) found "impact SC14" naming every
+# unit of the film through the story plan, the ladder and a saved choice.
+SCENE_AS_PLACE_FIELDS = {("PLAN", "act"), ("PLAN", "peak"), ("SEQUENCE", "scenes"), ("LADDER", "rung"),
+                         ("RESERVE", "allowed_in"), ("MOTIF", "appearance")}
+
+
 def impact_of(record_files, identifier, schema, words, constants, story=None, manifest=None):
     """What depends on an ID (see the note at the top of this file). Stops with exit 2 when no record or item has
     the ID. Changes nothing."""
@@ -1508,7 +1523,8 @@ def impact_of(record_files, identifier, schema, words, constants, story=None, ma
         return found
 
     target_keys = {record.key} if record is not None else set()
-    direct, stale, upstream = {}, {}, {}
+    target_is_scene = bool(SCENE_IDENTIFIER.match(identifier)) and type_name == "SCENE"
+    direct, stale, upstream, by_hand = {}, {}, {}, {}
     seen = {identifier}
     queue = [identifier]
     # Downstream only: a record goes stale through a field filled at or after the step of the record it cites
@@ -1532,6 +1548,9 @@ def impact_of(record_files, identifier, schema, words, constants, story=None, ma
                 continue
             if node == identifier:
                 direct.setdefault(shown, ImpactEntry(shown)).add(edge, node)
+            if node == identifier and target_is_scene and (shown[0], edge.field_name) in SCENE_AS_PLACE_FIELDS:
+                by_hand.setdefault(shown, direct[shown])
+                continue
             if edge.step < node_step.get(node, start_step) or shown[0] in ("CHOICE", "SETVALUE"):
                 # earlier in the work, or a choice: the user's answer stands until the user is asked again
                 if node == identifier:
@@ -1575,6 +1594,7 @@ def impact_of(record_files, identifier, schema, words, constants, story=None, ma
     result.direct = sorted(direct.values(), key=order)
     result.stale = sorted(stale.values(), key=order)
     result.upstream = sorted(upstream.values(), key=order)
+    result.by_hand = sorted((entry for key, entry in by_hand.items() if key not in stale), key=order)
     result.units = units
     return result
 
@@ -1603,6 +1623,7 @@ def run_impact(context):
         say("No record cites it, so a change to it touches nothing else.")
         return 0
     earlier = {entry.key for entry in result.upstream}
+    by_hand = {entry.key for entry in result.by_hand}
     say(f"Cited directly by {plural(len(result.direct), 'record')}:")
     for entry in result.direct:
         extra = f" ({'; '.join(entry.details)})" if entry.details else ""
@@ -1610,6 +1631,8 @@ def run_impact(context):
         if entry.key in earlier:
             note = (" - a choice the user answered; it stands unless the user is asked again"
                     if entry.key[0] in ("CHOICE", "SETVALUE") else " - earlier in the work, so it stays as it is")
+        elif entry.key in by_hand:
+            note = " - it names the scene as a place in the story: read it again by hand; the work is not followed"
         say(f"- {entry.identifier} ({entry.key[0]}{', locked' if entry.locked else ''}): "
             f"{', '.join(entry.fields)}{extra}{note}")
     shots = result.shots_citing()
@@ -1687,11 +1710,15 @@ class QuestionMaker:
     def name(self, identifier):
         return character_name(self.index, identifier)
 
-    def speech_opening(self, text):
+    def speech_said(self, text, who):
+        """(what is said, whose it is) for a question: the words in quotation marks, or 'the line that starts' and
+        its first sentence when it has more. Never '...', which apply refuses as a shortening marker when the answer
+        copies the question word for word (the second full run, Project notes 39)."""
         sentences = [piece for piece in SENTENCE_END.split(text.strip()) if piece]
         if len(sentences) > 1:
-            return sentences[0].rstrip(".!?") + "..."
-        return text.strip()
+            opening = f"'{sentences[0].strip()}'"
+            return f"the line that starts {opening}", f"{who}'s line that starts {opening}"
+        return f"'{text.strip()}'", f"{who}'s '{text.strip()}'"
 
     def speech_lines(self, speech_identifier):
         entry = self.speeches.get(speech_identifier) or {}
@@ -1788,8 +1815,8 @@ class QuestionMaker:
             text = self.speech_text(speech, item.get("words"))
             where_heard = normalise_word(item.get("speaker") or "")
             if speaker and text:
-                who, said = self.name(speaker), f"'{self.speech_opening(text)}'"
-                owner = f"{who}'s {said}"
+                who = self.name(speaker)
+                said, owner = self.speech_said(text, who)
             else:
                 # the speeches are not known here (no story read): name the speech by its ID
                 who, said = "the speaker", f"speech {speech}"

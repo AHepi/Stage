@@ -43,6 +43,13 @@ After the three-scene test of the fixed kit (Project notes 35 and 36):
 
 After the second three-scene test (Project notes 37 and 38):
 - a saved choice's "never in scenes 26 and 27" keeps those scenes out, and "scenes 10 and 29" names both.
+
+After the second full run (Project notes 39 and 40):
+- CRAFT-14 reads list items in a scene with no shots yet; REASON-03 takes a set-plan mark or object named in plain
+  words, never in capitals, and says a line number alone anchors nothing; CRAFT-19 takes any form of stand or move, or
+  a MOVE ID, for staging; WORDS-02 leaves "the screen left blank" alone; a plural word matches its singular.
+- after its cross-examination: CRAFT-24 warns about silent_third none on a turn with three or more people in its
+  shots.
 """
 
 import re
@@ -586,6 +593,36 @@ def all_element_names(run):
     return run.cache[key]
 
 
+def scene_plan_names(run, scene):
+    """The marks and objects of the scene's set plan in plain words ("fire door" for FIRE_DOOR): a why that names one
+    in plain words is anchored in the scene; the capitals themselves never count (the second full run, Project
+    notes 39)."""
+    key = ("craft_scene_plan_names", scene)
+    if key not in run.cache:
+        from .derive_fields import scene_location, set_plan
+        breakdown = breakdown_of(run)
+        location = scene_location(breakdown, scene)
+        plan = set_plan(breakdown, location) if location else None
+        found = set()
+        for name in (list(plan.marks) + list(plan.objects)) if plan is not None else []:
+            words = " ".join(name.lower().replace("_", " ").split())
+            if len(words) >= 3:
+                found.add(words)
+        run.cache[key] = found
+    return run.cache[key]
+
+
+def plan_name_in(text, names):
+    """The first set-plan name the text holds in plain words ("the fridge", "the fire door"), never in capitals
+    ("FRIDGE", "FIRE_DOOR"), or None."""
+    for name in sorted(names, key=len, reverse=True):
+        for match in re.finditer(r"(?<![A-Za-z0-9_])" + re.escape(name) + r"(?:s|es)?(?![A-Za-z0-9_])", text or "",
+                                 re.IGNORECASE):
+            if match.group(0) != match.group(0).upper():
+                return name
+    return None
+
+
 def named_element_in(text, names):
     """The first element name the text holds (whole words, any case, a plain plural allowed), or None."""
     lowered = (text or "").lower()
@@ -639,6 +676,9 @@ def reason_anchor(run, text, scene=None):
     name = named_element_in(QUOTED.sub(" ", text), names)
     if name:
         return Anchor(True, f'the name "{name}"')
+    name = plan_name_in(QUOTED.sub(" ", text), scene_plan_names(run, scene)) if scene else None
+    if name:
+        return Anchor(True, f'the set plan\'s "{name}"')
     if unknown:
         return Anchor(True, "a quote that could not be looked up here", unknown_quotes=True)
     return Anchor(False)
@@ -1807,8 +1847,14 @@ def addition_texts(run, scene):
 
 
 def content_words(text):
-    return [word for word in (piece.lower().strip("'’-") for piece in WORD_PIECE.findall(text or ""))
+    """The main words of a text, lower case, with a plain final "s" taken off ("stands" and "stand" match; the second
+    full run, Project notes 39); "glass" keeps its "ss"."""
+    return [without_plain_s(word) for word in (piece.lower().strip("'’-") for piece in WORD_PIECE.findall(text or ""))
             if word and word not in STOP_WORDS and len(word) > 1]
+
+
+def without_plain_s(word):
+    return word[:-1] if len(word) > 3 and word.endswith("s") and not word.endswith("ss") else word
 
 
 def addition_listed(run, scene, element=None, text=None):
@@ -1841,6 +1887,23 @@ def invented(run, reference):
 def check_craft_14(run):
     problems = []
     for scene in scene_identifiers(run):
+        if not shots_of(run, scene):
+            # step 7: the one-line list's subjects (the second full run, Project notes 39: an invented record shown
+            # in a scene was found only at step 8, a repair round later)
+            reported = set()
+            for view in shot_views(run, scene):
+                for element in view.subjects:
+                    if element in reported or not invented(run, element) or \
+                            addition_listed(run, scene, element=element):
+                        continue
+                    reported.add(element)
+                    problems.append(problem_at(
+                        run, "E", "CRAFT-14", view.list_record, "item",
+                        f"{element} is invented (origin: invented) and is not in {scene}'s additions "
+                        f"(list item {view.identifier})",
+                        f"Fix: add it to SCENE {scene} additions with changes_meaning: yes or no, or take it out of the "
+                        "item (B3 R24, C5 R27).", containing=element))
+            continue
         for shot in shots_of(run, scene):
             reported = set()
             references = [(item.first.strip(), "thing") for item in thing_items(run, shot)]
@@ -2044,6 +2107,10 @@ def beat_signals(run, scene, beat, previous_dial, dial, views):
 
 
 DEPARTMENT_SYNONYMS = {"lighting": "light", "blocking": "staging", "art": "design", "set": "design"}
+# Staging named in a scene idea in any form of stand or move, or by a MOVE ID (the second full run: only the fixed
+# words "stands" and "moves" counted).
+STAGING_IN_IDEA = re.compile(r"(?<![a-z])(?:stand|stands|standing|stood|move|moves|moving|moved|movement)(?![a-z])|"
+                             r"(?<![A-Za-z0-9])SC\d{2,3}[A-Z]?-M\d{2}(?![0-9])", re.IGNORECASE)
 
 
 @register_check("CRAFT-19", level="W", build=1,
@@ -2102,7 +2169,8 @@ def check_craft_19(run):
             lowered = (idea or "").lower()
             missing = [department for department in changing
                        if not any(re.search(r"(?<![a-z])" + re.escape(word) + r"(?![a-z])", lowered)
-                                  for word in DEPARTMENT_WORDS.get(department, (department,)))]
+                                  for word in DEPARTMENT_WORDS.get(department, (department,)))
+                       and not (department == "staging" and STAGING_IN_IDEA.search(idea or ""))]
             if missing:
                 problems.append(problem_at(
                     run, "W", "CRAFT-19", record, "scene_idea",
@@ -2293,12 +2361,23 @@ def check_craft_24(run):
     for scene in scene_identifiers(run):
         for beat in beats_of(run, scene):
             third = beat.get("silent_third")
-            if not is_turn_beat(beat) or not third or is_empty(third):
+            if not is_turn_beat(beat) or not third:
                 continue
-            third = element_of(third.strip())
             views = shots_on_beat(run, scene, beat.identifier)
             if not views:
                 continue
+            if is_empty(third):
+                # "none" is for a turn where nobody is left to witness (the second full run); three people in the
+                # turn's shots mean someone is (its cross-examination)
+                people = sorted({subject for view in views for subject in view.subjects if subject.startswith("CH-")})
+                if len(people) >= 3:
+                    problems.append(problem_at(
+                        run, "W", "CRAFT-24", beat, "silent_third",
+                        f"is none, but {len(people)} people are in this turn's shots ({names_list(people)})",
+                        "Fix: name the one who watches without speaking as silent_third; none is only for a turn "
+                        "with nobody left to witness."))
+                continue
+            third = element_of(third.strip())
             seen = any(third in view.subjects or (view.written and third in {
                 element_of(reference) for reference in id_list(view.record, "must_show")}) for view in views)
             if not seen:
@@ -2693,8 +2772,9 @@ def check_reason_03(run):
             "E", "REASON-03", record, label,
             f"{quote_for_message(text)} is not anchored: it quotes no line of {scene or 'the story'}, cites no ID and "
             "names no element of the scene",
-            "Fix: quote the line that justifies the choice, name the object or person it serves, or cite its ID "
-            "(the any-film test: would this reason fit any film?).", line_number=line.line_number,
+            "Fix: quote the line that justifies the choice, name the object or person it serves (a set plan's "
+            "mark or object counts in plain words, not in capitals), or cite its ID; a line number alone does not "
+            "anchor it (the any-film test: would this reason fit any film?).", line_number=line.line_number,
             file_name=record.file_name))
     return problems
 
@@ -2997,6 +3077,16 @@ def any_retired_word(words, modes):
     return cached[1]
 
 
+def screen_is_a_thing(text, match):
+    """True for "the screen left blank": a screen named as a thing, with "left" a verb and a word after it, which is
+    no direction (the second full run, Project notes 39); "exits screen left" and "screen left of the door" are still
+    the retired direction."""
+    before = text[max(0, match.start() - 8):match.start()]
+    after = text[match.end():match.end() + 12]
+    return bool(re.search(r"(?<![a-z])(?:the|a|its|his|her|their|this|that|your|our)\s+$", before, re.IGNORECASE)) \
+        and bool(re.match(r"\s+(?!of\b|to\b|toward)[a-z]", after))
+
+
 def retired_words_in_text(text, words, modes=("always", "user_text"), field_path=None):
     """[(word as found, entry)] of the retired words (rules/words.json) a text holds, outside double-quoted story
     words. modes chooses the flag modes to look for; field_path ("SHOT.why") also brings in the in_fields entries
@@ -3018,6 +3108,8 @@ def retired_words_in_text(text, words, modes=("always", "user_text"), field_path
         for match in retired_pattern(entry).finditer(text):
             written = match.group(0)
             if entry.get("word") == "stage" and text[match.end():match.end() + 3] == ".py":
+                continue
+            if entry.get("word") == "screen left" and screen_is_a_thing(text, match):
                 continue
             if written in (entry.get("exempt") or []):
                 continue

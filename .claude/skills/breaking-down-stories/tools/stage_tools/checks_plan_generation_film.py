@@ -51,6 +51,10 @@ After the full run on The Catch (Project notes 31 and 32):
 
 After the second three-scene test (Project notes 37 and 38):
 - PLAN-04 runs when only some scenes are chosen, as long as the whole film's scenes are there.
+
+After the second full run (Project notes 39 and 40):
+- the prompt lint reads a split speech's own words, allows a size such as "no longer than a hand", and counts the
+  visible words of effects, fixed descriptions and state lines; PLAN-04 says it waits for the story plan.
 """
 
 import datetime
@@ -63,7 +67,7 @@ from pathlib import Path
 from . import film_pass  # noqa: F401  (registers FILM-01 to FILM-12 and the film pass report section)
 from .check_records import register_check, same_scene, scene_of
 from .derive_fields import (allowed_lengths, constant, element_of, held_take, number_of, project_prompt_swaps,
-                            round_up_to, swap_prompt_words, swap_sources_banned)
+                            round_up_to, speech_words_part, swap_prompt_words, swap_sources_banned)
 from .film_pass import (MACHINE_FOLDER, breakdown_of, ends_before, film_scenes, id_range_pairs, in_pairs,
                         is_empty, is_kept, number_words, pairs_words, place_of, report, story_point_position)
 from .record_format import load_json, normalise_word, split_item, split_list
@@ -104,7 +108,9 @@ WRITING_REQUESTS = [
 # (8.1 rule 9, D15 rule 6: "He does not look at her.", "The camera does not move.") and the off-screen voice
 # (C3 §7F: "he is not visible").
 NEGATION = re.compile(r"\b(?:no|not|without)\b|\b\w+n't\b", re.IGNORECASE)
-ALLOWED_NEGATION_PHRASES = re.compile(r"\b(?:does|do|did)\s+not\s+\w+|\b(?:is|are)\s+not\s+visible\b", re.IGNORECASE)
+ALLOWED_NEGATION_PHRASES = re.compile(r"\b(?:does|do|did)\s+not\s+\w+|\b(?:is|are)\s+not\s+visible\b"
+                                      r"|\bno\s+(?:longer|more|bigger|smaller|larger|wider|taller)\s+than\b",
+                                      re.IGNORECASE)  # a size ("no longer than a hand"), not a negation
 # GEN-15: the records' own IDs, which never belong in a prompt (the reasons' because list).
 STAGE_IDENTIFIER = re.compile(r"\b(?:SC\d{2,3}[A-Z]?(?:-[A-Z]+\d+)?|(?:CH|VO|LOC|PR|TX|MO|CAM|WR|LK|CR|VS|RC|LX|PL|FT|"
                               r"ST|CF|SQ|CP|FIND|CHOICE|RT|PIC|PV|TK|VT|FX|MU)-[A-Z0-9][A-Z0-9-]*)\b")
@@ -287,7 +293,10 @@ def check_plan_04(run):
     if target is None and plan is not None and normalise_word(written or "") in ("as_written", ""):
         target, what = number_of(plan.get("runtime_estimate")), "the first estimate (the target is as written)"
     if target is None or target <= 0:
-        run.skip("PLAN-04", "no runtime target or first estimate to compare with yet")
+        # the first estimate is compared once the story plan holds it (the second full run: this read as if no
+        # estimate existed while the first estimate stood in 14 Time and cost)
+        run.skip("PLAN-04", "no runtime target or first estimate to compare with yet" if plan is not None else
+                 "no runtime target, and the first estimate is compared only once the story plan is written")
         return []
     scenes = film_scenes(run)
     if run.scope_scenes is not None and len(scenes) <= len(run.scope_scenes):
@@ -522,14 +531,29 @@ def clip_speeches(run, clip):
     return sent
 
 
+def heard_words_text(run, identifier, item):
+    """The words a shot hears of a speech: its hear item's words when they split the speech at a phrase, else the
+    whole speech (as the time floor counts them; the second full run, Project notes 39)."""
+    whole = speech_words_text(speech_entry(run, identifier))
+    part = straight_quotes_of(item.get("words") or "").strip().strip('"').strip() if item is not None else ""
+    return part if part and whole and speech_words_part(part, whole) else whole
+
+
+def straight_quotes_of(text):
+    for curly, straight in QUOTES.items():
+        text = text.replace(curly, straight)
+    return text
+
+
 def prompt_without_speeches(run, clip):
     """The prompt with the words of every heard speech taken out (dialogue is quoted exactly and never linted as
     picture words)."""
     prompt = clip.prompt
-    for identifier, _ in heard(clip):
-        words = speech_words_text(speech_entry(run, identifier))
-        if words:
-            prompt = re.sub(re.escape(words), " ", prompt, flags=re.IGNORECASE)
+    for identifier, item in heard(clip):
+        for words in dict.fromkeys([speech_words_text(speech_entry(run, identifier)),
+                                    heard_words_text(run, identifier, item)]):
+            if words:
+                prompt = re.sub(re.escape(words), " ", prompt, flags=re.IGNORECASE)
     return prompt
 
 
@@ -630,11 +654,13 @@ def lint_gen_03(run, clips, facts=None, forced=False):
             continue
         need = 0.0
         parts = []
+        items = dict(heard(clip))
         for identifier in speeches:
             entry = speech_entry(run, identifier) or {}
             words = entry.get("words")
-            if words is None:
-                words = word_count(speech_words_text(entry))
+            if words is None or identifier in items and heard_words_text(run, identifier, items[identifier]) != \
+                    speech_words_text(entry):
+                words = word_count(heard_words_text(run, identifier, items.get(identifier)))
             pace = breakdown.pace_of(entry.get("speaker") or "")
             need += words / pace
             parts.append(f"{identifier} {words} words at {number_words(pace)}")
@@ -1101,8 +1127,11 @@ def reason_texts(run, clip):
     return texts
 
 
-def visible_texts(clip):
-    """The shot's visible words (does, shows, end, task-like fields), which a prompt may legitimately hold."""
+def visible_texts(clip, run=None):
+    """The shot's visible words (does, shows, end, task-like fields), which a prompt may legitimately hold; with
+    the run, also the descriptions compile pastes: the fixed descriptions and state lines of the elements shown and
+    of the scene's place, and the shot's effects (the second full run, Project notes 39: "the size of a loaf", a
+    thing's fixed description, was taken for a reason)."""
     shot = clip.shot
     if shot is None:
         return ""
@@ -1113,6 +1142,20 @@ def visible_texts(clip):
     for written in shot.get_all("moment"):
         parts.append(split_item(written).get("shows") or "")
     parts += [shot.get("end") or "", shot.get("physics_note") or "", shot.get("gen_note") or ""]
+    if run is not None:
+        parts += [split_item(written).first or "" for written in shot.get_all("effect")]
+        scene = run.record(scene_of(shot.identifier) or "")
+        elements = {element_of(split_item(written).first or "") for name in ("subject", "thing")
+                    for written in shot.get_all(name)}
+        if scene is not None and scene.get("location"):
+            elements.add(scene.get("location"))
+        for element in elements:
+            record = run.record(element) if element else None
+            if record is not None:
+                parts.append(record.get("fixed_description") or "")
+        for state in run.records("STATE"):
+            if (state.get("element") or element_of(state.identifier or "")) in elements:
+                parts.append(state.get("state_line") or "")
     return normalised(" ".join(parts))
 
 
@@ -1122,7 +1165,7 @@ def lint_gen_15(run, clips, facts=None, forced=False):
                     ((run.words or {}).get("mood_only_phrases") or {}).get("phrases") or [] if phrase]
     for clip in clips:
         prompt = normalised(clip.prompt)
-        visible = visible_texts(clip)
+        visible = visible_texts(clip, run)
         found = None
         for what, text in reason_texts(run, clip):
             # a quotation of the script inside a reason is the story's own words (a spoken line the prompt sends,

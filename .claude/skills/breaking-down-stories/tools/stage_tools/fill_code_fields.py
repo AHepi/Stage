@@ -29,6 +29,12 @@ After the full run on The Catch (Project notes 31 and 32):
 
 After the second three-scene test (Project notes 37 and 38):
 - the heading's most specific part counts double, and a word most places share is no match on its own.
+
+After the second full run (Project notes 39 and 40):
+- a heading that shares one word with a different place of the same kind waits for its own place; the log says "The
+  answer to choice 9", never "The the answer".
+- after its cross-examination: a heading whose extra word only describes ("THE OLD KITCHEN") still finds the only
+  place of its kind.
 """
 
 import re
@@ -178,6 +184,30 @@ def specific_part(place_text):
     return pieces[-1] if pieces else (place_text or "")
 
 
+def main_name_words(location):
+    """The words of a place's main name: its ID and its title up to a comma or "and" ("The passage, later the
+    receiving room" is the passage)."""
+    identifier = location.identifier or ""
+    identifier = identifier[4:] if identifier.startswith("LOC-") else identifier
+    title = re.split(r",|\s+and\s+", location.title or "", maxsplit=1)[0]
+    return place_words(title) | place_words(identifier.replace("-", " "))
+
+
+def phrase_words_of(place_text, word):
+    """The words of the heading's phrase (between dashes and commas) that holds the word."""
+    for piece in re.split(r"\s+[-\u2013\u2014]\s+|,", place_text or ""):
+        words = place_words(piece)
+        if word in words:
+            return words
+    return {word}
+
+
+# Heading words that describe a place without naming another one ("THE OLD KITCHEN" is still the kitchen, "MOVING
+# CAR" the car): a heading whose own extra words are only these still finds the one place of its kind.
+DESCRIBING_PLACE_WORDS = {"old", "new", "deep", "upstairs", "downstairs", "moving", "parked", "small", "little",
+                          "big", "large", "dark", "empty", "abandoned", "same", "upper", "lower", "far", "near"}
+
+
 def best_location_for(place_text, locations):
     """The place whose name (title and ID) shares the most words with a scene's place words, each word weighed by
     how few places use it (a place's own word, "passage", outweighs "room", which half the places share) and doubled
@@ -197,6 +227,14 @@ def best_location_for(place_text, locations):
         shared = wanted & words
         if not shared or shared <= common:
             continue  # sharing only "room", which many places use, is no match ("RECEIVING ROOM" is not Eli's room)
+        if len(shared) == 1 and main_name_words(location) - wanted and \
+                phrase_words_of(place_text, next(iter(shared))) - words - DESCRIBING_PLACE_WORDS:
+            # one shared word, and both the heading's phrase holding it and the place's main name have a word the
+            # other lacks: another place of the same kind ("COLLECTION ROOM" is not Eli's room, "FREIGHT SHAFT" not
+            # the freight cage), even before enough places are written for "room" to count as common (the second
+            # full run, Project notes 39); "PASSAGE, ROOM END" is still the back passage, and "THE OLD KITCHEN", whose
+            # extra word only describes, is still the kitchen (its cross-examination)
+            continue
         score = (round(sum((2.0 if word in specific else 1.0) / uses[word] for word in shared), 6),
                  -len(words - wanted))
         if score > best_score:
@@ -516,13 +554,20 @@ def fill_code_fields(project, today_text=None, log=True):
         try:
             text = result.plain_summary()
             if waited:
-                text += " " + " ".join(f"The {how.split(',')[0]} was kept until {plain[2]} was made, and is now "
-                                       f"written there ({plain[1]}: {value})."
+                # "The answer to choice 9 was kept ...", never "The the answer" (the second full run)
+                text += " " + " ".join(f"{sentence_start(how.split(',')[0])} was kept until {plain[2]} was made, and "
+                                       f"is now written there ({plain[1]}: {value})."
                                        for (label, name, value, how), plain in waited)
             project.add_log_entry(text)
         except (OSError, ValueError):
             pass
     return result
+
+
+def sentence_start(text):
+    """'the answer to choice 9' -> 'The answer to choice 9'."""
+    text = (text or "").strip()
+    return text[:1].upper() + text[1:]
 
 
 def first_estimate_fields(project):

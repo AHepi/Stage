@@ -10,8 +10,8 @@ What it proves (blueprint 14.2 row WP5):
   lists the fields that need a why with their defaults;
 - the same holds with stub step files and stub card parts at their target lengths (steps.json target_words, the
   longest step file of 2.3), built in a temporary copy of the skill;
-- over the ceiling, a handout leaves out the example first, then the lowest-listed card parts, then trims the story
-  to the unit's own lines, and then says the unit must be split;
+- over the ceiling, a handout leaves out the example first, puts read-only records in brief, trims the story to the
+  unit's own lines, then leaves out the lowest-listed card parts (tag parts last), and then says the unit must be split;
 - next follows section 3's order: on the gold it goes on to the film pass; without the scene design it names
   U-07-SC10; with only the one-line list it waits at the first group of shots, and after --checkpoint-passed the
   list is approved and next names U-08-SC10-B1 (its batches recorded in the manifest); status prints the next unit;
@@ -392,8 +392,8 @@ def run_groups(workspace, story_path):
     stub_handouts()
 
     @group("over the ceiling: the example goes first, then the records the unit only reads are put in brief, then the "
-           "lowest-listed card parts, then the story is trimmed to the unit's own lines, then the unit is marked for "
-           "splitting")
+           "story is trimmed to the unit's own lines, then the lowest-listed card parts (the scene's tag parts last), "
+           "then the unit is marked for splitting")
     def drop_order():
         from stage_tools.make_handout import Workspace, build_handout, unit_from_identifier, estimate_tokens
         full = build_handout(Workspace(gold), unit_from_identifier(Workspace(gold), "U-08-SC10-B1"), "claude_code")
@@ -413,7 +413,9 @@ def run_groups(workspace, story_path):
         assert first.tokens() <= total - 10
         # changed after the full run (Project notes 32, problem 6): the records a unit only reads are put in brief
         # before any card part is left out (the full run lost the mirror rule's card part to whole records)
-        last_card = cards[-1]
+        # changed after the second full run (Project notes 39, F12): the story is trimmed before any card part is
+        # left out, and the scene's tag parts (glass, screens, creatures) are left out last
+        last_card = ([card for card in cards if not card.from_tag] or cards)[-1]
         second = with_ceiling(total - example_tokens - 10)
         assert "example" in second.left_out[0] and "in brief" in second.left_out[1], second.left_out
         assert not any(card.label in entry for card in cards for entry in second.left_out), \
@@ -427,6 +429,8 @@ def run_groups(workspace, story_path):
             "the highest-listed part went first"
         if excerpt is not None:
             assert any("the story's lines outside this unit's own" in entry for entry in kinds), kinds
+            story_place = next(index for index, entry in enumerate(kinds) if "the story's lines" in entry)
+            assert story_place < min(card_places), f"a card part went before the story was trimmed: {kinds}"
             source = next(section for section in third.sections if section.kind == "source")
             assert source.trimmed and "Trimmed to this unit's own lines" in source.current_text()
         assert third.too_big, "a handout still over the ceiling is not marked for splitting"

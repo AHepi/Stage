@@ -45,7 +45,7 @@ Behind it is one SHOT record (`SC10-SH150`, in `reference/01 Record format.md`) 
 4. Write the records to `For machines - do not edit/inbox/<unit>.md`, ending with the END line.
 5. `stage.py apply "<inbox file>"`. Any error refuses the whole inbox and changes no file: fix the lines it names and apply again. A field you send replaces all its stored lines: send every item of a repeated field you change.
 6. `stage.py check --unit <unit>` (what the unit wrote and cites); after a step's last unit, `stage.py check --step N` (with `--scene SCnn` at steps 7 and 8).
-7. Fix only the problems listed, at most `repair_rounds_max` rounds, each round's inbox named `<unit ID> - fix <N>.md`; then one plain question to the user, or a trace to the earliest wrong record and a redo from there.
+7. Fix only the problems listed, at most `repair_rounds_max` rounds (a refused apply fixed in place is no round), each round's inbox `<unit ID> - fix <N>.md`; then ask the user one plain question, or trace the earliest wrong record and redo from there.
 8. Report, or carry on when nothing waits for the user.
 
 In Claude Code, helper agents may take scenes, one handout each; `apply` takes one inbox at a time. After the app compacts the conversation, run `stage.py status` and reread the step file.
