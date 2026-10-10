@@ -213,9 +213,9 @@ def library_and_replay(scratch):
     assert code == 2, "a missing rule must stop with exit 2"
     from stage_tools.library_and_replay import library_text
     copy = scratch / "c2 skill"
-    (copy / "library" / "digests").mkdir(parents=True)
-    for path in (SKILL / "library" / "digests").glob("B1 *"):
-        shutil.copy(path, copy / "library" / "digests" / path.name)
+    (copy / "references" / "library" / "digests").mkdir(parents=True)
+    for path in (SKILL / "references" / "library" / "digests").glob("B1 *"):
+        shutil.copy(path, copy / "references" / "library" / "digests" / path.name)
     header, lines, _ = library_text("B1", "R14", copy)
     assert "from the digest" in header and lines, header
     code, output = stage(["import-json", "records.json"])
@@ -224,7 +224,7 @@ def library_and_replay(scratch):
     assert code == 0 and "RESULT: PASS" in output, output[-600:]
     from stage_tools.library_and_replay import replay_gold
     bare = scratch / "c2 replay skill"
-    shutil.copytree(SKILL / "examples", bare / "examples")
+    shutil.copytree(SKILL / "references" / "examples", bare / "references" / "examples")
     passed, lines = replay_gold(None, bare)
     assert passed and any("story not present" in line for line in lines), lines
     return "lib B1 R14, P5, §10.2, Ex1, K03, D10 TN2; the digest when the file is missing; replay with and without story"
@@ -504,7 +504,7 @@ def selftest_retry(scratch):
 
 @group("C10: REASON-03, REASON-04 and STATE-01 run at step 7; STATE-01 reads a list subject as it reads a shot's")
 def step_seven_checks(scratch, tester):
-    steps = json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))
+    steps = json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))
     seven = next(entry for entry in steps["steps"] if entry["step"] == 7)
     assert {"REASON-03", "REASON-04", "STATE-01"} <= set(seven["checks"]), seven["checks"]
     if skip_without(tester):
@@ -577,7 +577,7 @@ def because_everywhere(scratch):
 @group("C15: status reads checker_last_run after check --all and names steps 'step N of 12, name'")
 def status_words(scratch, tester):
     from stage_tools.project_files import unit_in_plain_words
-    assert unit_in_plain_words("U-03-WORLD", json.loads((SKILL / "schema" / "steps.json").read_text())) \
+    assert unit_in_plain_words("U-03-WORLD", json.loads((SKILL / "_config" / "schema" / "steps.json").read_text())) \
         .startswith("step 4 of 12, "), unit_in_plain_words("U-03-WORLD")
     if skip_without(tester):
         return "step words right (tester's project not present for the rest)"
@@ -657,7 +657,7 @@ def step_seven_handout(scratch, tester):
 def step_four_units(scratch, story):
     from stage_tools.checks_form import FormContext, run_form_checks
     from stage_tools.record_format import parse_text
-    steps = json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))
+    steps = json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))
     four = next(entry for entry in steps["steps"] if entry["step"] == 4)
     things = next(unit for unit in four["units"] if unit["id_pattern"] == "U-04-THINGS")
     assert "SCENE" in things["writes"] and "FACT" in things["writes"], things["writes"]
@@ -693,15 +693,15 @@ def step_four_units(scratch, story):
 @group("C26: the templates match the checker: RESERVE max_uses, LOCATION wild_walls, TEXT words_from, STYLE code "
        "fields, and none on every repeated field that may be empty")
 def templates_match(scratch):
-    film = (SKILL / "templates" / "10 Film rules.md").read_text(encoding="utf-8")
-    places = (SKILL / "templates" / "08 Places and things.md").read_text(encoding="utf-8")
-    world = (SKILL / "templates" / "06 World and style.md").read_text(encoding="utf-8")
+    film = (SKILL / "references" / "templates" / "10 Film rules.md").read_text(encoding="utf-8")
+    places = (SKILL / "references" / "templates" / "08 Places and things.md").read_text(encoding="utf-8")
+    world = (SKILL / "references" / "templates" / "06 World and style.md").read_text(encoding="utf-8")
     assert re.search(r"^- max_uses: <quick: a whole number \(3\), 1_per_scene, or share>", film, re.MULTILINE)
     assert re.search(r"^- wild_walls: <[^>]*north, south, east or west", places, re.MULTILINE)
     assert re.search(r"^- words_from: <quick, when text_in_story", places, re.MULTILINE)
     assert "- provisional: <" in world and "- named_reference_policy: <" in world
     missing = []
-    for path in sorted((SKILL / "templates").glob("*.md")):
+    for path in sorted((SKILL / "references" / "templates").glob("*.md")):
         current = None
         for line in path.read_text(encoding="utf-8").splitlines():
             heading = re.match(r"^### ([A-Z]+)\b", line)

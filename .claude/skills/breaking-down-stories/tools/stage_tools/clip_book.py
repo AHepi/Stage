@@ -1,5 +1,5 @@
 """clip_book.py: the clip book of a route, a model plus the place it runs. The first route is MiniMax H3 in ComfyUI,
-Reference to Video (adapters/video_models.json, minimax-h3-comfyui-r2v; Project notes 42 and 43).
+Reference to Video (_config/adapters/video_models.json, minimax-h3-comfyui-r2v; Project notes 42 and 43).
 
 In plain words:
 - a clip is one run of the video model, and it holds one to three shots of one scene (or part of one long shot);
@@ -63,7 +63,7 @@ LEFT_OUT_WHY = "Left out, because H3 would show it"
 
 @dataclass
 class RouteFacts:
-    """One route entry of adapters/video_models.json (kind: route), with the numbers the clip book needs."""
+    """One route entry of _config/adapters/video_models.json (kind: route), with the numbers the clip book needs."""
     name: str
     facts: dict
     display: str
@@ -1521,7 +1521,7 @@ def compile_route(context, compiler, project, scenes, route_name=ROUTE_MODEL, li
     from .project_files import StageStop
     route = RouteFacts.from_adapters(compiler.adapters, route_name)
     if not route.facts:
-        raise StageStop(f"The route {route_name} is not in the model facts (adapters/video_models.json).")
+        raise StageStop(f"The route {route_name} is not in the model facts (_config/adapters/video_models.json).")
     breakdown = compiler.breakdown
     masters = master_pictures(compiler, route)
     marks = route_rule_marks(compiler, route)

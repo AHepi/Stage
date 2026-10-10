@@ -1,0 +1,3009 @@
+{
+ "about": "Word lists the checker reads (WORDS-01 to WORDS-05, REASON-04, GEN-06, GEN-07, GEN-12, FORM-08, FORM-13) and the word list of blueprint 5.7 as data. Written by WP1 on 2026-09-28. Every list names its research source; entries marked [judgement] extend a research list in its own spirit.",
+ "flag_modes": {
+  "always": "WORDS-02 flags the word in field values and in user-facing text, outside double quotes that match the story.",
+  "user_text": "Flagged only in user-facing text: everything above a file's divider, reports, the book, references/formats/07 and checkpoint messages.",
+  "in_fields": "Flagged only in the fields named in in_fields ('*.origin' means the origin field of any record type).",
+  "field_name": "A retired field or sub-part name: FORM-03 reports it with 'did you mean' the replacement, and the tidy fix renames it when the replacement is a single field (FORM-13).",
+  "prompts": "Flagged only in compiled prompt text (GEN-12).",
+  "context": "Not flagged by code: the word is too common or is used correctly elsewhere. Writers of cards, steps and messages still avoid it in the retired sense.",
+  "rule": "Handled by another check or list, named in note."
+ },
+ "one_word_for_each_thing": [
+  {
+   "thing": "Story state of a person or thing in a mirror story",
+   "one_word": "reversed / original",
+   "user_word": null,
+   "field_names": [
+    "STATE.handedness",
+    "RULE.era (frame)",
+    "SCENE.frame_handedness (derived)"
+   ],
+   "retired": [
+    "phase",
+    "frame reversed",
+    "turned (as a mirror state)",
+    "handedness_phase",
+    "mirror true"
+   ]
+  },
+  {
+   "thing": "A stretch of the film under one frame handedness",
+   "one_word": "era (a, b, c)",
+   "user_word": null,
+   "field_names": [
+    "RULE.era"
+   ],
+   "retired": [
+    "phase"
+   ]
+  },
+  {
+   "thing": "How an element appears in a shot",
+   "one_word": "mirrored / normal",
+   "user_word": null,
+   "field_names": [
+    "SHOT.mirror_state (derived)"
+   ],
+   "retired": [
+    "MIRRORED",
+    "mirror_state capitals"
+   ]
+  },
+  {
+   "thing": "The edit operation",
+   "one_word": "flip",
+   "user_word": null,
+   "field_names": [
+    "SHOT.flip",
+    "FINISH.operation (flip)"
+   ],
+   "retired": [
+    "mirror_flip"
+   ]
+  },
+  {
+   "thing": "The fixed words pasted into every prompt for a person, thing or place",
+   "one_word": "fixed description",
+   "user_word": null,
+   "field_names": [
+    "CHARACTER.fixed_description",
+    "PROP.fixed_description"
+   ],
+   "retired": [
+    "identity key",
+    "look line"
+   ]
+  },
+  {
+   "thing": "A person's or thing's costume, injury and condition at a point",
+   "one_word": "state (Iona, state 2) and its state line",
+   "user_word": null,
+   "field_names": [
+    "STATE",
+    "STATE.state_line"
+   ],
+   "retired": [
+    "look ID",
+    "costume phase C1-C6",
+    "states S1-S6"
+   ]
+  },
+  {
+   "thing": "The light, colour and texture of a place at a time",
+   "one_word": "look; its pasted text is the look block ('look' is used for nothing else)",
+   "user_word": null,
+   "field_names": [
+    "LOOK",
+    "LOOK.look_block",
+    "SCENE.look"
+   ],
+   "retired": [
+    "look key",
+    "lighting block",
+    "global look key"
+   ]
+  },
+  {
+   "thing": "How the whole film is made to appear / how a character appears",
+   "one_word": "style (with its style words) / appearance",
+   "user_word": null,
+   "field_names": [
+    "STYLE",
+    "STYLE.style_words",
+    "CHARACTER.fixed_description (appearance)"
+   ],
+   "retired": [
+    "look (for either)",
+    "style key",
+    "\"the film's look\"",
+    "\"her look\""
+   ]
+  },
+  {
+   "thing": "The main light",
+   "one_word": "main light",
+   "user_word": null,
+   "field_names": [
+    "LOOK.main_light",
+    "VISUAL.main_light"
+   ],
+   "retired": [
+    "key light"
+   ]
+  },
+  {
+   "thing": "The shot where a scene turns",
+   "one_word": "turn shot (role: turn)",
+   "user_word": null,
+   "field_names": [
+    "SHOT.role (turn)",
+    "SHOTLIST.item role"
+   ],
+   "retired": [
+    "key shot"
+   ]
+  },
+  {
+   "thing": "The frame a turn must show, written before shots",
+   "one_word": "turn picture",
+   "user_word": null,
+   "field_names": [
+    "SCENE.turn_picture"
+   ],
+   "retired": [
+    "key frame (as a written frame)"
+   ]
+  },
+  {
+   "thing": "Stills a video starts or ends on",
+   "one_word": "start picture, end picture; one pinned inside a clip: pinned picture",
+   "user_word": null,
+   "field_names": [
+    "PIC.use (start, end, pinned)"
+   ],
+   "retired": [
+    "keyframe",
+    "first frame",
+    "start frame"
+   ]
+  },
+  {
+   "thing": "A grey still that fixes composition",
+   "one_word": "layout picture",
+   "user_word": null,
+   "field_names": [
+    "PIC.use (layout)"
+   ],
+   "retired": [
+    "structure image",
+    "layout guide"
+   ]
+  },
+  {
+   "thing": "A grey 3D video a model copies",
+   "one_word": "guide video, made from a grey render",
+   "user_word": null,
+   "field_names": [
+    "PREVIS.route",
+    "SHOT.route (guide_video)"
+   ],
+   "retired": [
+    "control video",
+    "clay render",
+    "greybox",
+    "motion guide"
+   ]
+  },
+  {
+   "thing": "Reference pictures of one element state",
+   "one_word": "reference pictures; one film-look still: style picture",
+   "user_word": null,
+   "field_names": [
+    "PIC.use (reference, style)",
+    "STYLE.style_picture",
+    "LOOK.style_picture"
+   ],
+   "retired": [
+    "reference pack",
+    "asset sheet",
+    "stack",
+    "model sheet",
+    "style frame"
+   ]
+  },
+  {
+   "thing": "McKee's action and reaction",
+   "one_word": "beat",
+   "user_word": null,
+   "field_names": [
+    "BEAT"
+   ],
+   "retired": [
+    "bit"
+   ]
+  },
+  {
+   "thing": "A timed visible change inside a shot",
+   "one_word": "moment",
+   "user_word": null,
+   "field_names": [
+    "SHOT.moment"
+   ],
+   "retired": [
+    "BEATS (in prompts)",
+    "timeline events",
+    "C4 beats"
+   ]
+  },
+  {
+   "thing": "\"(beat)\" in a script",
+   "one_word": "pause",
+   "user_word": null,
+   "field_names": [
+    "BEAT.pause_after"
+   ],
+   "retired": [
+    "beat"
+   ]
+  },
+  {
+   "thing": "A part of a scene with its own turn",
+   "one_word": "part",
+   "user_word": null,
+   "field_names": [
+    "PART"
+   ],
+   "retired": [
+    "movement"
+   ]
+  },
+  {
+   "thing": "One reply's share of a scene's shots",
+   "one_word": "batch",
+   "user_word": null,
+   "field_names": [
+    "steps.json batch rule",
+    "PROJECT.batch_size"
+   ],
+   "retired": [
+    "part (for replies)"
+   ]
+  },
+  {
+   "thing": "A group of scenes",
+   "one_word": "sequence (SQ)",
+   "user_word": "group of scenes (\"group 3\")",
+   "field_names": [
+    "SEQUENCE",
+    "SCENE.sequence"
+   ],
+   "retired": [
+    "stretch",
+    "colour-script sequence",
+    "journey unit"
+   ]
+  },
+  {
+   "thing": "The camera's movement / a character's move on the floor plan / Block's motion component",
+   "one_word": "camera move (move) / floor-plan move (MOVE record) / motion",
+   "user_word": null,
+   "field_names": [
+    "SHOT.move",
+    "MOVE",
+    "VISUAL.component (motion)"
+   ],
+   "retired": [
+    "movement",
+    "\"move\" alone in user text"
+   ]
+  },
+  {
+   "thing": "Whose point of view a scene holds / a shot through someone's eyes",
+   "one_word": "whose scene / point-of-view shot (frame: pov)",
+   "user_word": null,
+   "field_names": [
+    "SCENE.whose_scene",
+    "SHOT.frame (pov)"
+   ],
+   "retired": [
+    "POV for both"
+   ]
+  },
+  {
+   "thing": "What a character wants in a scene / in life",
+   "one_word": "want / life want",
+   "user_word": null,
+   "field_names": [
+    "SCENE.want",
+    "CHARACTER.life_want"
+   ],
+   "retired": [
+    "objective",
+    "intention",
+    "super-intention",
+    "spine",
+    "scene desire"
+   ]
+  },
+  {
+   "thing": "What a line or act does to the other person",
+   "one_word": "tactic (an -ing word)",
+   "user_word": null,
+   "field_names": [
+    "BEAT.action tactic",
+    "BEAT.reaction tactic",
+    "SHOT.subject tactic"
+   ],
+   "retired": [
+    "action gerund",
+    "playable action",
+    "infinitives"
+   ]
+  },
+  {
+   "thing": "What the hands do",
+   "one_word": "task",
+   "user_word": null,
+   "field_names": [
+    "BEAT.task"
+   ],
+   "retired": [
+    "activity",
+    "physical task"
+   ]
+  },
+  {
+   "thing": "What we see the body do in a shot",
+   "one_word": "does (visible behaviour)",
+   "user_word": null,
+   "field_names": [
+    "SHOT.subject does",
+    "BEAT.task does"
+   ],
+   "retired": [
+    "emotion words",
+    "behaviour as a plan field"
+   ]
+  },
+  {
+   "thing": "How openly a face or body shows a feeling / what does not move",
+   "one_word": "display 1-3 (contained, visible, open) / still",
+   "user_word": null,
+   "field_names": [
+    "SHOT.subject display",
+    "SHOT.subject still"
+   ],
+   "retired": [
+    "performance scale",
+    "intensity (for display)"
+   ]
+  },
+  {
+   "thing": "Which way a subject moves across the frame",
+   "one_word": "travel",
+   "user_word": null,
+   "field_names": [
+    "SHOT.subject travel",
+    "SEQUENCE.travel"
+   ],
+   "retired": [
+    "screen direction (as a field name)"
+   ]
+  },
+  {
+   "thing": "A moment inside a scene named before its beats exist",
+   "one_word": "story point (a scene and a quote)",
+   "user_word": null,
+   "field_names": [
+    "kind story_point"
+   ],
+   "retired": [
+    "beat reference (before step 7)"
+   ]
+  },
+  {
+   "thing": "The feeling a film or scene is played in",
+   "one_word": "tone: the film's home tone, a scene's tone, undercurrent and tone shift",
+   "user_word": null,
+   "field_names": [
+    "PLAN.tone_home",
+    "PROJECT.tone_home",
+    "SCENE.tone",
+    "SCENE.tone_undercurrent",
+    "SCENE.tone_shift"
+   ],
+   "retired": [
+    "mood (as a field)",
+    "genre (for tone)"
+   ]
+  },
+  {
+   "thing": "The record of changing states",
+   "one_word": "continuity (file 09, STATE records)",
+   "user_word": null,
+   "field_names": [
+    "STATE",
+    "09 Continuity.md"
+   ],
+   "retired": [
+    "continuity bible",
+    "ledger",
+    "state table",
+    "damage ledger"
+   ]
+  },
+  {
+   "thing": "A thing that returns and gathers meaning",
+   "one_word": "motif, with plant, payoff, rhyme",
+   "user_word": null,
+   "field_names": [
+    "MOTIF",
+    "PLANT",
+    "SHOT.thing plant/payoff",
+    "PLANT.rhyme"
+   ],
+   "retired": [
+    "carrier log",
+    "thread",
+    "emblem",
+    "hinge",
+    "reserved framing"
+   ]
+  },
+  {
+   "thing": "A choice saved for special moments",
+   "one_word": "saved choice (RC, RESERVE record)",
+   "user_word": null,
+   "field_names": [
+    "RESERVE"
+   ],
+   "retired": [
+    "reserved choice",
+    "reserved framing"
+   ]
+  },
+  {
+   "thing": "Kept out of frame for later",
+   "one_word": "keep hidden",
+   "user_word": null,
+   "field_names": [
+    "SHOT.keep_hidden"
+   ],
+   "retired": [
+    "withhold",
+    "withheld"
+   ]
+  },
+  {
+   "thing": "Readable words inside the picture",
+   "one_word": "text in picture (TX); the drawn file is the text graphic",
+   "user_word": null,
+   "field_names": [
+    "TEXT",
+    "SHOT.text"
+   ],
+   "retired": [
+    "on-screen text",
+    "insert graphic",
+    "text spec"
+   ]
+  },
+  {
+   "thing": "A character's voice / a place's steady background",
+   "one_word": "voice (with its voice description) / room sound",
+   "user_word": null,
+   "field_names": [
+    "VOICE",
+    "VOICE.voice_description",
+    "LOCATION.room_sound",
+    "SCENE.room_sound",
+    "SHOT.room_sound"
+   ],
+   "retired": [
+    "sound key",
+    "voice key",
+    "room tone key",
+    "bed",
+    "ambience"
+   ]
+  },
+  {
+   "thing": "How a voice reaches us",
+   "one_word": "path",
+   "user_word": null,
+   "field_names": [
+    "SPEECH.path",
+    "SHOT.hear path",
+    "VOICE.path_sound"
+   ],
+   "retired": [
+    "channel",
+    "voice_source",
+    "perspective"
+   ]
+  },
+  {
+   "thing": "Where the camera stands in a scene",
+   "one_word": "setup (\"camera A\")",
+   "user_word": null,
+   "field_names": [
+    "SETUP",
+    "SHOT.setup"
+   ],
+   "retired": [
+    "camera position S1-S8"
+   ]
+  },
+  {
+   "thing": "Left and right",
+   "one_word": "frame-left, frame-right; own left, own right; hand nearest the camera",
+   "user_word": null,
+   "field_names": [
+    "SHOT.subject faces/travel (frame_left, frame_right)",
+    "STATE.side own",
+    "PROP.side own"
+   ],
+   "retired": [
+    "screen left",
+    "image-left",
+    "camera left"
+   ]
+  },
+  {
+   "thing": "The imaginary line between two people",
+   "one_word": "the line (line of action)",
+   "user_word": null,
+   "field_names": [
+    "SETUP.side"
+   ],
+   "retired": [
+    "axis",
+    "180° line"
+   ]
+  },
+  {
+   "thing": "Shot sizes",
+   "one_word": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "user_word": null,
+   "field_names": [
+    "SHOT.size",
+    "SCENE.dial size"
+   ],
+   "retired": [
+    "big close-up",
+    "EWS",
+    "WS",
+    "MCU",
+    "CU",
+    "ECU",
+    "OTS and every abbreviation"
+   ]
+  },
+  {
+   "thing": "Tilt / eye height",
+   "one_word": "angle / height",
+   "user_word": null,
+   "field_names": [
+    "SHOT.angle",
+    "SHOT.height"
+   ],
+   "retired": [
+    "angle_height"
+   ]
+  },
+  {
+   "thing": "Where a fact comes from",
+   "one_word": "origin: story, inferred, invented",
+   "user_word": null,
+   "field_names": [
+    "origin on SCENE, SHOT, STATE, SPEECH, MOVE, WORLD, TEXT"
+   ],
+   "retired": [
+    "fact",
+    "extracted",
+    "authored",
+    "added",
+    "[design choice]"
+   ]
+  },
+  {
+   "thing": "Who may write a field",
+   "one_word": "writer: story, ai, user, code_state, code_derived",
+   "user_word": null,
+   "field_names": [
+    "schema.json writer"
+   ],
+   "retired": [
+    "extracted",
+    "authored",
+    "derived",
+    "human"
+   ]
+  },
+  {
+   "thing": "Used length / length to generate",
+   "one_word": "screen time / clip length",
+   "user_word": null,
+   "field_names": [
+    "SHOT.screen_time",
+    "SHOT.clips (derived)"
+   ],
+   "retired": [
+    "duration_s",
+    "clip_s"
+   ]
+  },
+  {
+   "thing": "Why a shot exists",
+   "one_word": "purpose",
+   "user_word": null,
+   "field_names": [
+    "SHOT.purpose"
+   ],
+   "retired": [
+    "PURPOSE",
+    "purpose (as picture job kind)"
+   ]
+  },
+  {
+   "thing": "The kind of picture job",
+   "one_word": "use",
+   "user_word": null,
+   "field_names": [
+    "PIC.use"
+   ],
+   "retired": [
+    "purpose"
+   ]
+  },
+  {
+   "thing": "A departure's reason",
+   "one_word": "the record's why",
+   "user_word": null,
+   "field_names": [
+    "why on SHOT, CUT, MOVE and others"
+   ],
+   "retired": [
+    "override:",
+    "WHY slot",
+    "story_reason"
+   ]
+  },
+  {
+   "thing": "How loud a thing is / a sound is",
+   "one_word": "emphasis 0-3 / sound emphasis 0-3",
+   "user_word": null,
+   "field_names": [
+    "SHOT.thing emphasis",
+    "BEAT.emphasis",
+    "SHOT.effect sound_emphasis",
+    "MOTIF.appearance"
+   ],
+   "retired": [
+    "L0-L3",
+    "S0-S3",
+    "emphasis device"
+   ]
+  },
+  {
+   "thing": "An extra signal on a beat",
+   "one_word": "added emphasis (0 or 1)",
+   "user_word": null,
+   "field_names": [
+    "BEAT.added_emphasis"
+   ],
+   "retired": [
+    "emphasis device",
+    "added signal"
+   ]
+  },
+  {
+   "thing": "Pressure inside a scene / across the film",
+   "one_word": "beat intensity 1-5 / scene intensity 1-10",
+   "user_word": null,
+   "field_names": [
+    "BEAT.beat_intensity",
+    "SCENE.scene_intensity"
+   ],
+   "retired": [
+    "intensity",
+    "story intensity"
+   ]
+  },
+  {
+   "thing": "Whole-film facts",
+   "one_word": "the whole-film files (05-10) and their whole-film summary (file 02)",
+   "user_word": null,
+   "field_names": [
+    "05 Story plan.md to 10 Film rules.md",
+    "02 Whole-film summary.md"
+   ],
+   "retired": [
+    "bible",
+    "visual bible",
+    "asset bible",
+    "register",
+    "core facts"
+   ]
+  },
+  {
+   "thing": "A question to the user with a default",
+   "one_word": "choice; one grouped without asking: small choice (\"small choices I made\")",
+   "user_word": null,
+   "field_names": [
+    "CHOICE",
+    "CHOICE.asked"
+   ],
+   "retired": [
+    "decision card",
+    "question record",
+    "small call",
+    "decision (for a choice)",
+    "question (for a choice)"
+   ]
+  },
+  {
+   "thing": "A place in the pipeline where the user answers",
+   "one_word": "checkpoint A, P, B, C, D, E",
+   "user_word": "named by what it is: \"the scene list\" (A), \"how the book becomes a film\" (P), \"the big choices\" (B), \"each group of shots\" (C), \"the finished check\" (acceptance), \"the grey previews\" (D), \"keeping takes\" (E)",
+   "field_names": [
+    "CHOICE.checkpoint"
+   ],
+   "retired": [
+    "checkpoint letters in user text"
+   ]
+  },
+  {
+   "thing": "How deep the breakdown goes",
+   "one_word": "quick, standard, detailed (depth)",
+   "user_word": null,
+   "field_names": [
+    "PROJECT.depth",
+    "SCENE.depth"
+   ],
+   "retired": [
+    "full (as a depth)"
+   ]
+  },
+  {
+   "thing": "A problem found, with its fix",
+   "one_word": "finding",
+   "user_word": null,
+   "field_names": [
+    "FINDING"
+   ],
+   "retired": [
+    "issue"
+   ]
+  },
+  {
+   "thing": "One step of the pipeline",
+   "one_word": "step (counted from 1 for the user: \"step 8 of 12\")",
+   "user_word": null,
+   "field_names": [
+    "steps.json"
+   ],
+   "retired": [
+    "stage (except \"Stage\", capitalised, the product's name, and `stage.py`, which WORDS-02 exempts)"
+   ]
+  },
+  {
+   "thing": "A piece of AI work that fits one reply",
+   "one_word": "unit",
+   "user_word": null,
+   "field_names": [
+    "steps.json units"
+   ],
+   "retired": [
+    "task",
+    "call"
+   ]
+  },
+  {
+   "thing": "The file the AI reads for a unit",
+   "one_word": "handout (code surfaces); the attached step file and whole-film summary (chat)",
+   "user_word": null,
+   "field_names": [
+    "For machines - do not edit/handouts/"
+   ],
+   "retired": [
+    "context pack"
+   ]
+  },
+  {
+   "thing": "Grey 3D stand-in renders of shots",
+   "one_word": "previs",
+   "user_word": "grey previews",
+   "field_names": [
+    "PREVIS",
+    "SHOT.previs_level"
+   ],
+   "retired": [
+    "clay preview",
+    "greybox (for the user)"
+   ]
+  },
+  {
+   "thing": "Runtime and cost estimates",
+   "one_word": "v0, v1 (D13)",
+   "user_word": "the first estimate, the estimate from the shots",
+   "field_names": [
+    "PLAN.runtime_estimate",
+    "14 Time and cost.md"
+   ],
+   "retired": [
+    "v0",
+    "v1 in user text"
+   ]
+  },
+  {
+   "thing": "Where a take is kept or rejected",
+   "one_word": "take",
+   "user_word": null,
+   "field_names": [
+    "TAKE"
+   ],
+   "retired": [
+    "generation job"
+   ]
+  },
+  {
+   "thing": "The flashlight in prompts",
+   "one_word": "flashlight; \"torch\" only inside quotes of the script",
+   "user_word": null,
+   "field_names": [
+    "PROJECT.prompt_words"
+   ],
+   "retired": [
+    "torch in prompts"
+   ]
+  },
+  {
+   "thing": "Model names",
+   "one_word": "the exact name in video_models.json, with aliases (\"Kling O3\" = kling-3.0-omni)",
+   "user_word": null,
+   "field_names": [
+    "SHOT.model",
+    "TAKE.model",
+    "PIC.model"
+   ],
+   "retired": [
+    "informal names"
+   ]
+  }
+ ],
+ "retired": [
+  {
+   "as_written": "phase",
+   "word": "phase",
+   "use_instead": "reversed / original",
+   "thing": "Story state of a person or thing in a mirror story",
+   "flag": "always"
+  },
+  {
+   "as_written": "frame reversed",
+   "word": "frame reversed",
+   "use_instead": "reversed / original",
+   "thing": "Story state of a person or thing in a mirror story",
+   "flag": "always"
+  },
+  {
+   "as_written": "turned (as a mirror state)",
+   "word": "turned",
+   "use_instead": "reversed / original",
+   "thing": "Story state of a person or thing in a mirror story",
+   "flag": "in_fields",
+   "in_fields": [
+    "STATE.handedness",
+    "RULE.era",
+    "SCENE.frame_handedness"
+   ],
+   "note": "turned belongs to value turns (BEAT.turn)"
+  },
+  {
+   "as_written": "handedness_phase",
+   "word": "handedness_phase",
+   "use_instead": "handedness",
+   "thing": "Story state of a person or thing in a mirror story",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "mirror true",
+   "word": "mirror true",
+   "use_instead": "reversed / original",
+   "thing": "Story state of a person or thing in a mirror story",
+   "flag": "always"
+  },
+  {
+   "as_written": "phase",
+   "word": "phase",
+   "use_instead": "era (a, b, c)",
+   "thing": "A stretch of the film under one frame handedness",
+   "flag": "always"
+  },
+  {
+   "as_written": "MIRRORED",
+   "word": "MIRRORED",
+   "use_instead": "mirrored / normal",
+   "thing": "How an element appears in a shot",
+   "flag": "always",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "mirror_state capitals",
+   "word": "MIRRORED|NORMAL",
+   "use_instead": "mirrored / normal",
+   "thing": "How an element appears in a shot",
+   "flag": "always",
+   "case_sensitive": true,
+   "pattern": "\\b(MIRRORED|NORMAL)\\b"
+  },
+  {
+   "as_written": "mirror_flip",
+   "word": "mirror_flip",
+   "use_instead": "flip",
+   "thing": "The edit operation",
+   "flag": "always"
+  },
+  {
+   "as_written": "identity key",
+   "word": "identity key",
+   "use_instead": "fixed description",
+   "thing": "The fixed words pasted into every prompt for a person, thing or place",
+   "flag": "always"
+  },
+  {
+   "as_written": "look line",
+   "word": "look line",
+   "use_instead": "fixed description",
+   "thing": "The fixed words pasted into every prompt for a person, thing or place",
+   "flag": "always"
+  },
+  {
+   "as_written": "look ID",
+   "word": "look ID",
+   "use_instead": "state (Iona, state 2) and its state line",
+   "thing": "A person's or thing's costume, injury and condition at a point",
+   "flag": "always"
+  },
+  {
+   "as_written": "costume phase C1-C6",
+   "word": "costume phase",
+   "use_instead": "state (Iona, state 2) and its state line",
+   "thing": "A person's or thing's costume, injury and condition at a point",
+   "flag": "always",
+   "extra_pattern": "\\bC[1-6]\\b",
+   "extra_pattern_in_fields": [
+    "STATE.state_line",
+    "STATE.changes"
+   ]
+  },
+  {
+   "as_written": "states S1-S6",
+   "word": "S1-S6",
+   "use_instead": "state (Iona, state 2) and its state line",
+   "thing": "A person's or thing's costume, injury and condition at a point",
+   "flag": "in_fields",
+   "pattern": "\\bS[1-6]\\b",
+   "in_fields": [
+    "STATE.state_line",
+    "STATE.changes",
+    "SHOT.subject"
+   ]
+  },
+  {
+   "as_written": "look key",
+   "word": "look key",
+   "use_instead": "look; its pasted text is the look block ('look' is used for nothing else)",
+   "thing": "The light, colour and texture of a place at a time",
+   "flag": "always"
+  },
+  {
+   "as_written": "lighting block",
+   "word": "lighting block",
+   "use_instead": "look; its pasted text is the look block ('look' is used for nothing else)",
+   "thing": "The light, colour and texture of a place at a time",
+   "flag": "always"
+  },
+  {
+   "as_written": "global look key",
+   "word": "global look key",
+   "use_instead": "look; its pasted text is the look block ('look' is used for nothing else)",
+   "thing": "The light, colour and texture of a place at a time",
+   "flag": "always"
+  },
+  {
+   "as_written": "look (for either)",
+   "word": "look",
+   "use_instead": "style (with its style words) / appearance",
+   "thing": "How the whole film is made to appear / how a character appears",
+   "flag": "context",
+   "note": "flag the phrases below; 'look' alone is too common to flag"
+  },
+  {
+   "as_written": "style key",
+   "word": "style key",
+   "use_instead": "style (with its style words) / appearance",
+   "thing": "How the whole film is made to appear / how a character appears",
+   "flag": "always"
+  },
+  {
+   "as_written": "\"the film's look\"",
+   "word": "the film's look",
+   "use_instead": "style (with its style words) / appearance",
+   "thing": "How the whole film is made to appear / how a character appears",
+   "flag": "always"
+  },
+  {
+   "as_written": "\"her look\"",
+   "word": "her look",
+   "use_instead": "style (with its style words) / appearance",
+   "thing": "How the whole film is made to appear / how a character appears",
+   "flag": "context",
+   "extra_words": [
+    "his look",
+    "their look"
+   ],
+   "note": "not flagged by code: 'her look goes to the door' is her eyes; writers say appearance for how she appears"
+  },
+  {
+   "as_written": "key light",
+   "word": "key light",
+   "use_instead": "main light",
+   "thing": "The main light",
+   "flag": "always"
+  },
+  {
+   "as_written": "key shot",
+   "word": "key shot",
+   "use_instead": "turn shot (role: turn)",
+   "thing": "The shot where a scene turns",
+   "flag": "always"
+  },
+  {
+   "as_written": "key frame (as a written frame)",
+   "word": "key frame",
+   "use_instead": "turn picture",
+   "thing": "The frame a turn must show, written before shots",
+   "flag": "always"
+  },
+  {
+   "as_written": "keyframe",
+   "word": "keyframe",
+   "use_instead": "start picture, end picture; one pinned inside a clip: pinned picture",
+   "thing": "Stills a video starts or ends on",
+   "flag": "always"
+  },
+  {
+   "as_written": "first frame",
+   "word": "first frame",
+   "use_instead": "start picture, end picture; one pinned inside a clip: pinned picture",
+   "thing": "Stills a video starts or ends on",
+   "flag": "user_text",
+   "note": "previs code may say first frame for a frame number"
+  },
+  {
+   "as_written": "start frame",
+   "word": "start frame",
+   "use_instead": "start picture, end picture; one pinned inside a clip: pinned picture",
+   "thing": "Stills a video starts or ends on",
+   "flag": "always",
+   "exempt_sub_part_keys": [
+    "SHOT.motion start_frame"
+   ],
+   "note": "SHOT.motion keeps the sub-part key start_frame (5.5), a frame number of the free-fall helper, not a picture"
+  },
+  {
+   "as_written": "structure image",
+   "word": "structure image",
+   "use_instead": "layout picture",
+   "thing": "A grey still that fixes composition",
+   "flag": "always"
+  },
+  {
+   "as_written": "layout guide",
+   "word": "layout guide",
+   "use_instead": "layout picture",
+   "thing": "A grey still that fixes composition",
+   "flag": "always"
+  },
+  {
+   "as_written": "control video",
+   "word": "control video",
+   "use_instead": "guide video, made from a grey render",
+   "thing": "A grey 3D video a model copies",
+   "flag": "always"
+  },
+  {
+   "as_written": "clay render",
+   "word": "clay render",
+   "use_instead": "guide video, made from a grey render",
+   "thing": "A grey 3D video a model copies",
+   "flag": "always"
+  },
+  {
+   "as_written": "greybox",
+   "word": "greybox",
+   "use_instead": "guide video, made from a grey render",
+   "thing": "A grey 3D video a model copies",
+   "flag": "always"
+  },
+  {
+   "as_written": "motion guide",
+   "word": "motion guide",
+   "use_instead": "guide video, made from a grey render",
+   "thing": "A grey 3D video a model copies",
+   "flag": "always"
+  },
+  {
+   "as_written": "reference pack",
+   "word": "reference pack",
+   "use_instead": "reference pictures; one film-look still: style picture",
+   "thing": "Reference pictures of one element state",
+   "flag": "always"
+  },
+  {
+   "as_written": "asset sheet",
+   "word": "asset sheet",
+   "use_instead": "reference pictures; one film-look still: style picture",
+   "thing": "Reference pictures of one element state",
+   "flag": "always"
+  },
+  {
+   "as_written": "stack",
+   "word": "stack",
+   "use_instead": "reference pictures; one film-look still: style picture",
+   "thing": "Reference pictures of one element state",
+   "flag": "context",
+   "note": "C2's 'stack order' of reference pictures is a technical term in cards"
+  },
+  {
+   "as_written": "model sheet",
+   "word": "model sheet",
+   "use_instead": "reference pictures; one film-look still: style picture",
+   "thing": "Reference pictures of one element state",
+   "flag": "always"
+  },
+  {
+   "as_written": "style frame",
+   "word": "style frame",
+   "use_instead": "reference pictures; one film-look still: style picture",
+   "thing": "Reference pictures of one element state",
+   "flag": "always"
+  },
+  {
+   "as_written": "bit",
+   "word": "bit",
+   "use_instead": "beat",
+   "thing": "McKee's action and reaction",
+   "flag": "context",
+   "note": "'a bit' is ordinary English"
+  },
+  {
+   "as_written": "BEATS (in prompts)",
+   "word": "BEATS",
+   "use_instead": "moment",
+   "thing": "A timed visible change inside a shot",
+   "flag": "prompts",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "timeline events",
+   "word": "timeline events",
+   "use_instead": "moment",
+   "thing": "A timed visible change inside a shot",
+   "flag": "always"
+  },
+  {
+   "as_written": "C4 beats",
+   "word": "C4 beats",
+   "use_instead": "moment",
+   "thing": "A timed visible change inside a shot",
+   "flag": "always",
+   "note": "the previs plan key beats is renamed moments"
+  },
+  {
+   "as_written": "beat",
+   "word": "beat",
+   "use_instead": "pause",
+   "thing": "\"(beat)\" in a script",
+   "flag": "context",
+   "note": "beat is the word for McKee's beat; '(beat)' in a script is read as a pause"
+  },
+  {
+   "as_written": "movement",
+   "word": "movement",
+   "use_instead": "part",
+   "thing": "A part of a scene with its own turn",
+   "flag": "always",
+   "exempt_field_names": [
+    "CHARACTER.movement"
+   ],
+   "pattern": "(?<![A-Za-z0-9_])(?:(?:camera|dolly|crane|tracking|lens|zoom)\\s+movements?|movements?\\s+(?:\\d+|one|two|three|four|five|six|of the scene))(?![A-Za-z0-9_])",
+   "note": "flagged only in its retired senses (a camera movement, a movement of a scene); 'his movement' is ordinary English, and CHARACTER.movement is a field name"
+  },
+  {
+   "as_written": "part (for replies)",
+   "word": "part",
+   "use_instead": "batch",
+   "thing": "One reply's share of a scene's shots",
+   "flag": "context",
+   "note": "part is the word for a part of a scene"
+  },
+  {
+   "as_written": "stretch",
+   "word": "stretch",
+   "use_instead": "sequence (SQ)",
+   "thing": "A group of scenes",
+   "flag": "context"
+  },
+  {
+   "as_written": "colour-script sequence",
+   "word": "colour-script sequence",
+   "use_instead": "sequence (SQ)",
+   "thing": "A group of scenes",
+   "flag": "always"
+  },
+  {
+   "as_written": "journey unit",
+   "word": "journey unit",
+   "use_instead": "sequence (SQ)",
+   "thing": "A group of scenes",
+   "flag": "always"
+  },
+  {
+   "as_written": "movement",
+   "word": "movement",
+   "use_instead": "camera move (move) / floor-plan move (MOVE record) / motion",
+   "thing": "The camera's movement / a character's move on the floor plan / Block's motion component",
+   "flag": "always",
+   "exempt_field_names": [
+    "CHARACTER.movement"
+   ],
+   "pattern": "(?<![A-Za-z0-9_])(?:(?:camera|dolly|crane|tracking|lens|zoom)\\s+movements?|movements?\\s+(?:\\d+|one|two|three|four|five|six|of the scene))(?![A-Za-z0-9_])",
+   "note": "flagged only in its retired senses (a camera movement, a movement of a scene); 'his movement' is ordinary English, and CHARACTER.movement is a field name"
+  },
+  {
+   "as_written": "\"move\" alone in user text",
+   "word": "move",
+   "use_instead": "camera move (move) / floor-plan move (MOVE record) / motion",
+   "thing": "The camera's movement / a character's move on the floor plan / Block's motion component",
+   "flag": "context",
+   "note": "noun and verb cannot be told apart by code; writers say camera move or floor-plan move"
+  },
+  {
+   "as_written": "POV for both",
+   "word": "POV",
+   "use_instead": "whose scene / point-of-view shot (frame: pov)",
+   "thing": "Whose point of view a scene holds / a shot through someone's eyes",
+   "flag": "always",
+   "case_sensitive": true,
+   "note": "the field value pov stays"
+  },
+  {
+   "as_written": "objective",
+   "word": "objective",
+   "use_instead": "want / life want",
+   "thing": "What a character wants in a scene / in life",
+   "flag": "in_fields",
+   "in_fields": [
+    "SCENE.want",
+    "CHARACTER.life_want",
+    "CHARACTER.arc"
+   ],
+   "note": "SHOT.stance keeps the value objective"
+  },
+  {
+   "as_written": "intention",
+   "word": "intention",
+   "use_instead": "want / life want",
+   "thing": "What a character wants in a scene / in life",
+   "flag": "always"
+  },
+  {
+   "as_written": "super-intention",
+   "word": "super-intention",
+   "use_instead": "want / life want",
+   "thing": "What a character wants in a scene / in life",
+   "flag": "always"
+  },
+  {
+   "as_written": "spine",
+   "word": "spine",
+   "use_instead": "want / life want",
+   "thing": "What a character wants in a scene / in life",
+   "flag": "in_fields",
+   "in_fields": [
+    "SCENE.want",
+    "CHARACTER.life_want"
+   ],
+   "note": "MOTIF.rank keeps the value spine"
+  },
+  {
+   "as_written": "scene desire",
+   "word": "scene desire",
+   "use_instead": "want / life want",
+   "thing": "What a character wants in a scene / in life",
+   "flag": "always"
+  },
+  {
+   "as_written": "action gerund",
+   "word": "action gerund",
+   "use_instead": "tactic (an -ing word)",
+   "thing": "What a line or act does to the other person",
+   "flag": "always"
+  },
+  {
+   "as_written": "playable action",
+   "word": "playable action",
+   "use_instead": "tactic (an -ing word)",
+   "thing": "What a line or act does to the other person",
+   "flag": "always"
+  },
+  {
+   "as_written": "infinitives",
+   "word": "infinitives",
+   "use_instead": "tactic (an -ing word)",
+   "thing": "What a line or act does to the other person",
+   "flag": "context",
+   "note": "A3's infinitives are converted to -ing words"
+  },
+  {
+   "as_written": "activity",
+   "word": "activity",
+   "use_instead": "task",
+   "thing": "What the hands do",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "physical task",
+   "word": "physical task",
+   "use_instead": "task",
+   "thing": "What the hands do",
+   "flag": "always"
+  },
+  {
+   "as_written": "emotion words",
+   "word": "emotion words",
+   "use_instead": "does (visible behaviour)",
+   "thing": "What we see the body do in a shot",
+   "flag": "rule",
+   "note": "WORDS-01 with emotion_adjectives"
+  },
+  {
+   "as_written": "behaviour as a plan field",
+   "word": "behaviour",
+   "use_instead": "does",
+   "thing": "What we see the body do in a shot",
+   "flag": "field_name",
+   "extra_words": [
+    "behavior"
+   ]
+  },
+  {
+   "as_written": "performance scale",
+   "word": "performance scale",
+   "use_instead": "display 1-3 (contained, visible, open) / still",
+   "thing": "How openly a face or body shows a feeling / what does not move",
+   "flag": "always"
+  },
+  {
+   "as_written": "intensity (for display)",
+   "word": "intensity",
+   "use_instead": "display",
+   "thing": "How openly a face or body shows a feeling / what does not move",
+   "flag": "field_name",
+   "in_fields": [
+    "SHOT.subject"
+   ]
+  },
+  {
+   "as_written": "screen direction (as a field name)",
+   "word": "screen_direction",
+   "use_instead": "travel",
+   "thing": "Which way a subject moves across the frame",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "beat reference (before step 7)",
+   "word": "beat reference",
+   "use_instead": "story point (a scene and a quote)",
+   "thing": "A moment inside a scene named before its beats exist",
+   "flag": "context"
+  },
+  {
+   "as_written": "mood (as a field)",
+   "word": "mood",
+   "use_instead": "tone",
+   "thing": "The feeling a film or scene is played in",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "genre (for tone)",
+   "word": "genre",
+   "use_instead": "tone: the film's home tone, a scene's tone, undercurrent and tone shift",
+   "thing": "The feeling a film or scene is played in",
+   "flag": "context",
+   "note": "PLAN.genre stays for the genre itself"
+  },
+  {
+   "as_written": "continuity bible",
+   "word": "continuity bible",
+   "use_instead": "continuity (file 09, STATE records)",
+   "thing": "The record of changing states",
+   "flag": "always"
+  },
+  {
+   "as_written": "ledger",
+   "word": "ledger",
+   "use_instead": "continuity (file 09, STATE records)",
+   "thing": "The record of changing states",
+   "flag": "context",
+   "note": "the craft layer's 'reserve ledger' names the RESERVE records"
+  },
+  {
+   "as_written": "state table",
+   "word": "state table",
+   "use_instead": "continuity (file 09, STATE records)",
+   "thing": "The record of changing states",
+   "flag": "always"
+  },
+  {
+   "as_written": "damage ledger",
+   "word": "damage ledger",
+   "use_instead": "continuity (file 09, STATE records)",
+   "thing": "The record of changing states",
+   "flag": "always"
+  },
+  {
+   "as_written": "carrier log",
+   "word": "carrier log",
+   "use_instead": "motif, with plant, payoff, rhyme",
+   "thing": "A thing that returns and gathers meaning",
+   "flag": "always"
+  },
+  {
+   "as_written": "thread",
+   "word": "thread",
+   "use_instead": "motif, with plant, payoff, rhyme",
+   "thing": "A thing that returns and gathers meaning",
+   "flag": "context"
+  },
+  {
+   "as_written": "emblem",
+   "word": "emblem",
+   "use_instead": "motif, with plant, payoff, rhyme",
+   "thing": "A thing that returns and gathers meaning",
+   "flag": "in_fields",
+   "in_fields": [
+    "MOTIF.meaning",
+    "MOTIF.rank"
+   ],
+   "note": "PROP.kind keeps the value emblem"
+  },
+  {
+   "as_written": "hinge",
+   "word": "hinge",
+   "use_instead": "motif, with plant, payoff, rhyme",
+   "thing": "A thing that returns and gathers meaning",
+   "flag": "context"
+  },
+  {
+   "as_written": "reserved framing",
+   "word": "reserved framing",
+   "use_instead": "motif, with plant, payoff, rhyme",
+   "thing": "A thing that returns and gathers meaning",
+   "flag": "always"
+  },
+  {
+   "as_written": "reserved choice",
+   "word": "reserved choice",
+   "use_instead": "saved choice (RC, RESERVE record)",
+   "thing": "A choice saved for special moments",
+   "flag": "always"
+  },
+  {
+   "as_written": "reserved framing",
+   "word": "reserved framing",
+   "use_instead": "saved choice (RC, RESERVE record)",
+   "thing": "A choice saved for special moments",
+   "flag": "always"
+  },
+  {
+   "as_written": "withhold",
+   "word": "withhold",
+   "use_instead": "keep hidden",
+   "thing": "Kept out of frame for later",
+   "flag": "always",
+   "exempt_field_names": [
+    "BEAT.action",
+    "BEAT.reaction",
+    "SHOT.subject",
+    "CHARACTER.status_play",
+    "CHARACTER.speech"
+   ],
+   "note": "a tactic ('withholding') is ordinary English in the tactic fields; keep hidden is the word for what stays out of frame"
+  },
+  {
+   "as_written": "withheld",
+   "word": "withheld",
+   "use_instead": "keep hidden",
+   "thing": "Kept out of frame for later",
+   "flag": "always"
+  },
+  {
+   "as_written": "on-screen text",
+   "word": "on-screen text",
+   "use_instead": "text in picture (TX); the drawn file is the text graphic",
+   "thing": "Readable words inside the picture",
+   "flag": "always"
+  },
+  {
+   "as_written": "insert graphic",
+   "word": "insert graphic",
+   "use_instead": "text in picture (TX); the drawn file is the text graphic",
+   "thing": "Readable words inside the picture",
+   "flag": "always"
+  },
+  {
+   "as_written": "text spec",
+   "word": "text spec",
+   "use_instead": "text in picture (TX); the drawn file is the text graphic",
+   "thing": "Readable words inside the picture",
+   "flag": "always"
+  },
+  {
+   "as_written": "sound key",
+   "word": "sound key",
+   "use_instead": "voice (with its voice description) / room sound",
+   "thing": "A character's voice / a place's steady background",
+   "flag": "always"
+  },
+  {
+   "as_written": "voice key",
+   "word": "voice key",
+   "use_instead": "voice (with its voice description) / room sound",
+   "thing": "A character's voice / a place's steady background",
+   "flag": "always"
+  },
+  {
+   "as_written": "room tone key",
+   "word": "room tone key",
+   "use_instead": "voice (with its voice description) / room sound",
+   "thing": "A character's voice / a place's steady background",
+   "flag": "always"
+  },
+  {
+   "as_written": "bed",
+   "word": "bed",
+   "use_instead": "voice (with its voice description) / room sound",
+   "thing": "A character's voice / a place's steady background",
+   "flag": "in_fields",
+   "in_fields": [
+    "LOCATION.room_sound",
+    "SCENE.room_sound",
+    "SHOT.room_sound",
+    "SHOT.effect"
+   ],
+   "note": "flagged only as a sound bed ('a room-tone bed'); a hospital bed that creaks is furniture, and LOCATION.object keeps furniture: bed",
+   "pattern": "(?<![A-Za-z0-9_])(?:(?:sound|room|tone|ambient|ambience|audio|music|musical|drone|noise)\\s+beds?|beds?\\s+of\\s+(?:sound|noise|hum|tone|traffic))(?![A-Za-z0-9_])"
+  },
+  {
+   "as_written": "ambience",
+   "word": "ambience",
+   "use_instead": "voice (with its voice description) / room sound",
+   "thing": "A character's voice / a place's steady background",
+   "flag": "always"
+  },
+  {
+   "as_written": "channel",
+   "word": "channel",
+   "use_instead": "path",
+   "thing": "How a voice reaches us",
+   "flag": "in_fields",
+   "in_fields": [
+    "SPEECH",
+    "SHOT.hear",
+    "VOICE"
+   ],
+   "note": "MOTIF.channel stays"
+  },
+  {
+   "as_written": "voice_source",
+   "word": "voice_source",
+   "use_instead": "path",
+   "thing": "How a voice reaches us",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "perspective",
+   "word": "perspective",
+   "use_instead": "path",
+   "thing": "How a voice reaches us",
+   "flag": "context"
+  },
+  {
+   "as_written": "camera position S1-S8",
+   "word": "camera position",
+   "use_instead": "setup (\"camera A\")",
+   "thing": "Where the camera stands in a scene",
+   "flag": "always",
+   "pattern": "\\bcamera position S[1-8]\\b"
+  },
+  {
+   "as_written": "screen left",
+   "word": "screen left",
+   "use_instead": "frame-left, frame-right; own left, own right; hand nearest the camera",
+   "thing": "Left and right",
+   "flag": "always",
+   "extra_words": [
+    "screen right"
+   ]
+  },
+  {
+   "as_written": "image-left",
+   "word": "image-left",
+   "use_instead": "frame-left, frame-right; own left, own right; hand nearest the camera",
+   "thing": "Left and right",
+   "flag": "always",
+   "extra_words": [
+    "image-right"
+   ]
+  },
+  {
+   "as_written": "camera left",
+   "word": "camera left",
+   "use_instead": "frame-left, frame-right; own left, own right; hand nearest the camera",
+   "thing": "Left and right",
+   "flag": "always",
+   "extra_words": [
+    "camera right"
+   ]
+  },
+  {
+   "as_written": "axis",
+   "word": "axis",
+   "use_instead": "the line (line of action)",
+   "thing": "The imaginary line between two people",
+   "flag": "context",
+   "note": "LOCATION.axes names the set-plan axes"
+  },
+  {
+   "as_written": "180° line",
+   "word": "180° line",
+   "use_instead": "the line (line of action)",
+   "thing": "The imaginary line between two people",
+   "flag": "always"
+  },
+  {
+   "as_written": "big close-up",
+   "word": "big close-up",
+   "use_instead": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "thing": "Shot sizes",
+   "flag": "always"
+  },
+  {
+   "as_written": "EWS",
+   "word": "EWS",
+   "use_instead": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "thing": "Shot sizes",
+   "flag": "always",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "WS",
+   "word": "WS",
+   "use_instead": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "thing": "Shot sizes",
+   "flag": "always",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "MCU",
+   "word": "MCU",
+   "use_instead": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "thing": "Shot sizes",
+   "flag": "always",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "CU",
+   "word": "CU",
+   "use_instead": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "thing": "Shot sizes",
+   "flag": "always",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "ECU",
+   "word": "ECU",
+   "use_instead": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "thing": "Shot sizes",
+   "flag": "always",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "OTS and every abbreviation",
+   "word": "OTS",
+   "use_instead": "extreme wide, wide, medium wide, medium, medium close-up, close-up, extreme close-up, insert",
+   "thing": "Shot sizes",
+   "flag": "always",
+   "case_sensitive": true,
+   "note": "every other abbreviation is in abbreviations"
+  },
+  {
+   "as_written": "angle_height",
+   "word": "angle_height",
+   "use_instead": "angle or height",
+   "thing": "Tilt / eye height",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "fact",
+   "word": "fact",
+   "use_instead": "origin: story, inferred, invented",
+   "thing": "Where a fact comes from",
+   "flag": "in_fields",
+   "in_fields": [
+    "*.origin"
+   ]
+  },
+  {
+   "as_written": "extracted",
+   "word": "extracted",
+   "use_instead": "origin: story, inferred, invented",
+   "thing": "Where a fact comes from",
+   "flag": "in_fields",
+   "in_fields": [
+    "*.origin"
+   ]
+  },
+  {
+   "as_written": "authored",
+   "word": "authored",
+   "use_instead": "origin: story, inferred, invented",
+   "thing": "Where a fact comes from",
+   "flag": "in_fields",
+   "in_fields": [
+    "*.origin"
+   ]
+  },
+  {
+   "as_written": "added",
+   "word": "added",
+   "use_instead": "origin: story, inferred, invented",
+   "thing": "Where a fact comes from",
+   "flag": "in_fields",
+   "in_fields": [
+    "*.origin"
+   ]
+  },
+  {
+   "as_written": "[design choice]",
+   "word": "design choice",
+   "use_instead": "origin: story, inferred, invented",
+   "thing": "Where a fact comes from",
+   "flag": "in_fields",
+   "in_fields": [
+    "*.origin"
+   ]
+  },
+  {
+   "as_written": "extracted",
+   "word": "extracted",
+   "use_instead": "writer: story, ai, user, code_state, code_derived",
+   "thing": "Who may write a field",
+   "flag": "context"
+  },
+  {
+   "as_written": "authored",
+   "word": "authored",
+   "use_instead": "writer: story, ai, user, code_state, code_derived",
+   "thing": "Who may write a field",
+   "flag": "context"
+  },
+  {
+   "as_written": "derived",
+   "word": "derived",
+   "use_instead": "writer: story, ai, user, code_state, code_derived",
+   "thing": "Who may write a field",
+   "flag": "context"
+  },
+  {
+   "as_written": "human",
+   "word": "human",
+   "use_instead": "writer: story, ai, user, code_state, code_derived",
+   "thing": "Who may write a field",
+   "flag": "context"
+  },
+  {
+   "as_written": "duration_s",
+   "word": "duration_s",
+   "use_instead": "screen_time",
+   "thing": "Used length / length to generate",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "clip_s",
+   "word": "clip_s",
+   "use_instead": "clips (code derives clip lengths)",
+   "thing": "Used length / length to generate",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "PURPOSE",
+   "word": "PURPOSE",
+   "use_instead": "purpose",
+   "thing": "Why a shot exists",
+   "flag": "always",
+   "case_sensitive": true
+  },
+  {
+   "as_written": "purpose (as picture job kind)",
+   "word": "purpose",
+   "use_instead": "use",
+   "thing": "Why a shot exists",
+   "flag": "field_name",
+   "in_fields": [
+    "PIC"
+   ]
+  },
+  {
+   "as_written": "purpose",
+   "word": "purpose",
+   "use_instead": "use",
+   "thing": "The kind of picture job",
+   "flag": "field_name",
+   "in_fields": [
+    "PIC"
+   ]
+  },
+  {
+   "as_written": "override:",
+   "word": "override:",
+   "use_instead": "the record's why",
+   "thing": "A departure's reason",
+   "flag": "always"
+  },
+  {
+   "as_written": "WHY slot",
+   "word": "WHY slot",
+   "use_instead": "the record's why",
+   "thing": "A departure's reason",
+   "flag": "always"
+  },
+  {
+   "as_written": "story_reason",
+   "word": "story_reason",
+   "use_instead": "why",
+   "thing": "A departure's reason",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "L0-L3",
+   "word": "L0-L3",
+   "use_instead": "emphasis 0-3 / sound emphasis 0-3",
+   "thing": "How loud a thing is / a sound is",
+   "flag": "in_fields",
+   "pattern": "\\bL[0-3]\\b",
+   "in_fields": [
+    "BEAT.emphasis",
+    "SHOT.thing",
+    "MOTIF.appearance"
+   ]
+  },
+  {
+   "as_written": "S0-S3",
+   "word": "S0-S3",
+   "use_instead": "emphasis 0-3 / sound emphasis 0-3",
+   "thing": "How loud a thing is / a sound is",
+   "flag": "in_fields",
+   "pattern": "\\bS[0-3]\\b",
+   "in_fields": [
+    "SHOT.effect",
+    "MOTIF.appearance"
+   ]
+  },
+  {
+   "as_written": "emphasis device",
+   "word": "emphasis device",
+   "use_instead": "emphasis 0-3 / sound emphasis 0-3",
+   "thing": "How loud a thing is / a sound is",
+   "flag": "always"
+  },
+  {
+   "as_written": "emphasis device",
+   "word": "emphasis device",
+   "use_instead": "added emphasis (0 or 1)",
+   "thing": "An extra signal on a beat",
+   "flag": "always"
+  },
+  {
+   "as_written": "added signal",
+   "word": "added signal",
+   "use_instead": "added emphasis (0 or 1)",
+   "thing": "An extra signal on a beat",
+   "flag": "always"
+  },
+  {
+   "as_written": "intensity",
+   "word": "intensity",
+   "use_instead": "beat_intensity or scene_intensity",
+   "thing": "Pressure inside a scene / across the film",
+   "flag": "field_name"
+  },
+  {
+   "as_written": "story intensity",
+   "word": "story intensity",
+   "use_instead": "beat intensity 1-5 / scene intensity 1-10",
+   "thing": "Pressure inside a scene / across the film",
+   "flag": "always"
+  },
+  {
+   "as_written": "bible",
+   "word": "bible",
+   "use_instead": "the whole-film files (05-10) and their whole-film summary (file 02)",
+   "thing": "Whole-film facts",
+   "flag": "always"
+  },
+  {
+   "as_written": "visual bible",
+   "word": "visual bible",
+   "use_instead": "the whole-film files (05-10) and their whole-film summary (file 02)",
+   "thing": "Whole-film facts",
+   "flag": "always"
+  },
+  {
+   "as_written": "asset bible",
+   "word": "asset bible",
+   "use_instead": "the whole-film files (05-10) and their whole-film summary (file 02)",
+   "thing": "Whole-film facts",
+   "flag": "always"
+  },
+  {
+   "as_written": "register",
+   "word": "register",
+   "use_instead": "the whole-film files (05-10) and their whole-film summary (file 02)",
+   "thing": "Whole-film facts",
+   "flag": "context",
+   "note": "B4's motif register is the MOTIF records"
+  },
+  {
+   "as_written": "core facts",
+   "word": "core facts",
+   "use_instead": "the whole-film files (05-10) and their whole-film summary (file 02)",
+   "thing": "Whole-film facts",
+   "flag": "always"
+  },
+  {
+   "as_written": "decision card",
+   "word": "decision card",
+   "use_instead": "choice; one grouped without asking: small choice (\"small choices I made\")",
+   "thing": "A question to the user with a default",
+   "flag": "always"
+  },
+  {
+   "as_written": "question record",
+   "word": "question record",
+   "use_instead": "choice; one grouped without asking: small choice (\"small choices I made\")",
+   "thing": "A question to the user with a default",
+   "flag": "always"
+  },
+  {
+   "as_written": "small call",
+   "word": "small call",
+   "use_instead": "choice; one grouped without asking: small choice (\"small choices I made\")",
+   "thing": "A question to the user with a default",
+   "flag": "always"
+  },
+  {
+   "as_written": "decision (for a choice)",
+   "word": "decision",
+   "use_instead": "choice; one grouped without asking: small choice (\"small choices I made\")",
+   "thing": "A question to the user with a default",
+   "flag": "context",
+   "note": "STRAND.decision and CHAPTER candidate decision stay"
+  },
+  {
+   "as_written": "question (for a choice)",
+   "word": "question",
+   "use_instead": "choice; one grouped without asking: small choice (\"small choices I made\")",
+   "thing": "A question to the user with a default",
+   "flag": "context",
+   "note": "CHOICE.question stays"
+  },
+  {
+   "as_written": "checkpoint letters in user text",
+   "word": "checkpoint letters",
+   "use_instead": "checkpoint A, P, B, C, D, E",
+   "thing": "A place in the pipeline where the user answers",
+   "flag": "user_text",
+   "pattern": "\\bcheckpoint [ABCDEP]\\b"
+  },
+  {
+   "as_written": "full (as a depth)",
+   "word": "full",
+   "use_instead": "detailed",
+   "thing": "How deep the breakdown goes",
+   "flag": "in_fields",
+   "in_fields": [
+    "PROJECT.depth",
+    "SCENE.depth"
+   ]
+  },
+  {
+   "as_written": "issue",
+   "word": "issue",
+   "use_instead": "finding",
+   "thing": "A problem found, with its fix",
+   "flag": "context",
+   "note": "too common to flag; writers say finding"
+  },
+  {
+   "as_written": "stage (except \"Stage\", capitalised, the product's name, and `stage.py`, which WORDS-02 exempts)",
+   "word": "stage",
+   "use_instead": "step (counted from 1 for the user: \"step 8 of 12\")",
+   "thing": "One step of the pipeline",
+   "flag": "always",
+   "case_sensitive": true,
+   "exempt": [
+    "Stage",
+    "stage.py"
+   ]
+  },
+  {
+   "as_written": "task",
+   "word": "task",
+   "use_instead": "unit",
+   "thing": "A piece of AI work that fits one reply",
+   "flag": "context",
+   "note": "BEAT.task is what the hands do"
+  },
+  {
+   "as_written": "call",
+   "word": "call",
+   "use_instead": "unit",
+   "thing": "A piece of AI work that fits one reply",
+   "flag": "context"
+  },
+  {
+   "as_written": "context pack",
+   "word": "context pack",
+   "use_instead": "handout (code surfaces); the attached step file and whole-film summary (chat)",
+   "thing": "The file the AI reads for a unit",
+   "flag": "always"
+  },
+  {
+   "as_written": "clay preview",
+   "word": "clay preview",
+   "use_instead": "previs",
+   "thing": "Grey 3D stand-in renders of shots",
+   "flag": "always"
+  },
+  {
+   "as_written": "greybox (for the user)",
+   "word": "greybox",
+   "use_instead": "previs",
+   "thing": "Grey 3D stand-in renders of shots",
+   "flag": "user_text"
+  },
+  {
+   "as_written": "v0",
+   "word": "v0",
+   "use_instead": "v0, v1 (D13)",
+   "thing": "Runtime and cost estimates",
+   "flag": "user_text",
+   "case_sensitive": true,
+   "pattern": "(?<![A-Za-z0-9-])v0(?![A-Za-z0-9])"
+  },
+  {
+   "as_written": "v1 in user text",
+   "word": "v1",
+   "use_instead": "v0, v1 (D13)",
+   "thing": "Runtime and cost estimates",
+   "flag": "user_text",
+   "case_sensitive": true,
+   "pattern": "(?<![A-Za-z0-9-])v1(?![A-Za-z0-9])"
+  },
+  {
+   "as_written": "generation job",
+   "word": "generation job",
+   "use_instead": "take",
+   "thing": "Where a take is kept or rejected",
+   "flag": "always"
+  },
+  {
+   "as_written": "torch in prompts",
+   "word": "torch",
+   "use_instead": "flashlight; \"torch\" only inside quotes of the script",
+   "thing": "The flashlight in prompts",
+   "flag": "prompts",
+   "note": "script quotes keep torch (K19)"
+  },
+  {
+   "as_written": "informal names",
+   "word": "informal names",
+   "use_instead": "the exact name in video_models.json, with aliases (\"Kling O3\" = kling-3.0-omni)",
+   "thing": "Model names",
+   "flag": "rule",
+   "note": "code maps aliases through the adapters"
+  }
+ ],
+ "ai_word_and_user_word": [
+  {
+   "ai": "sequence",
+   "user": "group of scenes",
+   "example": "group 3"
+  },
+  {
+   "ai": "checkpoint A",
+   "user": "the scene list"
+  },
+  {
+   "ai": "checkpoint P",
+   "user": "how the book becomes a film"
+  },
+  {
+   "ai": "checkpoint B",
+   "user": "the big choices"
+  },
+  {
+   "ai": "checkpoint C",
+   "user": "each group of shots"
+  },
+  {
+   "ai": "acceptance",
+   "user": "the finished check"
+  },
+  {
+   "ai": "checkpoint D",
+   "user": "the grey previews"
+  },
+  {
+   "ai": "checkpoint E",
+   "user": "keeping takes"
+  },
+  {
+   "ai": "previs",
+   "user": "grey previews"
+  },
+  {
+   "ai": "v0",
+   "user": "the first estimate"
+  },
+  {
+   "ai": "v1",
+   "user": "the estimate from the shots"
+  },
+  {
+   "ai": "step 7 (numbered from 0)",
+   "user": "step 8 of 12 (numbered from 1)"
+  }
+ ],
+ "exemptions": [
+  {
+   "word": "Stage",
+   "why": "the product's name, capitalised (WORDS-02)"
+  },
+  {
+   "word": "stage.py",
+   "why": "the command's file name (WORDS-02)"
+  },
+  {
+   "word": "words inside double quotes that match the story",
+   "why": "story words are quoted exactly (G12); 'torch' stays in script quotes (K19)"
+  },
+  {
+   "word": "movement",
+   "why": "allowed as the field name CHARACTER.movement (B5's movement signature); its view label is 'How they move'"
+  },
+  {
+   "word": "look_at",
+   "why": "the SETUP field name shared with the C4 previs kit; its view label is 'Aimed at'"
+  },
+  {
+   "word": "look",
+   "why": "allowed for LOOK records, SCENE.look and the look block"
+  },
+  {
+   "word": "research codes in AI-facing files",
+   "why": "cards and step files cite research by code (B1 R14); WORDS-04 checks only user-facing text"
+  },
+  {
+   "word": "AI",
+   "why": "the apps and the user's own guides call it AI; allowed in user-facing text"
+  },
+  {
+   "word": "ZIP, PDF",
+   "why": "file kinds the apps themselves name"
+  },
+  {
+   "word": "file extensions inside file names",
+   "why": "Shot list.csv, The Catch.srt are file names"
+  },
+  {
+   "word": "unit symbols after a number: s, min, %, $",
+   "why": "the blueprint's own user messages use them (13.3: '15 s', 'about 1 min 36 s', '$10')"
+  }
+ ],
+ "mood_only_phrases": {
+  "source": "REASON-04's list (blueprint 7.2; craft-first CR04), B3 R23, B2 §12 and its failure table, B2 §4.8",
+  "applies_to": [
+   "why on every record type",
+   "SCENE.department_idea idea",
+   "SCENE.scene_idea"
+  ],
+  "rule": "REASON-04 (error): a why that contains one of these phrases fails; 'to emphasise' counts only with no object. The feeling words below fail when the why names nothing else: no quote from the scene, no ID and no named element (REASON-03 and REASON-04 together).",
+  "phrases": [
+   "to build tension",
+   "for drama",
+   "for dramatic effect",
+   "cinematic",
+   "moody",
+   "to add interest",
+   "for visual interest",
+   "dynamic",
+   "to emphasise",
+   "to emphasize",
+   "to show isolation",
+   "to show the tension",
+   "atmospheric",
+   "dramatic lighting",
+   "it looks cinematic",
+   "for impact"
+  ],
+  "mood_words_flag_if_alone": [
+   "lonely",
+   "tense",
+   "tension",
+   "isolation",
+   "sad",
+   "eerie",
+   "unsettling",
+   "ominous"
+  ],
+  "mood_words_rule": "These feeling words fail only when the why names nothing else: no quote from the scene, no ID and no named element (B3 R23; REASON-03 and REASON-04 together).",
+  "conditional": [
+   {
+    "phrase": "to emphasise",
+    "flag_when": "no object follows (\"to emphasise\" at the end, or followed only by a mood word)"
+   },
+   {
+    "phrase": "to emphasize",
+    "flag_when": "no object follows"
+   }
+  ],
+  "judgement": [
+   "for dramatic effect",
+   "for impact"
+  ]
+ },
+ "emotion_adjectives": {
+  "source": "A3 R2 and P3 (Weston: 'result direction is inaccurate direction'), C3 L07, D15 R1, C2 §2 drift note, A2 failure table",
+  "applies_to": [
+   "SHOT.subject does",
+   "BEAT.task does"
+  ],
+  "allowed_in": [
+   "note",
+   "VOICETAKE.delivery",
+   "SPEECH.parenthetical",
+   "CHARACTER.expression when written as movement",
+   "words inside story quotes"
+  ],
+  "rule": "WORDS-01: an emotion adjective in does or task is an error; write two or three visible behaviours instead (C3 §6 method).",
+  "words": [
+   "afraid",
+   "angry",
+   "annoyed",
+   "anxious",
+   "ashamed",
+   "betrayed",
+   "bitter",
+   "bored",
+   "calm",
+   "cheerful",
+   "confident",
+   "confused",
+   "content",
+   "curious",
+   "defeated",
+   "defiant",
+   "depressed",
+   "desperate",
+   "determined",
+   "devastated",
+   "disappointed",
+   "disgusted",
+   "distraught",
+   "embarrassed",
+   "excited",
+   "fearful",
+   "frightened",
+   "frustrated",
+   "furious",
+   "glad",
+   "grateful",
+   "grief-stricken",
+   "guilty",
+   "happy",
+   "heartbroken",
+   "hopeful",
+   "hopeless",
+   "horrified",
+   "hurt",
+   "jealous",
+   "joyful",
+   "lonely",
+   "melancholy",
+   "miserable",
+   "nervous",
+   "overwhelmed",
+   "panicked",
+   "proud",
+   "relieved",
+   "resentful",
+   "resigned",
+   "sad",
+   "scared",
+   "shocked",
+   "sorrowful",
+   "stunned",
+   "surprised",
+   "suspicious",
+   "tense",
+   "terrified",
+   "thrilled",
+   "uneasy",
+   "upset",
+   "worried"
+  ],
+  "research_examples": [
+   "sad",
+   "angry",
+   "scared",
+   "shocked",
+   "happy",
+   "confused",
+   "worried",
+   "betrayed",
+   "devastated",
+   "annoyed",
+   "afraid"
+  ],
+  "judgement": "the rest extend the research examples [judgement]",
+  "frames": [
+   "feels",
+   "feeling",
+   "looks sad",
+   "looks upset"
+  ]
+ },
+ "expression_words": {
+  "source": "B5 fixed description rules (no expression), C2 §2 (face mechanics, never an emotion word), K26 (C3's example keys superseded)",
+  "applies_to": [
+   "CHARACTER.fixed_description",
+   "PROP.fixed_description"
+  ],
+  "rule": "WORDS-05: a fixed description with an expression word is an error.",
+  "words": [
+   "expression",
+   "expressionless",
+   "smile",
+   "smiling",
+   "smirk",
+   "smirking",
+   "frown",
+   "frowning",
+   "scowl",
+   "scowling",
+   "grin",
+   "grinning",
+   "crying",
+   "tearful",
+   "laughing",
+   "stern",
+   "composed",
+   "unreadable",
+   "serene",
+   "pensive",
+   "worried",
+   "angry",
+   "sad",
+   "happy",
+   "kindly",
+   "friendly",
+   "determined",
+   "weary"
+  ]
+ },
+ "image_side_words": {
+  "source": "5.4 rule 8, SIDE-02, K07",
+  "applies_to": [
+   "STATE.state_line",
+   "CHARACTER.fixed_description",
+   "PROP.fixed_description"
+  ],
+  "rule": "Image-side words are never stored in state lines or fixed descriptions; code derives image sides per shot. Own sides (own left, her right hand) and 'hand nearest the camera' are allowed.",
+  "phrases": [
+   "frame-left",
+   "frame-right",
+   "frame left",
+   "frame right",
+   "image-left",
+   "image-right",
+   "image left",
+   "image right",
+   "left of frame",
+   "right of frame",
+   "left of the frame",
+   "right of the frame",
+   "left side of the image",
+   "right side of the image",
+   "left of the image",
+   "right of the image",
+   "screen left",
+   "screen right",
+   "camera left",
+   "camera right",
+   "left of the picture",
+   "right of the picture"
+  ]
+ },
+ "banned_prompt_words": {
+  "source": "B2 §4.8 and §12 failure table; D5 style bible banned words; B5 §6.2 rule 7 and mistake 17; C2 cliché pull; blueprint 8.5 (creature lint); K19",
+  "applies_to": [
+   "compiled prompts",
+   "STYLE.style_words",
+   "LOOK.look_block",
+   "CHARACTER.fixed_description",
+   "PROP.fixed_description",
+   "STATE.state_line"
+  ],
+  "rule": "GEN-12: a banned word in a prompt is an error; describe the visible quality instead.",
+  "groups": {
+   "style_boosters": [
+    "cinematic",
+    "epic",
+    "blockbuster",
+    "8K",
+    "ultra-realistic",
+    "masterpiece",
+    "award-winning",
+    "stunning",
+    "hyper-detailed",
+    "futuristic",
+    "sci-fi"
+   ],
+   "light_without_a_source": [
+    "moody",
+    "atmospheric",
+    "dramatic lighting",
+    "cinematic lighting"
+   ],
+   "creature_cliches": [
+    "robot",
+    "alien",
+    "armour",
+    "armor",
+    "humanoid",
+    "glowing eyes",
+    "exosuit",
+    "chrome"
+   ],
+   "british_words_models_misread": [
+    "torch"
+   ]
+  },
+  "exempt": "words inside double quotes of the script, which never reach a prompt anyway"
+ },
+ "prompt_substitutions": {
+  "source": "K19 and B2 (torch), C3 R13 and L23 (falling), blueprint 8.1 phrasebook note (lens millimetres), B5 §6 identity key revision (humanoid)",
+  "rule": "Applied by the compiler (8.1 rule 5); PROJECT.prompt_words adds a project's own swaps.",
+  "swaps": [
+   {
+    "from": "torch",
+    "to": "flashlight",
+    "source": "K19, B2 note on torch"
+   },
+   {
+    "from": "falling",
+    "to": "visible evidence of the motion (\"hair, cloth and straps drift up; nothing settles\")",
+    "source": "C3 R13, L23; blueprint 8.3"
+   },
+   {
+    "from": "<number> mm",
+    "to": "the phrasebook's lens words (\"85 mm\" becomes \"compressed background, shallow focus\")",
+    "source": "blueprint 8.1, C3 L04"
+   },
+   {
+    "from": "humanoid",
+    "to": "shaped like a person",
+    "source": "B5 §6 (the figure's identity key revision)"
+   }
+  ]
+ },
+ "unreliable_camera_terms": {
+  "source": "C3 L04, B1 R14",
+  "rule": "Never trusted to words: split into two shots, composite, or use a guide video (8.5).",
+  "terms": [
+   "dolly zoom",
+   "vertigo",
+   "rack focus",
+   "whip pan",
+   "360°"
+  ]
+ },
+ "allowed_negations": {
+  "source": "C3 L14, K18",
+  "rule": "GEN-07: negation of a visible thing is an error outside these documented lines and a model's negative field.",
+  "lines": [
+   "No dialogue.",
+   "No embellishments.",
+   "No extra sound effects.",
+   "No background music.",
+   "No scene cuts.",
+   "Generate single shot.",
+   "No music.",
+   "No voices."
+  ]
+ },
+ "named_reference_markers": {
+  "source": "WORDS-03, STYLE.named_reference_policy, B2 (named cinematographers), D4",
+  "rule": "No real person, living artist, film title or brand in any field compiled into prompts; these phrases signal one.",
+  "phrases": [
+   "in the style of",
+   "directed by",
+   "shot by",
+   "lit like",
+   "like a scene from",
+   "as in the film"
+  ]
+ },
+ "shortening_markers": {
+  "source": "G11 (blueprint 5.1); D1 §4.4",
+  "rule": "FORM-08: a shortening marker inside a record is an error, unless inside double quotes that match the story.",
+  "markers": [
+   "...",
+   "…",
+   "etc.",
+   "and so on",
+   "same as above",
+   "as before",
+   "remaining shots",
+   "omitted for brevity"
+  ],
+  "line_starts": [
+   "//"
+  ]
+ },
+ "abbreviations": {
+  "source": "WORDS-04, principle 7, builder rule 4",
+  "rule": "WORDS-04: an abbreviation or internal code in user-facing text is a warning. Write the full words.",
+  "words": [
+   "EWS",
+   "ELS",
+   "XLS",
+   "WS",
+   "LS",
+   "MLS",
+   "MWS",
+   "MS",
+   "MCU",
+   "CU",
+   "BCU",
+   "ECU",
+   "XCU",
+   "OTS",
+   "POV",
+   "ASL",
+   "VO",
+   "V.O.",
+   "OS",
+   "O.S.",
+   "O.C.",
+   "SFX",
+   "VFX",
+   "FX",
+   "BG",
+   "FG",
+   "INT.",
+   "EXT.",
+   "DP",
+   "DOP",
+   "CGI",
+   "FPS",
+   "fps",
+   "TTS",
+   "e.g.",
+   "i.e.",
+   "etc.",
+   "approx.",
+   "vs",
+   "vs.",
+   "w/",
+   "b/c",
+   "info",
+   "pic",
+   "pics",
+   "ref",
+   "refs",
+   "spec",
+   "specs",
+   "config",
+   "TBD",
+   "N/A",
+   "mm",
+   "ID",
+   "IDs",
+   "JSON",
+   "CSV",
+   "SRT",
+   "OTIO",
+   "EDL",
+   "USD",
+   "RGB",
+   "l."
+  ],
+  "internal_code_patterns": {
+   "scene or shot ID": "\\bSC\\d{2,3}[A-Z]?(-[A-Z]+\\d+)?\\b",
+   "named record ID": "\\b(CH|VO|LOC|PR|TX|MO|CAM|WR|LK|CR|VS|RC|LX|PL|FT|ST|CF|SQ|CP)-?[A-Z0-9]+\\b",
+   "choice, finding or rights ID": "\\b(CHOICE|FIND|RT|RV)-\\w+\\b",
+   "check ID": "\\b(FORM|ID|CITE|COVER|TIME|STATE|SIDE|GEOM|CRAFT|INFO|REASON|WORDS|PLAN|GEN|FILM)-\\d{2}\\b",
+   "research code": "\\b([ABC][1-5]|D1[0-8]|D[1-9])( (R|P|S|T|L|C)\\d+| §)",
+   "conflict code": "\\bK\\d{2}\\b",
+   "unit ID": "\\bU-\\d{2}-",
+   "checkpoint letter": "\\bcheckpoint [ABCDEP]\\b",
+   "estimate version": "\\bv[01]\\b"
+  },
+  "exempt_in_file_names": [
+   "CSV",
+   "SRT",
+   "JSON",
+   "OTIO",
+   "EDL"
+  ]
+ },
+ "field_name_synonyms": {
+  "source": "the retired field names of 5.7; FORM-03 suggests the replacement and FORM-13 applies it when it is a single field",
+  "names": {
+   "handedness_phase": "handedness",
+   "mirror_flip": "flip",
+   "identity_key": "fixed_description",
+   "look_key": "look_block",
+   "lighting_block": "look_block",
+   "key_light": "main_light",
+   "duration_s": "screen_time",
+   "duration": "screen_time",
+   "angle_height": "angle",
+   "story_reason": "why",
+   "override": "why",
+   "voice_source": "path",
+   "screen_direction": "travel",
+   "mood": "tone",
+   "objective": "want",
+   "intention": "want",
+   "activity": "task",
+   "behaviour": "does",
+   "behavior": "does",
+   "withhold": "keep_hidden",
+   "withheld": "keep_hidden",
+   "emphasis_device": "added_emphasis",
+   "added_signal": "added_emphasis",
+   "reserved_choice": "choice",
+   "key_shot": "role",
+   "key_frame": "turn_picture",
+   "keyframe": "turn_picture",
+   "shot_size": "size",
+   "camera_move": "move",
+   "lens": "lens_mm",
+   "focal_length": "lens_mm",
+   "dialogue": "hear"
+  },
+  "scoped": {
+   "PIC": {
+    "purpose": "use"
+   },
+   "SPEECH": {
+    "channel": "path"
+   },
+   "BEAT": {
+    "intensity": "beat_intensity"
+   },
+   "SCENE": {
+    "intensity": "scene_intensity"
+   },
+   "SHOT": {
+    "duration": "screen_time",
+    "intensity": "display"
+   }
+  }
+ },
+ "value_synonyms": {
+  "source": "common shot-list abbreviations and spellings (B1 size ladder; 5.7 shot sizes); tidy fixes are logged as FORM-13",
+  "rule": "Applied only to the named field (and to sub-parts with the same key); every other spelling is FORM-04 with 'did you mean'.",
+  "fields": {
+   "size": {
+    "ews": "extreme_wide",
+    "els": "extreme_wide",
+    "xls": "extreme_wide",
+    "extreme long shot": "extreme_wide",
+    "ws": "wide",
+    "ls": "wide",
+    "long shot": "wide",
+    "wide shot": "wide",
+    "full shot": "wide",
+    "mws": "medium_wide",
+    "mls": "medium_wide",
+    "medium long shot": "medium_wide",
+    "medium wide shot": "medium_wide",
+    "ms": "medium",
+    "mid shot": "medium",
+    "medium shot": "medium",
+    "mcu": "medium_close_up",
+    "medium closeup": "medium_close_up",
+    "medium close up shot": "medium_close_up",
+    "cu": "close_up",
+    "closeup": "close_up",
+    "close up shot": "close_up",
+    "ecu": "extreme_close_up",
+    "xcu": "extreme_close_up",
+    "bcu": "extreme_close_up",
+    "big close up": "extreme_close_up",
+    "extreme closeup": "extreme_close_up",
+    "insert shot": "insert"
+   },
+   "frame": {
+    "ots": "over_shoulder",
+    "over the shoulder": "over_shoulder",
+    "2 shot": "two_shot",
+    "3 shot": "three_shot",
+    "point of view": "pov"
+   },
+   "move": {
+    "dolly in": "push_in",
+    "track in": "push_in",
+    "truck in": "push_in",
+    "dolly out": "pull_back",
+    "track out": "pull_back",
+    "pull out": "pull_back",
+    "truck": "sideways",
+    "crab": "sideways",
+    "boom up": "rise",
+    "pedestal up": "rise",
+    "boom down": "lower",
+    "pedestal down": "lower",
+    "hand held": "handheld",
+    "locked off": "static",
+    "static shot": "static",
+    "still": "static"
+   },
+   "angle": {
+    "eye level": "eye_level",
+    "birds eye": "top_down",
+    "bird's eye": "top_down",
+    "overhead": "top_down",
+    "low angle": "low",
+    "high angle": "high",
+    "worm's eye": "worms_eye",
+    "dutch angle": "dutch",
+    "dutch tilt": "dutch"
+   },
+   "speaker": {
+    "os": "off_screen",
+    "o.s.": "off_screen",
+    "offscreen": "off_screen",
+    "onscreen": "on_screen"
+   },
+   "path": {
+    "vo": "voice_over",
+    "v.o.": "voice_over",
+    "voiceover": "voice_over"
+   },
+   "depth": {
+    "full": "detailed"
+   },
+   "origin": {
+    "fact": "story",
+    "extracted": "story",
+    "authored": "invented",
+    "added": "invented",
+    "design choice": "invented"
+   },
+   "handedness": {
+    "turned": "reversed"
+   },
+   "frame_shape": {
+    "2.39:1": "2.39",
+    "2.39 : 1": "2.39",
+    "1.85:1": "1.85",
+    "1.85 : 1": "1.85",
+    "16:9": "16_9",
+    "4:3": "4_3",
+    "9:16": "9_16"
+   },
+   "cut_out_on": {
+    "withholding": "keep_hidden",
+    "withhold": "keep_hidden",
+    "withheld": "keep_hidden"
+   },
+   "hold": {
+    "short": "medium"
+   }
+  }
+ },
+ "stillness_words": {
+  "source": "Project notes 42 (the handover) and the h3-storyboard testing notes (SKILL.md, sections 6.2 and 7.2, checked 10 October 2026): a strong 'do not move' line leaks across the whole shot, so parts that should move stop; time with nothing happening is squeezed out. Marked J: testers' notes, not yet tried on the user's own setup.",
+  "rule": "CRAFT-26 and CRAFT-27 (step 8) and the route checks: a held moment is written as small timed actions, never as a list of parts that stay still. These words in a moment, a 'does' or an 'end' ask for stillness; they are never sent to a video model.",
+  "words": [
+   "still",
+   "stillness",
+   "motionless",
+   "unmoving",
+   "frozen",
+   "freeze",
+   "freezes",
+   "stock-still",
+   "rigid",
+   "immobile"
+  ],
+  "phrases": [
+   "does not move",
+   "do not move",
+   "doesn't move",
+   "don't move",
+   "without moving",
+   "not moving",
+   "neither of them moves",
+   "neither moves",
+   "nobody moves",
+   "no one moves",
+   "nothing moves",
+   "holds still",
+   "hold still",
+   "stays still",
+   "stay still",
+   "keeps still",
+   "nothing changes",
+   "completely still",
+   "perfectly still"
+  ],
+  "not_an_action": [
+   "stays",
+   "stay",
+   "remains",
+   "remain",
+   "keeps",
+   "keep",
+   "waits",
+   "wait",
+   "listens",
+   "listen",
+   "holds her gaze",
+   "holds his gaze",
+   "holds their gaze"
+  ]
+ },
+ "absence_words": {
+  "source": "ComfyUI's MiniMax H3 prompt guide (checked 10 October 2026): its templates have no negative branch, and 'an instruction that names an unwanted element adds that wording to the description the model reads'; say what should be there instead. MiniMax's reference-mode guide writes non_diegetic_music: N/A when there is none.",
+  "rule": "For a model with no negative side (MiniMax H3, hosted or in ComfyUI) these words never appear outside the spoken lines and printed words in quotation marks. A sentence that needs them is turned by the negation rewriter or left out and listed on the page; music with none is written N/A.",
+  "words": [
+   "no",
+   "not",
+   "nothing",
+   "nobody",
+   "none",
+   "never",
+   "neither",
+   "nor",
+   "without",
+   "n't",
+   "no one",
+   "nowhere",
+   "and nothing else"
+  ],
+  "allowed_phrases": [
+   "with no camera movement whatsoever",
+   "n/a"
+  ],
+  "allowed_phrases_source": "'static, on a tripod, with no camera movement whatsoever' is the one camera line the h3-storyboard testers found holds (SKILL.md section 7.2); N/A is MiniMax's own word for an empty field."
+ },
+ "talk_about_speaking": {
+  "source": "h3-storyboard testing notes (SKILL.md section 6.2, cause 5, checked 10 October 2026): sentences in the prompt that talk about speaking get read aloud. Marked J.",
+  "rule": "Route checks: outside the spoken lines a prompt says what the mouth does ('her lips close'), never talk about the speaking itself. 'says' just before a line is allowed.",
+  "words": [
+   "sentence",
+   "sentences",
+   "word",
+   "words",
+   "speaks",
+   "speak",
+   "speaking",
+   "talk",
+   "talks",
+   "talking",
+   "unfinished line",
+   "finishes the line",
+   "two words",
+   "one word"
+  ],
+  "allowed_before_a_line": [
+   "says",
+   "asks",
+   "answers",
+   "calls",
+   "reads it out"
+  ]
+ },
+ "comparison_markers": {
+  "source": "h3-storyboard testing notes (SKILL.md section 5, checked 10 October 2026): a comparison can make the model draw the thing compared. Marked J.",
+  "rule": "Route checks: no comparison outside the spoken lines; write the movement itself.",
+  "markers": [
+   "like a",
+   "like an",
+   "like the",
+   "as if",
+   "as though",
+   "the way a",
+   "the way an"
+  ]
+ },
+ "contact_words": {
+  "source": "h3-storyboard testing notes (SKILL.md section 2.1, checked 10 October 2026): H3 cannot do contact-driven cause and effect (a cup falls without the hand touching it); the fix is not to show that instant. Project notes 42, W9: end the shot at the contact and start the next with the result already there. Marked J.",
+  "rule": "CRAFT-28 (step 8) and the clip grouping of the H3 route: a shot where a 'cause' word (one thing driven into another) is followed by an 'effect' word (the other thing breaking, falling or giving way) shows a contact on screen; split it at the contact.",
+  "cause": [
+   "drives into",
+   "drives it into",
+   "drives the",
+   "swings into",
+   "swings it into",
+   "rams",
+   "smashes into",
+   "slams into",
+   "slams against",
+   "hits",
+   "strikes",
+   "kicks",
+   "punches",
+   "pushes",
+   "shoves",
+   "knocks",
+   "trips",
+   "tackles",
+   "throws it at",
+   "hurls",
+   "barges",
+   "cuts through",
+   "cuts the",
+   "slashes",
+   "stabs",
+   "shoots"
+  ],
+  "effect": [
+   "cracks",
+   "shatters",
+   "breaks",
+   "snaps",
+   "splinters",
+   "splits",
+   "tears",
+   "gives way",
+   "falls",
+   "topples",
+   "tips over",
+   "goes down",
+   "goes flying",
+   "flies",
+   "skids",
+   "crumples",
+   "folds in",
+   "caves in",
+   "drops",
+   "spills",
+   "bursts",
+   "collapses",
+   "sprawls"
+  ]
+ }
+}

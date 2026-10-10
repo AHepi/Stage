@@ -2,7 +2,7 @@
 smaller items; the fixes are written up in Project notes 32).
 
 What it proves, one group per problem (or a few problems together), on small fixtures only: copies of the WP12a gold
-(examples/01 and 02, scene 10), the scene 10 excerpt (tests/fixtures), the reader fixture, and short texts written
+(references/examples/01 and 02, scene 10), the scene 10 excerpt (tests/fixtures), the reader fixture, and short texts written
 here. No group reads a whole story.
 - P1 a jump cut after a shot numbered 010 to 090 is found (the CUT's number keeps its zeros);
 - P2 FORM-08 never judges code's own text (a checker finding's fix), and "as before" in a sentence is English; the
@@ -70,9 +70,9 @@ MACHINE = "For machines - do not edit"
 FIXTURES = REPOSITORY / "tests" / "fixtures"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
 READER_SCREENPLAY = FIXTURES / "reader" / "Night shift.fountain"
-GOLD_FILES = {"scene": SKILL / "examples" / "01 The Catch - scene 10.md",
-              "context": SKILL / "examples" / "02 The Catch - scene 10 - context.md"}
-BLUEPRINT = REPOSITORY / "Project notes" / "13 Blueprint - how Stage is built.md"
+GOLD_FILES = {"scene": SKILL / "references" / "examples" / "01 The Catch - scene 10.md",
+              "context": SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"}
+BLUEPRINT = REPOSITORY / "04 Project history" / "Project notes" / "13 Blueprint - how Stage is built.md"
 RESULTS = []
 
 
@@ -790,7 +790,7 @@ def none_clears(scratch):
     camera = next(record for record in rules.records if record.type_name == "CAMSYS")
     assert camera.get("normal_lens_mm") is None and camera.get("lens_type") == "spherical", camera.get("lens_type")
     assert "the normal lens is left to the film rules" in (project / "10 Film rules.md").read_text(encoding="utf-8")
-    steps = json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))
+    steps = json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))
     assert next_after_apply("U-07-SC10", steps) == "stage.py build, then stage.py check --unit U-07-SC10"
     assert next_after_apply("U-08-SC10-B1", steps).startswith("stage.py build, then")
     assert next_after_apply("U-06-CAMERA", steps) == "stage.py check --unit U-06-CAMERA"
@@ -805,10 +805,10 @@ def none_clears(scratch):
 @group("P15, P17, P18: the step files say the rules the checker enforces, the non-human character and the last "
        "steps; the blueprint's kill rule counts only real layout mistakes")
 def written_rules(scratch):
-    step_7 = (SKILL / "steps" / "07 Scene design and shot list.md").read_text(encoding="utf-8")
-    step_8 = (SKILL / "steps" / "08 Shot details.md").read_text(encoding="utf-8")
-    step_4 = (SKILL / "steps" / "04 Characters, places and things.md").read_text(encoding="utf-8")
-    step_10 = (SKILL / "steps" / "10 Check and estimate.md").read_text(encoding="utf-8")
+    step_7 = (SKILL / "stages" / "07 Scene design and shot list" / "CONTEXT.md").read_text(encoding="utf-8")
+    step_8 = (SKILL / "stages" / "08 Shot details" / "CONTEXT.md").read_text(encoding="utf-8")
+    step_4 = (SKILL / "stages" / "04 Characters, places and things" / "CONTEXT.md").read_text(encoding="utf-8")
+    step_10 = (SKILL / "stages" / "10 Check and estimate" / "CONTEXT.md").read_text(encoding="utf-8")
     wanted = {"a speech's words": ("words are on the lines after its speaker's name", step_8),
               "size from lens and distance": ("36 ÷ lens × distance", step_8),
               "one main action per 4 seconds": ("one per started 4 seconds", step_8),
@@ -829,7 +829,7 @@ def written_rules(scratch):
         assert "more real layout mistakes than craft errors" in blueprint
         assert "missing fields and refused values do not" in blueprint
         assert "the grammar errors (FORM family) before repair outnumber" not in blueprint
-    steps = json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))
+    steps = json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))
     things = next(unit for step in steps["steps"] if step["step"] == 4 for unit in step.get("units", [])
                   if unit.get("id_pattern") == "U-04-THINGS")
     assert any("CHARACTER" in str(entry) and "non_human" in str(entry) for entry in things.get("writes", [])), things

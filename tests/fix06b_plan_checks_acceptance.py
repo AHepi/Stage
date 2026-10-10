@@ -1,7 +1,7 @@
 """The acceptance test of the plan-level fixes after the H3 handover (Project notes 42; the build plan is note 43,
 work package B): stop asking for stillness, cut at contact, and check that the plan makes physical sense.
 
-What it proves, on small fixtures only: copies of the WP12a gold (examples/01 and 02, scene 10) and a generic test
+What it proves, on small fixtures only: copies of the WP12a gold (references/examples/01 and 02, scene 10) and a generic test
 scene written here in neutral words (a climber in a 2.4 metre shaft, a patient, a guard). No group reads a whole
 story; no group reads the clip file or its code.
 
@@ -21,7 +21,7 @@ Groups:
   door kicked open; more than two things in one person's hands; a tiny thing given emphasis in a wide shot; a thing
   out of reach); each line is a warning that asks a question;
 - the gold scene 10 (and its chat-saved copy) raises none of the new warnings, and none of the old checks either;
-- the new checks are warnings, registered with a plain sentence, listed for steps 4, 7 and 8 in schema/steps.json,
+- the new checks are warnings, registered with a plain sentence, listed for steps 4, 7 and 8 in _config/schema/steps.json,
   and their titles say they are judgements (J);
 - no new or changed file holds an email address.
 
@@ -44,8 +44,8 @@ from stage_tools import check_records  # noqa: E402
 from stage_tools.record_format import DIVIDER_LINE, load_skill_data, parse_file  # noqa: E402
 
 SCHEMA, WORDS, CONSTANTS = load_skill_data()
-GOLD_FILES = {"context": SKILL / "examples" / "02 The Catch - scene 10 - context.md",
-              "scene": SKILL / "examples" / "01 The Catch - scene 10.md"}
+GOLD_FILES = {"context": SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md",
+              "scene": SKILL / "references" / "examples" / "01 The Catch - scene 10.md"}
 CHAT_FOLDER = REPOSITORY / "tests" / "fixtures" / "chat saved scene 10"
 EXCERPT = REPOSITORY / "tests" / "fixtures" / "The Catch - lines 397-489.txt"
 NEW_CHECKS = ["CRAFT-26", "CRAFT-27", "CRAFT-28"] + [f"PHYS-{number:02d}" for number in range(1, 12)]
@@ -305,7 +305,7 @@ def main():
         return write_files(temporary / f"case {counter['n']:02d}", texts, extra)
 
     @group("B1: hold_action_every_s (2.0 s) replaces hold_needs_still_s; the physical sense numbers are in "
-           "rules/constants.json with a meaning, a source and the judgement mark")
+           "_config/rules/constants.json with a meaning, a source and the judgement mark")
     def constants():
         table = CONSTANTS["constants"]
         assert "hold_needs_still_s" not in table, "the old constant is still there"
@@ -576,7 +576,7 @@ def main():
             plain = definition.plain
             if not plain or plain[0].isupper() or re.search(r"[A-Z]{2,}-\d\d|\bJ\b", plain):
                 problems.append(f"{check_id}'s plain sentence {plain!r}")
-        steps = json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))["steps"]
+        steps = json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))["steps"]
         listed = {entry["step"]: entry["checks"] for entry in steps}
         if "PHYS-01" not in listed[4]:
             problems.append("step 4 does not list PHYS-01")
@@ -591,7 +591,7 @@ def main():
     @group("no new or changed file of this work holds an email address")
     def no_email():
         files = [Path(__file__), TOOLS / "stage_tools" / "checks_physical_sense.py",
-                 TOOLS / "stage_tools" / "checks_craft_reasons_words.py", SKILL / "rules" / "constants.json",
+                 TOOLS / "stage_tools" / "checks_craft_reasons_words.py", SKILL / "_config" / "rules" / "constants.json",
                  GOLD_FILES["scene"]]
         found = [f"{path.name}: {match}" for path in files
                  for match in EMAIL.findall(path.read_text(encoding="utf-8"))]

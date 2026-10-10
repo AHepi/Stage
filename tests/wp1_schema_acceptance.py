@@ -1,13 +1,13 @@
 """Acceptance test for work package 1 (schema and rules).
 
-Checks that every JSON file of the skill's schema/ and rules/ folders loads; that every record type
-and field of blueprint section 5.5 is in schema/schema.json with a depth, exactly one writer (or a
+Checks that every JSON file of the skill's _config/schema/ and _config/rules/ folders loads; that every record type
+and field of blueprint section 5.5 is in _config/schema/schema.json with a depth, exactly one writer (or a
 writer_when list) and a filled_by_step; that the depth and writer of every field agree with the d and
 w columns of 5.5 (documented deviations listed below with their reasons); that the filled_by_step
 values and chat writers the blueprint names hold; that every example ID of 5.3 matches its record
 type's pattern and malformed IDs do not; that the turn shot of 5.1 is valid under the schema; that
-every retired word of section 5.7 is in rules/words.json; that every constant the blueprint names is
-in rules/constants.json with the value of 5.8; that schema/steps.json names only known checks, record
+every retired word of section 5.7 is in _config/rules/words.json; that every constant the blueprint names is
+in _config/rules/constants.json with the value of 5.8; that _config/schema/steps.json names only known checks, record
 types, card parts and files; that limits.json and tone_defaults.json hold their blueprint rows; and
 that every field's example is valid under its own definition.
 
@@ -30,8 +30,8 @@ import sys
 
 REPOSITORY_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILL_FOLDER = os.path.join(REPOSITORY_FOLDER, ".claude", "skills", "breaking-down-stories")
-JSON_FILES = ["schema/schema.json", "schema/steps.json", "rules/constants.json", "rules/words.json", "rules/limits.json",
-              "rules/tone_defaults.json"]
+JSON_FILES = ["_config/schema/schema.json", "_config/schema/steps.json", "_config/rules/constants.json",
+              "_config/rules/words.json", "_config/rules/limits.json", "_config/rules/tone_defaults.json"]
 DEPTHS = {"q", "s", "f", "m", "o"}
 WRITERS = {"story", "ai", "user", "code_state", "code_derived"}
 WRITER_PATTERN = r"story|ai|user|code_state|code_derived|code"
@@ -111,7 +111,7 @@ ID_EXAMPLE_TYPES = {
     "TK-SC10-SH150.1-T03": "TAKE", "VT-SC10-D11-T01": "VOICETAKE", "FX-SC10-SH080-01": "FINISH",
     "PV-SC06-MASTER-V01": "PREVIS", "RT-001": "RIGHTS", "MU-01": "MUSIC", "U-08-SC10-B2": "UNIT",
 }
-# Malformed IDs (5.3, and reference/01 mistake 8) that must match no pattern of the named type.
+# Malformed IDs (5.3, and references/formats/01 mistake 8) that must match no pattern of the named type.
 BAD_IDS = {"SC10-SH15": "SHOT", "SC10-B7": "BEAT", "SC1": "SCENE", "SC10-P12": "PART", "CHOICE-21": "CHOICE",
            "RC-1": "RESERVE", "CH-iona": "CHARACTER", "CH-IONA.S2": "STATE", "SQ3": "SEQUENCE", "VS-03": "VISUAL",
            "SC10-SH1500": "SHOT", "RV-10": "REVIEW"}
@@ -538,7 +538,7 @@ def value_at(value, path):
 # ---------------------------------------------------------------- the checks, one function per group
 
 def check_coverage(loaded, expected):
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     record_types = schema["record_types"]
     missing_types = [name for name in expected["record_fields"] if name not in record_types]
     missing_fields = []
@@ -570,7 +570,7 @@ def all_fields_of(schema):
 
 
 def check_field_attributes(loaded, expected):
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     step_values = set(schema["filled_by_step_order"]["values"])
     problems = []
     all_fields = all_fields_of(schema)
@@ -609,7 +609,7 @@ def check_field_attributes(loaded, expected):
 
 def check_depth_and_writer(loaded, expected):
     """Every field's depth and writer agree with 5.5's d and w columns, apart from the documented deviations."""
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     record_types = schema["record_types"]
     problems = []
     compared = 0
@@ -650,7 +650,7 @@ def check_depth_and_writer(loaded, expected):
 
 
 def check_named_steps_and_chat_writers(loaded, expected):
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     record_types = schema["record_types"]
     common = {field["name"]: field for field in schema["common_fields"]["fields"]}
     problems = []
@@ -677,7 +677,7 @@ def check_named_steps_and_chat_writers(loaded, expected):
 
 
 def check_id_patterns(loaded, expected):
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     record_types = schema["record_types"]
     patterns = id_patterns(schema)
     problems = []
@@ -721,7 +721,7 @@ def check_id_patterns(loaded, expected):
 
 def check_turn_shot_example(loaded, expected):
     """The turn shot of 5.1 (and its chat forms) is valid under the schema, and every Standard field is in it or has a reason."""
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     patterns = id_patterns(schema)
     fields = {field["name"]: field for field in schema["record_types"]["SHOT"]["fields"]}
     problems = []
@@ -750,7 +750,7 @@ def check_turn_shot_example(loaded, expected):
 
 
 def check_retired_words(loaded, expected):
-    words = loaded["rules/words.json"]
+    words = loaded["_config/rules/words.json"]
     written = {normalise_retired(entry["as_written"]) for entry in words["retired"]}
     missing = [item for item in expected["retired"] if normalise_retired(item) not in written]
     if missing:
@@ -759,8 +759,8 @@ def check_retired_words(loaded, expected):
 
 
 def check_constants(loaded, expected):
-    schema = loaded["schema/schema.json"]
-    constants = loaded["rules/constants.json"]
+    schema = loaded["_config/schema/schema.json"]
+    constants = loaded["_config/rules/constants.json"]
     constant_names = set(constants["constants"]) | set(constants["from_blueprint_text"]["constants"])
     missing_table = [name for name in expected["table_constants"] if name not in constants["constants"]]
     schema_names = collect_schema_names(schema)
@@ -799,9 +799,9 @@ def check_constants(loaded, expected):
 
 
 def check_steps(loaded, expected):
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     record_types = schema["record_types"]
-    steps = loaded["schema/steps.json"]
+    steps = loaded["_config/schema/steps.json"]
     problems = []
     numbers = [step["step"] for step in steps["steps"]]
     if numbers != list(range(17)):
@@ -863,9 +863,9 @@ def check_steps(loaded, expected):
 
 
 def check_limits_and_tones(loaded, expected):
-    record_types = loaded["schema/schema.json"]["record_types"]
-    limits = loaded["rules/limits.json"]
-    tones = loaded["rules/tone_defaults.json"]["tones"]
+    record_types = loaded["_config/schema/schema.json"]["record_types"]
+    limits = loaded["_config/rules/limits.json"]
+    tones = loaded["_config/rules/tone_defaults.json"]["tones"]
     problems = []
     if limits["handout_tokens_max"].get("claude_code") != 30000 or limits["handout_tokens_max"].get("chatgpt") != 20000:
         problems.append("handout ceilings are not 30,000 and 20,000")
@@ -901,7 +901,7 @@ def check_limits_and_tones(loaded, expected):
 
 def check_kinds_and_references(loaded, expected):
     """Every kind, first part, sub-part, id_types entry and condition refers to something the schema defines."""
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     kinds = set(schema["kinds"])
     types = set(schema["record_types"]) | set(schema["other_ids"]) | {"*"}
     conditions = set(schema["conditions"])
@@ -938,7 +938,7 @@ def check_kinds_and_references(loaded, expected):
 
 
 def check_examples(loaded, expected):
-    schema = loaded["schema/schema.json"]
+    schema = loaded["_config/schema/schema.json"]
     patterns = id_patterns(schema)
     problems = []
     for type_name, field in all_fields_of(schema):
@@ -998,36 +998,36 @@ def remove_field(schema, type_name, field_name):
 
 
 SELF_TEST_FAULTS = [
-    ("remove SHOT.held", "5.5 coverage", lambda data: remove_field(data["schema/schema.json"], "SHOT", "held")),
+    ("remove SHOT.held", "5.5 coverage", lambda data: remove_field(data["_config/schema/schema.json"], "SHOT", "held")),
     ("give BEAT.turn two writers", "field attributes",
-     lambda data: break_field(data["schema/schema.json"], "BEAT", "turn", writer_when=[{"when": "turn_beat", "writer": "ai"}])),
+     lambda data: break_field(data["_config/schema/schema.json"], "BEAT", "turn", writer_when=[{"when": "turn_beat", "writer": "ai"}])),
     ("make SHOT.screen_time standard", "5.5 depth and writer",
-     lambda data: break_field(data["schema/schema.json"], "SHOT", "screen_time", depth="s")),
+     lambda data: break_field(data["_config/schema/schema.json"], "SHOT", "screen_time", depth="s")),
     ("make CHOICE.question a user field", "5.5 depth and writer",
-     lambda data: break_field(data["schema/schema.json"], "CHOICE", "question", writer="user")),
+     lambda data: break_field(data["_config/schema/schema.json"], "CHOICE", "question", writer="user")),
     ("fill PROJECT.frame_shape at step 3", "named steps and chat writers",
-     lambda data: break_field(data["schema/schema.json"], "PROJECT", "frame_shape", filled_by_step=3)),
+     lambda data: break_field(data["_config/schema/schema.json"], "PROJECT", "frame_shape", filled_by_step=3)),
     ("let shots have 2 digits", "record types and IDs",
-     lambda data: data["schema/schema.json"]["record_types"]["SHOT"].update(id_pattern=r"^SC\d{2,3}[A-Z]?-SH\d{2,3}$")),
+     lambda data: data["_config/schema/schema.json"]["record_types"]["SHOT"].update(id_pattern=r"^SC\d{2,3}[A-Z]?-SH\d{2,3}$")),
     ("drop the value turn from SHOT.role", "the turn shot of 5.1",
-     lambda data: break_field(data["schema/schema.json"], "SHOT", "role", values=["must_keep", "normal"])),
+     lambda data: break_field(data["_config/schema/schema.json"], "SHOT", "role", values=["must_keep", "normal"])),
     ("drop the retired word greybox", "retired words",
-     lambda data: data["rules/words.json"].update(
-         retired=[entry for entry in data["rules/words.json"]["retired"] if entry["word"] != "greybox"])),
+     lambda data: data["_config/rules/words.json"].update(
+         retired=[entry for entry in data["_config/rules/words.json"]["retired"] if entry["word"] != "greybox"])),
     ("set handles_s to 0.5", "constants",
-     lambda data: data["rules/constants.json"]["constants"]["handles_s"].update(value=0.5)),
-    ("remove loud_sets_max", "constants", lambda data: data["rules/constants.json"]["constants"].pop("loud_sets_max")),
+     lambda data: data["_config/rules/constants.json"]["constants"]["handles_s"].update(value=0.5)),
+    ("remove loud_sets_max", "constants", lambda data: data["_config/rules/constants.json"]["constants"].pop("loud_sets_max")),
     ("take card 07 off the motif unit", "steps.json",
-     lambda data: data["schema/steps.json"]["steps"][4]["units"][0].pop("cards", None)),
+     lambda data: data["_config/schema/steps.json"]["steps"][4]["units"][0].pop("cards", None)),
     ("forget step 2's RULE file", "steps.json",
-     lambda data: data["schema/steps.json"]["steps"][2].update(
-         files_written=[name for name in data["schema/steps.json"]["steps"][2]["files_written"] if "06 World" not in name])),
+     lambda data: data["_config/schema/steps.json"]["steps"][2].update(
+         files_written=[name for name in data["_config/schema/steps.json"]["steps"][2]["files_written"] if "06 World" not in name])),
     ("give ChatGPT 30,000 handout tokens", "limits and tone defaults",
-     lambda data: data["rules/limits.json"]["handout_tokens_max"].update(chatgpt=30000)),
+     lambda data: data["_config/rules/limits.json"]["handout_tokens_max"].update(chatgpt=30000)),
     ("point SHOT.setup at an unknown type", "kinds, ID types and conditions",
-     lambda data: break_field(data["schema/schema.json"], "SHOT", "setup", id_types=["CAMERA_POSITION"])),
+     lambda data: break_field(data["_config/schema/schema.json"], "SHOT", "setup", id_types=["CAMERA_POSITION"])),
     ("write a bad SHOT.because example", "examples",
-     lambda data: break_field(data["schema/schema.json"], "SHOT", "because", example="SC10-B7, MO-MINT")),
+     lambda data: break_field(data["_config/schema/schema.json"], "SHOT", "because", example="SC10-B7, MO-MINT")),
 ]
 
 

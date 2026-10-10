@@ -5,7 +5,7 @@ In plain words:
 - the clip book of MiniMax H3 in ComfyUI is written by stage.py compile --route into "For machines - do not edit/
   prompts/SC10 - minimax-h3-comfyui-r2v.json" (one file per scene, marked "kind": "clip_book"); the GEN checks
   leave these files to the ROUTE checks here, which run in compile and in stage.py check;
-- each check belongs to one rule of the route (adapters/video_models.json, the route's "rules"): its id (H3R-01
+- each check belongs to one rule of the route (_config/adapters/video_models.json, the route's "rules"): its id (H3R-01
   ...), what it says, its kind (format or judgement), its source and its kit mark: verified (a format fact found in
   MiniMax's or ComfyUI's own documents) or unclear (a judgement from testers' notes or the clip file);
 - the marks are worked out again from the project's take log every time code runs: a TAKE's rule lines (rule ID |
@@ -51,7 +51,7 @@ import re
 from pathlib import Path
 
 from .check_records import register_check
-from .record_format import load_json, split_item
+from .record_format import adapter_file, load_json, split_item
 
 ROUTE_MODEL = "minimax-h3-comfyui-r2v"
 ROUTE_FILE_KIND = "clip_book"
@@ -130,7 +130,7 @@ def route_facts_of(run, model=ROUTE_MODEL):
     key = "clip_book.facts"
     if key not in run.cache:
         try:
-            run.cache[key] = (load_json("adapters/video_models.json").get("models") or {}).get(model) or {}
+            run.cache[key] = (load_json(adapter_file("video_models.json")).get("models") or {}).get(model) or {}
         except (OSError, ValueError):
             run.cache[key] = {}
     return run.cache[key]

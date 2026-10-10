@@ -2887,10 +2887,10 @@
     ],
     "problems": [
      "E FORM-03 SC03-SH090 scren_time is not a field of SHOT. Did you mean screen_time? [FORM-03 unknown fields.md, line 6]",
-     "E FORM-03 SC03-SH090 mood is not a field of SHOT. Fix: use a field of this record type (reference/03 Field guide lists them). [FORM-03 unknown fields.md, line 7]",
-     "E FORM-03 SC03-SH090 sparkle is not a field of SHOT. Fix: use a field of this record type (reference/03 Field guide lists them). [FORM-03 unknown fields.md, line 8]",
+     "E FORM-03 SC03-SH090 mood is not a field of SHOT. Fix: use a field of this record type (references/formats/03 Field guide lists them). [FORM-03 unknown fields.md, line 7]",
+     "E FORM-03 SC03-SH090 sparkle is not a field of SHOT. Fix: use a field of this record type (references/formats/03 Field guide lists them). [FORM-03 unknown fields.md, line 8]",
      "E FORM-03 SC03-SH090 has the line \"- speed thing\", which is not a field line. Fix: write - <field>: <value>, one field per line (G4). [FORM-03 unknown fields.md, line 9]",
-     "E FORM-03 CHOICE-014-A colour is not a field of RULE. Fix: use a field of this record type (reference/03 Field guide lists them). [FORM-03 unknown fields.md, line 15]"
+     "E FORM-03 CHOICE-014-A colour is not a field of RULE. Fix: use a field of this record type (references/formats/03 Field guide lists them). [FORM-03 unknown fields.md, line 15]"
     ]
    }
   },
@@ -3302,7 +3302,7 @@
      }
     ],
     "problems": [
-     "E FORM-05 SC03-SH110 purpose is missing (required at quick depth by step 8). Fix: add \"- purpose: <purpose>\" (reference/03 Field guide shows its form). [FORM-05 required fields.md, line 5]",
+     "E FORM-05 SC03-SH110 purpose is missing (required at quick depth by step 8). Fix: add \"- purpose: <purpose>\" (references/formats/03 Field guide shows its form). [FORM-05 required fields.md, line 5]",
      "E FORM-05 SC03-SH110 subject item CH-MARA.S01 has no sub-part does (required at quick depth). Fix: add \"| does: <value>\" to the item. [FORM-05 required fields.md, line 5]",
      "E FORM-05 SC03-SH110 screen_time is missing (required at quick depth by step 8). Fix: add a line such as \"- screen_time: 15\" [FORM-05 required fields.md, line 5]"
     ]

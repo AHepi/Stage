@@ -2,7 +2,7 @@
 the command compile.
 
 In plain words:
-- reads the dated model facts in adapters/ (video_models, image_models, audio_models, routing, phrasebook);
+- reads the dated model facts in _config/adapters/ (video_models, image_models, audio_models, routing, phrasebook);
 - works out, for every shot, what making it needs (a start picture, a guide video, a line seen spoken, a held take
   longer than 15 seconds ...), picks one model for each scene (the scene model: the one the routing names most
   often for the needs of its shots with recurring characters), and sends a shot elsewhere only when the scene
@@ -24,7 +24,7 @@ Command: compile [--scene <one ID, a comma list or SC07..SC10>] [--model <list>]
 [--route <name>] [--storyboard] [--lint-only] [--story <path>]. Exit 0: no GEN error; 1: GEN errors printed; 2: could
 not run. With --route (or PROJECT video_route h3_comfyui_r2v) it makes a route's clip book instead (clip_book.py).
 
-Numbers come from rules/constants.json by name (handles_s, on_screen_speakers_per_clip_max,
+Numbers come from _config/rules/constants.json by name (handles_s, on_screen_speakers_per_clip_max,
 named_sounds_per_prompt_max, model_facts_max_age_days) and from the adapter files.
 Standard library only.
 
@@ -60,7 +60,8 @@ from .derive_fields import (Breakdown, allowed_lengths, clip_plan, constant, cut
                             project_prompt_swaps, round_up_to, scene_label, scene_of, seconds_text, set_plan,
                             shot_mirror_states, shot_number, speech_part, speech_words_part, subject_items,
                             swap_prompt_words, swap_sources_banned)
-from .record_format import load_json, normalise_word, sort_key_for_identifier, split_item, split_list
+from .record_format import (LIMITS_FILE, adapter_file, load_json, normalise_word, sort_key_for_identifier, split_item,
+                            split_list)
 
 MACHINE_FOLDER = "For machines - do not edit"
 PROMPTS_FOLDER = "prompts"
@@ -99,14 +100,14 @@ def read_date(text):
 
 
 class Adapters:
-    """The dated model facts of adapters/*.json, with the names and aliases of every model."""
+    """The dated model facts of _config/adapters/*.json, with the names and aliases of every model."""
 
     def __init__(self, documents=None, skill_folder=None):
         if documents is None:
             documents = {}
             for name in ADAPTER_FILES:
                 try:
-                    documents[name] = load_json(f"adapters/{name}", skill_folder)
+                    documents[name] = load_json(adapter_file(name), skill_folder)
                 except (OSError, ValueError):
                     documents[name] = {}
         self.documents = documents
@@ -468,7 +469,7 @@ class WordFixer:
         self.delivery = {key: value for key, value in (adapters.phrase("delivery_rewrites", default={}) or {}).items()
                          if key not in ("note", "marks")}
         # The words a model with no negative side would show (absence) or freeze on (stillness), and the words the
-        # H3 route also keeps out (talk about speaking, comparisons): rules/words.json (Project notes 42 and 43).
+        # H3 route also keeps out (talk about speaking, comparisons): _config/rules/words.json (Project notes 42 and 43).
         self.word_lists = {
             "absence": list((words.get("absence_words") or {}).get("words") or []),
             "stillness": list((words.get("stillness_words") or {}).get("words") or [])
@@ -2091,7 +2092,7 @@ class PromptWriter:
         words_limit = limit.get("words")
         tokens = limit.get("tokens")
         try:
-            per_word = float(load_json("rules/limits.json").get("tokens_per_word_estimate", {}).get("value", 1.4))
+            per_word = float(load_json(LIMITS_FILE).get("tokens_per_word_estimate", {}).get("value", 1.4))
         except (OSError, ValueError, AttributeError):
             per_word = 1.4
 
@@ -3237,7 +3238,7 @@ def run_compile(context):
     folder = Path(context.project)
     adapters = Adapters()
     if not adapters.present:
-        raise StageStop("The model facts (adapters/video_models.json) are missing from the tools. Use a complete copy of the skill folder.")
+        raise StageStop("The model facts (_config/adapters/video_models.json) are missing from the tools. Use a complete copy of the skill folder.")
     breakdown = Breakdown.from_project(folder, context.schema, context.words, context.constants)
     story_path = getattr(arguments, "story", None)
     if story_path:

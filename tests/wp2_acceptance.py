@@ -11,7 +11,7 @@ What it checks, in plain words:
 5. the commands new, status, apply, pack and unpack work on a small invented story in a temporary folder
    (apply refuses a faulty inbox and changes nothing; answered choices set their fields; the lock file holds a
    second helper back; a save ZIP opens to identical files);
-6. if the WP12a gold example ("examples/01 The Catch - scene 10.md") exists, it parses with no FORM error
+6. if the WP12a gold example ("references/examples/01 The Catch - scene 10.md") exists, it parses with no FORM error
    (FORM-05 and FORM-10, which depend on records in other files, are reported as information); if it does not
    exist yet the group says so.
 
@@ -39,8 +39,8 @@ TOOLS = SKILL / "tools"
 STAGE = TOOLS / "stage.py"
 FIXTURES = REPOSITORY / "tests" / "fixtures" / "grammar"
 EXPECTED = FIXTURES / "expected results.json"
-GOLD = SKILL / "examples" / "01 The Catch - scene 10.md"
-GOLD_CONTEXT = SKILL / "examples" / "02 The Catch - scene 10 - context.md"
+GOLD = SKILL / "references" / "examples" / "01 The Catch - scene 10.md"
+GOLD_CONTEXT = SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"
 
 sys.path.insert(0, str(TOOLS))
 from stage_tools.checks_form import FORM_CHECKS, FormContext, apply_tidy_fixes, run_form_checks  # noqa: E402
