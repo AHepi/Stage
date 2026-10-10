@@ -20,7 +20,7 @@ SHOT records (list items at quick depth); STYLE; each subject's fixed descriptio
 
 ## Outputs
 
-- The style test: nine PIC records (`use: style`), three directions on three shots, and a CHOICE whose answer sets `STYLE.style_picture` and clears `STYLE.provisional`.
+- The style test: nine PIC records (`use: style`), three directions on three shots, and a CHOICE in `01 Choices.md` whose answer sets `STYLE.style_picture` and clears `STYLE.provisional` in `06 World and style.md`.
 - `18 Storyboard/Storyboard frames.md`: one PIC record (`use: storyboard`) per kept frame.
 - `18 Storyboard/Scene 10 - frame prompts.md`, compiled by code; `18 Storyboard/Scene 10.html`, the page, laid out by code.
 

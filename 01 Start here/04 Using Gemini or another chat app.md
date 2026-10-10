@@ -16,7 +16,7 @@ To continue later: new chat in this project; attach 00 Start here, 02 Whole-film
 kitchen; type: Continue my breakdown. Next is scene 11.
 ```
 
-The first line ends the copy box: this END line counts the records (the entries below the divider line), so a reply that was cut off shows at once. Then come the AI's own count check, the name to save the box under and the message for the next chat.
+The END line closes the copy box and counts the records (the entries below the divider line), so a reply that was cut off shows at once. Then come the AI's own count check, the name to save the box under and the message for the next chat.
 
 ## What you need
 
@@ -26,7 +26,7 @@ The first line ends the copy box: this END line counts the records (the entries 
 
 ## First, privacy
 
-Do this once, before you upload a story that is not published: open **Gemini Apps Activity** and turn **Keep Activity** off. Chats are then kept only 72 hours, so your saved files are the only memory, which is how Stage works anyway. Never use the free tier of Google AI Studio for an unpublished story: people who review it may read what you send.
+Do this once, before you upload a story that is not published: open **Gemini Apps Activity** and turn **Keep Activity** off. Chats are then kept only 72 hours; your saved files are Stage's memory anyway. Never use Google AI Studio's free tier for an unpublished story: its reviewers may read what you send.
 
 ## Make a Gem, once
 
@@ -80,11 +80,13 @@ Checks in words are weaker than the checker program. At the end of each group, o
 
 ## Optional: line numbers instead of quotations
 
-Without code there are no line numbers, so the AI points to your story with short exact quotations instead. If you prefer line numbers, open the Claude website once at the start, attach your story and type **Make 03 Story - numbered for my story.** Save the file it gives you in your folder and attach it to every chat instead of your story.
+Without code there are no line numbers, so the AI points to your story with short exact quotations instead. If you prefer line numbers, open the Claude website once at the start, attach your story and type **Make 03 Story - numbered for my story.** Save it in your folder and attach it to every chat instead of your story.
 
 ## Carrying on another day
 
 Start a new chat with the Gem, attach the files the last "To continue later" line names, and type **Continue my breakdown.** When a chat gets long, the AI saves `00 Start here` and `02 Whole-film summary` again and gives you the message for the next chat.
+
+When you get a newer Stage, replace the Gem's instructions and all six knowledge files. Your breakdowns keep working.
 
 ## Another chat app
 

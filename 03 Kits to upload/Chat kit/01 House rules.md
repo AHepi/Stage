@@ -11,6 +11,7 @@ Part of the Stage chat kit, for a ChatGPT Project or a Gemini Gem. It joins the 
 | `references/formats/05 Quality rubric.md`, `references/formats/06 Checks in words.md` | 05 Checks in words |
 | `references/examples/01 The Catch - scene 10.md` | 06 Example - The Catch, scene 10 (an excerpt; the whole file is in 07 Tools.zip) |
 | `tools/`, `_config/`, `references/formats/03 Field guide.md`, library digests | 07 Tools.zip (ChatGPT only; unzip it and its folder breaking-down-stories is the skill's folder) |
+| `stages/CONTEXT.md`, `references/CONTEXT.md`, `_config/CONTEXT.md` | 07 Tools.zip only; in a chat without code, the steps table in SKILL.md below is the list of steps, and this table says where every other file is |
 | `stages/00` to `02` | 08 Steps 00-02 - start, reading, plan |
 | `stages/03` to `06` | 09 Steps 03-06 - world, people, continuity, film rules |
 | `stages/07`, `08` | 10 Steps 07-08 - scenes and shots |

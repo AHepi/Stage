@@ -2835,7 +2835,7 @@
  },
  "stillness_words": {
   "source": "Project notes 42 (the handover) and the h3-storyboard testing notes (SKILL.md, sections 6.2 and 7.2, checked 10 October 2026): a strong 'do not move' line leaks across the whole shot, so parts that should move stop; time with nothing happening is squeezed out. Marked J: testers' notes, not yet tried on the user's own setup.",
-  "rule": "CRAFT-26 and CRAFT-27 (step 8) and the route checks: a held moment is written as small timed actions, never as a list of parts that stay still. These words in a moment, a 'does' or an 'end' ask for stillness; they are never sent to a video model. A single word (still, frozen, rigid ...) asks for stillness only when it describes a person or a body part: never before a noun ('the still water', 'frozen peas', 'the rigid collar') or as 'even now' ('still wet', 'still holding'). CRAFT-26 counts the parts of a moment split at ';', ',', 'and' and 'then', and a part is an action only when it has a verb or a small_actions word and no not_an_action word (Project notes 43, round 1 findings F11 and F15).",
+  "rule": "CRAFT-26 and CRAFT-27 (step 8) and the route checks: a held moment is written as small timed actions, never as a list of parts that stay still. These words in a moment, a 'does' or an 'end' ask for stillness; they are never sent to a video model. A single word (still, frozen, rigid ...) asks for stillness only when it describes a person or a body part: never before a noun ('the still water', 'frozen peas', 'the rigid collar') or as 'even now' ('still wet', 'still holding'). CRAFT-26 counts the parts of a moment split at ';', ',', 'and' and 'then', and a part is an action only when it has a verb or a small_actions word and no not_an_action word (Project notes 43, round 1 findings F11 and F15). A phrase is also found with one -ly word after its first word ('stays exactly where'); hold_verbs alone make a long moment held, and a repeat with its verb left out ('close again', 'then back at her') counts as an action (Project notes 43, round 2 finding N8).",
   "words": [
    "still",
    "stillness",
@@ -2878,7 +2878,11 @@
    "holds his position",
    "holds their position",
    "does nothing",
-   "rooted to the spot"
+   "rooted to the spot",
+   "stays put",
+   "stay put",
+   "stays where",
+   "stay where"
   ],
   "not_an_action": [
    "stays",
@@ -2942,7 +2946,8 @@
    "gulps",
    "tremor",
    "flicker",
-   "flickers"
+   "flickers",
+   "looking"
   ],
   "small_actions_meaning": "CRAFT-26: the small timed actions of a held moment (a breath, a blink, a swallow, a glance). A part of a moment that holds one counts as an action even without a verb ('a slow breath in'); a moment whose actions are all small ones, or are done by a body part ('her lips press together'), has no main action, so it is held and needs one action every hold_action_every_s. Judgement (J), Project notes 43.",
   "body_parts": [
@@ -3006,7 +3011,25 @@
    "slack",
    "tight"
   ],
-  "body_parts_meaning": "CRAFT-26: a part of a moment made of a body part and a pose or a place, with no verb ('her eyes on Saye', 'her hands open at her sides', 'her face') says how a person is, not what they do, so it is not counted as an action."
+  "body_parts_meaning": "CRAFT-26: a part of a moment made of a body part and a pose or a place, with no verb ('her eyes on Saye', 'her hands open at her sides', 'her face') says how a person is, not what they do, so it is not counted as an action.",
+  "hold_verbs": [
+   "stares",
+   "stare",
+   "staring",
+   "sits",
+   "sit",
+   "sitting",
+   "stands",
+   "stand",
+   "standing",
+   "waits",
+   "wait",
+   "waiting",
+   "leans",
+   "lean",
+   "leaning"
+  ],
+  "hold_verbs_meaning": "CRAFT-26: a verb that names a posture or a long look held, not a movement ('she stares at the letter', 'Ben sits at the table', 'Anna stands by the window'). A part of a moment whose only verbs are hold_verbs is no action; a moment of twice hold_action_every_s or more whose actions are only these, and small ones, is held even in a shot not marked held. Followed by a word of movement ('sits down', 'stands up', 'leans in') it is an action as before. Judgement (J), Project notes 43, round 2 finding N8."
  },
  "absence_words": {
   "source": "ComfyUI's MiniMax H3 prompt guide (checked 10 October 2026): its templates have no negative branch, and 'an instruction that names an unwanted element adds that wording to the description the model reads'; say what should be there instead. MiniMax's reference-mode guide writes non_diegetic_music: N/A when there is none.",
@@ -3086,7 +3109,7 @@
  },
  "contact_words": {
   "source": "h3-storyboard testing notes (SKILL.md section 2.1, checked 10 October 2026): H3 cannot do contact-driven cause and effect (a cup falls without the hand touching it); the fix is not to show that instant. Project notes 42, W9: end the shot at the contact and start the next with the result already there. Marked J.",
-  "rule": "CRAFT-28 (step 8) and the clip grouping of the H3 route: a shot where a 'cause' word (one thing driven into another) is followed by an 'effect' word (the other thing breaking, falling or giving way) shows a contact on screen; split it at the contact.",
+  "rule": "CRAFT-28 (step 8) and the clip grouping of the H3 route: a shot where a 'cause' word (one thing driven into another) is followed by an 'effect' word (the other thing breaking, falling or giving way) shows a contact on screen; split it at the contact. A transitive impact verb with no preposition counts as a cause too ('she bangs the jar on the counter', 'the truck rams the barrier'), and 'jump', 'spray', 'buckle', 'flood' and 'dent' are effects (Project notes 43, round 2 finding N7).",
   "cause": [
    "drives into",
    "drives it into",
@@ -3118,7 +3141,12 @@
    "bumps into",
    "slams",
    "knocks over",
-   "knocks it over"
+   "knocks it over",
+   "bangs",
+   "ploughs",
+   "ploughs into",
+   "plows",
+   "plows into"
   ],
   "effect": [
    "cracks",
@@ -3145,7 +3173,12 @@
    "collapses",
    "sprawls",
    "pops",
-   "pops off"
+   "pops off",
+   "jumps",
+   "sprays",
+   "buckles",
+   "floods",
+   "dents"
   ],
   "cause_into_verbs": [
    "swings",
@@ -3167,7 +3200,9 @@
    "knocks",
    "drops",
    "hits",
-   "strikes"
+   "strikes",
+   "ploughs",
+   "plows"
   ],
   "cause_into_words": [
    "into",
@@ -3192,6 +3227,40 @@
    "kicks off",
    "hits the brakes"
   ],
+  "not_a_cause_subject": [
+   "thought",
+   "thoughts",
+   "news",
+   "word",
+   "words",
+   "look",
+   "looks",
+   "glance",
+   "idea",
+   "realisation",
+   "realization",
+   "truth",
+   "memory",
+   "question",
+   "remark",
+   "feeling",
+   "fear",
+   "panic",
+   "grief",
+   "shame",
+   "sight",
+   "name",
+   "silence",
+   "light",
+   "lamplight",
+   "sunlight",
+   "moonlight",
+   "sound",
+   "music",
+   "voice",
+   "smell"
+  ],
+  "not_a_cause_subject_meaning": "CRAFT-28 and the clip grouping: a cause whose subject, the word just before it, is one of these is no contact, since nothing solid is driven into anything ('the thought hits him; his hands fall to his sides', 'the news hits her'). Judgement (J), Project notes 43, round 2 finding N7.",
   "not_things": [
    "room",
    "light",
@@ -3257,7 +3326,12 @@
    "go down",
    "go flying",
    "tip over",
-   "pop off"
+   "pop off",
+   "jump",
+   "spray",
+   "buckle",
+   "flood",
+   "dent"
   ],
   "not_effects": [
    "falls silent",

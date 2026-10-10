@@ -13,13 +13,14 @@ What this file does, in plain words:
   user's answer to a checkpoint that has no choice record of its own (the first group of shots, the finished
   check), and a group of shots passed (or reported) gets its shot lists marked approved;
 - handout <unit>: builds one unit's handout, "For machines - do not edit/handouts/<unit>.md", the one file the AI
-  reads for that unit: the one-line task first; what to write and where; the IDs issued to the unit (also written
-  into the manifest, where the checker's ID-06 reads them); the step file; the card parts steps.json names for the
-  step, the depth and the scene's tags; the records the unit needs and only those, with what code keeps (status,
-  locks, the beats code gave story points) left out; the story's lines; at step 8 each list item's provisional
-  time floor, the sizes, angles and moves the camera system allows here, the saved choices with their uses left
-  and the fields that need a why with their defaults; the record template at the project's depth; one example
-  from the gold; and the one-line task again at the end;
+  reads for that unit: the one-line task first; then the rules for this piece of work, the same for every story:
+  the step file, the card parts steps.json names for the step, the depth and the scene's tags, the record template
+  at the project's depth and one example from the gold; then what the unit works on, this story: what to write and
+  where, the IDs issued to the unit (also written into the manifest, where the checker's ID-06 reads them), the
+  records the unit needs and only those, with what code keeps (status, locks, the beats code gave story points)
+  left out, the story's lines, and at step 8 each list item's provisional time floor, the sizes, angles and moves
+  the camera system allows here, the saved choices with their uses left and the fields that need a why with their
+  defaults; and the one-line task again at the end;
 - keeps a handout within its surface's ceiling (_config/rules/limits.json): card parts are capped at
   card_tokens_per_unit_max (the lowest-listed parts are left out first); over the ceiling it leaves out the
   example, then the lowest-listed card parts, then trims the story to the unit's own lines, and then says the unit
@@ -55,6 +56,12 @@ After the second full run (Project notes 39 and 40):
   add-ons without step numbers.
 - after its cross-examination: the film pass's check counts only after the judgement's last repair and every fix
   since.
+
+After the second cross-examination of the restructure (Project notes 43, round 2, finding R-F7):
+- a handout is grouped under two headings, after its one-line task: the rules for this piece of work, the same for
+  every story (the step file, the card parts, the record template, the example from the gold), to follow as
+  constraints; then what the unit is working on, this story's own material (the unit, its issued IDs, the records,
+  the story's lines), to process as input. The token caps and the order of leaving things out are unchanged.
 """
 
 import json
@@ -1609,6 +1616,19 @@ class Section:
         return self.text
 
 
+# The two groups a handout's sections are shown in (Project notes 43, round 2, finding R-F7): the rules, the same for
+# every story, then this story's material. The one-line task opens the handout and closes it, outside both groups.
+RULES_HEADING = "# Rules for this piece of work (the same for every story)"
+WORK_HEADING = "# What you are working on (this story)"
+RULE_SECTION_KEYS = ("step", "template")       # with every card part and the example from the gold
+OUTSIDE_GROUP_KEYS = ("head", "end")
+
+
+def is_rule_section(section):
+    """True for a section that is the same for every story: the step file, a card part, the template, the example."""
+    return section.key in RULE_SECTION_KEYS or section.kind in ("card", "example")
+
+
 @dataclass
 class Handout:
     """A unit's handout, section by section, with its size in tokens."""
@@ -1634,7 +1654,18 @@ class Handout:
         return section
 
     def text(self):
-        return "\n".join(section.current_text() for section in self.sections if section.current_text()).rstrip() + "\n"
+        """The handout: the head, then the rules (the same for every story), then what the unit works on (this
+        story), then the one-line task again; a group heading only when the group holds something."""
+        shown = [section for section in self.sections if section.current_text()]
+        head = [section.current_text() for section in shown if section.key == "head"]
+        end = [section.current_text() for section in shown if section.key == "end"]
+        rules = [section.current_text() for section in shown
+                 if section.key not in OUTSIDE_GROUP_KEYS and is_rule_section(section)]
+        work = [section.current_text() for section in shown
+                if section.key not in OUTSIDE_GROUP_KEYS and not is_rule_section(section)]
+        parts = head + ([RULES_HEADING + "\n"] + rules if rules else []) + ([WORK_HEADING + "\n"] + work if work else []) \
+            + end
+        return "\n".join(parts).rstrip() + "\n"
 
     def tokens(self):
         return estimate_tokens(self.text(), self.tokens_per_word)
