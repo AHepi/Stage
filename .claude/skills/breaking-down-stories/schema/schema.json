@@ -386,11 +386,11 @@
    "shown_to_user_as": "the value's name"
   },
   "CLIP": {
-   "pattern": "^SC\\d{2,3}[A-Z]?-SH\\d{3}\\.\\d$",
-   "syntax": "shot ID, a full stop and one digit",
+   "pattern": "^SC\\d{2,3}[A-Z]?-(?:SH\\d{3}\\.\\d|CL\\d{2})$",
+   "syntax": "shot ID, a full stop and one digit; or, for a route's clip book, scene ID, -CL and two digits",
    "example": "SC10-SH150.1",
    "declared_by": "code (code_derived)",
-   "shown_to_user_as": "shot 150, clip 1"
+   "shown_to_user_as": "shot 150, clip 1; or clip 3 of the scene"
   },
   "UNIT": {
    "pattern": "^U-\\d{2}-[A-Z0-9.]+(?:-[A-Z0-9]+)*$",
@@ -825,6 +825,24 @@
      "module": "C",
      "default": "no",
      "repeat": false
+    },
+    {
+     "name": "video_route",
+     "label": "Way the video is made",
+     "meaning": "How the video is made: auto (Stage picks a model for each scene, as before) or h3_comfyui_r2v (MiniMax H3 in ComfyUI, Reference to Video: compile makes the clip book). Set by a CHOICE at add-on C's checkpoint (Project notes 43).",
+     "kind": "word",
+     "values": [
+      "auto",
+      "h3_comfyui_r2v"
+     ],
+     "depth": "m",
+     "writer": "user",
+     "filled_by_step": "add_on_C",
+     "example": "h3_comfyui_r2v",
+     "module": "C",
+     "repeat": false,
+     "default": "auto",
+     "added_by": "Project notes 43"
     },
     {
      "name": "format",
@@ -11729,8 +11747,8 @@
    "plain_name": "take",
    "meaning": "One generated take.",
    "singleton": false,
-   "id_pattern": "^TK-SC\\d{2,3}[A-Z]?-SH\\d{3}\\.\\d-T\\d{2}$",
-   "id_syntax": "TK-, the clip ID, -T and 2 digits",
+   "id_pattern": "^TK-SC\\d{2,3}[A-Z]?-(?:SH\\d{3}\\.\\d|CL\\d{2})-T\\d{2}$",
+   "id_syntax": "TK-, the clip ID (a shot's clip, or a route clip such as SC10-CL03), -T and 2 digits",
    "id_example": "TK-SC10-SH150.1-T03",
    "shown_to_user_as": "take 3",
    "files": [
@@ -11743,7 +11761,7 @@
     {
      "name": "clip",
      "label": "Clip",
-     "meaning": "The clip.",
+     "meaning": "The clip: a shot's clip (SC10-SH150.1), or a clip of a route's clip book, which can hold one to three shots (SC10-CL03).",
      "kind": "id",
      "depth": "m",
      "writer": "ai",
@@ -11861,6 +11879,40 @@
       }
      ],
      "filled_by_step": "add_on_C"
+    },
+    {
+     "name": "rule",
+     "label": "Rule verdict",
+     "meaning": "What this take showed about one of the route's rules (the rules of MiniMax H3 in ComfyUI, H3R-01 ...): the rule's ID, then confirmed, wrong or unclear, and a note. Code works out each rule's mark from these every time it runs: confirmed or wrong only after enough takes agree (Project notes 42, W11).",
+     "kind": "sub_parts",
+     "depth": "m",
+     "writer": "ai",
+     "example": "H3R-16 | verdict: confirmed | note: with the stillness words left out, her face kept moving between the lines",
+     "repeat": true,
+     "first_part": {
+      "kind": "text",
+      "meaning": "The rule's ID, from the route's rules.",
+      "pattern": "^H3R-\\d{2}$"
+     },
+     "sub_parts": [
+      {
+       "key": "verdict",
+       "kind": "word",
+       "meaning": "What the take showed.",
+       "values": [
+        "confirmed",
+        "wrong",
+        "unclear"
+       ]
+      },
+      {
+       "key": "note",
+       "kind": "text",
+       "meaning": "What was seen, in plain words."
+      }
+     ],
+     "filled_by_step": "add_on_C",
+     "added_by": "Project notes 43"
     },
     {
      "name": "kept",

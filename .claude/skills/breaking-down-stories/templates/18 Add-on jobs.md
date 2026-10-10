@@ -66,8 +66,8 @@ Below this line: details for the AI and the checker. You never need to read them
 > Code adds these on every build; never type them: plan_file, blocking.
 > status: draft, approved, stale, omitted, planned.
 
-### TAKE <TK-, the clip ID, -T and 2 digits, like TK-SC10-SH150.1-T03> <a short plain title>
-- clip: <add-on, AI video: an ID of CLIP (SC10-SH150.1)>
+### TAKE <TK-, the clip ID, -T and 2 digits, like TK-SC10-SH150.1-T03 or TK-SC10-CL03-T01> <a short plain title>
+- clip: <add-on, AI video: an ID of CLIP (SC10-SH150.1, or a route clip such as SC10-CL03)>
 - model: <add-on, AI video: text>
 - route: <add-on, AI video: text>
 - inputs: <add-on, AI video: short phrases separated by commas>
@@ -76,6 +76,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - cost_usd: <add-on, AI video: US dollars>
 - file: <add-on, AI video: a file name>
 - review: <add-on, AI video, one line each: text> | answer: <yes or no> | evidence: <text>
+- rule: <add-on, AI video, one line each: a rule ID of the route, like H3R-16> | verdict: <confirmed, wrong or unclear> | note: <text>
 - kept: <add-on, AI video, the user's answer, set through a choice: yes or no>
 - refusals: <add-on, AI video: a number>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>

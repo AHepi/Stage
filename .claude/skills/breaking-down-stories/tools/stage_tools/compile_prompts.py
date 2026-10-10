@@ -21,10 +21,11 @@ In plain words:
 - routed_model(breakdown, shot) tells other tools (the shot list's Model column, the estimate) the model a shot goes to.
 
 Command: compile [--scene <one ID, a comma list or SC07..SC10>] [--model <list>] [--force-model <name>]
-[--storyboard] [--lint-only] [--story <path>]. Exit 0: no GEN error; 1: GEN errors printed; 2: could not run.
+[--route <name>] [--storyboard] [--lint-only] [--story <path>]. Exit 0: no GEN error; 1: GEN errors printed; 2: could
+not run. With --route (or PROJECT video_route h3_comfyui_r2v) it makes a route's clip book instead (clip_book.py).
 
 Numbers come from rules/constants.json by name (handles_s, on_screen_speakers_per_clip_max,
-named_sounds_per_prompt_max, model_facts_max_age_days, hold_needs_still_s) and from the adapter files.
+named_sounds_per_prompt_max, model_facts_max_age_days) and from the adapter files.
 Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
@@ -36,6 +37,14 @@ After the second full run (Project notes 39 and 40):
 - after its cross-examination: words that stand for their thing become the thing the TEXT's title names, a single
   mark a letter or a number with the right article, a quoted cue "that line"; a speaking shot is kept whole only
   when chaining it would cut through its line.
+
+After the H3 handover (Project notes 42 and 43):
+- no sentence from a subject's old `still` sub-part is written for any model, display level 1 says "small
+  movements", and no take question asks whether something stays still;
+- for MiniMax H3 (hosted, both entries) the clauses that name something absent or ask for stillness are left out and
+  listed, a must-not and the display sentence are left out, the camera has one sentence and music is N/A;
+- a route (kind: route, such as MiniMax H3 in ComfyUI) is never chosen by routing; compile --route makes its clip
+  book (clip_book.py), and PROJECT video_route h3_comfyui_r2v makes it the default.
 """
 
 import datetime
@@ -3209,6 +3218,8 @@ def add_compile_arguments(parser):
     parser.add_argument("--storyboard", action="store_true", help="write the storyboard frame prompts instead of video packs")
     parser.add_argument("--lint-only", dest="lint_only", action="store_true", help="route and lint without writing packs")
     parser.add_argument("--story", help="a story file to read the speeches from (default: the project's)")
+    parser.add_argument("--route", help="make the clip book of a route, a model plus the place it runs (for example "
+                        "h3-comfyui: MiniMax H3 in ComfyUI, Reference to Video)")
 
 
 def write_text(path, text):
@@ -3245,7 +3256,9 @@ def run_compile(context):
     forced = None
     if getattr(arguments, "force_model", None):
         forced, facts, retired = adapters.find(arguments.force_model)
-        if not forced:
+        if forced and is_route(facts):
+            arguments.route, forced = forced, None
+        elif not forced:
             raise StageStop(f"The model \"{arguments.force_model}\" is not in the model facts. Known models: "
                             + ", ".join(sorted(adapters.video)) + ".")
         if retired:
@@ -3261,6 +3274,10 @@ def run_compile(context):
     project = Project(folder, context.schema, context.words)
     if getattr(arguments, "storyboard", False):
         return write_storyboards(context, compiler, project, scenes)
+    route = chosen_route(adapters, breakdown, arguments, forced)
+    if route:
+        from .clip_book import compile_route
+        return compile_route(context, compiler, project, scenes, route, lint_only=bool(getattr(arguments, "lint_only", False)))
     results = [compiler.compile_scene(scene, forced) for scene in scenes]
     for result in results:
         compiler.current_scene_model = result.scene_model
@@ -3320,6 +3337,28 @@ def run_compile(context):
     return 1 if errors else 0
 
 
+def chosen_route(adapters, breakdown, arguments, forced):
+    """The route entry compile makes a clip book for: --route (a name or alias), else the project's video_route when
+    it names a route and no model is asked for; None for the usual packs (Project notes 43, A2)."""
+    from .project_files import StageStop
+    written = getattr(arguments, "route", None)
+    if written:
+        name, facts, _ = adapters.find(written)
+        if not name or not is_route(facts):
+            routes = sorted(key for key, value in adapters.video.items() if is_route(value))
+            raise StageStop(f'The route "{written}" is not in the model facts. Known routes: ' + ", ".join(routes) + ".")
+        return name
+    if forced or getattr(arguments, "model", None):
+        return None
+    project = breakdown.project
+    value = normalise_word(project.get("video_route") or "") if project is not None else ""
+    if value and value not in ("auto", "none", "open"):
+        name, facts, _ = adapters.find(value)
+        if name and is_route(facts):
+            return name
+    return None
+
+
 def write_packs(context, compiler, project, results, packs, chosen, forced, wanted_models):
     folder = Path(project.folder)
     machine = folder / MACHINE_FOLDER / (SYNTAX_TEST_FOLDER if forced else PROMPTS_FOLDER)
@@ -3330,8 +3369,8 @@ def write_packs(context, compiler, project, results, packs, chosen, forced, want
         for result in results:
             for old in machine.glob(f"{result.scene} - *.json"):
                 model = old.stem[len(result.scene) + 3:]
-                if model.endswith(" pictures"):
-                    continue
+                if model.endswith(" pictures") or is_route(compiler.adapters.video.get(model)):
+                    continue  # a route's clip book is kept: compile --route makes it
                 if (result.scene, model) not in chosen and (wanted_models is None or model in wanted_models):
                     old.unlink()
             for (scene, model), pack in chosen.items():

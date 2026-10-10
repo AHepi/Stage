@@ -15,6 +15,9 @@ In plain words:
   three named sounds;
 - importing this module also imports film_pass.py, which registers FILM-01 to FILM-12 and the film strip
   (check_records loads this module under its planned name, so nothing else needs to list film_pass).
+- it also imports checks_clip_book.py, which registers ROUTE-01 ... for a route's clip book (MiniMax H3 in
+  ComfyUI, Project notes 43). A clip book's machine file is marked "kind": "clip_book"; the GEN checks leave it to
+  the ROUTE checks, so GEN-05 ("motion only") and the other GEN checks never apply to that route.
 
 Where the GEN checks read the prompts. stage.py compile (work package 8) writes each scene's compiled prompts as
 JSON files in "For machines - do not edit/prompts/". Each file holds one pack:
@@ -65,6 +68,7 @@ from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
 from . import film_pass  # noqa: F401  (registers FILM-01 to FILM-12 and the film pass report section)
+from . import checks_clip_book  # noqa: F401  (registers ROUTE-01 ... for the clip book of a route)
 from .check_records import register_check, same_scene, scene_of
 from .derive_fields import (allowed_lengths, constant, element_of, held_take, number_of, project_prompt_swaps,
                             round_up_to, speech_words_part, swap_prompt_words, swap_sources_banned)
@@ -444,6 +448,8 @@ def read_packs(run):
             except (OSError, ValueError):
                 run.skip("GEN-01", f"'{path.name}' in the prompts folder could not be read as JSON; compile it again")
                 continue
+            if isinstance(data, dict) and data.get("kind") == checks_clip_book.ROUTE_FILE_KIND:
+                continue  # a route's clip book: the ROUTE checks read it, never the GEN checks (GEN-05 and the rest)
             if isinstance(data, dict) and isinstance(data.get("clips"), list):
                 data = dict(data, _file=path.name)
                 packs.append(data)
