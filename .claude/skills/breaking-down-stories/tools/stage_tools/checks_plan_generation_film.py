@@ -109,8 +109,10 @@ WRITING_REQUESTS = [
 # (C3 §7F: "he is not visible").
 NEGATION = re.compile(r"\b(?:no|not|without)\b|\b\w+n't\b", re.IGNORECASE)
 ALLOWED_NEGATION_PHRASES = re.compile(r"\b(?:does|do|did)\s+not\s+\w+|\b(?:is|are)\s+not\s+visible\b"
-                                      r"|\bno\s+(?:longer|more|bigger|smaller|larger|wider|taller)\s+than\b",
-                                      re.IGNORECASE)  # a size ("no longer than a hand"), not a negation
+                                      r"|\bno\s+(?:longer|more|bigger|smaller|larger|wider|taller)\s+than\b"
+                                      r"|\bwith\s+no\s+camera\s+movement\s+whatsoever\b",
+                                      re.IGNORECASE)  # a size ("no longer than a hand"), not a negation; and H3's
+# one camera line, which testers found holds (Project notes 42, W3; words.json absence_words allowed_phrases)
 # GEN-15: the records' own IDs, which never belong in a prompt (the reasons' because list).
 STAGE_IDENTIFIER = re.compile(r"\b(?:SC\d{2,3}[A-Z]?(?:-[A-Z]+\d+)?|(?:CH|VO|LOC|PR|TX|MO|CAM|WR|LK|CR|VS|RC|LX|PL|FT|"
                               r"ST|CF|SQ|CP|FIND|CHOICE|RT|PIC|PV|TK|VT|FX|MU)-[A-Z0-9][A-Z0-9-]*)\b")
