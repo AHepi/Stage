@@ -14,7 +14,7 @@ In plain words:
   matters (turn or must_keep).
 - REASON-01 to REASON-08 check that every shot says why it exists: a purpose and a because that names this story;
   a why wherever a value leaves its default; a why that is anchored in this story (a quote from the scene, an ID or
-  a named element) and never mood-only or a reason that would fit any film (the word lists of rules/words.json);
+  a named element) and never mood-only or a reason that would fit any film (the word lists of _config/rules/words.json);
   turn shots citing their turn beat; saved choices citing their RC; tool-forced changes keeping their meaning; every
   unsaid thought carried by something seen or heard (REASON-09 is planned for the second build).
 - WORDS-01 to WORDS-05 check the words: no emotion adjectives in what bodies do; no retired words; no real people,
@@ -23,7 +23,7 @@ In plain words:
 
 Every check reads the records (and the derived fields of derive_fields.py where it needs them), never changes them,
 and is registered with check_records.register_check (see the note at the top of check_records.py). Numbers come from
-rules/constants.json and words from rules/words.json, by name.
+_config/rules/constants.json and words from _config/rules/words.json, by name.
 
 Other modules may use the text helpers at the end of this file (retired_words_in_text, abbreviations_in_text,
 mood_only_phrases_in_reason, reason_is_anchored) to check text that is not a record file, such as step files,
@@ -56,7 +56,7 @@ After the H3 handover (Project notes 42 and 43, 10 October 2026); all three are 
 testers' notes that the take log has not yet confirmed:
 - CRAFT-26 is turned round: a moment of hold_action_every_s or more needs at least one small timed action every
   hold_action_every_s (its shows split at ";" and "then"; a clause holding a stillness word or a not_an_action word
-  of rules/words.json is no action), and a pause held on picture needs the shot's last moments to carry it the same
+  of _config/rules/words.json is no action), and a pause held on picture needs the shot's last moments to carry it the same
   way. It never asks for the subject's still sub-part, which is kept only so that older breakdowns load.
 - CRAFT-27: a stillness word or phrase (stillness_words) in a moment, a does, a start or an end.
 - CRAFT-28: a contact_words cause followed by its effect in one shot (the same moment or the next one); a shot that
@@ -2464,7 +2464,7 @@ def word_pattern(word):
 
 
 def stillness_lists(run):
-    """(words, phrases, not-an-action words) of rules/words.json's stillness_words."""
+    """(words, phrases, not-an-action words) of _config/rules/words.json's stillness_words."""
     entry = run.words.get("stillness_words") or {}
     return (list(entry.get("words") or []), list(entry.get("phrases") or []),
             list(entry.get("not_an_action") or []))
@@ -2476,7 +2476,7 @@ STILL_AS_EVEN_NOW = re.compile(r"\bstill\s+[a-z]+ing\b", re.I)
 
 
 def stillness_in(run, text):
-    """The stillness words and phrases of rules/words.json in a text, outside quotation marks, in the order of
+    """The stillness words and phrases of _config/rules/words.json in a text, outside quotation marks, in the order of
     the lists; a word inside a phrase found is reported as the phrase only."""
     words, phrases, _ = stillness_lists(run)
     plain = without_quotes(text)
@@ -2494,7 +2494,7 @@ def stillness_in(run, text):
 
 def action_clauses(run, text):
     """The clauses of a moment's shows (split at ';' and at 'then') that are actions: those holding no stillness
-    word or phrase and no not_an_action word (stays, waits, listens ...) of rules/words.json."""
+    word or phrase and no not_an_action word (stays, waits, listens ...) of _config/rules/words.json."""
     _, _, not_actions = stillness_lists(run)
     clauses = [piece.strip(" ,.:") for piece in re.split(r";|\bthen\b", text or "")]
     found = []
@@ -3303,7 +3303,7 @@ def screen_is_a_thing(text, match):
 
 
 def retired_words_in_text(text, words, modes=("always", "user_text"), field_path=None):
-    """[(word as found, entry)] of the retired words (rules/words.json) a text holds, outside double-quoted story
+    """[(word as found, entry)] of the retired words (_config/rules/words.json) a text holds, outside double-quoted story
     words. modes chooses the flag modes to look for; field_path ("SHOT.why") also brings in the in_fields entries
     that name that field. Other modules may call this on any user-facing text."""
     text = QUOTED.sub(" ", text or "")
@@ -3538,7 +3538,7 @@ def abbreviation_patterns(words):
 
 
 def abbreviations_in_text(text, words):
-    """[(what, kind)] of the abbreviations and internal codes (rules/words.json) a user-facing text holds, outside
+    """[(what, kind)] of the abbreviations and internal codes (_config/rules/words.json) a user-facing text holds, outside
     double-quoted story words and file names. Other modules may call this on guides, steps and templates."""
     text = QUOTED.sub(" ", text or "")
     text = re.sub(r"\S+\.(?:csv|srt|vtt|json|otio|edl|md|html|zip|pdf|txt|py)\b", " ", text, flags=re.I)

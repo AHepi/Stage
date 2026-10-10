@@ -179,7 +179,7 @@ import re
 from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
-from .record_format import (DEPTH_RANK, DIVIDER_LINE, EndLine, Problem, Record, TextBlock, count_levels,
+from .record_format import (DEPTH_RANK, DIVIDER_LINE, STEPS_FILE, EndLine, Problem, Record, TextBlock, count_levels,
                             load_json, merge_copies, normalise_word, parse_file, parse_line_numbers,
                             parse_quote_anchor, parse_text, record_lines, render_file, sort_key_for_identifier,
                             split_item, split_list, write_file)
@@ -783,7 +783,7 @@ def shot_number(identifier):
 
 def checks_for_step(step, skill_folder=None):
     """The check IDs steps.json lists for a step (step 10 means every check)."""
-    steps = load_json("schema/steps.json", skill_folder)
+    steps = load_json(STEPS_FILE, skill_folder)
     for entry in steps.get("steps", []):
         if entry.get("step") == step:
             listed = [item for item in entry.get("checks", []) if re.fullmatch(r"[A-Z]+-\d{2}", item)]
@@ -1300,7 +1300,7 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
     return lines
 
 
-# The ten scoring questions (reference/05 Quality rubric), in the user's words.
+# The ten scoring questions (references/formats/05 Quality rubric), in the user's words.
 RUBRIC_PLAIN_NAMES = {1: "being faithful to the story", 2: "reading the story", 3: "shots that serve the beats",
                       4: "the reasons", 5: "restraint", 6: "continuity and sides", 7: "rhythm and time",
                       8: "the film's visual plan", 9: "being ready for AI video", 10: "being easy to read"}
@@ -1322,7 +1322,7 @@ def review_scores(run):
 
 
 def scene_passes(scores):
-    """The rubric's pass rule on one scene's scores (reference/05): no criterion at 0, criteria 1, 3 and 6 at 2 or
+    """The rubric's pass rule on one scene's scores (references/formats/05): no criterion at 0, criteria 1, 3 and 6 at 2 or
     more, and a total of 20 or more of 30. The 'no error' part is the checker's, said on its own line."""
     return (all(score > 0 for score in scores.values()) and all(scores.get(number, 0) >= 2 for number in (1, 3, 6))
             and sum(scores.values()) >= 20)
@@ -1392,7 +1392,7 @@ def scenes_to_read_plain_lines(run):
         return []
     return ["## Three scenes to read", "",
             "Read these in 15 The breakdown, with the 10 questions in the guide \"05 How to read your breakdown\" "
-            "(in the Stage folder, beside 01 Read me first): "
+            "(in the Stage folder, in 01 Start here): "
             + join_words([f"{scene_in_words(scope)} ({why})" for scope, why in chosen]) + "."]
 
 

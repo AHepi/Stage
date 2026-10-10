@@ -6,7 +6,7 @@ What this file does, in plain words:
   seconds are its spoken words at the speaking pace, half a second for each speech, a second for each "(beat)",
   plus its action words at v0_action_seconds_per_word (low and high); its shots are its seconds divided by the
   average shot length of its pace class (SCENE rhythm_class, rhythm_class_asl_s) times its tone's shot-length
-  factor (rules/tone_defaults.json); its takes, pictures and minutes follow D13's class shares;
+  factor (_config/rules/tone_defaults.json); its takes, pictures and minutes follow D13's class shares;
 - the estimate from the shots (D13 version v1, "the estimate from the shots"): each SHOT's screen time, cost class,
   clip length (screen time plus handles_s at each end, rounded up to a length the model allows and never under the
   shortest clip), plates for text in picture and screens, storyboard frames and grey preview work. A scene whose
@@ -17,7 +17,7 @@ What this file does, in plain words:
   software and contingency (E8); the user's hours, base, central and high (E9), and weeks at their hours a week
   (E10); warnings for the page check (E3), the average shot length (E4), the generation factor (E6), the runtime
   target (E1, E2) and a long calendar (D13 R17);
-- prices come from adapters/prices.json with their date. When they are older than model_facts_max_age_days, no money
+- prices come from _config/adapters/prices.json with their date. When they are older than model_facts_max_age_days, no money
   is printed, written or stored anywhere until the prices are refreshed (D13 R7, E11);
 - writes "14 Time and cost.md" (plain words for the user) and "For machines - do not edit/estimate.json" (the D13
   estimate blocks, film and scene). The command also stores the code-owned fields the estimate fills: SCENE
@@ -29,9 +29,9 @@ What this file does, in plain words:
 Other modules may use: film_estimate(breakdown, version, on=None, prices=None), PriceTable, ShotWork, scene_block,
 seconds_from_words, render_time_and_cost, estimate_as_json, write_first_estimate, use_today.
 
-Every number comes from rules/constants.json (speech_wps_default, speech_floor_extra_s, pause_tiers, handles_s,
+Every number comes from _config/rules/constants.json (speech_wps_default, speech_floor_extra_s, pause_tiers, handles_s,
 v0_action_seconds_per_word, rhythm_class_asl_s, model_facts_max_age_days, film_asl_range_s, short_runtime_max_s,
-page_eighths_line_model, scene_total_tolerance) or from adapters/prices.json (prices and D13's work defaults).
+page_eighths_line_model, scene_total_tolerance) or from _config/adapters/prices.json (prices and D13's work defaults).
 
 Standard library only.
 
@@ -51,10 +51,9 @@ import re
 from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
-from .record_format import load_json, normalise_word, split_item, split_list
+from .record_format import TONE_DEFAULTS_FILE, adapter_file, load_json, normalise_word, split_item, split_list
 
-PRICES_FILE = "adapters/prices.json"
-TONE_DEFAULTS_FILE = "rules/tone_defaults.json"
+PRICES_FILE = adapter_file("prices.json")
 TIME_AND_COST_FILE = "14 Time and cost.md"
 MACHINE_FOLDER = "For machines - do not edit"
 ESTIMATE_JSON_FILE = "estimate.json"
@@ -118,7 +117,7 @@ def read_date(text):
 
 
 def constant(constants, name, default=None):
-    """The value of a named constant of rules/constants.json (either table), or default."""
+    """The value of a named constant of _config/rules/constants.json (either table), or default."""
     if not constants:
         return default
     for section in (constants.get("constants", {}), constants.get("from_blueprint_text", {}).get("constants", {})):
@@ -214,7 +213,7 @@ def weeks_text(value):
 # ---------------------------------------------------------------- the price table
 
 class PriceTable:
-    """adapters/prices.json: prices with their date and page, and D13's work defaults (takes, minutes, shares)."""
+    """_config/adapters/prices.json: prices with their date and page, and D13's work defaults (takes, minutes, shares)."""
 
     def __init__(self, data, path=None):
         self.data = data or {}
@@ -294,7 +293,7 @@ class PriceTable:
 
 
 def load_tone_factors(skill_folder=None):
-    """{tone: shot_length_factor} from rules/tone_defaults.json (D10 §2.2), or {} when the file is missing."""
+    """{tone: shot_length_factor} from _config/rules/tone_defaults.json (D10 §2.2), or {} when the file is missing."""
     try:
         tones = load_json(TONE_DEFAULTS_FILE, skill_folder).get("tones", {})
     except (OSError, ValueError):

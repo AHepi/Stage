@@ -20,7 +20,7 @@ In plain words:
   question_batch_size for fresh units (U-10-QUESTIONS-B1 ...). It writes them to
   "For machines - do not edit/questions.json" and "questions.md".
 
-Numbers come from rules/constants.json by name. Standard library only.
+Numbers come from _config/rules/constants.json by name. Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
 - every shot that keeps a fact hidden gets a review question about the hiding.
@@ -106,7 +106,7 @@ UNIT_OF_TYPE = {
 # ---------------------------------------------------------------- small helpers
 
 def constant(constants, name, default=None):
-    """A named number of rules/constants.json (either of its tables), or default."""
+    """A named number of _config/rules/constants.json (either of its tables), or default."""
     for table in ((constants or {}).get("constants") or {},
                   ((constants or {}).get("from_blueprint_text") or {}).get("constants") or {}):
         entry = table.get(name)

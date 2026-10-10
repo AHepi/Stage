@@ -311,7 +311,7 @@ def project_digits(run):
 
 
 def constant_value(run, name, default):
-    """A number of rules/constants.json by name (its "value"), from either of its two tables; default if absent."""
+    """A number of _config/rules/constants.json by name (its "value"), from either of its two tables; default if absent."""
     constants = run.constants or {}
     for table in (constants.get("constants") or {}, (constants.get("from_blueprint_text") or {}).get("constants") or {}):
         entry = table.get(name)
@@ -429,7 +429,7 @@ def check_id_02(run):
         elif how == "field path":
             what = f"names a field of {identifier}, which does not exist"
         problems.append(run.problem("E", "ID-02", record, field_name, what,
-                                    "Fix: copy an ID that exists (reference/03 lists where each kind is issued), or "
+                                    "Fix: copy an ID that exists (references/formats/03 lists where each kind is issued), or "
                                     "write that record first", line_number=line_number, file_name=record_file.name))
     left_out_skip(run, "ID-02", left_out)
     if waiting:

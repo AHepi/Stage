@@ -3,12 +3,12 @@
 In plain words:
 - lib <code> <reference> prints one part of the research library: a section (B1 §10.2), a decision rule (B1 R14),
   a principle (B1 P5), a worked example (B1 Ex1) or any other labelled item (D10 TN2, D4 Recipe 3), with every
-  erratum library/02 Errata.md holds for it. A resolved conflict (K03) comes from library/00 Resolved conflicts.md.
+  erratum references/library/02 Errata.md holds for it. A resolved conflict (K03) comes from references/library/00 Resolved conflicts.md.
   When the full research file is not in this copy of the skill (the skill ZIP keeps only the digests), it prints the
   digest's entry instead, labelled as the digest's.
 - replay [--story <path>] checks the gold examples against their expected outputs: it builds a project from the
-  gold (examples/01 and 02), works out its derived fields and runs every check. With an expected-check file
-  (examples/03 ... expected check.txt) the problem lines must be the same; without one the gold must give no error.
+  gold (references/examples/01 and 02), works out its derived fields and runs every check. With an expected-check file
+  (references/examples/03 ... expected check.txt) the problem lines must be the same; without one the gold must give no error.
   The derived values blueprint 14.3 (T2) names are compared too. The story is the one at --story, else the scene 10
   excerpt in tests/fixtures, else none (the checks that compare story words then say "skipped: story not present").
 - import-json is planned and not in this version: it says so plainly.
@@ -21,15 +21,14 @@ import tempfile
 from pathlib import Path
 
 from .project_files import StageStop
-from .record_format import SKILL_FOLDER
+from .record_format import EXAMPLES_FOLDER, LIBRARY_FOLDER, SKILL_FOLDER
 
-LIBRARY_FOLDER = "library"
 DIGESTS_FOLDER = "digests"
 ERRATA_FILE = "02 Errata.md"
 CONFLICTS_FILE = "00 Resolved conflicts.md"
 CODE_PATTERN = re.compile(r"^(?:[ABC]\d|D\d{1,2}|K\d{2})$")
 EXCERPT_FIXTURE = "The Catch - lines 397-489.txt"
-EXPECTED_CHECK_FILE = "examples/03 The Catch - scene 10 - expected check.txt"
+EXPECTED_CHECK_FILE = EXAMPLES_FOLDER + "/03 The Catch - scene 10 - expected check.txt"
 # Derived values of the gold that blueprint 14.3 (T2) names: (shot, what, expected).
 GOLD_DERIVED = [("SC10-SH150", "time floor in seconds", 13.8), ("SC10-SH080", "size from lens and distance", "medium"),
                 ("SC10-SH080", "mirror route", "plate")]
@@ -149,7 +148,7 @@ def find_reference(lines, reference):
 
 
 def errata_for(code, reference, skill_folder=SKILL_FOLDER):
-    """The lines of library/02 Errata.md about this code and reference (or about the whole file)."""
+    """The lines of references/library/02 Errata.md about this code and reference (or about the whole file)."""
     path = Path(skill_folder) / LIBRARY_FOLDER / ERRATA_FILE
     if not path.is_file():
         return []
@@ -176,20 +175,20 @@ def library_text(code, reference, skill_folder=SKILL_FOLDER):
     """(header line, lines, errata lines) for lib, or StageStop with a plain line."""
     code = code.strip().upper()
     if not CODE_PATTERN.match(code):
-        raise StageStop(f'"{code}" is not a library code. Codes look like B1, D10 or K03 (library/01 What the codes '
+        raise StageStop(f'"{code}" is not a library code. Codes look like B1, D10 or K03 (references/library/01 What the codes '
                         "mean.md lists them).")
     if code.startswith("K"):
         found = conflict_lines(code, skill_folder)
         if not found:
-            raise StageStop(f"{code} is not in library/{CONFLICTS_FILE}.")
-        return f"{code} (library/{CONFLICTS_FILE})", found, []
+            raise StageStop(f"{code} is not in references/library/{CONFLICTS_FILE}.")
+        return f"{code} (references/library/{CONFLICTS_FILE})", found, []
     full = library_file(code, skill_folder)
     reference = (reference or "").strip()
     if full is not None:
         lines = full.read_text(encoding="utf-8").splitlines()
         found = find_reference(lines, reference) if reference else lines[:40]
         if found:
-            return (f"{code} {reference} (library/{full.name})".replace("  ", " "), found,
+            return (f"{code} {reference} (references/library/{full.name})".replace("  ", " "), found,
                     errata_for(code, reference, skill_folder))
     digest = library_file(code, skill_folder, digest=True)
     if digest is not None:
@@ -198,7 +197,7 @@ def library_text(code, reference, skill_folder=SKILL_FOLDER):
         if found:
             why = "the full file is not in this copy of the skill" if full is None else \
                 "the full file does not label it this way"
-            return (f"{code} {reference}: from the digest (library/{DIGESTS_FOLDER}/{digest.name}), because {why}",
+            return (f"{code} {reference}: from the digest (references/library/{DIGESTS_FOLDER}/{digest.name}), because {why}",
                     found, errata_for(code, reference, skill_folder))
     if full is None and digest is None:
         raise StageStop(f"No library file starts with {code} in this copy of the skill.")
@@ -218,7 +217,7 @@ def run_lib(context):
     for line in lines:
         context.say(line)
     if errata:
-        context.say("Errata (library/02 Errata.md):")
+        context.say("Errata (references/library/02 Errata.md):")
         for line in errata:
             context.say(line)
     context.summary = f"lib {context.arguments.code} {reference}".strip()

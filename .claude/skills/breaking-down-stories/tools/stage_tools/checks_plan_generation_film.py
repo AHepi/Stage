@@ -38,13 +38,13 @@ are in the prompt; without "subjects" (optional, state IDs), the shot's subject 
 compile can also call lint_packs(run, packs, forced=True) on packs it holds in memory: with forced (compile
 --force-model), GEN-02 and GEN-10 come out as notes.
 
-Model facts come from adapters/video_models.json and adapters/image_models.json (work package 8), in the shape
+Model facts come from _config/adapters/video_models.json and _config/adapters/image_models.json (work package 8), in the shape
 of blueprint 8.2. While those files are missing, the checks that need them skip with a plain reason (tests give
 stand-in facts through use_model_facts). Checks only read; every problem line has 7.2's form (level, check ID,
-record, field, what is wrong, then the fix). Numbers come from rules/constants.json by name
+record, field, what is wrong, then the fix). Numbers come from _config/rules/constants.json by name
 (step_outline_tolerance, clip_speech_rule, handles_s, model_facts_max_age_days, on_screen_speakers_per_clip_max,
-cheap_test_above_usd_per_take, named_sounds_per_prompt_max) and rules/limits.json (tokens_per_word_estimate);
-word lists from rules/words.json (banned_prompt_words, allowed_negations).
+cheap_test_above_usd_per_take, named_sounds_per_prompt_max) and _config/rules/limits.json (tokens_per_word_estimate);
+word lists from _config/rules/words.json (banned_prompt_words, allowed_negations).
 
 Standard library only.
 
@@ -74,13 +74,13 @@ from .derive_fields import (allowed_lengths, constant, element_of, held_take, nu
                             round_up_to, speech_words_part, swap_prompt_words, swap_sources_banned)
 from .film_pass import (MACHINE_FOLDER, breakdown_of, ends_before, film_scenes, id_range_pairs, in_pairs,
                         is_empty, is_kept, number_words, pairs_words, place_of, report, story_point_position)
-from .record_format import load_json, normalise_word, split_item, split_list
+from .record_format import LIMITS_FILE, adapter_file, load_json, normalise_word, split_item, split_list
 
 PROMPTS_FOLDER = "prompts"
-MODEL_FACTS_FILES = ("adapters/video_models.json", "adapters/image_models.json")
+MODEL_FACTS_FILES = (adapter_file("video_models.json"), adapter_file("image_models.json"))
 NO_PACKS = ("no compiled prompts yet: stage.py compile writes them to 'For machines - do not edit/prompts/' "
             "(add-on C, or step 10's compile --lint-only)")
-NO_FACTS = ("the model facts files (adapters/video_models.json, adapters/image_models.json) are missing from this copy of "
+NO_FACTS = ("the model facts files (_config/adapters/video_models.json, _config/adapters/image_models.json) are missing from this copy of "
             "the tools, so this check waits for them")
 # 5.5 PROJECT intended_use values that release the film to other people (GEN-14; D4).
 PUBLIC_USES = ("festival", "online_free", "online_monetised", "commercial")
@@ -147,7 +147,7 @@ def clauses(text, least):
 
 def tokens_per_word():
     try:
-        return float(load_json("rules/limits.json").get("tokens_per_word_estimate", {}).get("value", 1.4))
+        return float(load_json(LIMITS_FILE).get("tokens_per_word_estimate", {}).get("value", 1.4))
     except (OSError, ValueError, AttributeError):
         return 1.4
 
@@ -355,7 +355,7 @@ def check_plan_05(run):
 # ---------------------------------------------------------------- the model facts (adapters) and the compiled packs
 
 class ModelFacts:
-    """The dated model facts of adapters/*.json: models by name, their aliases, the date they were checked."""
+    """The dated model facts of _config/adapters/*.json: models by name, their aliases, the date they were checked."""
 
     def __init__(self, documents):
         self.models = {}
@@ -386,7 +386,7 @@ class ModelFacts:
 
 
 def use_model_facts(document):
-    """Use these model facts (one dict shaped like adapters/video_models.json, or a list of them) instead of the
+    """Use these model facts (one dict shaped like _config/adapters/video_models.json, or a list of them) instead of the
     adapter files, for tests and dry runs; None goes back to the files."""
     if document is None:
         _MODEL_FACTS_OVERRIDE.update(facts=None, used=False)

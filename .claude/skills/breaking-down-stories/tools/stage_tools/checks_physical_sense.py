@@ -33,8 +33,8 @@ review questions.
 
 Every check reads the records and the derived fields of derive_fields.py and never changes them; each is
 registered with check_records.register_check (see the note at the top of check_records.py). Numbers come from
-rules/constants.json by name. The word lists below are this module's own; they are candidates for
-rules/words.json.
+_config/rules/constants.json by name. The word lists below are this module's own; they are candidates for
+_config/rules/words.json.
 
 Standard library only.
 """
@@ -49,7 +49,7 @@ from .derive_fields import (breakdown_for_run, character_height, element_of, ele
                             scene_location, scene_staging, set_plan)
 from .record_format import split_list
 
-# ---------------------------------------------------------------- words (candidates for rules/words.json)
+# ---------------------------------------------------------------- words (candidates for _config/rules/words.json)
 
 TEETH_HOLD = re.compile(
     r"\b(?:in|between)\s+(?:her|his|their|its|the|my|your)?\s*(?:own\s+)?teeth\b"
