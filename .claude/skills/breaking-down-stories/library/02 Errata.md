@@ -161,7 +161,19 @@ These come from testers' notes and from a clip file made by hand for MiniMax H3,
 
 - **Applies to**: C3 R1, C3 §9A, C3 §3C; card 21's "motion only" fix.
 - **The research says**: "If the shot starts from an image, then write motion only and call people 'the woman', 'the man', because Google says re-describing the image confuses the model."
-- **Read instead**: C3 R1 (motion only with a start picture) does not apply to MiniMax H3's reference mode, where each person's description is repeated word for word next to their picture label (`<Subject 2> ... comes from <Picture 2>`); rewording a description there re-rolls the face (MiniMax's reference-mode prompt guide; Project notes 42). For other image-to-video models R1 still holds.
+- **Read instead**: C3 R1 (motion only with a start picture) does not apply to MiniMax H3's reference mode, where each person's description is repeated word for word next to their picture label (`<Subject 2> ... comes from <Picture 2>`); rewording a description there re-rolls the face (MiniMax's reference-mode prompt guide; Project notes 42). For other image-to-video models R1 still holds. The route is described in C3 §25.
+
+### 25. H3's camera line (C3 §4; the adapter entries for MiniMax H3)
+
+- **Applies to**: C3 §4's H3 row; `camera_static` of `minimax-h3` and `minimax-h3-max` in `adapters/video_models.json`; the phrasebook's `hold` line.
+- **The research says**: H3's static camera is written "holds a perfectly static shot [static]", and Stage added "The camera does not move." after it.
+- **Read instead**: for both H3 entries (the hosted service and the ComfyUI route) the camera gets one sentence, "The shot is static, on a tripod, with no camera movement whatsoever." Testers found that extra camera lines ("no push in, no zoom ...") made cuts drift and the camera move, and that this one line holds (the h3-storyboard testing notes, section 7.2, checked 10 October 2026). Marked J until the take log confirms it.
+
+### 26. The stillness example for shot 150 (card 21; step 14)
+
+- **Applies to**: card 21's worked examples (The Catch, shot 150; The Long Places, scene 5) and step 14's purpose paragraph, as written before 10 October 2026.
+- **The research says**: the prompt for shot 150 ends "Her head and hands stay still; only her eyes move. The camera does not move. No background music.", quoted as good practice.
+- **Read instead**: that ending is withdrawn (entry 23): a held moment is written as small timed actions, the camera gets one sentence, and for a model with no negative side music with none is written "N/A". Card 21 and step 14 now quote the new form.
 
 ---
 

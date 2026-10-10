@@ -50,6 +50,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - rights: <quick, the user's answer, set through a choice: mine, permission, public_domain, study_only or unknown>
 - intended_use: <add-on, AI video, the user's answer, set through a choice: personal, festival, online_free, online_monetised or commercial>
 - licensed_data_only: <add-on, AI video, the user's answer, set through a choice: yes or no; default no>
+- video_route: <add-on, AI video, the user's answer, set through a choice: auto, per_scene or h3_comfyui_r2v; default auto>
 - format: <quick, the user's answer, set through a choice: short, feature or limited_series>
 - runtime_target_s: <quick, the user's answer, set through a choice: seconds, or as_written>
 - scope: <quick, the user's answer, set through a choice: IDs of SCENE (SC10), separated by commas, or all>
@@ -1122,7 +1123,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - frame_in_frame: <detailed: text, or none>
 - device: <detailed: text, or none>
 - glass: <standard, when glass_in_frame, one line each: text> | state: <clear, marked, reflecting, screen or broken_open> | camera: <through, along or angled>
-- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | still: <standard: words from the note, separated by commas> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)> | recorded: <footage only: SC06 or SC06 "quote">
+- subject: <quick, one line each: an ID of STATE (CH-IONA.S02) or CHARACTER (CH-IONA); write none when there is nothing> | at: <unless set_plan_exists: left_edge, left_third, centre, right_third or right_edge> | faces: <unless set_plan_exists: a direction word, or the ID of what the subject faces, or an ID> | does: <text; visible behaviour only, never emotion words> | tactic: <standard: one word ending in -ing> | energy: <standard: still, held, rising, breaking or spent> | display: <standard: 1, 2 or 3> | eyeline: <standard: text> | dwell_s: <standard, when eyeline_set: seconds> | travel: <standard, when subject_moves: one word from the note> | must_not: <standard, when later_beat_saves_behaviour: text> | continues: <detailed: an ID of SHOT (SC10-SH150)> | recorded: <footage only: SC06 or SC06 "quote">
 - thing: <standard, one line each: an ID of PROP (PR-FLASK) or STATE (CH-IONA.S02) or MOTIF (MO-MINT) or TEXT (TX-GOODS-ONLY); write none when there is nothing> | emphasis: <a number from 0 to 3> | at: <text> | plant: <an ID of PLANT (PL-07)> | payoff: <an ID of PLANT (PL-07)> | recorded: <footage only: SC06 or SC06 "quote">
 - text: <standard: IDs of TEXT (TX-GOODS-ONLY), separated by commas, or none>
 - keep_hidden: <standard, when fact_element_before_reveal, one line each: an ID of FACT (FT-03)> | how: <one word from the note>
@@ -1176,7 +1177,6 @@ Below this line: details for the AI and the checker. You never need to read them
 > - move: static, pan, tilt, push_in, pull_back, sideways, rise, lower, follow, lead, handheld, crane, orbit, zoom, whip_pan, dolly_zoom, drone
 > - move, only under a saved choice (RESERVE): orbit, zoom, whip_pan, dolly_zoom, drone
 > - subject faces: frame_left, frame_right, camera, away, up, down
-> - subject still: head, eyes, mouth, hands, torso, whole_body
 > - subject travel: frame_left, frame_right, up, down, toward_camera, away, none
 > - keep_hidden how: frame_edge, focus, dark, obstruction, timing, sound_first
 > - hear path: direct, off_screen, earpiece, radio, intercom, phone, device_speaker, recording, helmet_inside, helmet_outside, through_glass, voice_over, thought
@@ -1351,8 +1351,8 @@ Below this line: details for the AI and the checker. You never need to read them
 > Code adds these on every build; never type them: plan_file, blocking.
 > status: draft, approved, stale, omitted, planned.
 
-### TAKE <TK-, the clip ID, -T and 2 digits, like TK-SC10-SH150.1-T03> <a short plain title>
-- clip: <add-on, AI video: an ID of CLIP (SC10-SH150.1)>
+### TAKE <TK-, the clip ID, -T and 2 digits, like TK-SC10-SH150.1-T03 or TK-SC10-CL03-T01> <a short plain title>
+- clip: <add-on, AI video: an ID of CLIP (SC10-SH150.1, or a route clip such as SC10-CL03)>
 - model: <add-on, AI video: text>
 - route: <add-on, AI video: text>
 - inputs: <add-on, AI video: short phrases separated by commas>
@@ -1361,6 +1361,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - cost_usd: <add-on, AI video: US dollars>
 - file: <add-on, AI video: a file name>
 - review: <add-on, AI video, one line each: text> | answer: <yes or no> | evidence: <text>
+- rule: <add-on, AI video, one line each: a rule ID of the route, like H3R-16> | verdict: <confirmed, wrong or unclear> | note: <text>
 - kept: <add-on, AI video, the user's answer, set through a choice: yes or no>
 - refusals: <add-on, AI video: a number>
 - status: <quick, code writes it; in a chat without code you write it: draft, approved, stale or omitted>

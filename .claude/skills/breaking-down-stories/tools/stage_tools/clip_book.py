@@ -1328,7 +1328,7 @@ class ClipWriter:
         return list(dict.fromkeys(questions)), notes
 
 
-# ---------------------------------------------------------------- master pictures and the look block
+# ---------------------------------------------------------------- master pictures and the picture style block
 
 def objects_of(place_record):
     """[(name, material)] of the place's set objects (its set plan), in the order written; an opening is left out."""
@@ -1665,9 +1665,9 @@ def pictures_page(compiler, route, packs, masters):
              "- Make the master pictures first, once each: the places, empty.",
              "- Then make each clip's start picture from its master picture and character pictures, with the prompt on "
              "the clip's page.",
-             "- Paste the look block first in every picture prompt, then the picture's own prompt.",
+             "- Paste the picture style block first in every picture prompt, then the picture's own prompt.",
              "- Show every start picture to yourself against the checklist before it is used.",
-             "", "## The look block (paste this first in every picture prompt)", "",
+             "", "## The picture style block (paste this first in every picture prompt)", "",
              "```text", packs[0]["look_block"] if packs else look_block_paragraph(compiler), "```", "",
              "## Master pictures (make these first, once)", ""]
     used = []
@@ -1680,7 +1680,7 @@ def pictures_page(compiler, route, packs, masters):
         if master["code"] not in used:
             continue
         lines += [f"### {master['code']} - {master['name']} (empty)", "",
-                  "Attach: nothing.", "Prompt (look block first, then this):", "",
+                  "Attach: nothing.", "Prompt (picture style block first, then this):", "",
                   "```text", master["prompt"], "```", "", f"Save it as: {master['file']}", ""]
     lines += ["## Start pictures", "",
               "- Make each clip's start picture from the master picture and character pictures listed on its page, "
@@ -1713,7 +1713,7 @@ def scene_page(compiler, route, pack):
              "paste the prompt, type the seconds, run it, answer the questions, and keep only the part given.",
              f"- Sizes: {size_words(full)} for the real clip, {size_words(test)} for a quick layout test"
              + (f" ({crop})." if crop else "."),
-             "- Settings, the look block and the master pictures are in this folder's other pages.",
+             "- Settings, the picture style block and the master pictures are in this folder's other pages.",
              "- Never change a prompt here. Change the shot in the breakdown and compile again.", ""]
     for entry in pack["clips"]:
         shots = entry["shots"]
@@ -1732,7 +1732,7 @@ def scene_page(compiler, route, pack):
         characters = [f"{character['name']} ({character['file']})" for character in entry.get("character_pictures") or []]
         lines.append("Character pictures: " + (", ".join(characters) if characters else "none") + ".")
         lines.append("Give the picture tool: " + ", ".join(picture.get("attach") or []) + ".")
-        lines += ["Prompt (paste the look block first, then this):", "", "```text", picture.get("prompt", ""), "```", "",
+        lines += ["Prompt (paste the picture style block first, then this):", "", "```text", picture.get("prompt", ""), "```", "",
                   f"Save it as: {picture.get('file')}", "", "### Connect in this order", ""]
         for index, connection in enumerate(entry["connections"], start=1):
             lines.append(f"{index}. {connection['input']}: {connection['picture']} ({connection['file']}) -> "

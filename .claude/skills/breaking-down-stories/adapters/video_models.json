@@ -1781,7 +1781,7 @@
    },
    "inputs": {
     "references_max": 9,
-    "people_pictures_max": 4,
+    "people_pictures_max": 3,
     "start_picture": "the start picture is <Picture 1>, wired to ref_image_0",
     "character_pictures": "each person's picture after it, in order: ref_image_1 is <Picture 2>, ref_image_2 is <Picture 3> ...",
     "guide_video": false,
@@ -2137,7 +2137,7 @@
     "frames": "V ComfyUI templates page: duration snaps up to 17 x k + 5 frames (said for the T2V and I2V templates); the length input defaults to 124 frames; U the range 124 to 362 (Project notes 42: 362 is 15 seconds snapped up; shorter lengths on the grid are untested) [checked 2026-10-10]",
     "tail_s_min": "J h3-storyboard testing notes: H3 often breaks up 1.2 to 1.7 seconds before the end; leave 1.3 to 1.5 s",
     "sizes": "V ComfyUI templates page: native canvas 1344 x 768 at 16:9; U 1536 x 640 for a 2.39 film and 1152 x 480 for tests (the clip file's choices); U 1024 x 576 as the 16:9 test size (Stage's choice)",
-    "inputs": "V ComfyUI templates page and MiniMax model page: up to 9 reference pictures, tags <Picture 1>; U the inputs ref_image_0, ref_image_1 ... (the clip file's reading of the template); J at most 4 character pictures a clip (Project notes 43)",
+    "inputs": "V ComfyUI templates page and MiniMax model page: up to 9 reference pictures, tags <Picture 1>; U the inputs ref_image_0, ref_image_1 ... (the clip file's reading of the template); J at most 3 character pictures a clip, the most the hand-made clip file wires (Project notes 43)",
     "shots_per_clip_max": "J Project notes 42, question 2 (accepted): a clip holds one to three shots",
     "sections": "V MiniMax reference-mode guide: the six sections in this order [checked 2026-10-10]",
     "detailed_description_words": "V MiniMax reference-mode guide: 'normally 350-500 English words' [checked 2026-10-10]",

@@ -82,6 +82,7 @@ One per project: the story, the app, the depth, the rights and the big settings.
 | `rights` | The right to adapt the story (CHOICE-001). study_only marks every export 'Private study, not for publication'. | mine, permission, public_domain, study_only, unknown | quick | user | step 0 | `mine` |
 | `intended_use` | Where the finished film goes. | personal, festival, online_free, online_monetised, commercial | add-on (C) | user | add-on C (prompts for AI video) | `festival` |
 | `licensed_data_only` | Route only to models the adapter marks licensed_data (8.4). | yes_no; default no | add-on (C) | user | add-on C (prompts for AI video) | `no` |
+| `video_route` | How the video is made: auto (the default) or per_scene, Stage picks a model for each scene as before; h3_comfyui_r2v, MiniMax H3 in ComfyUI, Reference to Video: compile makes the clip book. Set by a CHOICE at add-on C's checkpoint, whose option a writes per_scene (a choice cannot write auto, the word for 'code decides') and option b h3_comfyui_r2v (Project notes 43). | auto, per_scene, h3_comfyui_r2v; default auto | add-on (C) | user | add-on C (prompts for AI video) | `h3_comfyui_r2v` |
 | `format` | The kind of finished work (CHOICE-004, asked: no; short under 40 minutes by the first estimate, feature otherwise). | short, feature, limited_series | quick | user | step 1 | `short` |
 | `runtime_target_s` | Target length with credits, in seconds, or as_written. | seconds; also as_written | quick | user | checkpoint A | `as_written` |
 | `scope` | The scenes the scene work, checks, film pass, estimates and exports cover; all by default (for prose, the scenes of chapter I). Set by a CHOICE: at the scene list (checkpoint A) for a screenplay, at the prose plan (checkpoint P) for prose. | id_list; IDs of SCENE; also all | quick | user | checkpoint P | `all` |
@@ -353,7 +354,7 @@ One shot, written from its list item at standard and detailed, reason-first (pur
 | `frame_in_frame` | A frame within the frame. | text; also none | detailed | ai | step 8 | `none` |
 | `device` | At most one expressive device. | text; also none | detailed | ai | step 8 | `none` |
 | `glass` | Every glass surface in frame. | sub_parts; first part: text; state: word (clear, marked, reflecting, screen, broken_open); camera: word (through, along, angled); one line each | standard | ai | step 8 | `window \| state: reflecting \| camera: angled` |
-| `subject` | Who is in frame, where, facing, doing. | sub_parts; first part: id (STATE, CHARACTER); at: word (left_edge, left_third, centre, right_third, right_edge); faces: word (frame_left, frame_right, camera, away, up, down); does: text; tactic: word; energy: word (still, held, rising, breaking, spent); display: number (1, 2, 3); still: word_list (head, eyes, mouth, hands, torso, whole_body); eyeline: text; dwell_s: seconds; travel: word (frame_left, frame_right, up, down, toward_camera, away, none); must_not: text; continues: id; recorded: text; also none; one line each | quick | ai | step 8 | `CH-IONA.S02 \| at: left_third \| faces: camera \| eyeline: CH-SAYE \| dwell_s: 15 \| does: chews slowly; stops chewing; a small frown \| tactic: discovering \| energy: held \| display: 1 \| still: head, hands, torso \| travel: none` |
+| `subject` | Who is in frame, where, facing, doing. | sub_parts; first part: id (STATE, CHARACTER); at: word (left_edge, left_third, centre, right_third, right_edge); faces: word (frame_left, frame_right, camera, away, up, down); does: text; tactic: word; energy: word (still, held, rising, breaking, spent); display: number (1, 2, 3); still: word_list (head, eyes, mouth, hands, torso, whole_body); eyeline: text; dwell_s: seconds; travel: word (frame_left, frame_right, up, down, toward_camera, away, none); must_not: text; continues: id; recorded: text; also none; one line each | quick | ai | step 8 | `CH-IONA.S02 \| at: left_third \| faces: camera \| eyeline: CH-SAYE \| dwell_s: 15 \| does: chews slowly; stops chewing; a small frown \| tactic: discovering \| energy: held \| display: 1 \| travel: none` |
 | `thing` | Register items in frame and how loud they are; plant or payoff on the shot that plants or pays off a PLANT. | sub_parts; first part: id (PROP, STATE, MOTIF, TEXT); emphasis: number; at: text; plant: id; payoff: id; recorded: text; also none; one line each | standard | ai | step 8 | `MO-MINT \| emphasis: 2` |
 | `text` | Text in picture in frame. | id_list; IDs of TEXT; also none | standard | ai | step 8 | `TX-GOODS-ONLY` |
 | `keep_hidden` | What stays out of view, the fact it protects, and how. | sub_parts; first part: id (FACT); how: word (frame_edge, focus, dark, obstruction, timing, sound_first); one line each | standard | ai | step 8 | `FT-03 \| how: frame_edge` |
@@ -980,11 +981,11 @@ Status values: draft, approved, stale, omitted, planned.
 
 ## TAKE: take
 
-One generated take. ID: TK-, the clip ID, -T and 2 digits (`TK-SC10-SH150.1-T03`); the user sees it as take 3. Lives in: 20 Prompts for AI video/Takes.md. Designed at add-on C (prompts for AI video); needed from add-on depth.
+One generated take. ID: TK-, the clip ID (a shot's clip, or a route clip such as SC10-CL03), -T and 2 digits (`TK-SC10-SH150.1-T03`); the user sees it as take 3. Lives in: 20 Prompts for AI video/Takes.md. Designed at add-on C (prompts for AI video); needed from add-on depth.
 
 | Field | Meaning | Values | Depth | Writer | Filled at | Example |
 |---|---|---|---|---|---|---|
-| `clip` | The clip. | id; IDs of CLIP | add-on | ai | add-on C (prompts for AI video) | `SC10-SH150.1` |
+| `clip` | The clip: a shot's clip (SC10-SH150.1), or a clip of a route's clip book, which can hold one to three shots (SC10-CL03). | id; IDs of CLIP | add-on | ai | add-on C (prompts for AI video) | `SC10-SH150.1` |
 | `model` | The exact model name with its date. | text | add-on | ai | add-on C (prompts for AI video) | `seedance-2.5 (model facts 2026-09-27)` |
 | `route` | How it was made. | text | add-on | ai | add-on C (prompts for AI video) | `start picture and prompt` |
 | `inputs` | The files sent. | text_list | add-on | ai | add-on C (prompts for AI video) | `Scene 10 - shot 150 - start 01.png` |
@@ -993,6 +994,7 @@ One generated take. ID: TK-, the clip ID, -T and 2 digits (`TK-SC10-SH150.1-T03`
 | `cost_usd` | What it cost. | dollars | add-on | ai | add-on C (prompts for AI video) | `5.10` |
 | `file` | The take file. | file | add-on | ai | add-on C (prompts for AI video) | `Scene 10 - shot 150 - take 03.mp4` |
 | `review` | Yes/no questions on the take. | sub_parts; first part: text; answer: yes_no; evidence: text; one line each | add-on | ai | add-on C (prompts for AI video) | `Only her mouth moves, and only at 6-8 s? \| answer: yes \| evidence: watched twice` |
+| `rule` | What this take showed about one of the route's rules (the rules of MiniMax H3 in ComfyUI, H3R-01 ...): the rule's ID, then confirmed, wrong or unclear, and a note. Code works out each rule's mark from these every time it runs: confirmed or wrong only after enough takes agree (Project notes 42, W11). | sub_parts; first part: text; verdict: word (confirmed, wrong, unclear); note: text; one line each | add-on | ai | add-on C (prompts for AI video) | `H3R-16 \| verdict: confirmed \| note: with the stillness words left out, her face kept moving between the lines` |
 | `kept` | Whether the user keeps the take (checkpoint E). | yes_no | add-on | user | add-on C (prompts for AI video) | `yes` |
 | `refusals` | How many times the model refused. | number | add-on | ai | add-on C (prompts for AI video) | `0` |
 

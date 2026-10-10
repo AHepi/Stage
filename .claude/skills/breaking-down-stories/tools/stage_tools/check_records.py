@@ -207,7 +207,7 @@ CHECK_FAMILY_MODULES = [
 ]
 
 FAMILY_ORDER = ["FORM", "ID", "CITE", "COVER", "TIME", "STATE", "SIDE", "GEOM", "PHYS", "CRAFT", "INFO", "REASON",
-                "WORDS", "PLAN", "GEN", "FILM"]
+                "WORDS", "PLAN", "GEN", "ROUTE", "FILM"]
 # The ending code writes after a story point once it is resolved to a beat: SC24 "She deletes the way home." = SC24-B03
 RESOLVED_ENDING = re.compile(r'("[^"]*"|“[^”]*”)\s*=\s*SC\d{2,3}[A-Z]?-B\d{2,3}')
 # Checks steps.json lists that another command runs (7.2: previs has its own checks in render_previs.py).
