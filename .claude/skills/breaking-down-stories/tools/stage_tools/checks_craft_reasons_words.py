@@ -54,13 +54,21 @@ After the second full run (Project notes 39 and 40):
 
 After the H3 handover (Project notes 42 and 43, 10 October 2026); all three are warnings marked J, judgements from
 testers' notes that the take log has not yet confirmed:
-- CRAFT-26 is turned round: a moment of hold_action_every_s or more needs at least one small timed action every
-  hold_action_every_s (its shows split at ";" and "then"; a clause holding a stillness word or a not_an_action word
-  of _config/rules/words.json is no action), and a pause held on picture needs the shot's last moments to carry it the same
-  way. It never asks for the subject's still sub-part, which is kept only so that older breakdowns load.
+- CRAFT-26 is turned round: a held moment of hold_action_every_s or more needs at least one small timed action every
+  hold_action_every_s, and a pause held on picture needs the shot's last moments to carry it the same way. It never
+  asks for the subject's still sub-part, which is kept only so that older breakdowns load.
 - CRAFT-27: a stillness word or phrase (stillness_words) in a moment, a does, a start or an end.
 - CRAFT-28: a contact_words cause followed by its effect in one shot (the same moment or the next one); a shot that
   ends on the cause, followed by one that opens on the result, is the fix and is never flagged.
+- after their cross-examination (Project notes 43, round 1, findings F11, F12 and F15), tried on a harness of
+  realistic writing: CRAFT-26 applies to held moments only (a shot marked held, or a moment with no main action,
+  only small ones such as a breath or a blink), so one long walk is never flagged; it counts the parts of a moment
+  split at ";", ",", "and" and "then", and a part is an action only when it has a verb or a small action word ("her
+  eyes on Saye" is a pose, not an action). CRAFT-27 counts a single stillness word only where it describes a person
+  or a body part, never before a noun ("frozen peas", "the still water") or as "even now" ("still wet").
+  CRAFT-28 also reads a cause as a verb with "into", "against" and the like within three words ("swings the bottle
+  into the window"), reads an effect followed by "as" and its cause, and counts an effect only when its subject is
+  a thing or a person ("the glass cracks", never "the room falls silent" or "her face falls").
 - CRAFT-15 counts a person as acting unless they are in the background: energy: still and no line on screen in
   the shot (or an older breakdown's still: whole_body).
 """
@@ -2470,20 +2478,59 @@ def stillness_lists(run):
             list(entry.get("not_an_action") or []))
 
 
+def stillness_extra_list(run, name):
+    """One of the lists of stillness_words that CRAFT-26 reads to tell an action from a pose (small_actions,
+    body_parts, pose_words), as a set of lower-case words."""
+    entry = run.words.get("stillness_words") or {}
+    return {word.lower() for word in entry.get(name) or []}
+
+
 # "still" that means "even now" ("still refusing", "still talking") asks for no stillness, so it is not counted
 # when the next word is an -ing word (Project notes 43: narrow triggers).
 STILL_AS_EVEN_NOW = re.compile(r"\bstill\s+[a-z]+ing\b", re.I)
+# The words that may follow a single stillness word that describes a person ("she sits still beside him", "stands
+# frozen in the doorway", "her body goes rigid."); any other word after it means the word comes before a noun
+# ("the still water", "frozen peas", "the rigid collar") or means "even now" ("still wet"), and asks for no
+# stillness (Project notes 43, round 1, finding F15).
+AFTER_A_STILL_PERSON = {
+    "in", "on", "at", "by", "beside", "against", "with", "as", "and", "or", "but", "for", "while", "until", "behind",
+    "under", "over", "near", "there", "here", "now", "again", "apart", "except", "like", "from", "to", "inside",
+    "outside", "before", "after", "where", "when", "then", "among", "across", "through", "during", "between",
+    "above", "below", "beneath", "too", "even", "once", "throughout"}
+# The single stillness words that are verbs or nouns, never adjectives before a noun, so the test above is skipped.
+ALWAYS_STILLNESS = {"stillness", "freeze", "freezes"}
+
+
+def describes_a_person(plain, match, word):
+    """True when a single stillness word found in a text describes a person or a body part: it ends its clause or is
+    followed by a preposition or a joining word, and it is not 'still' meaning 'even now' or 'even so'."""
+    if word.lower() in ALWAYS_STILLNESS:
+        return True
+    if word.lower() == "still" and STILL_AS_EVEN_NOW.match(plain, match.start()):
+        return False
+    before = plain[:match.start()].rstrip()
+    after = plain[match.end():]
+    if word.lower() == "still" and after.lstrip().startswith(",") and (not before or before[-1] in ";:.("):
+        return False  # "Still, she reaches for the cup": "even so"
+    if word.lower() == "still" and (before.endswith(",") or re.search(r"\b(?:is|are|was|were)$", before, re.I)) \
+            and re.match(r"\s*[A-Za-z]", after):
+        return False  # "Ben, still in his coat, sits down", "the cup is still on the table": "even now"
+    following = re.match(r"\s*([A-Za-z]+)", after)
+    if following is None:
+        return True  # the end of the text, or a comma, a semicolon or a quotation mark after it
+    return following.group(1).lower() in AFTER_A_STILL_PERSON
 
 
 def stillness_in(run, text):
     """The stillness words and phrases of _config/rules/words.json in a text, outside quotation marks, in the order of
-    the lists; a word inside a phrase found is reported as the phrase only."""
+    the lists; a word inside a phrase found is reported as the phrase only, and a single word only where it
+    describes a person or a body part (describes_a_person)."""
     words, phrases, _ = stillness_lists(run)
     plain = without_quotes(text)
     found = [phrase for phrase in phrases if word_pattern(phrase).search(plain)]
     for word in words:
         for match in word_pattern(word).finditer(plain):
-            if word.lower() == "still" and STILL_AS_EVEN_NOW.match(plain, match.start()):
+            if not describes_a_person(plain, match, word):
                 continue
             if any(word_pattern(word).search(phrase) for phrase in found):
                 break
@@ -2492,20 +2539,102 @@ def stillness_in(run, text):
     return found
 
 
-def action_clauses(run, text):
-    """The clauses of a moment's shows (split at ';' and at 'then') that are actions: those holding no stillness
-    word or phrase and no not_an_action word (stays, waits, listens ...) of _config/rules/words.json."""
+# The grammar CRAFT-26 needs to tell a part of a moment that does something ("her lips press together", "breathes
+# out") from one that only says how a person is ("her eyes on Saye", "her hands open at her sides", "level").
+WORDS_BEFORE_A_NOUN = {"the", "a", "an", "her", "his", "their", "its", "my", "your", "our", "one", "two", "three", "four",
+               "both", "each", "every", "some", "this", "that", "these", "those", "any", "all", "another", "other",
+               "no", "of", "own"}
+JOINING_WORDS = {"on", "at", "to", "toward", "towards", "in", "into", "onto", "by", "over", "under", "across", "down",
+                 "up", "out", "off", "away", "back", "from", "of", "with", "without", "against", "along", "round",
+                 "around", "behind", "beside", "between", "through", "past", "near", "above", "below", "for", "and",
+                 "or", "but", "as", "while", "again", "together", "just", "only", "too", "now", "then", "once",
+                 "still", "there", "here", "is", "are", "was", "were", "be", "been", "very", "so", "not", "no"}
+SUBJECT_PRONOUNS = {"she", "he", "they", "it", "we", "you", "i", "both", "them", "who", "which", "each", "all"}
+MODAL_VERBS = {"will", "can", "could", "would", "won't", "cannot", "can't", "must", "might", "may", "should"}
+NOT_VERBS_IN_S = {"his", "hers", "its", "this", "is", "was", "has", "us", "yes", "as", "towards", "always",
+                  "perhaps", "sometimes", "afterwards", "upwards", "downwards", "backwards", "forwards", "theirs",
+                  "ours", "yours", "whereas", "besides", "news", "lens", "series", "thus", "plus", "across", "less",
+                  "unless", "jeans", "trousers", "glasses", "scissors", "pliers", "tongs", "stairs", "seconds",
+                  "minutes", "times", "steps", "inches", "metres", "meters", "centimetres"}
+NOT_VERBS_IN_ING = {"nothing", "something", "anything", "everything", "ceiling", "morning", "evening", "during",
+                    "string", "thing", "things", "ring", "king", "wing", "spring", "building", "sibling", "wedding",
+                    "pudding", "railing", "awning", "clothing", "lightning", "bedding", "landing", "darling",
+                    "stocking", "stockings"}
+PART_SPLIT = re.compile(r";|,|\bthen\b|\band\b", re.I)
+
+
+def part_words(part):
+    """The lower-case words of a part of a moment, curly apostrophes made straight."""
+    return re.findall(r"[a-z][a-z'-]*", part.lower().replace("’", "'"))
+
+
+def looks_like_a_verb(words, index, small_actions, body_parts, pose_words):
+    """True when the word at index reads as a verb among the words of a part: a small action word; a modal ('will');
+    an -ing or -ed word that is not a pose after a body part ('whitening', never 'her face turned'); an -s word
+    that does not follow 'the', 'her', a number or a name's ('breathes', 'the fridge hums', never 'her eyes'); or
+    the word after a plural subject or a pronoun that is not a joining or pose word ('her lips press', 'both
+    hold')."""
+    word = words[index].strip("'")
+    previous = words[index - 1] if index else ""
+    if word in small_actions:
+        return True
+    if word.endswith("'s") or word in body_parts:
+        return False
+    if word in MODAL_VERBS:
+        return True
+    if len(word) >= 5 and word.endswith("ing") and word not in NOT_VERBS_IN_ING:
+        return previous not in WORDS_BEFORE_A_NOUN  # "his knuckles whitening", never "the moving train"
+    if len(word) >= 5 and word.endswith("ed"):
+        return not (previous in body_parts or previous in WORDS_BEFORE_A_NOUN or word in pose_words)
+    if (len(word) >= 3 and word.endswith("s") and not word.endswith(("ss", "ous")) and word not in NOT_VERBS_IN_S
+            and previous not in WORDS_BEFORE_A_NOUN and not previous.endswith("'s") and not previous.isdigit()):
+        return True
+    if not index or word in JOINING_WORDS or word in pose_words or word in WORDS_BEFORE_A_NOUN or word.endswith("ly"):
+        return False
+    plural_noun_before = previous.endswith("s") and not previous.endswith(("ss", "'s")) and (
+        previous in body_parts or (index >= 2 and (words[index - 2] in WORDS_BEFORE_A_NOUN or words[index - 2].endswith("'s"))))
+    return plural_noun_before or previous in SUBJECT_PRONOUNS
+
+
+def moment_parts(run, text):
+    """[(part, is an action, is a small action)] of a moment's shows, split at ';', ',', 'and' and 'then', outside
+    quotation marks. A part is an action when it holds no stillness word or phrase, no not_an_action word, and a
+    verb or a small action word (looks_like_a_verb); a small action is one with a small_actions word or one done
+    by a body part ('his jaw works', 'her eyes go to Jude')."""
     _, _, not_actions = stillness_lists(run)
-    clauses = [piece.strip(" ,.:") for piece in re.split(r";|\bthen\b", text or "")]
+    small_actions = stillness_extra_list(run, "small_actions")
+    body_parts = stillness_extra_list(run, "body_parts")
+    pose_words = stillness_extra_list(run, "pose_words")
     found = []
-    for clause in clauses:
-        if not clause:
+    for part in PART_SPLIT.split(without_quotes(text)):
+        part = part.strip(" .:()")
+        words = part_words(part)
+        if not words:
             continue
-        plain = without_quotes(clause)
-        if stillness_in(run, clause) or any(word_pattern(word).search(plain) for word in not_actions):
+        if stillness_in(run, part) or any(word_pattern(word).search(part) for word in not_actions):
+            found.append((part, False, False))
             continue
-        found.append(clause)
+        action = any(looks_like_a_verb(words, index, small_actions, body_parts, pose_words)
+                     for index in range(len(words)))
+        head = next((word for word in words if word not in WORDS_BEFORE_A_NOUN and not word.endswith("'s")), "")
+        small = action and (any(word in small_actions for word in words) or head in body_parts)
+        found.append((part, action, small))
     return found
+
+
+def action_clauses(run, text):
+    """The parts of a moment's shows that are actions (moment_parts)."""
+    return [part for part, action, _ in moment_parts(run, text) if action]
+
+
+def held_moment(run, shot, text):
+    """True when a moment is held, so CRAFT-26 counts its actions: the shot is marked held (turn shots and oner
+    shots are), or the moment has no main action, only small ones (a breath, a blink, a glance) or none. A moment
+    with a main action ('walks round the table and stops') is one action however long it is (TIME-06), and is
+    never counted (Project notes 43, round 1, finding F11)."""
+    if word_of(shot.get("held")) == "yes":
+        return True
+    return not any(action and not small for _, action, small in moment_parts(run, text))
 
 
 def people_in(run, shot):
@@ -2542,9 +2671,9 @@ SMALL_ACTIONS_FIX = ("Fix: write small timed actions instead (a breath, a blink,
 
 
 @register_check("CRAFT-26", level="W", build=1,
-                title="A held moment (hold_action_every_s or more, or a pause held on picture) with fewer than one "
-                      "small timed action every hold_action_every_s (D15 R6, rewritten; J: testers' notes, Project "
-                      "notes 42 and 43)",
+                title="A held moment (hold_action_every_s or more in a shot marked held or with no main action, or a "
+                      "pause held on picture) with fewer than one small timed action every hold_action_every_s (D15 "
+                      "R6, rewritten; J: testers' notes, Project notes 42 and 43)",
                 plain="holds on a person with too little happening, so a video model may freeze the picture or "
                       "squeeze the time out")
 def check_craft_26(run):
@@ -2557,7 +2686,7 @@ def check_craft_26(run):
         moments = items(run, shot, "moment")
         for item in moments:
             seconds = moment_seconds(item)
-            if seconds is None or seconds + 1e-9 < every:
+            if seconds is None or seconds + 1e-9 < every or not held_moment(run, shot, item.get("shows") or ""):
                 continue
             needed = int(math.floor(seconds / every + 1e-9))
             found = action_clauses(run, item.get("shows") or "")
@@ -2612,11 +2741,6 @@ def check_craft_27(run):
     return problems
 
 
-def contact_lists(run):
-    entry = run.words.get("contact_words") or {}
-    return list(entry.get("cause") or []), list(entry.get("effect") or [])
-
-
 def phrase_positions(plain, phrases):
     """[(position, phrase)] of every phrase found in a text as whole words and not negated just before it."""
     found = []
@@ -2628,6 +2752,94 @@ def phrase_positions(plain, phrases):
     return sorted(found)
 
 
+# The words before an effect that leave it with no subject ("and drops run") or make it a noun ("her tears", "the
+# falls"), so it is no effect of a contact (Project notes 43, round 1, finding F12).
+NO_SUBJECT_BEFORE = {"the", "a", "an", "her", "his", "their", "its", "my", "your", "our", "some", "and", "or", "but",
+                     "then", "as", "to", "of", "with", "in", "on", "at", "into", "while", "when", "for", "from",
+                     "by", "over", "under"}
+
+
+def cause_positions(words, plain):
+    """[(position, cause words)] of the contact causes in a text: the cause list of contact_words, and a
+    cause_into_verbs verb followed within three words by a cause_into_words word ('swings the bottle into the
+    window'), leaving out the not_a_cause phrases ('knocks at the door') and negated ones."""
+    entry = words.get("contact_words") or {}
+    found = phrase_positions(plain, list(entry.get("cause") or []))
+    verbs = "|".join(re.escape(verb) for verb in entry.get("cause_into_verbs") or [])
+    joins = "|".join(re.escape(join).replace(r"\ ", r"\s+") for join in entry.get("cause_into_words") or [])
+    if verbs and joins:
+        pattern = re.compile(r"(?<![A-Za-z'-])(" + verbs + r")(?:\s+[A-Za-z'’-]+){0,3}?\s+(?:" + joins + r")(?![A-Za-z'-])",
+                             re.I)
+        for match in pattern.finditer(plain):
+            if not NEGATION_BEFORE.search(plain[:match.start()]):
+                found.append((match.start(), re.sub(r"\s+", " ", match.group(0))))
+    exceptions = [word_pattern(phrase) for phrase in entry.get("not_a_cause") or []]
+    kept = []
+    for position, cause in sorted(found):
+        if any(pattern.match(plain, position) for pattern in exceptions):
+            continue
+        if any(spot == position for spot, _ in kept):
+            continue
+        kept.append((position, cause))
+    return kept
+
+
+def effect_positions(words, plain, cause_before=False):
+    """[(position, effect word)] of the effects in a text (effect and effect_plural) that a thing or a person does
+    right before them ('the glass cracks', 'it falls', 'the jars fall'): never after a word of NO_SUBJECT_BEFORE
+    (then the word is a noun, 'her tears', or has no subject), except after 'and' when a cause comes before it and no
+    verb follows ('trips over the cable and goes down', never 'and drops run down the glass'); never when the
+    subject is a not_things word ('her face falls', 'the light falls across the floor'); never in a not_effects
+    phrase ('the room falls silent')."""
+    entry = words.get("contact_words") or {}
+    not_things = {word.lower() for word in entry.get("not_things") or []}
+    not_effects = [word_pattern(phrase) for phrase in entry.get("not_effects") or []]
+    effects = list(entry.get("effect") or []) + list(entry.get("effect_plural") or [])
+    found = []
+    for position, effect in phrase_positions(plain, effects):
+        if any(pattern.match(plain, position) for pattern in not_effects):
+            continue
+        before = [word for word in re.findall(r"[A-Za-z'’-]+", plain[:position]) if not word.lower().endswith("ly")]
+        if not before or re.search(r"[;,.:]\s*$", plain[:position]):
+            continue
+        subject = before[-1].lower().replace("’", "'")
+        if subject in not_things:
+            continue
+        if subject in NO_SUBJECT_BEFORE:
+            following = re.match(r"\s*([A-Za-z'’-]+)", plain[position + len(effect):])
+            next_word = following.group(1).lower() if following else ""
+            verb_follows = next_word and next_word not in JOINING_WORDS and next_word not in WORDS_BEFORE_A_NOUN \
+                and not next_word.endswith("ly")
+            if subject != "and" or not cause_before or verb_follows:
+                continue
+        found.append((position, effect))
+    return found
+
+
+def contact_found(words, texts):
+    """The first contact shown on screen in a shot's texts, read in order: (index of the text, cause, effect, effect
+    first) when a text holds a cause and then an effect, an effect followed by 'as' and its cause ('the glass
+    shatters as the bottle smashes into it'), or a cause whose effect opens the next text; else None. texts are the
+    plain words of the shot's moments, in time order. Shared so that the clip grouping can read contacts the same
+    way."""
+    for index, plain in enumerate(texts):
+        causes = cause_positions(words, plain)
+        effects = effect_positions(words, plain, cause_before=bool(causes))
+        for position, cause in causes:
+            later = [effect for spot, effect in effects if spot > position]
+            if later:
+                return index, cause, later[0], False
+            earlier = [(spot, effect) for spot, effect in effects if spot < position
+                       and re.search(r"\b(?:as|when)\b", plain[spot:position], re.I)]
+            if earlier:
+                return index, cause, earlier[-1][1], True
+            if index + 1 < len(texts):
+                following = effect_positions(words, texts[index + 1])
+                if following and not re.search(r"[;,]", texts[index + 1][:following[0][0]]):
+                    return index + 1, cause, following[0][1], False
+    return None
+
+
 @register_check("CRAFT-28", level="W", build=1,
                 title="A shot whose moments, in order, hold a contact_words cause and then its effect: a contact "
                       "shown on screen (J: testers' notes, Project notes 42 W9)",
@@ -2635,34 +2847,24 @@ def phrase_positions(plain, phrases):
                       "do; cut at the moment of contact")
 def check_craft_28(run):
     problems = []
-    causes, effects = contact_lists(run)
     fix = ("Fix: end the shot at the contact and open the next shot on the result already there, in a clearly "
            "different size or angle, with the sound of the hit on the cut (a judgement from testers' notes: video "
            "models cannot make one thing break or push another at the moment of contact; Project notes 42).")
     for shot in records_of(run, "SHOT"):
-        moments = items(run, shot, "moment")
-        timed = sorted(moments, key=lambda item: (moment_span(item) or (0.0, 0.0)))
-        texts = [("moment", item.first, without_quotes(item.get("shows"))) for item in timed]
-        texts += [("subject", item.first, without_quotes(item.get("does"))) for item in items(run, shot, "subject")]
-        for index, (field_name, first, plain) in enumerate(texts):
-            hit = None
-            for position, cause in phrase_positions(plain, causes):
-                later = [(field_name, first, effect) for spot, effect in phrase_positions(plain, effects)
-                         if spot > position]
-                if not later and field_name == "moment" and index + 1 < len(texts) and texts[index + 1][0] == "moment":
-                    following = texts[index + 1]
-                    later = [(following[0], following[1], effect)
-                             for _, effect in phrase_positions(following[2], effects)]
-                if later:
-                    hit = (cause, later[0])
-                    break
+        moments = sorted(items(run, shot, "moment"), key=lambda item: (moment_span(item) or (0.0, 0.0)))
+        groups = [("moment", moments, [without_quotes(item.get("shows")) for item in moments])]
+        groups += [("subject", [item], [without_quotes(item.get("does"))]) for item in items(run, shot, "subject")]
+        for field_name, sources, texts in groups:
+            hit = contact_found(run.words, texts)
             if hit is None:
                 continue
-            cause, (where_field, where_first, effect) = hit
+            index, cause, effect, effect_first = hit
+            order = (f"{quote_for_message(effect)} as {quote_for_message(cause)}" if effect_first else
+                     f"{quote_for_message(cause)} and then {quote_for_message(effect)}")
             problems.append(problem_at(
-                run, "W", "CRAFT-28", shot, where_field,
-                f"{quote_for_message(cause)} and then {quote_for_message(effect)} in one shot show a contact and its "
-                f"result on screen", fix, containing=(where_first or "").strip() or None))
+                run, "W", "CRAFT-28", shot, field_name,
+                f"{order} in one shot show a contact and its result on screen", fix,
+                containing=(sources[index].first or "").strip() or None))
             break
     return problems
 

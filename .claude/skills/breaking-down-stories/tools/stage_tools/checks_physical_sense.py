@@ -18,7 +18,8 @@ In plain words (Project notes 42, work item W8, and 43, part B3):
   runs or sprints, or who carries, lifts or holds up a person written as heavy, big, broad or tall;
 - PHYS-09 doors: a brace against a door (a chair under the handle, a wedge), or a door or gate kicked open, when
   nothing says which way the door opens;
-- PHYS-10 one thing per hand: a person holding more than two things at once in one shot;
+- PHYS-10 one thing per hand: a person holding more than two things at once in one shot (in their does, the places
+  of the shot's things, or one clause of a moment; "in one hand ... in the other" counts as holding);
 - PHYS-11 a thing given emphasis that is too small to see at the shot's size (visible_thing_min_size_m_by_size,
   from visible_thing_emphasis_min).
 
@@ -56,7 +57,10 @@ TEETH_HOLD = re.compile(
     r"|\bteeth\s+(?:clamped|clenched|closed|locked|tight)\s+(?:on|round|around|over)\b"
     r"|\b(?:clamped|clenched|gripped|held)\s+(?:in|between)\s+(?:her|his|their)\s+jaws\b|\bbites?\s+down\s+on\b"
     r"|\b(?:holds?|holding|carries|carrying|grips?|gripping|clamps?|clamping|clenche?s?|clenching)\b"
-    r"[^.;]{0,40}\bin\s+(?:her|his|their)\s+mouth\b", re.I)
+    r"[^.;]{0,40}\bin\s+(?:her|his|their)\s+mouth\b"
+    # "the flask gripped by her teeth", "held with his teeth" (Project notes 43, round 1, finding F16)
+    r"|\b(?:holds?|holding|held|grips?|gripping|gripped|carries|carrying|carried|clamps?|clamped|clamping|"
+    r"clenche?s?|clenched|clenching)\b[^.;]{0,40}\b(?:by|with)\s+(?:her|his|their)\s+(?:teeth|jaws)\b", re.I)
 TAKEN_OUT_OF_TEETH = re.compile(
     r"\b(?:takes?|took|taking|pulls?|pulling|spits?|spitting|drops?|dropping|removes?|removing|lets? go of)\b"
     r"[^.;]{0,30}\b(?:out of|from)\s+(?:her|his|their)\s+(?:teeth|mouth|jaws?)\b|\bspits?\b", re.I)
@@ -88,8 +92,12 @@ OPEN_ABOVE = re.compile(r"\b(?:open|grid|grille|mesh|wire|slatted|slats|grating|
 SOLID_ABOVE = re.compile(r"\b(?:solid|steel|metal|iron|concrete|wooden|wood)\s+(?:[a-z-]+\s+)?"
                          r"(?:plate|sheet|slab|panel|lid|deck|cover)\b|"
                          r"\b(?:plate|sheet|slab|panel|lid|deck)\s+(?:[a-z-]+\s+){0,3}(?:over|above|covers?)\b", re.I)
-ROLLING_BAR = re.compile(r"\b(rung|rungs|bar|bars|crossbar|rail|rails|handrail|railing|pipe|pipes)\b[^.;]{0,40}?"
-                         r"\b(rolls|roll|rolling|rolled)\b(?!\s+pin)", re.I)
+# The bar must be the one that rolls: "the rung rolls under her hand", "the top rung rolls as she steps on it",
+# never "grips the rail and rolls her shoulders" or "on the rail as the boat rolls" (Project notes 43, round 1,
+# finding F16).
+ROLLING_BAR = re.compile(r"\b(rung|rungs|bar|bars|crossbar|rail|rails|handrail|railing|pipe|pipes)\s+"
+                         r"(?:(?:beneath|under|below|in|of)\s+(?:the|her|his|their|its|a)\s+[a-z-]+\s+|[a-z]+ly\s+|"
+                         r"(?:starts?|begins?)\s+to\s+)?(rolls|roll|rolling|rolled)\b(?!\s+pin)", re.I)
 LOOSE_WORDS = re.compile(r"\b(loose|free|falls|fallen|falling|dropped|drops|on the floor|across the floor|along the "
                          r"floor|off the|down the)\b", re.I)
 # Weak words: the strong ones count wherever they describe the person; the soft ones (thin is also said of cloth)
@@ -106,10 +114,14 @@ CARRY_VERB = re.compile(r"\b(carries|carrying|carried|lifts|lifting|lifted|hauls
                         r"supporting|takes the weight of|bears the weight of)\b|"
                         r"\b(?:holds?|holding|held|props?|propping|propped|keeps?|keeping)\s+(?:[A-Za-z'-]+\s+){0,2}up\b",
                         re.I)
+# The door may be named with a possessive ("under the back door's handle") and the brace must be against the door
+# itself, never "braces herself against the door frame" (Project notes 43, round 1, finding F16).
+DOOR_PART = (r"(?:the\s+|its\s+|a\s+)?(?:[a-z-]+\s+){0,2}?(?:door(?:'s)?\s+|[a-z-]+'s\s+)?"
+             r"(?:handle|knob|doorknob|lever)\b")
 BRACE = re.compile(r"\b(?:wedges?|wedged|wedging|jams?|jammed|jamming|braces?|braced|bracing|props?|propped)\b"
-                   r"[^.;]{0,50}\b(?:under|against|beneath)\s+(?:the\s+)?(?:door\s+)?(?:handle|knob|doorknob|lever|door)\b"
-                   r"|\b(?:chair|wedge|table|plank|bar)\b[^.;]{0,30}\bunder\s+(?:the\s+)?(?:door\s+)?"
-                   r"(?:handle|knob|doorknob|lever)\b", re.I)
+                   r"[^.;]{0,50}\b(?:under|against|beneath)\s+(?:" + DOOR_PART +
+                   r"|(?:the\s+|a\s+)?(?:[a-z-]+\s+)?door\b(?!\s*(?:frame|jamb|post|way)))"
+                   r"|\b(?:chair|wedge|table|plank|bar|broom)\b[^.;]{0,30}\bunder\s+" + DOOR_PART, re.I)
 KICKED_OPEN = re.compile(r"\b(?:kicks?|kicked|kicking|boots?|booted)\b[^.;]{0,25}\b(?:door|gate|hatch)\b[^.;]{0,25}"
                          r"\bopen\b|\b(?:door|gate|hatch)\b[^.;]{0,15}\b(?:kicked|booted)\s+open\b", re.I)
 OPENS_WHICH_WAY = re.compile(r"\bopens?\s+(?:in|inward|inwards|out|outward|outwards|toward|towards|away|into|onto|"
@@ -117,7 +129,10 @@ OPENS_WHICH_WAY = re.compile(r"\bopens?\s+(?:in|inward|inwards|out|outward|outwa
                              r"into|open toward)\b", re.I)
 HOLD_VERB = re.compile(r"\b(holds?|holding|carries|carrying|clutch(?:es|ing)?|grips?|gripping|clasps?|clasping|"
                        r"cradles?|cradling)\b|"
-                       r"\bin\s+(?:her|his|their)\s+(?:\w+\s+)?(?:hand|hands|fist|fists|arms|grip)\b", re.I)
+                       r"\bin\s+(?:her|his|their)\s+(?:\w+\s+)?(?:hand|hands|fist|fists|arms|grip)\b|"
+                       # "the lit phone in one hand, the flask and her scissors in the other" (Project notes 43,
+                       # round 1, finding F16)
+                       r"\bin\s+(?:one|either)\s+(?:hand|fist)\b|\bin\s+the\s+other\b", re.I)
 HAND_PLACE = re.compile(r"\bin\s+(?:([A-Z][A-Za-z]+)(?:'s|’s)|her|his|their)\s+(?:\w+\s+)?"
                         r"(?:hand|hands|fist|fists|grip|arms|fingers|palm)\b")
 # "him" or "her" as the one carried, never "her hand" ("holds her hand up").
@@ -930,7 +945,23 @@ def check_phys_10(run):
                 for prop in props_named(run, clause, candidates):
                     if prop not in held[person]:
                         held[person].append(prop)
-        for person, things in held.items():
+        # A moment counts too, one at a time and one clause at a time, so that things put down in between are never
+        # added up: "Saye holds the lit phone, the flask and her scissors" (Project notes 43, round 1, finding F16).
+        at_once = {person: list(things) for person, things in held.items()}
+        for item in items(run, shot, "moment"):
+            for clause in clauses_of(plain_text(item.get("shows"))):
+                if not HOLD_VERB.search(clause) or TEETH_HOLD.search(clause):
+                    continue
+                person = person_in_clause(run, shot, clause)
+                if person not in held:
+                    continue
+                things = list(held[person])
+                for prop in props_named(run, clause, candidates):
+                    if prop not in things:
+                        things.append(prop)
+                if len(things) > len(at_once[person]):
+                    at_once[person] = things
+        for person, things in at_once.items():
             if len(things) > 2:
                 problems.append(problem_at(
                     run, "W", "PHYS-10", shot, "subject",
