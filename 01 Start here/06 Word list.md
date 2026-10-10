@@ -85,7 +85,7 @@ Stage uses one plain word for each thing, always the same one. The examples come
 | start picture, end picture | Pictures a video clip starts or ends on. | Shot 150 is made from a start picture of Iona. |
 | layout picture | A grey still that fixes where things stand in the frame. | Shot 080's two women and the table. |
 | guide video | A grey render an AI video tool copies the motion from. | The fall in scene 6, made first as a grey render. |
-| clip length | How long a piece of AI video is made. | Shot 150: 15 seconds on screen, a 17-second clip. |
+| clip, clip length | One run of an AI video model (with MiniMax H3 in ComfyUI, up to three shots), and how long it is made. | Shot 150: one clip. |
 | take | One try at making a clip; you keep or reject each. | "Take 3 of shot 150: keep it? [keep]" |
 | the first estimate, the estimate from the shots | Running time and cost, first from your story's words, later from the shots. | The Catch, first estimate: about 35 minutes. |
 

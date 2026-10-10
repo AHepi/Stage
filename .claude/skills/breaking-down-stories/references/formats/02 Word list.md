@@ -33,7 +33,9 @@ One plain word for each thing. Write "turn shot", never "key shot"; in a record 
 | What a line or act does to the other person | **tactic**, an -ing word (`tactic` sub-parts of BEAT and SHOT) | action gerund, playable action, infinitives |
 | What the hands do | **task** (`BEAT.task`) | activity, physical task |
 | What we see the body do | **does** (`SHOT.subject` sub-part) | emotion words, behaviour as a plan field |
-| How openly a body shows a feeling / what does not move | **display** 1-3 / **still** (`SHOT.subject` sub-parts) | performance scale, intensity (for display) |
+| How openly a body shows a feeling | **display** 1-3 (`SHOT.subject` sub-part); the old sub-part **still** is no longer written or sent to a model | performance scale, intensity (for display) |
+| A held moment, filled | **held moment** (a moment of `hold_action_every_s` or more, or a pause held on picture) filled with **small timed actions**: a breath, a blink, a swallow, a glance, a hand that adjusts something | stillness, "stays still", a list of still parts |
+| Words that ask a model to freeze | **stillness words** (`_config/rules/words.json`); never in a record a model reads | none |
 | Which way a subject crosses the frame | **travel** (`SHOT.subject`, `SEQUENCE.travel`) | screen direction (as a field name) |
 | A moment in a scene named before its beats exist | **story point** (kind story_point) | beat reference (before step 7) |
 | The feeling a film or scene is played in | **tone**: **home tone** (`PLAN.tone_home`), a scene's **tone**, **undercurrent**, **tone shift** (`SCENE` fields) | mood (as a field), genre (for tone) |
@@ -69,6 +71,18 @@ One plain word for each thing. Write "turn shot", never "key shot"; in a record 
 | Grey 3D stand-in renders of shots | AI: **previs** (PREVIS, `SHOT.previs_level`); user: **grey previews** | clay preview, greybox (for the user) |
 | Runtime and cost estimates | AI: v0, v1 (D13); user: **the first estimate**, **the estimate from the shots** | v0, v1 in user text |
 | Where a take is kept or rejected | **take** (TAKE) | generation job |
+| A video model plus the place it runs | **route** (`PROJECT.video_route`; route entries in `_config/adapters/video_models.json`), such as "MiniMax H3 in ComfyUI, Reference to Video" | platform, pipeline (for a route) |
+| One run of a video model | **clip**: on a route, one to three shots of one scene or one part of a long shot (`SC10-CL01`); elsewhere a piece of one shot (`SC10-SH150.1`) | generation, job |
+| All of a route's clip pages, with its settings, pictures, shot map and take log | **clip book** (`20 Prompts for AI video/MiniMax H3 in ComfyUI/`) | prompt file (for a route) |
+| The end of a clip made to be thrown away / where the kept part ends | **tail** / **keep point** | handle (for the tail), buffer |
+| The number typed into the template's Duration box | **seconds to type** | duration |
+| Ending a shot as one thing reaches another, the next shot opening on the result | **contact cut** | impact shot |
+| An empty picture of a place, made once, that start pictures are built from | **master picture** (M1, M2 ...) | plate (for this), set still |
+| The paragraph pasted first in every picture prompt on a route | **picture style block**; never "look block", which is a place's light and colour words | look block (for this) |
+| The line giving each person in a clip breathing, eye movements, weight shifts and blink times | **"alive" sentence** | none |
+| Which clip holds each shot, and its seconds | **shot map** | edit list |
+| A run's seed, settings, result and verdict, and what it showed about a route's rules | **take log** (TAKE records with `rule` lines); each rule's **mark**: verified, confirmed, wrong or unclear | none |
+| A question the checker asks when a body is asked to do something impossible | **physical sense check** (PHYS) | none |
 | The flashlight in prompts | **flashlight** (`PROJECT.prompt_words`); "torch" only inside quotes of the script | torch in prompts |
 | Model names | the exact name in `video_models.json`, with aliases ("Kling O3" = kling-3.0-omni) | informal names |
 
