@@ -89,7 +89,7 @@ Below this line: details for the AI and the checker. You never need to read them
 ### PROP PR-BOTTLE The water bottle
 - names: a water bottle
 - category: consumable
-- fixed_description: a clear plastic water bottle with a white screw cap and no label
+- fixed_description: a clear, unlabelled plastic water bottle with a white screw cap
 - real_size: [0.07, 0.07, 0.22]
 - side: cap thread | own: right | plot: yes
 - text: none
