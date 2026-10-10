@@ -1,6 +1,6 @@
 # 43 Status
 
-Log entry 43 started this file. Where the project stands, rewritten each round. Last updated: 10 October 2026, entry 44.
+Log entry 43 started this file. Where the project stands, rewritten each round. Last updated: 10 October 2026, entry 45.
 
 ## In one paragraph
 
@@ -23,7 +23,7 @@ It no longer asks any video model for stillness. The repository is laid out as n
 
 ## Waiting
 
-- **The test run (W1):** now 14 runs, planned for a new rented pod. Entry 44 researched how to run it properly (note 44). It waits on two decisions of yours: sending the test material (it quotes The Catch) to the pod, and using a password-protected helper on the pod. The pod made in entry 44 is stopped and empty; it will be replaced by one on a machine with the right graphics driver.
+- **The test run (W1):** done in entry 45 (14 runs, note 45). Waiting for your listening (lines, voices, how alive people look) before the route's rule marks change. Next: the blocking test with Blender grey previews (entry 46).
 - **Scenes 1 to 6 compiled for the route:** needs the plan of The Catch (the "40 ... revised kit" files).
 - **One question for you:** your handover note (42) is in the public repository and quotes a few lines of clip 03's prompt from scenes 1 to 6. Keep it as it is, or replace those lines with a scene 10 example?
 

@@ -15,7 +15,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 ## Where things stand
 
 **Built and uploaded:**
-- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 to 44 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
+- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 to 45 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
 - **New in entry 43:** a way of making video with MiniMax H3 in ComfyUI. For each scene it makes a clip book: one page per clip with the start picture to make, the pictures to connect, the prompt in MiniMax's own format, the seconds to type, what to check and which seconds to keep. Stage no longer asks any video model for stillness, and it checks plans for physical slips (no room to climb, a heavy torch held in the teeth, nothing to cut a strap with).
 - **The repository is laid out as numbered folders** (entry 43): `CONTEXT.md` at the top says where to go; then `01 Start here`, `02 Example`, `03 Kits to upload` and `04 Project history`.
 - The kit is a Claude skill with its own checking program. It also comes as a bundle for ChatGPT and Gemini, with setup guides for each app.
@@ -283,6 +283,15 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - Waits on two decisions of yours: sending the test material to the pod, and using the password-protected helper instead of the manual's 3-minute download link.
     - Files: `Project notes/44 RunPod - how to run the test properly.md`; lesson 12 in `43 Lessons.md`.
 
+45. **Ran the first H3 test on a new rented pod: 14 runs, all made and checked.**
+    - With your yes I deleted the empty pod and made a new one, the right way: on a machine with the right graphics driver, with the pod's normal startup kept, only port 8099 open, no secure shell and no Jupyter.
+    - Your setup was installed exactly as pinned. The 123.6 GB of model files downloaded in 5 minutes (81 last time), and the model loaded in a minute (18 last time). A warm-up run with no story tested the whole chain first.
+    - The safety check blocked the story text three times in Auto mode, even after your yes. You switched the mode to "Accept edits" and approved the one step that sent the prompts and pictures, then the rest ran.
+    - Results, from frames: Stage's contact cut worked in both takes, and your one-line prompt never made the trip. The new "Not mint." prompt gave a calm take without any stillness words, while the old one gave big expressions. But H3 copied the start picture's wide framing over the words "close-up": the planning picture decides the camera.
+    - The pod's own switch-off timer stopped it at the end, so the money cap is proven. The cost was about $5.50 for about 62 minutes, plus $0.53 for the deleted pod.
+    - Not yet known: the lines and voices (they need your ears), and how alive people look at full speed.
+    - Files: `Project notes/45 First H3 test - results.md`; the clips and the take log are outside git (they hold story material).
+
 ## Next step
 
-Decide the two questions in note 44: may I send the test material to a new pod, and may I use the password-protected helper there? With both yeses I make the new pod, run the 14 runs, bring back the clips with a take log to fill, stop the pod and report the cost.
+Listen to the 14 clips and fill in the take log's columns marked "you" (lines, voices, how alive people look). Meanwhile I design the blocking test: Stage's Blender grey preview as H3's planning picture, to control the camera and where people stand.
