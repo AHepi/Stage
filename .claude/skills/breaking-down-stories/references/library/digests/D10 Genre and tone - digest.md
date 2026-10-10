@@ -90,7 +90,7 @@ Enums lowercase snake_case; `none`, never empty. The blueprint wins on names: it
 | number | `song_id`, `bpm`, `bars` | The locked song | `MU-##` (or theme `TH-##`); integer; integer |
 | number shot | `bar_in`, `bar_out`, `lip_sync_route` | Where the shot sits; how the mouth syncs | integers; D3 `sync_method`: `none` `native` `audio_reference` `post_lipsync` |
 
-**Tone defaults (§2.2; `rules/tone_defaults.json`).** "From this tone, start here"; a departure gets one line in `notes`.
+**Tone defaults (§2.2; `_config/rules/tone_defaults.json`).** "From this tone, start here"; a departure gets one line in `notes`.
 
 | tone | asl_factor | size, lens | movement | light | sound | acting |
 |---|---|---|---|---|---|---|

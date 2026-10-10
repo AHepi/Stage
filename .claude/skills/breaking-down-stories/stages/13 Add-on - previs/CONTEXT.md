@@ -23,7 +23,7 @@ LOCATION set plans (objects, marks, `plan_orientation`); each SCENE's `start` it
 - PREVIS records in `19 Grey previews/Grey preview jobs.md`: `for`, `level`, `standin_level`, `route`, `extras`, `stills`, `approved`; code works out `plan_file` and `blocking`.
 - Plan files in `For machines - do not edit/previs plans/`; renders in `19 Grey previews/Scene 10 - shot 080/`; one `19 Grey previews/Scene 10 - contact sheet.html` per scene.
 - Extras fragments `19 Grey previews/extras/<shot>.json`, where needed.
-- PROJECT `previs_colours`, one flat colour per character's stand-in, set once by code.
+- PROJECT `previs_colours` in `00 Start here.md`, one flat colour per character's stand-in, set once by code.
 
 ## Card parts to open
 

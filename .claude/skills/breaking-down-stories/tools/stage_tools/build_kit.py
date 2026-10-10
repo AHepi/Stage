@@ -4,6 +4,8 @@ build-kit (blueprint 7.1, 2.1, 2.3, 2.5). It is a maintainers' tool: the AI neve
 In plain words, `python .claude/skills/breaking-down-stories/tools/stage.py build-kit` writes:
 - references/formats/03 Field guide.md in the skill: every record type and field of _config/schema/schema.json in
   plain words;
+- the Reads and Writes columns of stages/CONTEXT.md, the list of steps, from _config/schema/steps.json (each step's
+  reads and files_written), so the list never drifts from the steps (Project notes 43, round 2, finding R-F1);
 - AGENTS.md at the top of the repository: SKILL.md's rules with every path written out, for coding agents
   other than Claude Code;
 - 03 Kits to upload/Chat kit/: exactly the 13 files of blueprint 2.5 for a ChatGPT Project or a Gemini Gem: the text to paste
@@ -39,7 +41,8 @@ from pathlib import Path
 from .project_files import Project, StageStop, today
 from .record_format import (CARDS_FOLDER, CONFIG_FOLDER, DIVIDER_LINE, FORMATS_FOLDER, GOLD_CONTEXT_FILE,
                             GOLD_SCENE_FILE, LIBRARY_FOLDER, LIMITS_FILE, MESSAGE_FORMATS_FILE, REFERENCES_FOLDER,
-                            SCHEMA_FILE, SKILL_FOLDER, STAGES_FOLDER, TEMPLATES_FOLDER, stage_contract_file)
+                            SCHEMA_FILE, SKILL_FOLDER, STAGE_CONTRACT_NAME, STAGES_FOLDER, STEPS_FILE,
+                            TEMPLATES_FOLDER, stage_contract_file)
 
 SKILL_NAME = "breaking-down-stories"
 KITS_FOLDER = "03 Kits to upload"
@@ -48,6 +51,7 @@ SKILL_ZIP_NAME = KITS_FOLDER + "/Skill for Claude apps.zip"
 EXAMPLE_FOLDER = "02 Example - The Catch, scene 10"
 AGENTS_FILE = "AGENTS.md"
 FIELD_GUIDE = FORMATS_FOLDER + "/03 Field guide.md"
+STEPS_LIST = STAGES_FOLDER + "/" + STAGE_CONTRACT_NAME
 TOOLS_ZIP_NAME = "07 Tools.zip"
 INSTRUCTIONS_NAME = "00 Paste into instructions.txt"
 GOLD_SCENE = GOLD_SCENE_FILE
@@ -447,6 +451,48 @@ def field_guide_text(schema_data):
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- stages/CONTEXT.md, the list of steps
+
+STEP_ROW = re.compile(r"^\|\s*(\d+)\s*\|")
+
+
+def steps_reads_cell(step):
+    """The Reads cell of a step's row: the record types and inputs steps.json lists for it."""
+    reads = step.get("reads") or []
+    return table_cell(", ".join(reads)) if reads else "no records: it starts the project"
+
+
+def steps_writes_cell(step):
+    """The Writes cell of a step's row: each file of steps.json's files_written, its name in backticks and its note
+    after it ('`05 Story plan.md` (CHAPTER stubs)')."""
+    cells = []
+    for entry in step.get("files_written") or []:
+        name, bracket, note = entry.partition(" (")
+        if name.startswith("none"):
+            cells.append(entry)
+        else:
+            cells.append(f"`{name}`" + (f" ({note}" if bracket else ""))
+    return table_cell("; ".join(cells)) if cells else "nothing"
+
+
+def steps_list_text(current, steps_data):
+    """stages/CONTEXT.md with the folder, Reads and Writes cells of every step row made again from steps.json; the
+    rest of the file (its headings, the 'The user types' and 'When' cells and the text) is kept as it is written."""
+    steps = {step["step"]: step for step in steps_data["steps"]}
+    lines = []
+    for line in current.splitlines():
+        match = STEP_ROW.match(line)
+        step = steps.get(int(match.group(1))) if match else None
+        if step is None:
+            lines.append(line)
+            continue
+        cells = [cell.strip() for cell in re.split(r"(?<!\\)\|", line.strip()[1:-1])]
+        folder = step["step_file"].split("/")[1]
+        cells = [cells[0], f"`{folder}/`"] + cells[2:-2] + [steps_reads_cell(step), steps_writes_cell(step)]
+        lines.append("| " + " | ".join(cells) + " |")
+    return "\n".join(lines) + "\n"
+
+
 # ---------------------------------------------------------------- AGENTS.md
 
 EXPLICIT_PREFIXES = (STAGES_FOLDER + "/", REFERENCES_FOLDER + "/", CONFIG_FOLDER + "/", "tools/")
@@ -512,6 +558,9 @@ def kit_map_table():
         "file is in 07 Tools.zip) |",
         "| `tools/`, `_config/`, `references/formats/03 Field guide.md`, library digests | "
         "07 Tools.zip (ChatGPT only; unzip it and its folder breaking-down-stories is the skill's folder) |",
+        # The three routing files SKILL.md names (Project notes 43, round 2, finding R-F5).
+        "| `stages/CONTEXT.md`, `references/CONTEXT.md`, `_config/CONTEXT.md` | 07 Tools.zip only; in a chat without "
+        "code, the steps table in SKILL.md below is the list of steps, and this table says where every other file is |",
         "| `stages/00` to `02` | 08 Steps 00-02 - start, reading, plan |",
         "| `stages/03` to `06` | 09 Steps 03-06 - world, people, continuity, film rules |",
         "| `stages/07`, `08` | 10 Steps 07-08 - scenes and shots |",
@@ -874,6 +923,9 @@ def build_all(repository, skill_folder, story=None, with_example=True, say=print
     write_text(skill_folder / FIELD_GUIDE, field_guide_text(schema_data))
     say(f"Field guide: {FIELD_GUIDE} ({english_words(read_text(skill_folder / FIELD_GUIDE)):,} words, "
         f"{len(schema_data['record_types'])} record types).")
+    steps_data = json.loads(read_text(skill_folder / STEPS_FILE))
+    write_text(skill_folder / STEPS_LIST, steps_list_text(read_text(skill_folder / STEPS_LIST), steps_data))
+    say(f"List of steps: {STEPS_LIST} (the Reads and Writes of {len(steps_data['steps'])} steps from {STEPS_FILE}).")
     write_text(repository / AGENTS_FILE, agents_text(skill_folder))
     say(f"{AGENTS_FILE}: SKILL.md's rules with every path written out.")
     kit_problems, kit_notes, _ = build_chat_kit(repository, skill_folder, say)

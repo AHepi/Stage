@@ -20,7 +20,7 @@ The handout (in chat, the attached files): everything step 7 had, the scene desi
 
 ## Outputs
 
-SHOT and CUT records, appended to `11 Scenes/Scene NN - <place>.md` on code surfaces, or saved in chat as `11 Scenes/Scene 10 - Saye's kitchen - shots 130-200.md` (merged by ID, G10). `stage.py build` then works out the derived fields. When a shot writes a `time_slice` or a CUT writes `shared_geometry`, code creates the named PREVIS stub (`PV-SC06-MASTER-V01`, `status: planned`).
+SHOT and CUT records, appended to `11 Scenes/Scene NN - <place>.md` on code surfaces, or saved in chat as `11 Scenes/Scene 10 - Saye's kitchen - shots 130-200.md` (merged by ID, G10). `stage.py build` then works out the derived fields. When a shot writes a `time_slice` or a CUT writes `shared_geometry`, code creates the named PREVIS stub (`PV-SC06-MASTER-V01`, `status: planned`) in `19 Grey previews/Grey preview jobs.md`.
 
 ## Card parts to open
 

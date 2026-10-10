@@ -3029,9 +3029,9 @@
     "PROJECT (spend_cap_usd, intended_use, licensed_data_only)"
    ],
    "files_written": [
-    "20 Prompts for AI video/",
+    "20 Prompts for AI video/ (on the MiniMax H3 route in ComfyUI, the clip book in its folder MiniMax H3 in ComfyUI/)",
     "22 Rights and credits.md",
-    "00 Start here.md (PROJECT spend_cap_usd, intended_use, licensed_data_only)",
+    "00 Start here.md (PROJECT spend_cap_usd, intended_use, licensed_data_only, video_route)",
     "01 Choices.md",
     "07 Characters and voices.md (CHARACTER skin_light, VOICE source)"
    ],
@@ -3296,7 +3296,9 @@
    ],
    "writes": [],
    "files_written": [
-    "none, or the missing records re-sent"
+    "none, or the missing records re-sent",
+    "00 Start here.md (rewritten at a stop point, in a chat without code)",
+    "02 Whole-film summary.md (rewritten at a stop point, in a chat without code)"
    ],
    "units": [
     {

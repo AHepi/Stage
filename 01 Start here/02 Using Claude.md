@@ -60,6 +60,8 @@ If your app shows different names for these menus, follow the app: the makers mo
 - **Claude desktop with a folder, and Claude Code:** type **Continue my breakdown.** Claude looks at your files and answers in one line, for example: "Yesterday we finished scenes 1 to 12. Next: scene 13. Nothing is waiting for you."
 - **The Claude website:** start a new chat in the same project, attach the newest save file, and type **Continue my breakdown.**
 
+When you get a newer Stage, replace the whole kit, never single files: on the Claude website or Claude desktop, remove the old skill and upload the new `Skill for Claude apps.zip`. Your breakdowns keep working.
+
 ## When the chat gets long
 
 On the Claude website, one chat does one group of scenes. When a chat gets long, or Claude says it is summarising earlier messages, it finishes the piece it is on, makes a save file and says:

@@ -62,6 +62,8 @@ Continue my breakdown.
 
 ChatGPT opens the save file, reads `00 Start here` and tells you in one line what comes next.
 
+When you get a newer Stage, replace every file of the chat kit in the project, the instructions too, never just some of them. Your breakdowns keep working.
+
 ## When the chat gets long
 
 One chat does one group of scenes. When a chat gets long, or ChatGPT says it is summarising earlier messages, it finishes the piece it is on, makes a save file and says: "This chat is getting long. Start a new chat in this project, attach the save file, and type: Continue my breakdown." Do just that; nothing is lost.
