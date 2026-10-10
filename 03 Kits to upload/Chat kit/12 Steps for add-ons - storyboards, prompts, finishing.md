@@ -28,7 +28,7 @@ SHOT records (list items at quick depth); STYLE; each subject's fixed descriptio
 
 ## Outputs
 
-- The style test: nine PIC records (`use: style`), three directions on three shots, and a CHOICE whose answer sets `STYLE.style_picture` and clears `STYLE.provisional`.
+- The style test: nine PIC records (`use: style`), three directions on three shots, and a CHOICE in `01 Choices.md` whose answer sets `STYLE.style_picture` and clears `STYLE.provisional` in `06 World and style.md`.
 - `18 Storyboard/Storyboard frames.md`: one PIC record (`use: storyboard`) per kept frame.
 - `18 Storyboard/Scene 10 - frame prompts.md`, compiled by code; `18 Storyboard/Scene 10.html`, the page, laid out by code.
 
@@ -137,7 +137,7 @@ Every shot-related record; STYLE; CHARACTER, VOICE and STATE; LOOK; SOUNDPLAN; R
 - `20 Prompts for AI video/`: `Pictures.md` (PIC: reference, start and end pictures), `Voices.md` (VOICETAKE), `Takes.md` (TAKE); one pack page per scene and model (`Scene 10 - Saye's kitchen - Kling 3.0 Omni.md`); `Reference pictures/`, `Voices/`, `Text graphics/`.
 - On the H3 route in ComfyUI, the clip book instead: `20 Prompts for AI video/MiniMax H3 in ComfyUI/` (`00 Settings and how to run a clip.md`, `01 Pictures to make first.md`, one page per scene with one part per clip, `Shot map.md`, `If a clip goes wrong.md`, `Take log.md`), and `Master pictures/`, `Start pictures/`.
 - `22 Rights and credits.md`: RIGHTS for voices, likeness, music, fonts, stock and tool terms, and the disclosure text.
-- PROJECT `spend_cap_usd`, `intended_use`, `licensed_data_only`, `video_route`; CHARACTER `skin_light`; VOICE `source`; CHOICE records; on the H3 route, each TAKE's `rule` lines.
+- PROJECT `spend_cap_usd`, `intended_use`, `licensed_data_only`, `video_route` in `00 Start here.md`; CHARACTER `skin_light` and VOICE `source` in `07 Characters and voices.md`; CHOICE records in `01 Choices.md`; on the H3 route, each TAKE's `rule` lines.
 
 ## Card parts to open
 
