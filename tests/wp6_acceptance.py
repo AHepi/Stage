@@ -1,6 +1,6 @@
 """The acceptance test of work package 6: views and exports (make_views.py, make_exports.py, the command export).
 
-What it proves on the WP12a gold (examples/01 and 02 made into a project folder), as the blueprint's row for WP6 asks
+What it proves on the WP12a gold (references/examples/01 and 02 made into a project folder), as the blueprint's row for WP6 asks
 (14.2), with the checks of step 11 and T8 (14.3):
 - the plain part and the divider of every record file: code writes the plain part above the divider from the
   records (At a glance, one line per item, and for the scene "Why it's shot this way"), headings are # and ## only
@@ -50,8 +50,8 @@ from stage_tools.checks_craft_reasons_words import abbreviations_in_text, retire
 SCHEMA, WORDS, CONSTANTS = load_skill_data()
 FIXTURES = REPOSITORY / "tests" / "fixtures"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
-GOLD_SCENE = SKILL / "examples" / "01 The Catch - scene 10.md"
-GOLD_CONTEXT = SKILL / "examples" / "02 The Catch - scene 10 - context.md"
+GOLD_SCENE = SKILL / "references" / "examples" / "01 The Catch - scene 10.md"
+GOLD_CONTEXT = SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"
 MACHINE = "For machines - do not edit"
 SCENE_FILE = "11 Scenes/Scene 10 - Saye's kitchen.md"
 
@@ -271,7 +271,7 @@ def whole_film_summary(workspace, story):
     end = parsed.end_line
     assert end is not None and end.count == len(parsed.records), "the END line's count is wrong"
     words = words_in(path.read_text(encoding="utf-8"))
-    constants = json.loads((SKILL / "rules" / "constants.json").read_text(encoding="utf-8"))
+    constants = json.loads((SKILL / "_config" / "rules" / "constants.json").read_text(encoding="utf-8"))
     limit = constants["from_blueprint_text"]["constants"]["summary_words_max"]["value"]
     assert words <= limit, f"{words} words, over {limit}"
     return f"{len(parsed.records)} records, one line each, {words} words (at most {limit}), no floor plan"

@@ -7,7 +7,7 @@ What it proves (blueprint 7.2, 14.2 row WP4):
   copy of the WP12a gold) fires with 7.2's message format (level, check ID, record, field, what is wrong, then the
   fix), naming the record and the field it should, placed in a file and line; TIME-01's line is exactly 7.2's
   example; the build-2 checks TIME-07 and TIME-10 fire on theirs, and STATE-04 is a stub that says why it skips;
-- all these checks are silent on the WP12a gold fixture (examples/01 and 02 with the scene 10 excerpt, and with the
+- all these checks are silent on the WP12a gold fixture (references/examples/01 and 02 with the scene 10 excerpt, and with the
   whole story when --story is given), with no story at all (the story checks then say "story not present"), on the
   chat-saved copy of scene 10, and through the command stage.py check on a project made from the gold;
 - before step 8 the coverage checks read the list items, and during step 8 they look only at the batches written
@@ -41,8 +41,8 @@ FIXTURES = REPOSITORY / "tests" / "fixtures"
 FAULTS_FILE = FIXTURES / "coverage time and state" / "faults.json"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
 CHAT_FOLDER = FIXTURES / "chat saved scene 10"
-GOLD_FILES = {"scene": SKILL / "examples" / "01 The Catch - scene 10.md",
-              "context": SKILL / "examples" / "02 The Catch - scene 10 - context.md"}
+GOLD_FILES = {"scene": SKILL / "references" / "examples" / "01 The Catch - scene 10.md",
+              "context": SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"}
 
 OWN_FAMILIES = ("COVER", "TIME", "STATE")
 LEVELS_7_2 = {

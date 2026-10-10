@@ -33,7 +33,7 @@ What this file does, in plain words (blueprint 9, K20, K23, K24; C4 section 5.2)
   PREVIS-02 (blocking not OK) and PREVIS-03 (a facing more than facing_tolerance_deg from the records), writes one
   contact sheet per scene and marks a passing shot that is not framing-critical approved: auto.
 
-Numbers come from rules/constants.json by name. The few this file needs that constants.json does not hold yet
+Numbers come from _config/rules/constants.json by name. The few this file needs that constants.json does not hold yet
 (stand-in palette, material colours, wall thickness, plan-view margin, handheld noise, parking depth) are named
 in PREVIS_DEFAULTS below with their sources, and constants.json overrides them when it holds the same name.
 Standard library only.
@@ -66,7 +66,7 @@ SPAN_TEXT = re.compile(r"^\s*(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)\s*$")
 TOOLS_FOLDER = Path(__file__).resolve().parents[1]
 KIT_FOLDER = TOOLS_FOLDER / "previs"
 
-# Named values this module needs; rules/constants.json overrides any of them by the same name.
+# Named values this module needs; _config/rules/constants.json overrides any of them by the same name.
 PREVIS_DEFAULTS = {
     # The stand-in colours, given once per character (PROJECT previs_colours). A character whose lineup colour word
     # names one of these gets it; the others take the next free one, in order. The first three are C4 section 12's
@@ -115,7 +115,7 @@ EPSILON = 1e-6
 
 
 def setting(constants, name):
-    """A named value: from rules/constants.json when it holds the name, else PREVIS_DEFAULTS."""
+    """A named value: from _config/rules/constants.json when it holds the name, else PREVIS_DEFAULTS."""
     return constant(constants, name, PREVIS_DEFAULTS.get(name))
 
 

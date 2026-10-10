@@ -13,14 +13,15 @@ What this file does, in plain words:
   user's answer to a checkpoint that has no choice record of its own (the first group of shots, the finished
   check), and a group of shots passed (or reported) gets its shot lists marked approved;
 - handout <unit>: builds one unit's handout, "For machines - do not edit/handouts/<unit>.md", the one file the AI
-  reads for that unit: the one-line task first; what to write and where; the IDs issued to the unit (also written
-  into the manifest, where the checker's ID-06 reads them); the step file; the card parts steps.json names for the
-  step, the depth and the scene's tags; the records the unit needs and only those, with what code keeps (status,
-  locks, the beats code gave story points) left out; the story's lines; at step 8 each list item's provisional
-  time floor, the sizes, angles and moves the camera system allows here, the saved choices with their uses left
-  and the fields that need a why with their defaults; the record template at the project's depth; one example
-  from the gold; and the one-line task again at the end;
-- keeps a handout within its surface's ceiling (rules/limits.json): card parts are capped at
+  reads for that unit: the one-line task first; then the rules for this piece of work, the same for every story:
+  the step file, the card parts steps.json names for the step, the depth and the scene's tags, the record template
+  at the project's depth and one example from the gold; then what the unit works on, this story: what to write and
+  where, the IDs issued to the unit (also written into the manifest, where the checker's ID-06 reads them), the
+  records the unit needs and only those, with what code keeps (status, locks, the beats code gave story points)
+  left out, the story's lines, and at step 8 each list item's provisional time floor, the sizes, angles and moves
+  the camera system allows here, the saved choices with their uses left and the fields that need a why with their
+  defaults; and the one-line task again at the end;
+- keeps a handout within its surface's ceiling (_config/rules/limits.json): card parts are capped at
   card_tokens_per_unit_max (the lowest-listed parts are left out first); over the ceiling it leaves out the
   example, then the lowest-listed card parts, then trims the story to the unit's own lines, and then says the unit
   must be split.
@@ -55,6 +56,12 @@ After the second full run (Project notes 39 and 40):
   add-ons without step numbers.
 - after its cross-examination: the film pass's check counts only after the judgement's last repair and every fix
   since.
+
+After the second cross-examination of the restructure (Project notes 43, round 2, finding R-F7):
+- a handout is grouped under two headings, after its one-line task: the rules for this piece of work, the same for
+  every story (the step file, the card parts, the record template, the example from the gold), to follow as
+  constraints; then what the unit is working on, this story's own material (the unit, its issued IDs, the records,
+  the story's lines), to process as input. The token caps and the order of leaving things out are unchanged.
 """
 
 import json
@@ -65,9 +72,10 @@ from pathlib import Path
 
 from .project_files import (MACHINE_FOLDER, REPORT_AND_LOG_FILES, Project, StageStop, history_run_folder,
                             keep_in_history, load_steps, now, plural, unit_in_plain_words)
-from .record_format import (DIVIDER_LINE, SKILL_FOLDER, load_skill_data, merge_copies, normalise_word, parse_file,
-                            parse_line_numbers, parse_story_point, sort_key_for_identifier, split_item, split_list,
-                            write_file)
+from .record_format import (DIVIDER_LINE, GOLD_CONTEXT_FILE, GOLD_SCENE_FILE, LIMITS_FILE, MESSAGE_FORMATS_FILE,
+                            SKILL_FOLDER, TEMPLATES_FOLDER, load_skill_data, merge_copies, normalise_word,
+                            parse_file, parse_line_numbers, parse_story_point, sort_key_for_identifier, split_item,
+                            split_list, write_file)
 
 HANDOUTS_FOLDER = "handouts"
 INBOX_FOLDER = "inbox"
@@ -77,8 +85,6 @@ FILM_STRIP_FILE = "film strip.txt"
 WHOLE_FILM_FILE = "12 Whole-film check.md"
 HEALTH_CHECK_FILE = "13 Health check.md"
 BOOK_FILE = "15 The breakdown/The breakdown.html"
-GOLD_SCENE_FILE = "examples/01 The Catch - scene 10.md"
-GOLD_CONTEXT_FILE = "examples/02 The Catch - scene 10 - context.md"
 
 UNIT_IDENTIFIER = re.compile(r"^U-(\d{2})-(.+)$")
 SCENE_IDENTIFIER = re.compile(r"^SC\d{2,3}[A-Z]?$")
@@ -92,7 +98,7 @@ DEPTH_OF_HINT = {"quick": 1, "standard": 2, "detailed": 3}
 CODE_KEPT_FIELDS = ("status", "locked", "approved")
 STEP_OF_CHECKPOINT = {"rights": 0, "a": 1, "p": 2, "b": 5, "c": 7, "acceptance": 10}
 
-# An estimate of tokens from characters, used beside rules/limits.json's tokens_per_word_estimate so that record
+# An estimate of tokens from characters, used beside _config/rules/limits.json's tokens_per_word_estimate so that record
 # text (IDs, numbers, punctuation) is not under-counted: the larger of the two estimates counts. [judgement]
 CHARACTERS_PER_TOKEN = 4
 # Over the ceiling, a record type the unit only reads with more records than this is shown as an index of IDs and
@@ -156,7 +162,7 @@ def read_json_file(path):
 
 
 def constant_value(constants, name, default=None):
-    """The value of a named constant of rules/constants.json (either table), or default."""
+    """The value of a named constant of _config/rules/constants.json (either table), or default."""
     for section in ((constants or {}).get("constants", {}),
                     (constants or {}).get("from_blueprint_text", {}).get("constants", {})):
         if name in section:
@@ -195,7 +201,7 @@ def words_of(text):
 
 
 def estimate_tokens(text, tokens_per_word=1.4):
-    """An estimate of a text's tokens: the larger of words x tokens_per_word_estimate (rules/limits.json) and
+    """An estimate of a text's tokens: the larger of words x tokens_per_word_estimate (_config/rules/limits.json) and
     characters / CHARACTERS_PER_TOKEN, so dense record text is not under-counted."""
     text = text or ""
     by_words = len(text.split()) * float(tokens_per_word)
@@ -295,7 +301,7 @@ class Workspace:
         self.folder = Path(project_folder).resolve()
         self.project = Project(self.folder, self.schema, self.words)
         self.steps = load_steps(skill_folder) or {}
-        self.limits = limits if limits is not None else (read_json_file(self.skill_folder / "rules/limits.json") or {})
+        self.limits = limits if limits is not None else (read_json_file(self.skill_folder / LIMITS_FILE) or {})
         self.record_files = self.project.load_record_files()
         self.index, _ = merge_copies(self.record_files, self.schema)
         self.by_identifier = {}
@@ -373,7 +379,7 @@ class Workspace:
         return normalise_word(self.project_value("code_execution", "yes")) != "no"
 
     def ceiling(self, surface=None):
-        """The handout ceiling in tokens for a surface (rules/limits.json handout_tokens_max); chat surfaces, which
+        """The handout ceiling in tokens for a surface (_config/rules/limits.json handout_tokens_max); chat surfaces, which
         read no handouts, take the Claude surfaces' ceiling."""
         table = self.limits.get("handout_tokens_max") or {}
         value = table.get(surface or self.surface)
@@ -1533,7 +1539,7 @@ def unit_from_identifier(workspace, identifier):
     scope = match.group(2)
     entry = workspace.step_entry(step)
     if not entry:
-        raise StageStop(f"There is no step {step}: steps run from 0 to 16 (steps/ and schema/steps.json).")
+        raise StageStop(f"There is no step {step}: steps run from 0 to 16 (stages/ and _config/schema/steps.json).")
     entry_of_unit = unit_entry_for(workspace, step, identifier)
     if entry_of_unit is None:
         patterns = [unit.get("id_pattern") for unit in entry.get("units", [])
@@ -1610,6 +1616,19 @@ class Section:
         return self.text
 
 
+# The two groups a handout's sections are shown in (Project notes 43, round 2, finding R-F7): the rules, the same for
+# every story, then this story's material. The one-line task opens the handout and closes it, outside both groups.
+RULES_HEADING = "# Rules for this piece of work (the same for every story)"
+WORK_HEADING = "# What you are working on (this story)"
+RULE_SECTION_KEYS = ("step", "template")       # with every card part and the example from the gold
+OUTSIDE_GROUP_KEYS = ("head", "end")
+
+
+def is_rule_section(section):
+    """True for a section that is the same for every story: the step file, a card part, the template, the example."""
+    return section.key in RULE_SECTION_KEYS or section.kind in ("card", "example")
+
+
 @dataclass
 class Handout:
     """A unit's handout, section by section, with its size in tokens."""
@@ -1635,7 +1654,18 @@ class Handout:
         return section
 
     def text(self):
-        return "\n".join(section.current_text() for section in self.sections if section.current_text()).rstrip() + "\n"
+        """The handout: the head, then the rules (the same for every story), then what the unit works on (this
+        story), then the one-line task again; a group heading only when the group holds something."""
+        shown = [section for section in self.sections if section.current_text()]
+        head = [section.current_text() for section in shown if section.key == "head"]
+        end = [section.current_text() for section in shown if section.key == "end"]
+        rules = [section.current_text() for section in shown
+                 if section.key not in OUTSIDE_GROUP_KEYS and is_rule_section(section)]
+        work = [section.current_text() for section in shown
+                if section.key not in OUTSIDE_GROUP_KEYS and not is_rule_section(section)]
+        parts = head + ([RULES_HEADING + "\n"] + rules if rules else []) + ([WORK_HEADING + "\n"] + work if work else []) \
+            + end
+        return "\n".join(parts).rstrip() + "\n"
 
     def tokens(self):
         return estimate_tokens(self.text(), self.tokens_per_word)
@@ -1701,7 +1731,7 @@ def step_file_parts(workspace, step_entry, keep_chat_twin=False):
     if not step_entry.get("step_file") or not path.is_file():
         task = step_entry.get("purpose") or f"Do the work of step {step_entry.get('step')}."
         return task, (f"The step file {step_entry.get('step_file') or ''} is not in this copy of the skill; its "
-                      f"purpose from schema/steps.json: {step_entry.get('purpose', '')}")
+                      f"purpose from _config/schema/steps.json: {step_entry.get('purpose', '')}")
     text = path.read_text(encoding="utf-8")
     task = ""
     kept = []
@@ -1828,7 +1858,7 @@ def tag_card_parts(workspace, unit, step_entry):
 def template_blocks(workspace):
     """{(template file name, record type): the template's record block with its note block}."""
     blocks = {}
-    folder = workspace.skill_folder / "templates"
+    folder = workspace.skill_folder / TEMPLATES_FOLDER
     if not folder.is_dir():
         return blocks
     for path in sorted(folder.glob("*.md")):
@@ -3694,7 +3724,7 @@ def add_handout_arguments(parser):
 
 def say_checkpoint(context, workspace, unit):
     name = unit.plain(workspace.steps)
-    reference = "reference/07 Report and message formats has its message"
+    reference = f"{MESSAGE_FORMATS_FILE} has its message"
     context.say(f"Next: {name}, a checkpoint that waits for the user ({reference}).")
     if unit.waiting:
         for choice in unit.waiting[:7]:
@@ -3746,7 +3776,7 @@ def run_next(context):
     unit, reported = find_next_unit(workspace, pass_reported_checkpoints=True)
     if reported:
         for checkpoint in reported:
-            context.say(f"Show the user {checkpoint.plain(workspace.steps)} (it does not wait; reference/07 has its "
+            context.say(f"Show the user {checkpoint.plain(workspace.steps)} (it does not wait; references/formats/07 has its "
                         "message); its shot lists are now approved.")
         workspace = Workspace(context.project, context.schema, context.words, context.constants)
         unit, _ = find_next_unit(workspace, pass_reported_checkpoints=True)

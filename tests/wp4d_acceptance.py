@@ -6,14 +6,14 @@ What it checks, in plain words:
 - every CRAFT, INFO, REASON and WORDS check of 7.2 is registered with 7.2's level and build, with a plain sentence
   for the health check that holds no code or abbreviation; the build-2 checks (CRAFT-17, REASON-09) are registered
   as build 2 and say plainly why they are skipped;
-- every one of these checks is silent on the WP12a gold fixture (examples/01 The Catch - scene 10.md and its
+- every one of these checks is silent on the WP12a gold fixture (references/examples/01 The Catch - scene 10.md and its
   context file), with the scene 10 excerpt, without any story, at steps 7 and 8 and for check --all, and on the
   chat-saved copy of the same scene; stage.py check --all on a project made from the gold prints none of their lines;
 - each build-1 check fires on its faulty fixture (tests/fixtures/craft reasons and words/faults.json), on the
   record and field it names, in 7.2's line format (level, check ID, record, field, what is wrong, then the fix);
 - at step 7, before any shot is written, the checks that step lists read the shot list's items;
 - reasons: mood-only reasons and reasons that would fit any film are rejected (REASON-03 and REASON-04, from the
-  word lists in rules/words.json), and reasons that quote the scene, cite an ID or name an element pass;
+  word lists in _config/rules/words.json), and reasons that quote the scene, cite an ID or name an element pass;
 - the text helpers other modules use (retired words, abbreviations) find what they should.
 
 Usage: python tests/wp4d_acceptance.py [--story <the whole story or an excerpt>]
@@ -32,7 +32,7 @@ from pathlib import Path
 REPOSITORY = Path(__file__).resolve().parents[1]
 SKILL = REPOSITORY / ".claude" / "skills" / "breaking-down-stories"
 TOOLS = SKILL / "tools"
-EXAMPLES = SKILL / "examples"
+EXAMPLES = SKILL / "references" / "examples"
 SCENE_FILE = "01 The Catch - scene 10.md"
 CONTEXT_FILE = "02 The Catch - scene 10 - context.md"
 EXCERPT = REPOSITORY / "tests" / "fixtures" / "The Catch - lines 397-489.txt"
@@ -57,7 +57,7 @@ EXPECTED = {
     "CRAFT-11": ("E", 1), "CRAFT-12": ("W", 1), "CRAFT-13": ("W", 1), "CRAFT-14": ("E", 1), "CRAFT-15": ("W", 1),
     "CRAFT-16": ("E", 1), "CRAFT-17": ("W", 2), "CRAFT-18": ("E", 1), "CRAFT-19": ("W", 1), "CRAFT-20": ("W", 1),
     "CRAFT-21": ("W", 1), "CRAFT-22": ("W", 1), "CRAFT-23": ("W", 1), "CRAFT-24": ("W", 1), "CRAFT-25": ("W", 1),
-    "CRAFT-26": ("W", 1),
+    "CRAFT-26": ("W", 1), "CRAFT-27": ("W", 1), "CRAFT-28": ("W", 1),
     "INFO-01": ("W", 1), "INFO-02": ("W", 1),
     "REASON-01": ("E", 1), "REASON-02": ("E", 1), "REASON-03": ("E", 1), "REASON-04": ("E", 1),
     "REASON-05": ("E", 1), "REASON-06": ("E", 1), "REASON-07": ("E", 1), "REASON-08": ("E", 1),

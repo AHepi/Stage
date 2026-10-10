@@ -1,19 +1,20 @@
 """checks_craft_reasons_words.py: the CRAFT, INFO, REASON and WORDS checks of blueprint section 7.2.
 
 In plain words:
-- CRAFT-01 to CRAFT-26 count the craft rules that can be counted: caps on push-ins and extreme close-ups, the
+- CRAFT-01 to CRAFT-28 count the craft rules that can be counted: caps on push-ins and extreme close-ups, the
   scene's closest size kept for its turn, exactly one turn shot for each turn beat, at most two beats of intensity 5
   in a part, one camera move per shot, lenses inside the family or a lens exception, quiet plants, the emphasis-3
   budget, no added emphasis where the script already marks a beat, saved choices and banned choices, the editor's
   device budget, joins the story does not write, inventions listed as additions, at most three acting people in a
   shot, no slow playback where the camera system bans it, the sign test for turns, no stacked signals on one beat,
-  principals that look alike, melodrama and monologue flags, off-screen speakers, the silent third, display 3 and
-  held moments with nothing still (CRAFT-17 is planned for the second build).
+  principals that look alike, melodrama and monologue flags, off-screen speakers, the silent third, display 3,
+  held moments filled with small timed actions, no words asking for stillness, and no contact shown with its
+  result inside one shot (CRAFT-17 is planned for the second build).
 - INFO-01 and INFO-02 check who knows what: nothing gives a fact away before its reveal, and the reveal shot
   matters (turn or must_keep).
 - REASON-01 to REASON-08 check that every shot says why it exists: a purpose and a because that names this story;
   a why wherever a value leaves its default; a why that is anchored in this story (a quote from the scene, an ID or
-  a named element) and never mood-only or a reason that would fit any film (the word lists of rules/words.json);
+  a named element) and never mood-only or a reason that would fit any film (the word lists of _config/rules/words.json);
   turn shots citing their turn beat; saved choices citing their RC; tool-forced changes keeping their meaning; every
   unsaid thought carried by something seen or heard (REASON-09 is planned for the second build).
 - WORDS-01 to WORDS-05 check the words: no emotion adjectives in what bodies do; no retired words; no real people,
@@ -22,7 +23,7 @@ In plain words:
 
 Every check reads the records (and the derived fields of derive_fields.py where it needs them), never changes them,
 and is registered with check_records.register_check (see the note at the top of check_records.py). Numbers come from
-rules/constants.json and words from rules/words.json, by name.
+_config/rules/constants.json and words from _config/rules/words.json, by name.
 
 Other modules may use the text helpers at the end of this file (retired_words_in_text, abbreviations_in_text,
 mood_only_phrases_in_reason, reason_is_anchored) to check text that is not a record file, such as step files,
@@ -50,14 +51,41 @@ After the second full run (Project notes 39 and 40):
   a MOVE ID, for staging; WORDS-02 leaves "the screen left blank" alone; a plural word matches its singular.
 - after its cross-examination: CRAFT-24 warns about silent_third none on a turn with three or more people in its
   shots.
+
+After the H3 handover (Project notes 42 and 43, 10 October 2026); all three are warnings marked J, judgements from
+testers' notes that the take log has not yet confirmed:
+- CRAFT-26 is turned round: a held moment of hold_action_every_s or more needs at least one small timed action every
+  hold_action_every_s, and a pause held on picture needs the shot's last moments to carry it the same way. It never
+  asks for the subject's still sub-part, which is kept only so that older breakdowns load.
+- CRAFT-27: a stillness word or phrase (stillness_words) in a moment, a does, a start or an end.
+- CRAFT-28: a contact_words cause followed by its effect in one shot (the same moment or the next one); a shot that
+  ends on the cause, followed by one that opens on the result, is the fix and is never flagged.
+- after their cross-examination (Project notes 43, round 1, findings F11, F12 and F15), tried on a harness of
+  realistic writing: CRAFT-26 applies to held moments only (a shot marked held, or a moment with no main action,
+  only small ones such as a breath or a blink), so one long walk is never flagged; it counts the parts of a moment
+  split at ";", ",", "and" and "then", and a part is an action only when it has a verb or a small action word ("her
+  eyes on Saye" is a pose, not an action). CRAFT-27 counts a single stillness word only where it describes a person
+  or a body part, never before a noun ("frozen peas", "the still water") or as "even now" ("still wet").
+  CRAFT-28 also reads a cause as a verb with "into", "against" and the like within three words ("swings the bottle
+  into the window"), reads an effect followed by "as" and its cause, and counts an effect only when its subject is
+  a thing or a person ("the glass cracks", never "the room falls silent" or "her face falls").
+- after the second cross-examination (Project notes 43, round 2, findings N7 and N8), tried on the reviewer's
+  wordings and on a held-out set written before the change: CRAFT-26 reads a moment of twice hold_action_every_s or
+  more whose only verbs are hold_verbs ("she stares at the letter", "Ben sits at the table") as held, and a repeat
+  with its verb left out ("close again", "then back at her") as an action; CRAFT-27 finds a stillness phrase with
+  one -ly word inside it ("stays exactly where"); CRAFT-28 reads more effects ("the plates jump") and impact verbs
+  with no preposition ("bangs the jar"), and no cause whose subject is abstract ("the thought hits him").
+- CRAFT-15 counts a person as acting unless they are in the background: energy: still and no line on screen in
+  the shot (or an older breakdown's still: whole_body).
 """
 
+import math
 import re
 from dataclasses import dataclass
 
 from .check_records import register_check, same_scene, scene_of
-from .derive_fields import (SIZE_LADDER, breakdown_for_run, constant, count_words, element_of, number_of,
-                            script_marked)
+from .derive_fields import (SIZE_LADDER, breakdown_for_run, constant, count_words, element_of,
+                            last_shot_naming_beat, number_of, script_marked)
 from .record_format import (DIVIDER_LINE, TextBlock, normalise_word, parse_line_numbers, parse_story_point,
                             quote_for_message, sort_key_for_identifier, split_item, split_list)
 
@@ -1931,8 +1959,18 @@ def check_craft_14(run):
     return problems
 
 
+def speaks_on_screen(run, shot, element):
+    """True when a person speaks in the shot with their mouth seen (a hear item with speaker: on_screen)."""
+    for item in items(run, shot, "hear"):
+        if word_of(item.get("speaker")) == "on_screen" and speaker_of(run, (item.first or "").strip()) == element:
+            return True
+    return False
+
+
 def acting_characters(run, shot):
-    """The people in a shot who act: person subjects not held entirely still (still: whole_body)."""
+    """The people in a shot who act: every person subject, apart from those in the background: energy: still and
+    no line spoken on screen in this shot. An older breakdown's still: whole_body counts as background too (the
+    subject's still sub-part is kept only so that those breakdowns load; Project notes 43)."""
     found = []
     for item in items(run, shot, "subject"):
         if not item.first:
@@ -1941,8 +1979,10 @@ def acting_characters(run, shot):
         record = run.record(element)
         if not element.startswith("CH-") and not (record is not None and record.type_name == "CHARACTER"):
             continue
-        still = [word_of(piece) for piece in split_list(item.get("still") or "")]
-        if "whole_body" in still:
+        old_still = [word_of(piece) for piece in split_list(item.get("still") or "")]
+        if "whole_body" in old_still:
+            continue
+        if word_of(item.get("energy")) == "still" and not speaks_on_screen(run, shot, element):
             continue
         if element not in found:
             found.append(element)
@@ -1960,7 +2000,8 @@ def check_craft_15(run):
             problems.append(problem_at(
                 run, "W", "CRAFT-15", shot, "subject",
                 f"{len(acting)} people act in the shot ({names_list(acting)}); the most is {most}",
-                "Fix: hold the others still (still: whole_body), or split the shot (C3 L22)."))
+                "Fix: keep the others in the background (energy: still, with no line on screen in this shot), or "
+                "split the shot (C3 L22)."))
     return problems
 
 
@@ -2420,35 +2461,456 @@ def moment_seconds(item):
     return float(match.group(2)) - float(match.group(1))
 
 
+def moment_span(item):
+    """(start, end) seconds of a moment item ('8-15'), or None."""
+    match = re.match(r"^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$", (item.first or "").strip())
+    return (float(match.group(1)), float(match.group(2))) if match else None
+
+
+def without_quotes(text):
+    """A text with its quoted parts (story lines, printed words) blanked out, so their words are never judged."""
+    return QUOTED.sub(" ", (text or "").replace("’", "'"))
+
+
+def word_pattern(word):
+    """A pattern that finds a word or phrase as whole words, in any case."""
+    return re.compile(r"(?<![A-Za-z'-])" + re.escape(word) + r"(?![A-Za-z'-])", re.I)
+
+
+def stillness_lists(run):
+    """(words, phrases, not-an-action words) of _config/rules/words.json's stillness_words."""
+    entry = run.words.get("stillness_words") or {}
+    return (list(entry.get("words") or []), list(entry.get("phrases") or []),
+            list(entry.get("not_an_action") or []))
+
+
+def stillness_extra_list(run, name):
+    """One of the lists of stillness_words that CRAFT-26 reads to tell an action from a pose (small_actions,
+    body_parts, pose_words), as a set of lower-case words."""
+    entry = run.words.get("stillness_words") or {}
+    return {word.lower() for word in entry.get(name) or []}
+
+
+# "still" that means "even now" ("still refusing", "still talking") asks for no stillness, so it is not counted
+# when the next word is an -ing word (Project notes 43: narrow triggers).
+STILL_AS_EVEN_NOW = re.compile(r"\bstill\s+[a-z]+ing\b", re.I)
+# The words that may follow a single stillness word that describes a person ("she sits still beside him", "stands
+# frozen in the doorway", "her body goes rigid."); any other word after it means the word comes before a noun
+# ("the still water", "frozen peas", "the rigid collar") or means "even now" ("still wet"), and asks for no
+# stillness (Project notes 43, round 1, finding F15).
+AFTER_A_STILL_PERSON = {
+    "in", "on", "at", "by", "beside", "against", "with", "as", "and", "or", "but", "for", "while", "until", "behind",
+    "under", "over", "near", "there", "here", "now", "again", "apart", "except", "like", "from", "to", "inside",
+    "outside", "before", "after", "where", "when", "then", "among", "across", "through", "during", "between",
+    "above", "below", "beneath", "too", "even", "once", "throughout"}
+# The single stillness words that are verbs or nouns, never adjectives before a noun, so the test above is skipped.
+ALWAYS_STILLNESS = {"stillness", "freeze", "freezes"}
+
+
+def describes_a_person(plain, match, word):
+    """True when a single stillness word found in a text describes a person or a body part: it ends its clause or is
+    followed by a preposition or a joining word, and it is not 'still' meaning 'even now' or 'even so'."""
+    if word.lower() in ALWAYS_STILLNESS:
+        return True
+    if word.lower() == "still" and STILL_AS_EVEN_NOW.match(plain, match.start()):
+        return False
+    before = plain[:match.start()].rstrip()
+    after = plain[match.end():]
+    if word.lower() == "still" and after.lstrip().startswith(",") and (not before or before[-1] in ";:.("):
+        return False  # "Still, she reaches for the cup": "even so"
+    if word.lower() == "still" and (before.endswith(",") or re.search(r"\b(?:is|are|was|were)$", before, re.I)) \
+            and re.match(r"\s*[A-Za-z]", after):
+        return False  # "Ben, still in his coat, sits down", "the cup is still on the table": "even now"
+    following = re.match(r"\s*([A-Za-z]+)", after)
+    if following is None:
+        return True  # the end of the text, or a comma, a semicolon or a quotation mark after it
+    return following.group(1).lower() in AFTER_A_STILL_PERSON
+
+
+def stillness_phrase_pattern(phrase):
+    """A pattern that finds a stillness phrase as whole words, also with one -ly word after its first word ('stays
+    exactly where', 'holds perfectly still'; Project notes 43, round 2, finding N8)."""
+    first, _, rest = phrase.partition(" ")
+    if not rest:
+        return word_pattern(phrase)
+    return re.compile(r"(?<![A-Za-z'-])" + re.escape(first) + r"(?:\s+[A-Za-z]+ly)?\s+" + re.escape(rest)
+                      + r"(?![A-Za-z'-])", re.I)
+
+
+def stillness_in(run, text):
+    """The stillness words and phrases of _config/rules/words.json in a text, outside quotation marks, in the order of
+    the lists; a word inside a phrase found is reported as the phrase only, and a single word only where it
+    describes a person or a body part (describes_a_person)."""
+    words, phrases, _ = stillness_lists(run)
+    plain = without_quotes(text)
+    found = [phrase for phrase in phrases if stillness_phrase_pattern(phrase).search(plain)]
+    for word in words:
+        for match in word_pattern(word).finditer(plain):
+            if not describes_a_person(plain, match, word):
+                continue
+            if any(word_pattern(word).search(phrase) for phrase in found):
+                break
+            found.append(word)
+            break
+    return found
+
+
+# The grammar CRAFT-26 needs to tell a part of a moment that does something ("her lips press together", "breathes
+# out") from one that only says how a person is ("her eyes on Saye", "her hands open at her sides", "level").
+WORDS_BEFORE_A_NOUN = {"the", "a", "an", "her", "his", "their", "its", "my", "your", "our", "one", "two", "three", "four",
+               "both", "each", "every", "some", "this", "that", "these", "those", "any", "all", "another", "other",
+               "no", "of", "own"}
+JOINING_WORDS = {"on", "at", "to", "toward", "towards", "in", "into", "onto", "by", "over", "under", "across", "down",
+                 "up", "out", "off", "away", "back", "from", "of", "with", "without", "against", "along", "round",
+                 "around", "behind", "beside", "between", "through", "past", "near", "above", "below", "for", "and",
+                 "or", "but", "as", "while", "again", "together", "just", "only", "too", "now", "then", "once",
+                 "still", "there", "here", "is", "are", "was", "were", "be", "been", "very", "so", "not", "no"}
+SUBJECT_PRONOUNS = {"she", "he", "they", "it", "we", "you", "i", "both", "them", "who", "which", "each", "all"}
+MODAL_VERBS = {"will", "can", "could", "would", "won't", "cannot", "can't", "must", "might", "may", "should"}
+NOT_VERBS_IN_S = {"his", "hers", "its", "this", "is", "was", "has", "us", "yes", "as", "towards", "always",
+                  "perhaps", "sometimes", "afterwards", "upwards", "downwards", "backwards", "forwards", "theirs",
+                  "ours", "yours", "whereas", "besides", "news", "lens", "series", "thus", "plus", "across", "less",
+                  "unless", "jeans", "trousers", "glasses", "scissors", "pliers", "tongs", "stairs", "seconds",
+                  "minutes", "times", "steps", "inches", "metres", "meters", "centimetres"}
+NOT_VERBS_IN_ING = {"nothing", "something", "anything", "everything", "ceiling", "morning", "evening", "during",
+                    "string", "thing", "things", "ring", "king", "wing", "spring", "building", "sibling", "wedding",
+                    "pudding", "railing", "awning", "clothing", "lightning", "bedding", "landing", "darling",
+                    "stocking", "stockings"}
+PART_SPLIT = re.compile(r";|,|\bthen\b|\band\b", re.I)
+# The words after a hold verb that make it a movement ("sits down", "stands up", "leans in"), so it is an action.
+HOLD_VERB_MOVES = {"up", "down", "back", "forward", "forwards", "in", "out", "away", "over", "round", "around",
+                   "aside", "upright", "straight", "off", "across"}
+# The words that open a part repeating the verb before it with the verb left out ("he looks away, then back at her";
+# Project notes 43, round 2, finding N8); a part ending in "again" does the same ("his lips part, close again").
+REPEAT_OPENINGS = {"back", "away", "up", "down", "over", "round", "around", "across", "out", "in"}
+
+
+def part_words(part):
+    """The lower-case words of a part of a moment, curly apostrophes made straight."""
+    return re.findall(r"[a-z][a-z'-]*", part.lower().replace("’", "'"))
+
+
+def looks_like_a_verb(words, index, small_actions, body_parts, pose_words):
+    """True when the word at index reads as a verb among the words of a part: a small action word; a modal ('will');
+    an -ing or -ed word that is not a pose after a body part ('whitening', never 'her face turned'); an -s word
+    that does not follow 'the', 'her', a number or a name's ('breathes', 'the fridge hums', never 'her eyes'); or
+    the word after a plural subject or a pronoun that is not a joining or pose word ('her lips press', 'both
+    hold')."""
+    word = words[index].strip("'")
+    previous = words[index - 1] if index else ""
+    if word in small_actions:
+        return True
+    if word.endswith("'s") or word in body_parts:
+        return False
+    if word in MODAL_VERBS:
+        return True
+    if len(word) >= 5 and word.endswith("ing") and word not in NOT_VERBS_IN_ING:
+        return previous not in WORDS_BEFORE_A_NOUN  # "his knuckles whitening", never "the moving train"
+    if len(word) >= 5 and word.endswith("ed"):
+        return not (previous in body_parts or previous in WORDS_BEFORE_A_NOUN or word in pose_words)
+    if (len(word) >= 3 and word.endswith("s") and not word.endswith(("ss", "ous")) and word not in NOT_VERBS_IN_S
+            and previous not in WORDS_BEFORE_A_NOUN and not previous.endswith("'s") and not previous.isdigit()):
+        return True
+    if not index or word in JOINING_WORDS or word in pose_words or word in WORDS_BEFORE_A_NOUN or word.endswith("ly"):
+        return False
+    plural_noun_before = previous.endswith("s") and not previous.endswith(("ss", "'s")) and (
+        previous in body_parts or (index >= 2 and (words[index - 2] in WORDS_BEFORE_A_NOUN or words[index - 2].endswith("'s"))))
+    return plural_noun_before or previous in SUBJECT_PRONOUNS
+
+
+def moment_parts(run, text):
+    """[(part, is an action, is a small action, is a hold)] of a moment's shows, split at ';', ',', 'and' and 'then',
+    outside quotation marks. A part is an action when it holds no stillness word or phrase, no not_an_action word,
+    and a verb or a small action word (looks_like_a_verb); a small action is one with a small_actions word or one
+    done by a body part ('his jaw works', 'her eyes go to Jude'). A part whose only verbs are hold_verbs ('she
+    stares at the letter', 'Ben sits at the table') is a hold, not an action; a part right after an action that
+    repeats it with the verb left out ('close again', 'then back at her') is an action of the same kind (Project
+    notes 43, round 2, finding N8)."""
+    _, _, not_actions = stillness_lists(run)
+    small_actions = stillness_extra_list(run, "small_actions")
+    body_parts = stillness_extra_list(run, "body_parts")
+    pose_words = stillness_extra_list(run, "pose_words")
+    hold_verbs = stillness_extra_list(run, "hold_verbs")
+    found = []
+    for part in PART_SPLIT.split(without_quotes(text)):
+        part = part.strip(" .:()")
+        words = part_words(part)
+        if not words:
+            continue
+        if stillness_in(run, part) or any(word_pattern(word).search(part) for word in not_actions):
+            found.append((part, False, False, False))
+            continue
+        verbs = [index for index in range(len(words))
+                 if looks_like_a_verb(words, index, small_actions, body_parts, pose_words)]
+        if verbs and all(words[index] in hold_verbs and (index + 1 >= len(words) or words[index + 1] not in
+                                                          HOLD_VERB_MOVES) for index in verbs):
+            found.append((part, False, False, True))
+            continue
+        action = bool(verbs)
+        head = next((word for word in words if word not in WORDS_BEFORE_A_NOUN and not word.endswith("'s")), "")
+        small = action and (any(word in small_actions for word in words) or head in body_parts)
+        previous = found[-1] if found else None
+        if not action and previous and previous[1] and (words[-1] == "again" or words[0] in REPEAT_OPENINGS):
+            action, small = True, previous[2]
+        found.append((part, action, small, False))
+    return found
+
+
+def action_clauses(run, text):
+    """The parts of a moment's shows that are actions (moment_parts)."""
+    return [part for part, action, _, _ in moment_parts(run, text) if action]
+
+
+def held_moment(run, shot, text, seconds=None):
+    """True when a moment is held, so CRAFT-26 counts its actions: the shot is marked held (turn shots and oner
+    shots are), or the moment has no main action, only small ones (a breath, a blink, a glance) or none. A moment
+    with a main action ('walks round the table and stops') is one action however long it is (TIME-06), and is
+    never counted (Project notes 43, round 1, finding F11). A hold verb ('stares', 'sits', 'stands') is no main
+    action in a moment of twice hold_action_every_s or more, so 'she stares at the letter' for 8 seconds is held;
+    in a shorter moment it counts as a main action, as before (Project notes 43, round 2, finding N8)."""
+    if word_of(shot.get("held")) == "yes":
+        return True
+    every = float(constant_of(run, "hold_action_every_s", 2.0) or 2.0)
+    long_enough = seconds is not None and seconds + 1e-9 >= 2 * every
+    return not any((action and not small) or (hold and not long_enough)
+                   for _, action, small, hold in moment_parts(run, text))
+
+
+def people_in(run, shot):
+    return [item for item in items(run, shot, "subject")
+            if item.first and element_of(item.first.strip()).startswith("CH-")]
+
+
+def held_pause_seconds(run, shot):
+    """The longest pause held on picture (BEAT pause_after with picture: hold) that this shot carries: the pause
+    of a beat whose last shot is this one, read from its seconds, else from the low end of its tier."""
+    breakdown = breakdown_of(run)
+    longest = None
+    tiers = constant_of(run, "pause_tiers", {}) or {}
+    for beat_identifier in id_list(shot, "beats"):
+        beat = run.record(beat_identifier)
+        if beat is None or beat.type_name != "BEAT":
+            continue
+        if last_shot_naming_beat(breakdown, beat_identifier) not in (None, shot.identifier):
+            continue
+        for item in items(run, beat, "pause_after"):
+            if word_of(item.get("picture")) != "hold":
+                continue
+            seconds = number_of(item.get("seconds"))
+            if seconds is None:
+                tier = tiers.get(word_of(item.first)) if isinstance(tiers, dict) else None
+                seconds = (tier or {}).get("from_s", 0.0) if isinstance(tier, dict) else 0.0
+            longest = seconds if longest is None else max(longest, seconds)
+    return longest
+
+
+SMALL_ACTIONS_FIX = ("Fix: write small timed actions instead (a breath, a blink, a swallow, a glance, a hand that "
+                     "adjusts something), about one every {every:g} s, never a list of parts that stay still (D15 R6; "
+                     "a judgement from testers' notes, Project notes 42).")
+
+
 @register_check("CRAFT-26", level="W", build=1,
-                title="A moment of 2 s or more, or a pause held on picture, with no still item on the subject (D15)",
-                plain="holds on a person without saying what stays still, so the picture may drift")
+                title="A held moment (hold_action_every_s or more in a shot marked held or with no main action, or a "
+                      "pause held on picture) with fewer than one small timed action every hold_action_every_s (D15 "
+                      "R6, rewritten; J: testers' notes, Project notes 42 and 43)",
+                plain="holds on a person with too little happening, so a video model may freeze the picture or "
+                      "squeeze the time out")
 def check_craft_26(run):
     problems = []
-    hold = constant_of(run, "hold_needs_still_s", 2.0)
+    every = float(constant_of(run, "hold_action_every_s", 2.0) or 2.0)
+    fix = SMALL_ACTIONS_FIX.format(every=every)
     for shot in records_of(run, "SHOT"):
-        long_moments = [item for item in items(run, shot, "moment") if (moment_seconds(item) or 0) >= hold]
-        held_pause = False
-        for beat_identifier in id_list(shot, "beats"):
-            beat = run.record(beat_identifier)
-            if beat is not None and beat.type_name == "BEAT":
-                held_pause = held_pause or any(word_of(item.get("picture")) == "hold"
-                                               for item in items(run, beat, "pause_after"))
-        if not long_moments and not held_pause:
+        if not people_in(run, shot):
             continue
-        for item in items(run, shot, "subject"):
-            if not item.first or not element_of(item.first.strip()).startswith("CH-"):
+        moments = items(run, shot, "moment")
+        for item in moments:
+            seconds = moment_seconds(item)
+            if seconds is None or seconds + 1e-9 < every or not held_moment(run, shot, item.get("shows") or "",
+                                                                             seconds):
                 continue
-            still = item.get("still")
-            if still and not is_empty(still):
-                continue
-            why = (f"a moment of {moment_seconds(long_moments[0]):g} s" if long_moments else
-                   "a pause held on picture")
+            needed = int(math.floor(seconds / every + 1e-9))
+            found = action_clauses(run, item.get("shows") or "")
+            if len(found) < needed:
+                span = (item.first or "").strip()
+                problems.append(problem_at(
+                    run, "W", "CRAFT-26", shot, "moment",
+                    f"the moment {span} holds {seconds:g} s with {len(found)} small "
+                    f"{'action' if len(found) == 1 else 'actions'}; it needs at least {needed}, one every {every:g} s",
+                    fix, containing=span))
+        pause = held_pause_seconds(run, shot)
+        if pause is None:
+            continue
+        needed = max(1, int(math.floor(pause / every + 1e-9)))
+        screen_time = number_of(shot.get("screen_time"))
+        tail = [item for item in moments if moment_span(item) and (
+            screen_time is None or moment_span(item)[1] >= screen_time - pause - 1e-9)]
+        found = sum(len(action_clauses(run, item.get("shows") or "")) for item in tail)
+        if found < needed:
+            last = (moments[-1].first or "").strip() if moments else None
             problems.append(problem_at(
-                run, "W", "CRAFT-26", shot, "subject",
-                f"{item.first.strip()} has no still item, and the shot holds {why}",
-                "Fix: add still: with what does not move (head, eyes, mouth, hands, torso or whole_body) (D15).",
-                containing=item.first.strip()))
+                run, "W", "CRAFT-26", shot, "moment" if moments else "beats",
+                f"the shot holds a pause of {pause:g} s on picture with {found} small "
+                f"{'action' if found == 1 else 'actions'} in its last moments; it needs at least {needed}",
+                fix, containing=last))
+    return problems
+
+
+@register_check("CRAFT-27", level="W", build=1,
+                title="A stillness word or phrase (stillness_words) in a moment's shows, a subject's does, or a "
+                      "shot's start or end (J: testers' notes, Project notes 42 and 43)",
+                plain="asks a person or a thing to stay still, which a video model reads as an order to freeze")
+def check_craft_27(run):
+    problems = []
+    # energy: still is a value, not text, so it is never read here (Project notes 43).
+    fix = ("Fix: write what happens instead, as small timed actions (a breath, a blink, a swallow, a glance, a hand "
+           "that adjusts something) (D15 R6; a judgement from testers' notes, Project notes 42).")
+    for shot in records_of(run, "SHOT"):
+        places = [("moment", item.first, item.get("shows")) for item in items(run, shot, "moment")]
+        places += [("subject", item.first, item.get("does")) for item in items(run, shot, "subject")]
+        places += [(name, None, shot.get(name)) for name in ("start", "end")]
+        for field_name, first, text in places:
+            found = stillness_in(run, text or "")
+            if not found:
+                continue
+            where = {"moment": f"the moment {(first or '').strip()}", "subject": f"{(first or '').strip()}'s does",
+                     "start": "the start", "end": "the end"}[field_name]
+            problems.append(problem_at(
+                run, "W", "CRAFT-27", shot, field_name,
+                f"{', '.join(quote_for_message(word) for word in found)} in {where} asks for stillness", fix,
+                containing=(first or "").strip() or None))
+    return problems
+
+
+def phrase_positions(plain, phrases):
+    """[(position, phrase)] of every phrase found in a text as whole words and not negated just before it."""
+    found = []
+    for phrase in phrases:
+        for match in word_pattern(phrase).finditer(plain):
+            if NEGATION_BEFORE.search(plain[:match.start()]):
+                continue
+            found.append((match.start(), phrase))
+    return sorted(found)
+
+
+# The words before an effect that leave it with no subject ("and drops run") or make it a noun ("her tears", "the
+# falls"), so it is no effect of a contact (Project notes 43, round 1, finding F12).
+NO_SUBJECT_BEFORE = {"the", "a", "an", "her", "his", "their", "its", "my", "your", "our", "some", "and", "or", "but",
+                     "then", "as", "to", "of", "with", "in", "on", "at", "into", "while", "when", "for", "from",
+                     "by", "over", "under"}
+
+
+def cause_positions(words, plain):
+    """[(position, cause words)] of the contact causes in a text: the cause list of contact_words, and a
+    cause_into_verbs verb followed within three words by a cause_into_words word ('swings the bottle into the
+    window'), leaving out the not_a_cause phrases ('knocks at the door'), negated ones, and those whose subject is a
+    not_a_cause_subject word ('the thought hits him', 'the news hits her')."""
+    entry = words.get("contact_words") or {}
+    found = phrase_positions(plain, list(entry.get("cause") or []))
+    verbs = "|".join(re.escape(verb) for verb in entry.get("cause_into_verbs") or [])
+    joins = "|".join(re.escape(join).replace(r"\ ", r"\s+") for join in entry.get("cause_into_words") or [])
+    if verbs and joins:
+        pattern = re.compile(r"(?<![A-Za-z'-])(" + verbs + r")(?:\s+[A-Za-z'’-]+){0,3}?\s+(?:" + joins + r")(?![A-Za-z'-])",
+                             re.I)
+        for match in pattern.finditer(plain):
+            if not NEGATION_BEFORE.search(plain[:match.start()]):
+                found.append((match.start(), re.sub(r"\s+", " ", match.group(0))))
+    exceptions = [word_pattern(phrase) for phrase in entry.get("not_a_cause") or []]
+    not_subjects = {word.lower() for word in entry.get("not_a_cause_subject") or []}
+    kept = []
+    for position, cause in sorted(found):
+        if any(pattern.match(plain, position) for pattern in exceptions):
+            continue
+        before = [word for word in re.findall(r"[A-Za-z'’-]+", plain[:position]) if not word.lower().endswith("ly")]
+        if before and not re.search(r"[;,.:]\s*$", plain[:position]) and before[-1].lower() in not_subjects:
+            continue  # "the thought hits him": nothing solid is driven into anything (round 2, finding N7)
+        if any(spot == position for spot, _ in kept):
+            continue
+        kept.append((position, cause))
+    return kept
+
+
+def effect_positions(words, plain, cause_before=False):
+    """[(position, effect word)] of the effects in a text (effect and effect_plural) that a thing or a person does
+    right before them ('the glass cracks', 'it falls', 'the jars fall'): never after a word of NO_SUBJECT_BEFORE
+    (then the word is a noun, 'her tears', or has no subject), except after 'and' when a cause comes before it and no
+    verb follows ('trips over the cable and goes down', never 'and drops run down the glass'); never when the
+    subject is a not_things word ('her face falls', 'the light falls across the floor'); never in a not_effects
+    phrase ('the room falls silent')."""
+    entry = words.get("contact_words") or {}
+    not_things = {word.lower() for word in entry.get("not_things") or []}
+    not_effects = [word_pattern(phrase) for phrase in entry.get("not_effects") or []]
+    effects = list(entry.get("effect") or []) + list(entry.get("effect_plural") or [])
+    found = []
+    for position, effect in phrase_positions(plain, effects):
+        if any(pattern.match(plain, position) for pattern in not_effects):
+            continue
+        before = [word for word in re.findall(r"[A-Za-z'’-]+", plain[:position]) if not word.lower().endswith("ly")]
+        if not before or re.search(r"[;,.:]\s*$", plain[:position]):
+            continue
+        subject = before[-1].lower().replace("’", "'")
+        if subject in not_things:
+            continue
+        if subject in NO_SUBJECT_BEFORE:
+            following = re.match(r"\s*([A-Za-z'’-]+)", plain[position + len(effect):])
+            next_word = following.group(1).lower() if following else ""
+            verb_follows = next_word and next_word not in JOINING_WORDS and next_word not in WORDS_BEFORE_A_NOUN \
+                and not next_word.endswith("ly")
+            if subject != "and" or not cause_before or verb_follows:
+                continue
+        found.append((position, effect))
+    return found
+
+
+def contact_found(words, texts):
+    """The first contact shown on screen in a shot's texts, read in order: (index of the text, cause, effect, effect
+    first) when a text holds a cause and then an effect, an effect followed by 'as' and its cause ('the glass
+    shatters as the bottle smashes into it'), or a cause whose effect opens the next text; else None. texts are the
+    plain words of the shot's moments, in time order. Shared so that the clip grouping can read contacts the same
+    way."""
+    for index, plain in enumerate(texts):
+        causes = cause_positions(words, plain)
+        effects = effect_positions(words, plain, cause_before=bool(causes))
+        for position, cause in causes:
+            later = [effect for spot, effect in effects if spot > position]
+            if later:
+                return index, cause, later[0], False
+            earlier = [(spot, effect) for spot, effect in effects if spot < position
+                       and re.search(r"\b(?:as|when)\b", plain[spot:position], re.I)]
+            if earlier:
+                return index, cause, earlier[-1][1], True
+            if index + 1 < len(texts):
+                following = effect_positions(words, texts[index + 1])
+                if following and not re.search(r"[;,]", texts[index + 1][:following[0][0]]):
+                    return index + 1, cause, following[0][1], False
+    return None
+
+
+@register_check("CRAFT-28", level="W", build=1,
+                title="A shot whose moments, in order, hold a contact_words cause and then its effect: a contact "
+                      "shown on screen (J: testers' notes, Project notes 42 W9)",
+                plain="shows one thing hitting another and the result in the same shot, which video models cannot "
+                      "do; cut at the moment of contact")
+def check_craft_28(run):
+    problems = []
+    fix = ("Fix: end the shot at the contact and open the next shot on the result already there, in a clearly "
+           "different size or angle, with the sound of the hit on the cut (a judgement from testers' notes: video "
+           "models cannot make one thing break or push another at the moment of contact; Project notes 42).")
+    for shot in records_of(run, "SHOT"):
+        moments = sorted(items(run, shot, "moment"), key=lambda item: (moment_span(item) or (0.0, 0.0)))
+        groups = [("moment", moments, [without_quotes(item.get("shows")) for item in moments])]
+        groups += [("subject", [item], [without_quotes(item.get("does"))]) for item in items(run, shot, "subject")]
+        for field_name, sources, texts in groups:
+            hit = contact_found(run.words, texts)
+            if hit is None:
+                continue
+            index, cause, effect, effect_first = hit
+            order = (f"{quote_for_message(effect)} as {quote_for_message(cause)}" if effect_first else
+                     f"{quote_for_message(cause)} and then {quote_for_message(effect)}")
+            problems.append(problem_at(
+                run, "W", "CRAFT-28", shot, field_name,
+                f"{order} in one shot show a contact and its result on screen", fix,
+                containing=(sources[index].first or "").strip() or None))
+            break
     return problems
 
 
@@ -3088,7 +3550,7 @@ def screen_is_a_thing(text, match):
 
 
 def retired_words_in_text(text, words, modes=("always", "user_text"), field_path=None):
-    """[(word as found, entry)] of the retired words (rules/words.json) a text holds, outside double-quoted story
+    """[(word as found, entry)] of the retired words (_config/rules/words.json) a text holds, outside double-quoted story
     words. modes chooses the flag modes to look for; field_path ("SHOT.why") also brings in the in_fields entries
     that name that field. Other modules may call this on any user-facing text."""
     text = QUOTED.sub(" ", text or "")
@@ -3323,7 +3785,7 @@ def abbreviation_patterns(words):
 
 
 def abbreviations_in_text(text, words):
-    """[(what, kind)] of the abbreviations and internal codes (rules/words.json) a user-facing text holds, outside
+    """[(what, kind)] of the abbreviations and internal codes (_config/rules/words.json) a user-facing text holds, outside
     double-quoted story words and file names. Other modules may call this on guides, steps and templates."""
     text = QUOTED.sub(" ", text or "")
     text = re.sub(r"\S+\.(?:csv|srt|vtt|json|otio|edl|md|html|zip|pdf|txt|py)\b", " ", text, flags=re.I)

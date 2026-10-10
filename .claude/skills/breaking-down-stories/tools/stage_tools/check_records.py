@@ -29,6 +29,7 @@ HOW A FAMILY MODULE REGISTERS ITS CHECKS (for the builders of the other check fa
        stage_tools.checks_sides_geometry        SIDE and GEOM (WP4a)
        stage_tools.checks_craft_reasons_words   CRAFT, INFO, REASON and WORDS (WP4d)
        stage_tools.checks_plan_generation_film  PLAN, GEN and FILM (WP4e)
+       stage_tools.checks_physical_sense        PHYS-01 to PHYS-11 (Project notes 43, part B3)
 
 2. In the module, register one function per check ID of 7.2 with the decorator register_check (import it with a
    relative import, so the module registers with this very registry):
@@ -178,7 +179,7 @@ import re
 from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
-from .record_format import (DEPTH_RANK, DIVIDER_LINE, EndLine, Problem, Record, TextBlock, count_levels,
+from .record_format import (DEPTH_RANK, DIVIDER_LINE, STEPS_FILE, EndLine, Problem, Record, TextBlock, count_levels,
                             load_json, merge_copies, normalise_word, parse_file, parse_line_numbers,
                             parse_quote_anchor, parse_text, record_lines, render_file, sort_key_for_identifier,
                             split_item, split_list, write_file)
@@ -202,10 +203,11 @@ CHECK_FAMILY_MODULES = [
     "stage_tools.checks_sides_geometry",
     "stage_tools.checks_craft_reasons_words",
     "stage_tools.checks_plan_generation_film",
+    "stage_tools.checks_physical_sense",
 ]
 
-FAMILY_ORDER = ["FORM", "ID", "CITE", "COVER", "TIME", "STATE", "SIDE", "GEOM", "CRAFT", "INFO", "REASON", "WORDS",
-                "PLAN", "GEN", "FILM"]
+FAMILY_ORDER = ["FORM", "ID", "CITE", "COVER", "TIME", "STATE", "SIDE", "GEOM", "PHYS", "CRAFT", "INFO", "REASON",
+                "WORDS", "PLAN", "GEN", "ROUTE", "FILM"]
 # The ending code writes after a story point once it is resolved to a beat: SC24 "She deletes the way home." = SC24-B03
 RESOLVED_ENDING = re.compile(r'("[^"]*"|“[^”]*”)\s*=\s*SC\d{2,3}[A-Z]?-B\d{2,3}')
 # Checks steps.json lists that another command runs (7.2: previs has its own checks in render_previs.py).
@@ -781,7 +783,7 @@ def shot_number(identifier):
 
 def checks_for_step(step, skill_folder=None):
     """The check IDs steps.json lists for a step (step 10 means every check)."""
-    steps = load_json("schema/steps.json", skill_folder)
+    steps = load_json(STEPS_FILE, skill_folder)
     for entry in steps.get("steps", []):
         if entry.get("step") == step:
             listed = [item for item in entry.get("checks", []) if re.fullmatch(r"[A-Z]+-\d{2}", item)]
@@ -1064,6 +1066,8 @@ def plain_problem_line(problem, run):
         where = name  # a scene's record says where it is: "Scene 10, shot 150"
     else:
         where = f"{name}, in {file_name}"
+    # a route line names its clip and shot as the clip pages do: "Scene 10, clip 07 (shot 150)" (review N9)
+    where = getattr(problem, "plain_where", None) or where
     where = where[:1].upper() + where[1:]
     return f"- {where}: {plain}."
 
@@ -1298,7 +1302,7 @@ def health_check_plain_part(project, result, step, scene, film, all_checks, stor
     return lines
 
 
-# The ten scoring questions (reference/05 Quality rubric), in the user's words.
+# The ten scoring questions (references/formats/05 Quality rubric), in the user's words.
 RUBRIC_PLAIN_NAMES = {1: "being faithful to the story", 2: "reading the story", 3: "shots that serve the beats",
                       4: "the reasons", 5: "restraint", 6: "continuity and sides", 7: "rhythm and time",
                       8: "the film's visual plan", 9: "being ready for AI video", 10: "being easy to read"}
@@ -1320,7 +1324,7 @@ def review_scores(run):
 
 
 def scene_passes(scores):
-    """The rubric's pass rule on one scene's scores (reference/05): no criterion at 0, criteria 1, 3 and 6 at 2 or
+    """The rubric's pass rule on one scene's scores (references/formats/05): no criterion at 0, criteria 1, 3 and 6 at 2 or
     more, and a total of 20 or more of 30. The 'no error' part is the checker's, said on its own line."""
     return (all(score > 0 for score in scores.values()) and all(scores.get(number, 0) >= 2 for number in (1, 3, 6))
             and sum(scores.values()) >= 20)
@@ -1390,7 +1394,7 @@ def scenes_to_read_plain_lines(run):
         return []
     return ["## Three scenes to read", "",
             "Read these in 15 The breakdown, with the 10 questions in the guide \"05 How to read your breakdown\" "
-            "(in the Stage folder, beside 01 Read me first): "
+            "(in the Stage folder, in 01 Start here): "
             + join_words([f"{scene_in_words(scope)} ({why})" for scope, why in chosen]) + "."]
 
 

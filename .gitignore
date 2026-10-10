@@ -5,3 +5,6 @@ My breakdowns/*
 !My breakdowns/.keep
 __pycache__/
 *.pyc
+
+# Helper worktrees made by Claude Code while it works (temporary copies, never part of the kit)
+.claude/worktrees/

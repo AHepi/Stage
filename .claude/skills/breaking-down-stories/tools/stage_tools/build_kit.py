@@ -2,17 +2,20 @@
 build-kit (blueprint 7.1, 2.1, 2.3, 2.5). It is a maintainers' tool: the AI never runs it for a user.
 
 In plain words, `python .claude/skills/breaking-down-stories/tools/stage.py build-kit` writes:
-- reference/03 Field guide.md in the skill: every record type and field of schema/schema.json in plain words;
+- references/formats/03 Field guide.md in the skill: every record type and field of _config/schema/schema.json in
+  plain words;
+- the Reads and Writes columns of stages/CONTEXT.md, the list of steps, from _config/schema/steps.json (each step's
+  reads and files_written), so the list never drifts from the steps (Project notes 43, round 2, finding R-F1);
 - AGENTS.md at the top of the repository: SKILL.md's rules with every path written out, for coding agents
   other than Claude Code;
-- 07 Chat kit/: exactly the 13 files of blueprint 2.5 for a ChatGPT Project or a Gemini Gem: the text to paste
+- 03 Kits to upload/Chat kit/: exactly the 13 files of blueprint 2.5 for a ChatGPT Project or a Gemini Gem: the text to paste
   into the instruction box, six knowledge files joined from the skill's own files, the tools as one ZIP, and
   five step-group files that each chat attaches;
-- 08 Skill for Claude apps.zip: the skill folder, with breaking-down-stories/SKILL.md at the top of the ZIP, for
+- 03 Kits to upload/Skill for Claude apps.zip: the skill folder, with breaking-down-stories/SKILL.md at the top of the ZIP, for
   Customize > Skills on the Claude website and in Claude desktop (the research library cut to its digests, its
   D files and its three notes, to keep the ZIP small);
-- 09 Example - The Catch, scene 10/: a small finished project folder made from the gold example (the records of
-  examples/01 and 02, built, checked and made into a book by stage.py itself), holding only the files blueprint
+- 02 Example - The Catch, scene 10/: a small finished project folder made from the gold example (the records of
+  references/examples/01 and 02, built, checked and made into a book by stage.py itself), holding only the files blueprint
   2.3 names.
 
 Everything is made from the skill folder, so there is one source: edit the skill, then run build-kit again.
@@ -36,18 +39,24 @@ import zipfile
 from pathlib import Path
 
 from .project_files import Project, StageStop, today
-from .record_format import DIVIDER_LINE, SKILL_FOLDER
+from .record_format import (CARDS_FOLDER, CONFIG_FOLDER, DIVIDER_LINE, FORMATS_FOLDER, GOLD_CONTEXT_FILE,
+                            GOLD_SCENE_FILE, LIBRARY_FOLDER, LIMITS_FILE, MESSAGE_FORMATS_FILE, REFERENCES_FOLDER,
+                            SCHEMA_FILE, SKILL_FOLDER, STAGE_CONTRACT_NAME, STAGES_FOLDER, STEPS_FILE,
+                            TEMPLATES_FOLDER, stage_contract_file)
 
 SKILL_NAME = "breaking-down-stories"
-CHAT_KIT_FOLDER = "07 Chat kit"
-SKILL_ZIP_NAME = "08 Skill for Claude apps.zip"
-EXAMPLE_FOLDER = "09 Example - The Catch, scene 10"
+KITS_FOLDER = "03 Kits to upload"
+CHAT_KIT_FOLDER = KITS_FOLDER + "/Chat kit"
+SKILL_ZIP_NAME = KITS_FOLDER + "/Skill for Claude apps.zip"
+EXAMPLE_FOLDER = "02 Example - The Catch, scene 10"
 AGENTS_FILE = "AGENTS.md"
-FIELD_GUIDE = "reference/03 Field guide.md"
+FIELD_GUIDE = FORMATS_FOLDER + "/03 Field guide.md"
+STEPS_LIST = STAGES_FOLDER + "/" + STAGE_CONTRACT_NAME
 TOOLS_ZIP_NAME = "07 Tools.zip"
 INSTRUCTIONS_NAME = "00 Paste into instructions.txt"
-GOLD_SCENE = "examples/01 The Catch - scene 10.md"
-GOLD_CONTEXT = "examples/02 The Catch - scene 10 - context.md"
+GOLD_SCENE = GOLD_SCENE_FILE
+GOLD_CONTEXT = GOLD_CONTEXT_FILE
+COMMANDS_FILE = FORMATS_FOLDER + "/08 Commands.md"
 STORY_EXCERPT = "tests/fixtures/The Catch - lines 397-489.txt"
 MACHINE_FOLDER = "For machines - do not edit"
 ZIP_DATE = (2026, 1, 1, 0, 0, 0)  # one fixed date for every entry, so the same skill gives the same ZIP
@@ -88,26 +97,26 @@ KIT_FILES = [
      "attached when the user asks for storyboards, prompts for AI video or the edit plan"),
 ]
 SIZE_TOLERANCE = 0.25  # "about" in blueprint 2.5: within a quarter of the target
-KNOWLEDGE_TOTAL_ABOUT = 60000  # blueprint 2.5 and rules/limits.json chat_kit.knowledge_words_total_about
+KNOWLEDGE_TOTAL_ABOUT = 60000  # blueprint 2.5 and _config/rules/limits.json chat_kit.knowledge_words_total_about
 
 # The records of the gold scene kept in the chat kit's example (06): its plain part whole, the scene's design, the
 # two turns and the beats around them, a floor-plan move, three setups, the one-line shot list, and six shots of
 # different kinds (the first shot, the saved reflection frame, a line heard over a thing, the turn, the held wide,
-# the last line) with the cut to black and the title card. The whole file is in 07 Tools.zip and in 09 Example.
+# the last line) with the cut to black and the title card. The whole file is in 07 Tools.zip and in 02 Example.
 EXAMPLE_EXCERPT_RECORDS = [
     "SC10", "SC10-P1", "SC10-P2", "SC10-B01", "SC10-B06", "SC10-B07", "SC10-B11", "SC10-M01", "SC10-M05",
     "SC10-SU01", "SC10-SU02", "SC10-SU06", "SC10-LIST", "SC10-SH010", "SC10-SH080", "SC10-SH130", "SC10-SH150",
     "SC10-SH190", "SC10-SH200", "SC10-C200", "SC10-SH990",
 ]
 
-# The folder 09 Example holds only these (blueprint 2.3), plus the book made from them.
+# The folder 02 Example holds only these (blueprint 2.3), plus the book made from them.
 EXAMPLE_FILES = ["00 Start here.md", "01 Choices.md", "04 Scene list.md", "07 Characters and voices.md",
                  "08 Places and things.md", "09 Continuity.md", "10 Film rules.md"]
 EXAMPLE_BOOK_FILES = ["15 The breakdown/The breakdown.md", "15 The breakdown/The breakdown.html"]
 EXAMPLE_LAST_UNIT = "U-08-SC10-B2"  # the gold's 21 shots are two batches of the chat batch size (12)
 
 # The text for the instruction box of a ChatGPT Project or a Gemini Gem (blueprint 2.5): the house rules
-# condensed. It must stay within rules/limits.json chat_kit.instructions_characters_max (6,000 characters).
+# condensed. It must stay within _config/rules/limits.json chat_kit.instructions_characters_max (6,000 characters).
 INSTRUCTIONS_TEXT = """\
 You are Stage, a story-breakdown helper. You turn the user's story (a screenplay, a novel, a short story, a play) into a scene-by-scene plan for making it as a film, including with AI picture and video tools. You do the work; the user decides only what matters.
 
@@ -202,6 +211,20 @@ def numbered_files(folder, numbers):
     return found
 
 
+def numbered_stage_files(skill_folder, numbers):
+    """The step files (stages/NN <name>/CONTEXT.md) of the steps with each two-digit number, in the order given."""
+    found = []
+    stages = Path(skill_folder) / STAGES_FOLDER
+    for number in numbers:
+        matches = sorted(path for path in stages.glob(f"{number} *") if path.is_dir())
+        contract = Path(skill_folder) / stage_contract_file(matches[0].name) if matches else None
+        if contract is None or not contract.is_file():
+            raise StageStop(f'The skill has no step file in a folder starting "{number} " in {STAGES_FOLDER}/. '
+                            "Restore it, then run build-kit again.")
+        found.append(contract)
+    return found
+
+
 def repository_of(skill_folder, explicit=None):
     """The Stage repository: --repository, else the folder that holds .claude/skills/<the skill>."""
     if explicit:
@@ -231,13 +254,13 @@ def kept_in_zip(relative):
 def library_file_kept(relative):
     """The library in a ZIP: its digests, its D research files and its three notes (00, 01, 02); the long A, B and C
     research files stay out (blueprint 2.3: 'library limited to digests and D files to keep it small')."""
-    parts = relative.split("/")
-    if parts[0] != "library":
+    if not relative.startswith(LIBRARY_FOLDER + "/"):
         return True
-    if len(parts) >= 3 and parts[1] == "digests":
+    parts = relative[len(LIBRARY_FOLDER) + 1:].split("/")
+    if len(parts) >= 2 and parts[0] == "digests":
         return True
-    if len(parts) == 2:
-        return bool(re.match(r"^(D\d+ |0\d )", parts[1]))
+    if len(parts) == 1:
+        return bool(re.match(r"^(D\d+ |0\d )", parts[0]))
     return False
 
 
@@ -267,7 +290,7 @@ def skill_files(skill_folder):
     return sorted(found)
 
 
-# ---------------------------------------------------------------- reference/03 Field guide.md
+# ---------------------------------------------------------------- references/formats/03 Field guide.md
 
 def table_cell(text):
     text = " ".join(str(text).split())
@@ -354,17 +377,17 @@ def field_row(field):
 
 
 def field_guide_text(schema_data):
-    """reference/03 Field guide.md, made from schema.json."""
+    """references/formats/03 Field guide.md, made from schema.json."""
     record_types = schema_data["record_types"]
     shot = record_types.get("SHOT", {})
     size = next((field for field in shot.get("fields", []) if field.get("name") == "size"), None)
     lines = [
         "# Field guide",
         "",
-        "Every record type and every field of `schema/schema.json`, in plain words. This file is made by "
+        "Every record type and every field of `_config/schema/schema.json`, in plain words. This file is made by "
         "`stage.py build-kit` from the schema (version "
         f"{schema_data.get('schema_version', '')}); edit the schema, never this file. Record grammar: "
-        "`reference/01 Record format.md`. Words: `reference/02 Word list.md`.",
+        "`references/formats/01 Record format.md`. Words: `references/formats/02 Word list.md`.",
         "",
     ]
     if size:
@@ -428,10 +451,51 @@ def field_guide_text(schema_data):
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- stages/CONTEXT.md, the list of steps
+
+STEP_ROW = re.compile(r"^\|\s*(\d+)\s*\|")
+
+
+def steps_reads_cell(step):
+    """The Reads cell of a step's row: the record types and inputs steps.json lists for it."""
+    reads = step.get("reads") or []
+    return table_cell(", ".join(reads)) if reads else "no records: it starts the project"
+
+
+def steps_writes_cell(step):
+    """The Writes cell of a step's row: each file of steps.json's files_written, its name in backticks and its note
+    after it ('`05 Story plan.md` (CHAPTER stubs)')."""
+    cells = []
+    for entry in step.get("files_written") or []:
+        name, bracket, note = entry.partition(" (")
+        if name.startswith("none"):
+            cells.append(entry)
+        else:
+            cells.append(f"`{name}`" + (f" ({note}" if bracket else ""))
+    return table_cell("; ".join(cells)) if cells else "nothing"
+
+
+def steps_list_text(current, steps_data):
+    """stages/CONTEXT.md with the folder, Reads and Writes cells of every step row made again from steps.json; the
+    rest of the file (its headings, the 'The user types' and 'When' cells and the text) is kept as it is written."""
+    steps = {step["step"]: step for step in steps_data["steps"]}
+    lines = []
+    for line in current.splitlines():
+        match = STEP_ROW.match(line)
+        step = steps.get(int(match.group(1))) if match else None
+        if step is None:
+            lines.append(line)
+            continue
+        cells = [cell.strip() for cell in re.split(r"(?<!\\)\|", line.strip()[1:-1])]
+        folder = step["step_file"].split("/")[1]
+        cells = [cells[0], f"`{folder}/`"] + cells[2:-2] + [steps_reads_cell(step), steps_writes_cell(step)]
+        lines.append("| " + " | ".join(cells) + " |")
+    return "\n".join(lines) + "\n"
+
+
 # ---------------------------------------------------------------- AGENTS.md
 
-EXPLICIT_PREFIXES = ("steps/", "cards/", "reference/", "schema/", "rules/", "adapters/", "templates/", "examples/",
-                     "tools/", "library/")
+EXPLICIT_PREFIXES = (STAGES_FOLDER + "/", REFERENCES_FOLDER + "/", CONFIG_FOLDER + "/", "tools/")
 
 
 def with_explicit_paths(text):
@@ -483,21 +547,25 @@ def kit_map_table():
     return "\n".join([
         "| The skill's file | In this chat kit |",
         "|---|---|",
-        "| `SKILL.md`, `reference/07 Report and message formats.md` | 01 House rules (this file) |",
-        "| `cards/01` to `07`, `15` to `20` | 02 Cards - story and scenes |",
-        "| `cards/08` to `14`, `21` to `24` | 03 Cards - picture, sound and making |",
-        "| `templates/`, `reference/01 Record format.md`, `02 Word list.md`, `04 Rule order.md` | "
+        "| `SKILL.md`, `references/formats/07 Report and message formats.md`, `references/formats/08 Commands.md` | "
+        "01 House rules (this file) |",
+        "| `references/cards/01` to `07`, `15` to `20` | 02 Cards - story and scenes |",
+        "| `references/cards/08` to `14`, `21` to `24` | 03 Cards - picture, sound and making |",
+        "| `references/templates/`, `references/formats/01 Record format.md`, `02 Word list.md`, `04 Rule order.md` | "
         "04 Templates and word list |",
-        "| `reference/05 Quality rubric.md`, `reference/06 Checks in words.md` | 05 Checks in words |",
-        "| `examples/01 The Catch - scene 10.md` | 06 Example - The Catch, scene 10 (an excerpt; the whole file is in "
-        "07 Tools.zip) |",
-        "| `tools/`, `schema/`, `rules/`, `adapters/`, `reference/03 Field guide.md`, library digests | "
+        "| `references/formats/05 Quality rubric.md`, `references/formats/06 Checks in words.md` | 05 Checks in words |",
+        "| `references/examples/01 The Catch - scene 10.md` | 06 Example - The Catch, scene 10 (an excerpt; the whole "
+        "file is in 07 Tools.zip) |",
+        "| `tools/`, `_config/`, `references/formats/03 Field guide.md`, library digests | "
         "07 Tools.zip (ChatGPT only; unzip it and its folder breaking-down-stories is the skill's folder) |",
-        "| `steps/00` to `02` | 08 Steps 00-02 - start, reading, plan |",
-        "| `steps/03` to `06` | 09 Steps 03-06 - world, people, continuity, film rules |",
-        "| `steps/07`, `08` | 10 Steps 07-08 - scenes and shots |",
-        "| `steps/09`, `10`, `11`, `16` | 11 Steps 09-11 and 16 - film pass, check, book, resume |",
-        "| `steps/12`, `14`, `15` | 12 Steps for add-ons - storyboards, prompts, finishing (step 13, grey previews, "
+        # The three routing files SKILL.md names (Project notes 43, round 2, finding R-F5).
+        "| `stages/CONTEXT.md`, `references/CONTEXT.md`, `_config/CONTEXT.md` | 07 Tools.zip only; in a chat without "
+        "code, the steps table in SKILL.md below is the list of steps, and this table says where every other file is |",
+        "| `stages/00` to `02` | 08 Steps 00-02 - start, reading, plan |",
+        "| `stages/03` to `06` | 09 Steps 03-06 - world, people, continuity, film rules |",
+        "| `stages/07`, `08` | 10 Steps 07-08 - scenes and shots |",
+        "| `stages/09`, `10`, `11`, `16` | 11 Steps 09-11 and 16 - film pass, check, book, resume |",
+        "| `stages/12`, `14`, `15` | 12 Steps for add-ons - storyboards, prompts, finishing (step 13, grey previews, "
         "needs Claude Code on the user's computer and is not in the chat kit) |",
     ])
 
@@ -522,19 +590,20 @@ def joined_file(title, lead, parts, skill_folder):
 def house_rules_text(skill_folder):
     skill_folder = Path(skill_folder)
     lead = ("Part of the Stage chat kit, for a ChatGPT Project or a Gemini Gem. It joins the skill's house rules "
-            "(`SKILL.md`, without its front matter) and `reference/07 Report and message formats.md`. Where they "
+            "(`SKILL.md`, without its front matter), `references/formats/07 Report and message formats.md` and "
+            "`references/formats/08 Commands.md`. Where they "
             "name another skill file, it is in this kit here:\n\n" + kit_map_table() +
             "\n\nOn ChatGPT with 07 Tools.zip unzipped you are on a code surface: the paths below are inside the "
             "folder breaking-down-stories. In a chat without code, the step file attached to the chat says what to do.")
     parts = [(skill_folder / "SKILL.md", without_front_matter(read_text(skill_folder / "SKILL.md"))),
-             (skill_folder / "reference/07 Report and message formats.md",
-              read_text(skill_folder / "reference/07 Report and message formats.md"))]
+             (skill_folder / MESSAGE_FORMATS_FILE, read_text(skill_folder / MESSAGE_FORMATS_FILE)),
+             (skill_folder / COMMANDS_FILE, read_text(skill_folder / COMMANDS_FILE))]
     return joined_file("01 House rules", lead, parts, skill_folder)
 
 
 def cards_text(file_name, numbers, skill_folder):
     skill_folder = Path(skill_folder)
-    paths = numbered_files(skill_folder / "cards", numbers)
+    paths = numbered_files(skill_folder / CARDS_FOLDER, numbers)
     listing = ", ".join(path.stem for path in paths)
     lead = (f"Part of the Stage chat kit (knowledge). It joins these craft cards, each whole: {listing}. A step file "
             "names the card parts to read for each unit; read only those parts. 01 House rules says where every "
@@ -544,8 +613,8 @@ def cards_text(file_name, numbers, skill_folder):
 
 def templates_text(skill_folder):
     skill_folder = Path(skill_folder)
-    templates = sorted(path for path in (skill_folder / "templates").glob("*.md") if path.is_file())
-    references = [skill_folder / "reference" / name for name in
+    templates = sorted(path for path in (skill_folder / TEMPLATES_FOLDER).glob("*.md") if path.is_file())
+    references = [skill_folder / FORMATS_FOLDER / name for name in
                   ("01 Record format.md", "02 Word list.md", "04 Rule order.md")]
     for path in references:
         if not path.is_file():
@@ -561,11 +630,11 @@ def templates_text(skill_folder):
 
 def checks_text(skill_folder):
     skill_folder = Path(skill_folder)
-    paths = [skill_folder / "reference/06 Checks in words.md", skill_folder / "reference/05 Quality rubric.md"]
+    paths = [skill_folder / FORMATS_FOLDER / "06 Checks in words.md", skill_folder / FORMATS_FOLDER / "05 Quality rubric.md"]
     lead = ("Part of the Stage chat kit: knowledge, and attached to every check chat. It joins "
-            "`reference/06 Checks in words.md` (part 1: the checks every reply runs on its own file; part 2: the "
+            "`references/formats/06 Checks in words.md` (part 1: the checks every reply runs on its own file; part 2: the "
             "checks a separate check chat runs on a group of scenes; part 3: the real check on the Claude website) and "
-            "`reference/05 Quality rubric.md` (the ten criteria the finished check scores).")
+            "`references/formats/05 Quality rubric.md` (the ten criteria the finished check scores).")
     return joined_file("05 Checks in words", lead, [(path, read_text(path)) for path in paths], skill_folder)
 
 
@@ -613,9 +682,9 @@ def example_excerpt_text(skill_folder):
         "shots of different kinds with the cut to black and the title card. The shots left out (shots "
         + ", ".join(shots_left) + ") follow the same form. A real scene file holds "
         "every beat and every shot, and its END line counts them all; the END line below counts this excerpt. The "
-        "whole file is `examples/01 The Catch - scene 10.md` in 07 Tools.zip (and in the Stage folder's "
-        "\"09 Example - The Catch, scene 10\"), and the whole-film records it cites (characters, places, "
-        "continuity, film rules) are in `examples/02` there.",
+        "whole file is `references/examples/01 The Catch - scene 10.md` in 07 Tools.zip (and in the Stage folder's "
+        "\"02 Example - The Catch, scene 10\"), and the whole-film records it cites (characters, places, "
+        "continuity, film rules) are in `references/examples/02` there.",
         "",
         "",
     ]
@@ -627,8 +696,8 @@ def example_excerpt_text(skill_folder):
 
 def steps_text(file_name, numbers, skill_folder):
     skill_folder = Path(skill_folder)
-    paths = numbered_files(skill_folder / "steps", numbers)
-    listing = ", ".join(path.stem for path in paths)
+    paths = numbered_stage_files(skill_folder, numbers)
+    listing = ", ".join(path.parent.name for path in paths)
     lead = (f"Part of the Stage chat kit: a step-group file, attached to the chat that runs one of these steps "
             f"(not knowledge). It joins the step files {listing}, each whole. Read the one for this unit every time, "
             "quote its one-line task back before any work, and follow its section \"If you cannot run code\" when "
@@ -637,19 +706,20 @@ def steps_text(file_name, numbers, skill_folder):
 
 
 def tools_zip_entries(skill_folder):
-    """07 Tools.zip (blueprint 2.5): stage.py and stage_tools plus schema, rules, adapters, steps, cards, templates,
-    examples and the library digests, so every command runs in ChatGPT's sandbox. SKILL.md, reference/ (the handouts
-    read it) and the library's three notes (lib prints the errata) go in too. The previs scripts stay out: grey
-    previews need Claude Code and Blender."""
+    """07 Tools.zip (blueprint 2.5): stage.py and stage_tools plus _config/ (schema, rules, adapters), stages/,
+    references/ (cards, templates, examples, formats) and the library digests, so every command runs in ChatGPT's
+    sandbox. SKILL.md, references/formats/ (the handouts read it) and the library's three notes (lib prints the errata)
+    go in too. The previs scripts stay out: grey previews need Claude Code and Blender."""
     entries = []
     for relative in skill_files(skill_folder):
         top = relative.split("/")[0]
-        if relative == "SKILL.md" or top in ("schema", "rules", "adapters", "steps", "cards", "templates", "examples",
-                                             "reference"):
+        in_library = relative.startswith(LIBRARY_FOLDER + "/")
+        if relative == "SKILL.md" or top in (CONFIG_FOLDER, STAGES_FOLDER) or (top == REFERENCES_FOLDER and not in_library):
             pass
         elif relative == "tools/stage.py" or relative.startswith("tools/stage_tools/"):
             pass
-        elif top == "library" and library_file_kept(relative) and not re.match(r"^library/D\d+ ", relative):
+        elif in_library and library_file_kept(relative) and not re.match(
+                "^" + re.escape(LIBRARY_FOLDER) + r"/D\d+ ", relative):
             pass  # digests and the three notes; the D research files stay in the skill ZIP only
         else:
             continue
@@ -658,7 +728,7 @@ def tools_zip_entries(skill_folder):
 
 
 def skill_zip_entries(skill_folder):
-    """08 Skill for Claude apps.zip: the whole skill folder under breaking-down-stories/, library cut down."""
+    """Skill for Claude apps.zip: the whole skill folder under breaking-down-stories/, library cut down."""
     return [(f"{SKILL_NAME}/{relative}", Path(skill_folder) / relative)
             for relative in skill_files(skill_folder) if library_file_kept(relative)]
 
@@ -677,7 +747,7 @@ def check_zip_layout(zip_path, must_hold):
     return problems, names
 
 
-# ---------------------------------------------------------------- 09 Example - The Catch, scene 10
+# ---------------------------------------------------------------- 02 Example - The Catch, scene 10
 
 def gold_project(folder, skill_folder):
     """A project folder from the gold: each '## From <file>' part of the context file as its numbered file (a
@@ -721,7 +791,7 @@ def leaks_in(text, name, local_paths):
 
 
 def build_example(repository, skill_folder, story=None, say=print):
-    """09 Example - The Catch, scene 10/: files 00, 01, 04, 07, 08, 09, 10 with the plain parts code writes, the
+    """02 Example - The Catch, scene 10/: files 00, 01, 04, 07, 08, 09, 10 with the plain parts code writes, the
     gold scene file as it is, and the book made from them. Returns problem lines."""
     problems = []
     skill_folder = Path(skill_folder)
@@ -786,12 +856,12 @@ def build_example(repository, skill_folder, story=None, say=print):
 # ---------------------------------------------------------------- the whole build
 
 def build_chat_kit(repository, skill_folder, say=print):
-    """07 Chat kit/ with exactly the 13 files of blueprint 2.5. Returns (problem lines, size notes, sizes)."""
+    """03 Kits to upload/Chat kit/ with exactly the 13 files of blueprint 2.5. Returns (problem lines, size notes, sizes)."""
     skill_folder = Path(skill_folder)
     kit = Path(repository) / CHAT_KIT_FOLDER
     kit.mkdir(parents=True, exist_ok=True)
     problems, notes, sizes = [], [], {}
-    limits = json.loads(read_text(skill_folder / "rules" / "limits.json")).get("chat_kit", {})
+    limits = json.loads(read_text(skill_folder / LIMITS_FILE)).get("chat_kit", {})
     characters_max = int(limits.get("instructions_characters_max", 6000))
     texts = {
         INSTRUCTIONS_NAME: INSTRUCTIONS_TEXT,
@@ -808,8 +878,8 @@ def build_chat_kit(repository, skill_folder, say=print):
         write_text(kit / name, text)
     tools_zip = kit / TOOLS_ZIP_NAME
     write_zip(tools_zip, tools_zip_entries(skill_folder))
-    zip_problems, names = check_zip_layout(tools_zip, [f"{SKILL_NAME}/tools/stage.py", f"{SKILL_NAME}/schema/schema.json",
-                                                       f"{SKILL_NAME}/steps/00 Start.md"])
+    zip_problems, names = check_zip_layout(tools_zip, [f"{SKILL_NAME}/tools/stage.py", f"{SKILL_NAME}/{SCHEMA_FILE}",
+                                                       f"{SKILL_NAME}/{stage_contract_file('00 Start')}"])
     problems += zip_problems
     wanted = [name for name, _, _, _ in KIT_FILES]
     for path in sorted(kit.iterdir()):
@@ -849,10 +919,13 @@ def build_all(repository, skill_folder, story=None, with_example=True, say=print
     skill_folder = Path(skill_folder)
     repository = Path(repository)
     problems, notes = [], []
-    schema_data = json.loads(read_text(skill_folder / "schema" / "schema.json"))
+    schema_data = json.loads(read_text(skill_folder / SCHEMA_FILE))
     write_text(skill_folder / FIELD_GUIDE, field_guide_text(schema_data))
     say(f"Field guide: {FIELD_GUIDE} ({english_words(read_text(skill_folder / FIELD_GUIDE)):,} words, "
         f"{len(schema_data['record_types'])} record types).")
+    steps_data = json.loads(read_text(skill_folder / STEPS_FILE))
+    write_text(skill_folder / STEPS_LIST, steps_list_text(read_text(skill_folder / STEPS_LIST), steps_data))
+    say(f"List of steps: {STEPS_LIST} (the Reads and Writes of {len(steps_data['steps'])} steps from {STEPS_FILE}).")
     write_text(repository / AGENTS_FILE, agents_text(skill_folder))
     say(f"{AGENTS_FILE}: SKILL.md's rules with every path written out.")
     kit_problems, kit_notes, _ = build_chat_kit(repository, skill_folder, say)
