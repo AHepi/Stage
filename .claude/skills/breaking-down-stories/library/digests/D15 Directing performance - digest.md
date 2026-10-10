@@ -22,9 +22,9 @@ Source: `research/D15_performance_direction.md` (fact-checked 28 Sept 2026). Bra
 7. [§3 rule 5] If a behaviour step is shorter than about 0.5 s, then lengthen it or plan a transfer, because a micro-expression is "a quarter to half a second" (B5), 6-12 frames at 24 fps [J].
 
 **Stillness, silence, eyelines**
-8. [§3 rule 6] If a hold is 2 s or longer, then name every still part and the one moving part, and add "The camera does not move.", because models fill empty time [J].
+8. [§3 rule 6, rewritten 10 October 2026] If a hold is 2 s or longer, then write at least one small timed action for every 2 s of it (a breath, a blink, a swallow, a glance, a hand that adjusts something), and give the camera one plain sentence, never a list of what does not move, because models read a list of still parts as an order to freeze: testers found that a strong "do not move" line spreads over the whole shot, so parts that should move stop and a face looks like a photo with moving lips; and time with nothing happening in it is squeezed out or frozen [J; the h3-storyboard testing notes, checked 10 October 2026; Project notes 42 and 43].
 9. [§3 rule 7] If lips part in silence, then add "No dialogue." and "closes it without a sound", because parted lips invite generated speech on native-audio models [J; C3 L14 allows "No dialogue"].
-10. [§3 rule 8] If pauses compete for long holds, then apply A1 R15 (long hold = 3 s or more, ranks 1 and 2 only) before writing stillness over 3 s.
+10. [§3 rule 8] If pauses compete for long holds, then apply A1 R15 (long hold = 3 s or more, ranks 1 and 2 only) before filling a hold over 3 s with timed actions (rule 6).
 11. [§3 rule 9] If an eyeline change is itself a beat, then put that look in `must_not` for every earlier shot; if the script gives an earlier look, then aim it at a different target and add "meets her eyes" to its `must_not`, because one early glance spends the beat.
 12. [§3 rule 10] If the eyes move, then name target and dwell ("to the flask; stays 2 s"), never "looks around"; for separately generated singles write opposite frame directions and "does not look into the camera" (A2 R26; A1 R44).
 
@@ -158,11 +158,11 @@ performance:
 
 ## 5. Checklists
 
-**Per shot** [§8]: (1) a block for every acting character; (2) tactic a gerund, task physical; (3) no emotion words in `behavior`; (4) steps timed, ≤1 main action per 4-5 s; (5) eyeline has target, direction, dwell; (6) breath state set; (7) stillness named for any hold ≥2 s; (8) display level fits shot size; (9) must-not filled, none written as "no X"; (10) `state_in` = previous `state_out`; (11) capture route chosen, with a reason for key shots; (12) D3 delivery matches the breath; (13) transfer shots: no movement words in any text box.
+**Per shot** [§8]: (1) a block for every acting character; (2) tactic a gerund, task physical; (3) no emotion words in `behavior`; (4) steps timed, ≤1 main action per 4-5 s; (5) eyeline has target, direction, dwell; (6) breath state set; (7) every hold ≥2 s filled with small timed actions, one at least every 2 s; (8) display level fits shot size; (9) must-not filled, none written as "no X"; (10) `state_in` = previous `state_out`; (11) capture route chosen, with a reason for key shots; (12) D3 delivery matches the breath; (13) transfer shots: no movement words in any text box.
 
 **Per scene**: (1) at most two long holds, per A1's ranking; (2) beat-eyelines protected in earlier shots; (3) one display peak, at or after the main turn; (4) no unexplained jumps in the ledger; (5) signatures at most once per scene except in a payoff scene (B5 §5.6).
 
-**Per take**: (1) primary behaviour present, in order; (2) stillness held; (3) no must-not items; (4) eyeline and sides correct; (5) nobody speaks who should not; (6) no face reset at the start; (7) hands intact.
+**Per take**: (1) primary behaviour present, in order; (2) each person moves between the written actions, and nothing freezes; (3) no must-not items; (4) eyeline and sides correct; (5) nobody speaks who should not; (6) no face reset at the start; (7) hands intact.
 
 **Failure → fix**: see file §9 (11 symptoms, each with cause and fix).
 
@@ -170,7 +170,7 @@ performance:
 
 - **Vocabulary** [§4.2; untested until Recipe V runs; full table there]: shock "stops moving completely; eyes fix on {target}" (1.5-3 s); recognition "eyes fix on {target}; brows draw together slightly"; confusion "eyes lose focus and drift down"; fear "eyes widen slightly, stay on {target}; she backs one step"; suppressed anger "jaw tightens; one slow breath through the nose; eyes fixed"; withholding "eyes go to {object}, not to {person}"; relief "shoulders drop; one long breath out"; outwaiting "does not move or speak; eyes stay on {target}"; trying to smile "one corner of the mouth lifts; cheeks do not rise; eyes stay flat"; speechless "opens her mouth, holds it open, closes it without a sound; eyes drop". *Disgust* and *anguish* deliberately missing.
 - **Breath wording** [§2.3]: "her shoulders rise once with one slow breath"; "she breathes slowly through her nose; her shoulders stay level"; "her shoulders and chest go completely still"; "a short, sharp breath in through parted lips"; "she lets out one long breath; her shoulders drop".
-- **Phrasing** [§4.3]: primary behaviour first; one sentence per step joined by "then"; timecodes only where the model supports them (C3 §5); name body parts ("his left thumb"); for stillness say what is still and for how long ("Her head and hands stay completely still for three seconds; only her eyes move."); tone words only in the voice line.
+- **Phrasing** [§4.3]: primary behaviour first; one sentence per step joined by "then"; timecodes only where the model supports them (C3 §5); name body parts ("his left thumb"); for a hold say what happens in it and when ("For three seconds her eyes stay on him; at about two seconds she blinks."), never a list of what does not move; tone words only in the voice line.
 - **Maker evidence** [§4.1, V]: LTX "Avoid emotional labels like 'sad' or 'confused' without describing visual cues"; Seedance 2.5 "You are converting an internal emotion into something visible". Kling and Wan pair labels with cues and print tears or sobbing beside grief. No guide covers whole-body holds, one-sided expressions or breath-holding.
 - **Transfers**: no movement text (rule 20). Figure prompt, untested: "It moves in separate, complete motions with a full stop between each; its arms move first and its body follows a moment later; its head stays level; when it stops, one hand sinks slightly and hangs."
 

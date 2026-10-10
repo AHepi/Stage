@@ -57,7 +57,7 @@ EXPECTED = {
     "CRAFT-11": ("E", 1), "CRAFT-12": ("W", 1), "CRAFT-13": ("W", 1), "CRAFT-14": ("E", 1), "CRAFT-15": ("W", 1),
     "CRAFT-16": ("E", 1), "CRAFT-17": ("W", 2), "CRAFT-18": ("E", 1), "CRAFT-19": ("W", 1), "CRAFT-20": ("W", 1),
     "CRAFT-21": ("W", 1), "CRAFT-22": ("W", 1), "CRAFT-23": ("W", 1), "CRAFT-24": ("W", 1), "CRAFT-25": ("W", 1),
-    "CRAFT-26": ("W", 1),
+    "CRAFT-26": ("W", 1), "CRAFT-27": ("W", 1), "CRAFT-28": ("W", 1),
     "INFO-01": ("W", 1), "INFO-02": ("W", 1),
     "REASON-01": ("E", 1), "REASON-02": ("E", 1), "REASON-03": ("E", 1), "REASON-04": ("E", 1),
     "REASON-05": ("E", 1), "REASON-06": ("E", 1), "REASON-07": ("E", 1), "REASON-08": ("E", 1),

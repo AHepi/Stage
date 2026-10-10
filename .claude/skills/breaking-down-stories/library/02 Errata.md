@@ -144,6 +144,25 @@
 - **The research says**: C1 fixes smeared fast motion with "Slow-motion in prompt then speed up in edit".
 - **Read instead**: allowed only as a way of generating whose playback is real time, logged as a `speed` finishing job; slow playback is banned in The Catch (check CRAFT-16; D11 R15).
 
+
+---
+
+## Corrections from the H3 handover (10 October 2026; Project notes 42 and 43)
+
+These come from testers' notes and from a clip file made by hand for MiniMax H3, not from runs on the user's own setup, so the rules they bring stay judgements (J) until the take log confirms them.
+
+### 23. Stillness written as a list of still parts (D15 R6)
+
+- **Applies to**: D15 R6, D15 R8, D15 §1, D15 §4.3, D15 §8, D15 §9; D15 Ex1, D15 Ex2, D15 Ex6; C3 §6.
+- **The research says**: D15 rule 6 (item 8 of the digest, which Project notes 42 calls "rule 8"): "If a hold is 2 s or longer, then name every still part and the one moving part, and add 'The camera does not move.', because models fill empty time [J]." Its examples and checklists write stillness the same way ("her head and hands stay completely still"; "stillness held").
+- **Read instead**: a hold of `hold_action_every_s` or more is written as small timed actions, one at least every 2 seconds (a breath, a blink, a swallow, a glance, a hand that adjusts something), and the camera gets one plain sentence. Testers found that models read a list of still parts as an order to freeze (a strong "do not move" line spreads over the whole shot, so a face looks like a photo with moving lips), and that time with nothing happening in it is squeezed out or frozen (the h3-storyboard testing notes, checked 10 October 2026). "Less display, more time" stays: the time is filled with small actions. The subject's `still` part is no longer asked for or sent to a model (checks CRAFT-26 and CRAFT-27; D15 R6 is rewritten in place, dated).
+
+### 24. Motion only with a start picture, on MiniMax H3 in reference mode (C3 R1)
+
+- **Applies to**: C3 R1, C3 §9A, C3 §3C; card 21's "motion only" fix.
+- **The research says**: "If the shot starts from an image, then write motion only and call people 'the woman', 'the man', because Google says re-describing the image confuses the model."
+- **Read instead**: C3 R1 (motion only with a start picture) does not apply to MiniMax H3's reference mode, where each person's description is repeated word for word next to their picture label (`<Subject 2> ... comes from <Picture 2>`); rewording a description there re-rolls the face (MiniMax's reference-mode prompt guide; Project notes 42). For other image-to-video models R1 still holds.
+
 ---
 
 ## Corrections later research files make to earlier ones
@@ -186,3 +205,4 @@ These slips are in the build plan, in early notes or in the schema's wording. Th
 | "C5 P8" (D14) | C5 §9 E1 and C5 Recipe 2 | the C5 digest's procedure P8; C5 has no P8 |
 | "C3 §7A (languages)" | C3 §7B; keeping words off the screen is C3 §7G | D18 §11 |
 | A2 R4 as "close-up or a deliberate wide" (step 6) | A2 R4: the scene's tightest size, or a deliberate wide | A2 R4's own words |
+| "D15 rule 8" for the stillness rule (Project notes 42) | D15 R6 (entry 23 above) | digest numbering: the digest's item 8 is §3 rule 6 |

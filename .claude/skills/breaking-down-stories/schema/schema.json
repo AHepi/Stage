@@ -4732,7 +4732,7 @@
      "kind": "sub_parts",
      "depth": "q",
      "writer": "ai",
-     "example": "CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | dwell_s: 15 | does: chews slowly; stops chewing; a small frown | tactic: discovering | energy: held | display: 1 | still: head, hands, torso | travel: none",
+     "example": "CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | dwell_s: 15 | does: chews slowly; stops chewing; a small frown | tactic: discovering | energy: held | display: 1 | travel: none",
      "repeat": true,
      "group": "people",
      "also_allowed": [
@@ -4820,7 +4820,7 @@
       {
        "key": "still",
        "kind": "word_list",
-       "meaning": "What does not move.",
+       "meaning": "An old field, kept only so that older breakdowns still load: it never reaches a model and no check asks for it. Leave it out; write a held moment as small timed actions in moment and does instead (CRAFT-26, CRAFT-27; Project notes 42 and 43).",
        "values": [
         "head",
         "eyes",
@@ -4828,8 +4828,7 @@
         "hands",
         "torso",
         "whole_body"
-       ],
-       "depth": "s"
+       ]
       },
       {
        "key": "eyeline",

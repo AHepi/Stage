@@ -34,7 +34,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: PR-FLASK.S03
 - move: static
 - move_reason: none
-- subject: CH-SAYE.S01 | at: left_edge | faces: frame_right | eyeline: PR-FLASK.S03 | dwell_s: 3 | does: her hand comes in from the left toward the flask and stops a short way from it | tactic: testing | energy: rising | display: 1 | still: torso | travel: frame_right
+- subject: CH-SAYE.S01 | at: left_edge | faces: frame_right | eyeline: PR-FLASK.S03 | dwell_s: 3 | does: her hand comes in from the left toward the flask and stops a short way from it | tactic: testing | energy: rising | display: 1 | travel: frame_right
 - thing: PR-FLASK.S03 | emphasis: 2 | at: centre, on the counter | plant: PL-09
 - thing: PR-PHONE.S01 | emphasis: 0 | at: right third, on the counter beside the flask
 - text: none
@@ -50,7 +50,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - needs_description: yes
 - screen_time: 3
 - moment: 0-3 | shows: the hand comes toward the flask; Eli's voice; the hand stops and stays in the air
-- end: Saye's hand still, short of the flask
+- end: Saye's hand in the air, short of the flask
 - cut_out_on: line_end
 - held: no
 - previs_level: 0
@@ -86,10 +86,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - move: static
 - move_reason: none
 - glass: window | state: clear | camera: through
-- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: PR-MINT.S01 | dwell_s: 3 | does: sets her scissors down on the counter, crosses to the sill with her back to the room, tears a leaf from the pot, comes back to the table and holds it out to Iona | tactic: proving | energy: held | display: 1 | still: head | travel: frame_right
-- subject: CH-IONA.S02 | at: left_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 7 | does: waits at the table with her hands empty, and takes the leaf when it reaches her | tactic: defying | energy: held | display: 1 | still: head, torso | must_not: any change in her face, saved for the next shot, where "Her face changes." | travel: none
-- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: PR-MINT.S01 | dwell_s: 5 | does: stands by the fridge with the open bottle and watches the leaf, not the women | tactic: hiding | energy: still | display: 1 | still: whole_body | travel: none
-- subject: CH-JUDE.S03 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 7 | does: lies still on the table | tactic: enduring | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: PR-MINT.S01 | dwell_s: 3 | does: sets her scissors down on the counter, crosses to the sill with her back to the room, tears a leaf from the pot, comes back to the table and holds it out to Iona | tactic: proving | energy: held | display: 1 | travel: frame_right
+- subject: CH-IONA.S02 | at: left_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 7 | does: waits at the table with her hands empty, and takes the leaf when it reaches her | tactic: defying | energy: held | display: 1 | must_not: any change in her face, saved for the next shot, where "Her face changes." | travel: none
+- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: PR-MINT.S01 | dwell_s: 5 | does: stands by the fridge with the open bottle and watches the leaf, not the women | tactic: hiding | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 7 | does: lies on the table, his chest rising and falling | tactic: enduring | energy: still | display: 1 | travel: none
 - thing: PR-MINT.S01 | emphasis: 2 | at: right edge, on the sill; then the leaf in Saye's hand
 - thing: PR-SCISSORS.S01 | emphasis: 0 | at: set down on the counter
 - thing: PR-LAMP.S01 | emphasis: 0 | at: on the table between them
@@ -143,7 +143,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-IONA
 - move: static
 - move_reason: none
-- subject: CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | dwell_s: 15 | does: chews slowly; stops chewing; a small frown; chews once more, slowly; then listens | tactic: discovering | energy: held | display: 1 | still: head, hands, torso | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | dwell_s: 15 | does: chews slowly; stops chewing; a small frown; chews once more, slowly; then listens | tactic: discovering | energy: held | display: 1 | travel: none
 - thing: MO-MINT | emphasis: 2 | payoff: PL-08
 - text: none
 - must_show: none
@@ -159,11 +159,11 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 15
-- moment: 0-4 | shows: chews slowly, eyes on Saye just right of the lens
+- moment: 0-4 | shows: chews slowly, eyes on Saye just right of the lens; breathes in through her nose; blinks once
 - moment: 4-6 | shows: stops chewing; a small frown; chews once more, slowly
 - moment: 6-8 | shows: says two words, unsteady
-- moment: 8-15 | shows: listens, does not speak; swallows once; eyes stay on Saye
-- end: still, mouth closed, eyes on Saye
+- moment: 8-15 | shows: swallows once; breathes out slowly through her nose; blinks; her lips press together; a slow breath in, her eyes on Saye; she blinks again
+- end: mouth closed, eyes on Saye, breathing slowly
 - cut_out_on: thought_complete
 - held: yes
 - previs_level: 0
@@ -199,8 +199,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - move: static
 - move_reason: none
 - glass: window | state: clear | camera: through
-- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: CH-IONA | dwell_s: 1.5 | does: holds her eyes on Iona for a moment, then turns to the counter, takes up her phone, and its screen lights her hand | tactic: reporting | energy: still | display: 1 | still: head | travel: frame_left
-- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: her shoulder, soft at the edge of the frame, not moving | tactic: absorbing | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: CH-IONA | dwell_s: 1.5 | does: holds her eyes on Iona for a moment, then turns to the counter, takes up her phone, and its screen lights her hand | tactic: reporting | energy: still | display: 1 | travel: frame_left
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: her shoulder, soft at the edge of the frame, rising and falling with her breath | tactic: absorbing | energy: still | display: 1 | travel: none
 - thing: PR-PHONE.S01 | emphasis: 1 | at: left third, on the counter, then in her hand
 - thing: PR-FLASK.S03 | emphasis: 0 | at: on the counter beside the phone
 - text: none
@@ -250,7 +250,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-IONA
 - move: static
 - move_reason: none
-- subject: CH-IONA.S02 | at: centre | faces: camera | eyeline: CH-SAYE | dwell_s: 3.5 | does: asks it straight; hears the answer; her eyes go past Saye to Eli at the far end | tactic: challenging | energy: rising | display: 2 | still: torso | travel: none
+- subject: CH-IONA.S02 | at: centre | faces: camera | eyeline: CH-SAYE | dwell_s: 3.5 | does: asks it straight; hears the answer; her eyes go past Saye to Eli at the far end | tactic: challenging | energy: rising | display: 2 | travel: none
 - thing: none
 - text: none
 - must_show: none
@@ -302,10 +302,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-IONA
 - move: static
 - move_reason: none
-- subject: CH-IONA.S02 | at: right_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 2 | does: walks round the end of the table and stops square between Saye and Eli, facing Saye, her hands open at her sides | tactic: shielding | energy: rising | display: 2 | still: head | travel: frame_right
-- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: CH-IONA | dwell_s: 4 | does: stands at the counter with the lit phone and does not move | tactic: reporting | energy: still | display: 1 | still: whole_body | travel: none
-- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-IONA | dwell_s: 4 | does: stays by the fridge, the open bottle still in his hand | tactic: hiding | energy: still | display: 1 | still: whole_body | travel: none
-- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: CH-IONA | dwell_s: 4 | does: lies on the table in the front of the frame | tactic: enduring | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-IONA.S02 | at: right_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 2 | does: walks round the end of the table and stops square between Saye and Eli, facing Saye, her hands open at her sides | tactic: shielding | energy: rising | display: 2 | travel: frame_right
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: CH-IONA | dwell_s: 4 | does: stands at the counter with the lit phone, her eyes on Iona | tactic: reporting | energy: still | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-IONA | dwell_s: 4 | does: stays by the fridge, the open bottle in his hand | tactic: hiding | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: CH-IONA | dwell_s: 4 | does: lies on the table in the front of the frame | tactic: enduring | energy: still | display: 1 | travel: none
 - thing: PR-PHONE.S01 | emphasis: 1 | at: lit, in Saye's hand
 - text: none
 - must_show: CH-ELI.S03, CH-SAYE.S01
@@ -319,7 +319,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 4
-- moment: 0-4 | shows: Iona crosses round the end of the table and stops between them, facing Saye
+- moment: 0-4 | shows: Iona crosses round the end of the table; she stops between them, facing Saye, her hands open at her sides
 - end: Iona square between Saye and Eli
 - cut_out_on: thought_complete
 - held: no
@@ -356,10 +356,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - move: static
 - move_reason: none
 - glass: window | state: clear | camera: through
-- subject: CH-IONA.S02 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 6 | does: stands square between them through the line and the wait; her eyes go to Jude on the table; she steps aside, toward him | tactic: yielding | energy: spent | display: 1 | still: head, hands | travel: frame_left
-- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: CH-IONA | dwell_s: 9 | does: says it once, level, then waits with the phone in her hand and does not move at all | tactic: outwaiting | energy: still | display: 1 | still: whole_body | travel: none
-- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: CH-IONA | dwell_s: 9 | does: stays by the fridge behind his sister; when she steps aside he is in plain sight again | tactic: hiding | energy: still | display: 1 | still: whole_body | travel: none
-- subject: CH-JUDE.S03 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 9 | does: lies on the table in the front of the frame | tactic: enduring | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-IONA.S02 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 6 | does: stands square between them through the line and the wait; her eyes go to Jude on the table; she steps aside, toward him | tactic: yielding | energy: spent | display: 1 | travel: frame_left
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: CH-IONA | dwell_s: 9 | does: says it once, level, then waits with the phone in her hand, her eyes on Iona, breathing slowly | tactic: outwaiting | energy: still | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: CH-IONA | dwell_s: 9 | does: stays by the fridge behind his sister; when she steps aside he is in plain sight again | tactic: hiding | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 9 | does: lies on the table in the front of the frame | tactic: enduring | energy: still | display: 1 | travel: none
 - thing: PR-PHONE.S01 | emphasis: 1 | at: in Saye's hand, lit
 - text: none
 - must_show: CH-JUDE.S03, CH-ELI.S03
@@ -373,10 +373,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 9
-- moment: 0-4 | shows: Saye speaks, level, from the counter
-- moment: 4-7.5 | shows: nobody moves; Saye waits
+- moment: 0-4 | shows: Saye speaks, level, from the counter; Iona breathes in, her eyes on Saye
+- moment: 4-7.5 | shows: Saye waits, her eyes on Iona; Iona swallows, her hands open at her sides; Jude's chest rises and falls on the table
 - moment: 7.5-9 | shows: Iona's eyes go to Jude and she steps aside, toward him; Eli is in plain sight again
-- end: Iona at Jude's feet, Saye still at the counter, Eli clear behind
+- end: Iona at Jude's feet, Saye at the counter, Eli clear behind
 - cut_out_on: thought_complete
 - held: yes
 - previs_level: 2
@@ -411,7 +411,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - move: static
 - move_reason: none
 - glass: window | state: clear | camera: through
-- subject: CH-SAYE.S01 | at: left_third | faces: frame_left | eyeline: CH-IONA | dwell_s: 3 | does: says it once, without raising her voice, the lit phone at her side | tactic: containing | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: left_third | faces: frame_left | eyeline: CH-IONA | dwell_s: 3 | does: says it once, without raising her voice, the lit phone at her side | tactic: containing | energy: still | display: 1 | travel: none
 - thing: PR-PHONE.S01 | emphasis: 0 | at: in her hand at her side
 - thing: PR-FLASK.S03 | emphasis: 0 | at: on the counter behind her
 - text: none
@@ -426,8 +426,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: no
 - screen_time: 3
-- moment: 0-3 | shows: Saye says it, still, and holds
-- end: Saye still, eyes on Iona
+- moment: 0-3 | shows: Saye says it, level; she breathes out, her eyes on Iona
+- end: Saye, the lit phone at her side, eyes on Iona
 - cut_out_on: line_end
 - held: no
 - previs_level: 0

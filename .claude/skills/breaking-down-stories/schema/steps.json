@@ -244,9 +244,9 @@
      "covers": "voice design, pace, paths, accents (step 4)"
     },
     "display_and_stillness": {
-     "heading": "Display and stillness",
+     "heading": "Display and timed actions",
      "target_words": 450,
-     "covers": "display levels 1-3 and the closer-is-lower rule, stillness written out, eyeline dwell, looks saved for later beats (D15)"
+     "covers": "display levels 1-3 and the closer-is-lower rule, held moments written as small timed actions (never a list of still parts), eyeline dwell, looks saved for later beats (D15)"
     },
     "lip_sync": {
      "heading": "Lip sync and voice takes",
@@ -1591,7 +1591,8 @@
     "WORDS-02",
     "WORDS-03",
     "WORDS-05",
-    "CRAFT-20", "FILM-11"
+    "CRAFT-20", "FILM-11",
+    "PHYS-01"
    ],
    "check_command": "check --step 4",
    "checkpoint": {
@@ -2203,7 +2204,8 @@
     "WORDS-02",
     "STATE-01",
     "REASON-03",
-    "REASON-04"
+    "REASON-04",
+    "PHYS-03"
    ],
    "check_command": "check --step 7",
    "checkpoint": {
@@ -2498,6 +2500,8 @@
     "CRAFT-24",
     "CRAFT-25",
     "CRAFT-26",
+    "CRAFT-27",
+    "CRAFT-28",
     "INFO-01",
     "INFO-02",
     "REASON-01",
@@ -2512,7 +2516,18 @@
     "WORDS-01",
     "WORDS-02",
     "WORDS-03",
-    "WORDS-04"
+    "WORDS-04",
+    "PHYS-01",
+    "PHYS-02",
+    "PHYS-03",
+    "PHYS-04",
+    "PHYS-05",
+    "PHYS-06",
+    "PHYS-07",
+    "PHYS-08",
+    "PHYS-09",
+    "PHYS-10",
+    "PHYS-11"
    ],
    "check_command": "check --step 8",
    "checkpoint": {

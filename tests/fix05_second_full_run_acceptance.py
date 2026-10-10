@@ -1285,8 +1285,8 @@ def text_none_keeps_featured_text(scratch):
     featured = edit(dict(texts), "scene", "SHOT SC10-SH020", "- thing: PR-FLASK.S03 | emphasis: 1 |",
                     "- thing: PR-FLASK.S03 | emphasis: 2 |")
     assert floor_texts(featured) == ["TX-FLASK-LABEL"], floor_texts(featured)
-    quoted = edit(dict(texts), "scene", "SHOT SC10-SH020", "shows: the flask held still in his fist,",
-                  "shows: the flask held still in his fist, KEEP FROZEN AT ALL TIMES on its side,")
+    quoted = edit(dict(texts), "scene", "SHOT SC10-SH020", "shows: the flask in his fist,",
+                  "shows: the flask in his fist, KEEP FROZEN AT ALL TIMES on its side,")
     assert floor_texts(quoted) == ["TX-FLASK-LABEL"], floor_texts(quoted)
     return "unfeatured: no floor; at emphasis 2 or quoted in a moment: the label's floor"
 

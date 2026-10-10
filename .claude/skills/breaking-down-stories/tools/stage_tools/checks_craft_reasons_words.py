@@ -1,14 +1,15 @@
 """checks_craft_reasons_words.py: the CRAFT, INFO, REASON and WORDS checks of blueprint section 7.2.
 
 In plain words:
-- CRAFT-01 to CRAFT-26 count the craft rules that can be counted: caps on push-ins and extreme close-ups, the
+- CRAFT-01 to CRAFT-28 count the craft rules that can be counted: caps on push-ins and extreme close-ups, the
   scene's closest size kept for its turn, exactly one turn shot for each turn beat, at most two beats of intensity 5
   in a part, one camera move per shot, lenses inside the family or a lens exception, quiet plants, the emphasis-3
   budget, no added emphasis where the script already marks a beat, saved choices and banned choices, the editor's
   device budget, joins the story does not write, inventions listed as additions, at most three acting people in a
   shot, no slow playback where the camera system bans it, the sign test for turns, no stacked signals on one beat,
-  principals that look alike, melodrama and monologue flags, off-screen speakers, the silent third, display 3 and
-  held moments with nothing still (CRAFT-17 is planned for the second build).
+  principals that look alike, melodrama and monologue flags, off-screen speakers, the silent third, display 3,
+  held moments filled with small timed actions, no words asking for stillness, and no contact shown with its
+  result inside one shot (CRAFT-17 is planned for the second build).
 - INFO-01 and INFO-02 check who knows what: nothing gives a fact away before its reveal, and the reveal shot
   matters (turn or must_keep).
 - REASON-01 to REASON-08 check that every shot says why it exists: a purpose and a because that names this story;
@@ -50,14 +51,27 @@ After the second full run (Project notes 39 and 40):
   a MOVE ID, for staging; WORDS-02 leaves "the screen left blank" alone; a plural word matches its singular.
 - after its cross-examination: CRAFT-24 warns about silent_third none on a turn with three or more people in its
   shots.
+
+After the H3 handover (Project notes 42 and 43, 10 October 2026); all three are warnings marked J, judgements from
+testers' notes that the take log has not yet confirmed:
+- CRAFT-26 is turned round: a moment of hold_action_every_s or more needs at least one small timed action every
+  hold_action_every_s (its shows split at ";" and "then"; a clause holding a stillness word or a not_an_action word
+  of rules/words.json is no action), and a pause held on picture needs the shot's last moments to carry it the same
+  way. It never asks for the subject's still sub-part, which is kept only so that older breakdowns load.
+- CRAFT-27: a stillness word or phrase (stillness_words) in a moment, a does, a start or an end.
+- CRAFT-28: a contact_words cause followed by its effect in one shot (the same moment or the next one); a shot that
+  ends on the cause, followed by one that opens on the result, is the fix and is never flagged.
+- CRAFT-15 counts a person as acting unless they are in the background: energy: still and no line on screen in
+  the shot (or an older breakdown's still: whole_body).
 """
 
+import math
 import re
 from dataclasses import dataclass
 
 from .check_records import register_check, same_scene, scene_of
-from .derive_fields import (SIZE_LADDER, breakdown_for_run, constant, count_words, element_of, number_of,
-                            script_marked)
+from .derive_fields import (SIZE_LADDER, breakdown_for_run, constant, count_words, element_of,
+                            last_shot_naming_beat, number_of, script_marked)
 from .record_format import (DIVIDER_LINE, TextBlock, normalise_word, parse_line_numbers, parse_story_point,
                             quote_for_message, sort_key_for_identifier, split_item, split_list)
 
@@ -1931,8 +1945,18 @@ def check_craft_14(run):
     return problems
 
 
+def speaks_on_screen(run, shot, element):
+    """True when a person speaks in the shot with their mouth seen (a hear item with speaker: on_screen)."""
+    for item in items(run, shot, "hear"):
+        if word_of(item.get("speaker")) == "on_screen" and speaker_of(run, (item.first or "").strip()) == element:
+            return True
+    return False
+
+
 def acting_characters(run, shot):
-    """The people in a shot who act: person subjects not held entirely still (still: whole_body)."""
+    """The people in a shot who act: every person subject, apart from those in the background: energy: still and
+    no line spoken on screen in this shot. An older breakdown's still: whole_body counts as background too (the
+    subject's still sub-part is kept only so that those breakdowns load; Project notes 43)."""
     found = []
     for item in items(run, shot, "subject"):
         if not item.first:
@@ -1941,8 +1965,10 @@ def acting_characters(run, shot):
         record = run.record(element)
         if not element.startswith("CH-") and not (record is not None and record.type_name == "CHARACTER"):
             continue
-        still = [word_of(piece) for piece in split_list(item.get("still") or "")]
-        if "whole_body" in still:
+        old_still = [word_of(piece) for piece in split_list(item.get("still") or "")]
+        if "whole_body" in old_still:
+            continue
+        if word_of(item.get("energy")) == "still" and not speaks_on_screen(run, shot, element):
             continue
         if element not in found:
             found.append(element)
@@ -1960,7 +1986,8 @@ def check_craft_15(run):
             problems.append(problem_at(
                 run, "W", "CRAFT-15", shot, "subject",
                 f"{len(acting)} people act in the shot ({names_list(acting)}); the most is {most}",
-                "Fix: hold the others still (still: whole_body), or split the shot (C3 L22)."))
+                "Fix: keep the others in the background (energy: still, with no line on screen in this shot), or "
+                "split the shot (C3 L22)."))
     return problems
 
 
@@ -2420,35 +2447,223 @@ def moment_seconds(item):
     return float(match.group(2)) - float(match.group(1))
 
 
+def moment_span(item):
+    """(start, end) seconds of a moment item ('8-15'), or None."""
+    match = re.match(r"^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$", (item.first or "").strip())
+    return (float(match.group(1)), float(match.group(2))) if match else None
+
+
+def without_quotes(text):
+    """A text with its quoted parts (story lines, printed words) blanked out, so their words are never judged."""
+    return QUOTED.sub(" ", (text or "").replace("’", "'"))
+
+
+def word_pattern(word):
+    """A pattern that finds a word or phrase as whole words, in any case."""
+    return re.compile(r"(?<![A-Za-z'-])" + re.escape(word) + r"(?![A-Za-z'-])", re.I)
+
+
+def stillness_lists(run):
+    """(words, phrases, not-an-action words) of rules/words.json's stillness_words."""
+    entry = run.words.get("stillness_words") or {}
+    return (list(entry.get("words") or []), list(entry.get("phrases") or []),
+            list(entry.get("not_an_action") or []))
+
+
+# "still" that means "even now" ("still refusing", "still talking") asks for no stillness, so it is not counted
+# when the next word is an -ing word (Project notes 43: narrow triggers).
+STILL_AS_EVEN_NOW = re.compile(r"\bstill\s+[a-z]+ing\b", re.I)
+
+
+def stillness_in(run, text):
+    """The stillness words and phrases of rules/words.json in a text, outside quotation marks, in the order of
+    the lists; a word inside a phrase found is reported as the phrase only."""
+    words, phrases, _ = stillness_lists(run)
+    plain = without_quotes(text)
+    found = [phrase for phrase in phrases if word_pattern(phrase).search(plain)]
+    for word in words:
+        for match in word_pattern(word).finditer(plain):
+            if word.lower() == "still" and STILL_AS_EVEN_NOW.match(plain, match.start()):
+                continue
+            if any(word_pattern(word).search(phrase) for phrase in found):
+                break
+            found.append(word)
+            break
+    return found
+
+
+def action_clauses(run, text):
+    """The clauses of a moment's shows (split at ';' and at 'then') that are actions: those holding no stillness
+    word or phrase and no not_an_action word (stays, waits, listens ...) of rules/words.json."""
+    _, _, not_actions = stillness_lists(run)
+    clauses = [piece.strip(" ,.:") for piece in re.split(r";|\bthen\b", text or "")]
+    found = []
+    for clause in clauses:
+        if not clause:
+            continue
+        plain = without_quotes(clause)
+        if stillness_in(run, clause) or any(word_pattern(word).search(plain) for word in not_actions):
+            continue
+        found.append(clause)
+    return found
+
+
+def people_in(run, shot):
+    return [item for item in items(run, shot, "subject")
+            if item.first and element_of(item.first.strip()).startswith("CH-")]
+
+
+def held_pause_seconds(run, shot):
+    """The longest pause held on picture (BEAT pause_after with picture: hold) that this shot carries: the pause
+    of a beat whose last shot is this one, read from its seconds, else from the low end of its tier."""
+    breakdown = breakdown_of(run)
+    longest = None
+    tiers = constant_of(run, "pause_tiers", {}) or {}
+    for beat_identifier in id_list(shot, "beats"):
+        beat = run.record(beat_identifier)
+        if beat is None or beat.type_name != "BEAT":
+            continue
+        if last_shot_naming_beat(breakdown, beat_identifier) not in (None, shot.identifier):
+            continue
+        for item in items(run, beat, "pause_after"):
+            if word_of(item.get("picture")) != "hold":
+                continue
+            seconds = number_of(item.get("seconds"))
+            if seconds is None:
+                tier = tiers.get(word_of(item.first)) if isinstance(tiers, dict) else None
+                seconds = (tier or {}).get("from_s", 0.0) if isinstance(tier, dict) else 0.0
+            longest = seconds if longest is None else max(longest, seconds)
+    return longest
+
+
+SMALL_ACTIONS_FIX = ("Fix: write small timed actions instead (a breath, a blink, a swallow, a glance, a hand that "
+                     "adjusts something), about one every {every:g} s, never a list of parts that stay still (D15 R6; "
+                     "a judgement from testers' notes, Project notes 42).")
+
+
 @register_check("CRAFT-26", level="W", build=1,
-                title="A moment of 2 s or more, or a pause held on picture, with no still item on the subject (D15)",
-                plain="holds on a person without saying what stays still, so the picture may drift")
+                title="A held moment (hold_action_every_s or more, or a pause held on picture) with fewer than one "
+                      "small timed action every hold_action_every_s (D15 R6, rewritten; J: testers' notes, Project "
+                      "notes 42 and 43)",
+                plain="holds on a person with too little happening, so a video model may freeze the picture or "
+                      "squeeze the time out")
 def check_craft_26(run):
     problems = []
-    hold = constant_of(run, "hold_needs_still_s", 2.0)
+    every = float(constant_of(run, "hold_action_every_s", 2.0) or 2.0)
+    fix = SMALL_ACTIONS_FIX.format(every=every)
     for shot in records_of(run, "SHOT"):
-        long_moments = [item for item in items(run, shot, "moment") if (moment_seconds(item) or 0) >= hold]
-        held_pause = False
-        for beat_identifier in id_list(shot, "beats"):
-            beat = run.record(beat_identifier)
-            if beat is not None and beat.type_name == "BEAT":
-                held_pause = held_pause or any(word_of(item.get("picture")) == "hold"
-                                               for item in items(run, beat, "pause_after"))
-        if not long_moments and not held_pause:
+        if not people_in(run, shot):
             continue
-        for item in items(run, shot, "subject"):
-            if not item.first or not element_of(item.first.strip()).startswith("CH-"):
+        moments = items(run, shot, "moment")
+        for item in moments:
+            seconds = moment_seconds(item)
+            if seconds is None or seconds + 1e-9 < every:
                 continue
-            still = item.get("still")
-            if still and not is_empty(still):
-                continue
-            why = (f"a moment of {moment_seconds(long_moments[0]):g} s" if long_moments else
-                   "a pause held on picture")
+            needed = int(math.floor(seconds / every + 1e-9))
+            found = action_clauses(run, item.get("shows") or "")
+            if len(found) < needed:
+                span = (item.first or "").strip()
+                problems.append(problem_at(
+                    run, "W", "CRAFT-26", shot, "moment",
+                    f"the moment {span} holds {seconds:g} s with {len(found)} small "
+                    f"{'action' if len(found) == 1 else 'actions'}; it needs at least {needed}, one every {every:g} s",
+                    fix, containing=span))
+        pause = held_pause_seconds(run, shot)
+        if pause is None:
+            continue
+        needed = max(1, int(math.floor(pause / every + 1e-9)))
+        screen_time = number_of(shot.get("screen_time"))
+        tail = [item for item in moments if moment_span(item) and (
+            screen_time is None or moment_span(item)[1] >= screen_time - pause - 1e-9)]
+        found = sum(len(action_clauses(run, item.get("shows") or "")) for item in tail)
+        if found < needed:
+            last = (moments[-1].first or "").strip() if moments else None
             problems.append(problem_at(
-                run, "W", "CRAFT-26", shot, "subject",
-                f"{item.first.strip()} has no still item, and the shot holds {why}",
-                "Fix: add still: with what does not move (head, eyes, mouth, hands, torso or whole_body) (D15).",
-                containing=item.first.strip()))
+                run, "W", "CRAFT-26", shot, "moment" if moments else "beats",
+                f"the shot holds a pause of {pause:g} s on picture with {found} small "
+                f"{'action' if found == 1 else 'actions'} in its last moments; it needs at least {needed}",
+                fix, containing=last))
+    return problems
+
+
+@register_check("CRAFT-27", level="W", build=1,
+                title="A stillness word or phrase (stillness_words) in a moment's shows, a subject's does, or a "
+                      "shot's start or end (J: testers' notes, Project notes 42 and 43)",
+                plain="asks a person or a thing to stay still, which a video model reads as an order to freeze")
+def check_craft_27(run):
+    problems = []
+    # energy: still is a value, not text, so it is never read here (Project notes 43).
+    fix = ("Fix: write what happens instead, as small timed actions (a breath, a blink, a swallow, a glance, a hand "
+           "that adjusts something) (D15 R6; a judgement from testers' notes, Project notes 42).")
+    for shot in records_of(run, "SHOT"):
+        places = [("moment", item.first, item.get("shows")) for item in items(run, shot, "moment")]
+        places += [("subject", item.first, item.get("does")) for item in items(run, shot, "subject")]
+        places += [(name, None, shot.get(name)) for name in ("start", "end")]
+        for field_name, first, text in places:
+            found = stillness_in(run, text or "")
+            if not found:
+                continue
+            where = {"moment": f"the moment {(first or '').strip()}", "subject": f"{(first or '').strip()}'s does",
+                     "start": "the start", "end": "the end"}[field_name]
+            problems.append(problem_at(
+                run, "W", "CRAFT-27", shot, field_name,
+                f"{', '.join(quote_for_message(word) for word in found)} in {where} asks for stillness", fix,
+                containing=(first or "").strip() or None))
+    return problems
+
+
+def contact_lists(run):
+    entry = run.words.get("contact_words") or {}
+    return list(entry.get("cause") or []), list(entry.get("effect") or [])
+
+
+def phrase_positions(plain, phrases):
+    """[(position, phrase)] of every phrase found in a text as whole words and not negated just before it."""
+    found = []
+    for phrase in phrases:
+        for match in word_pattern(phrase).finditer(plain):
+            if NEGATION_BEFORE.search(plain[:match.start()]):
+                continue
+            found.append((match.start(), phrase))
+    return sorted(found)
+
+
+@register_check("CRAFT-28", level="W", build=1,
+                title="A shot whose moments, in order, hold a contact_words cause and then its effect: a contact "
+                      "shown on screen (J: testers' notes, Project notes 42 W9)",
+                plain="shows one thing hitting another and the result in the same shot, which video models cannot "
+                      "do; cut at the moment of contact")
+def check_craft_28(run):
+    problems = []
+    causes, effects = contact_lists(run)
+    fix = ("Fix: end the shot at the contact and open the next shot on the result already there, in a clearly "
+           "different size or angle, with the sound of the hit on the cut (a judgement from testers' notes: video "
+           "models cannot make one thing break or push another at the moment of contact; Project notes 42).")
+    for shot in records_of(run, "SHOT"):
+        moments = items(run, shot, "moment")
+        timed = sorted(moments, key=lambda item: (moment_span(item) or (0.0, 0.0)))
+        texts = [("moment", item.first, without_quotes(item.get("shows"))) for item in timed]
+        texts += [("subject", item.first, without_quotes(item.get("does"))) for item in items(run, shot, "subject")]
+        for index, (field_name, first, plain) in enumerate(texts):
+            hit = None
+            for position, cause in phrase_positions(plain, causes):
+                later = [(field_name, first, effect) for spot, effect in phrase_positions(plain, effects)
+                         if spot > position]
+                if not later and field_name == "moment" and index + 1 < len(texts) and texts[index + 1][0] == "moment":
+                    following = texts[index + 1]
+                    later = [(following[0], following[1], effect)
+                             for _, effect in phrase_positions(following[2], effects)]
+                if later:
+                    hit = (cause, later[0])
+                    break
+            if hit is None:
+                continue
+            cause, (where_field, where_first, effect) = hit
+            problems.append(problem_at(
+                run, "W", "CRAFT-28", shot, where_field,
+                f"{quote_for_message(cause)} and then {quote_for_message(effect)} in one shot show a contact and its "
+                f"result on screen", fix, containing=(where_first or "").strip() or None))
+            break
     return problems
 
 
