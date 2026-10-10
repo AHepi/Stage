@@ -31,8 +31,8 @@ Labels: **[V]** verified on the web on 2026-09-27; **[U]** found but not confirm
 
 1. **Play the tactic, show the behaviour, never name the feeling.** Every maker guide checked says this (4.1). FilmBench (July 2026) found "the performance group is uniformly the lowest-scoring L2 cluster in both tasks" across the models it tested; action performance averaged only 50.8 (text-to-video) and 46.8 (reference-to-video) out of 100 [V, arxiv.org/html/2607.24241].
 2. **Order is the performance.** At a turning point the face moves before the line (A2 Step 8), so write timed steps, not adjectives.
-3. **Less display, more time.** The camera magnifies (A1 P10). Pressure reads from how long a face stays still.
-4. **Stillness must be written, or the model fills it** with nods, blinks, drift or speech [J].
+3. **Less display, more time.** The camera magnifies (A1 P10). Pressure reads from how long a face holds one thought, and that time is filled with small timed actions: a breath, a blink, a swallow, a glance.
+4. **Held time must be written as small timed actions, or the model fills it** with nods, drift or speech, or squeezes it out; a list of still parts freezes the face instead [J; rewritten 10 October 2026, see rule 6].
 5. **Eyes carry thought; hands carry the unsaid** (A1, B5). This file adds a dwell to every eyeline, and a start and end state to every hand.
 6. **Breath is the cheapest continuous signal.** It shows in shoulders, chest, nostrils, a fogged visor and sound, and it crosses cuts.
 7. **A clip has no memory.** Continuity must be written into each clip's first sentence and start frame, or the face resets to a pleasant neutral [J].
@@ -126,9 +126,9 @@ Write `none` rather than deleting a field (C3's convention).
 5. If a behaviour step is shorter than about 0.5 s, then lengthen it or plan a transfer, because B5 puts micro-expressions at "a quarter to half a second", only 6-12 frames at 24 fps [J].
 
 **Stillness, silence, eyelines**
-6. If a hold is 2 s or longer, then name every still part and the one moving part, and add "The camera does not move.", because models fill empty time [J].
+6. If a hold is 2 s or longer, then write at least one small timed action for every 2 s of it (a breath, a blink, a swallow, a glance, a hand that adjusts something; `hold_action_every_s`), and give the camera one plain sentence, never a list of what does not move, because models read a list of still parts as an order to freeze: testers found that a strong "do not move" line spreads over the whole shot, so parts that should move stop and a face looks like a photo with moving lips; and time with nothing happening in it is squeezed out or frozen [J; the h3-storyboard testing notes, checked 10 October 2026; Project notes 42 and 43]. (Rewritten 10 October 2026; until then this rule asked for every still part and "The camera does not move.": library/02 Errata, entry 23.)
 7. If lips part in silence ("She opens her mouth. Nothing in it."), then add "No dialogue." and "closes it without a sound", because parted lips invite generated speech on native-audio models [J; C3 L14 allows "No dialogue", and Wan's guide says it stops speech (C3 §7A)].
-8. If pauses compete for long holds, then apply A1 R15 (at most two long holds per scene) before writing stillness over 3 s.
+8. If pauses compete for long holds, then apply A1 R15 (at most two long holds per scene) before filling a hold over 3 s with timed actions (rule 6).
 9. If an eyeline change is itself a beat (sc13 B14 "Now he looks at her."), then put that look in `must_not` for every earlier shot in the scene, because one early glance spends the beat. If the script itself gives an earlier look (sc13 B12: "He watches her look at it.", her palm), then aim the earlier look at a different target (her palm, not her eyes) and put "meets her eyes" in its `must_not`, so B14's look into her face is still the first.
 10. If the eyes move, then name the target and the dwell ("to the flask; stays 2 s"), never "looks around", and for separately generated singles write opposite frame directions and "does not look into the camera" (A2 R26; A1 R44).
 
@@ -205,7 +205,7 @@ Two words are deliberately missing. *Disgust* is a trap in *The Catch* (Example 
 ### 4.3 Phrasing rules [J]
 - Primary behaviour first. One sentence per step, joined by "then" (C3 §5 and rule 15). Timecodes only where the model supports them (C3 §5 timing syntax).
 - Name body parts ("her lower lip", "his left thumb"), not faces.
-- For stillness, say what is still and for how long: "Her head and hands stay completely still for three seconds; only her eyes move."
+- For a hold, say what happens in it and when: "For three seconds her eyes stay on him; she breathes in through her nose; at about two seconds she blinks." Never a list of what does not move (rule 6, rewritten 10 October 2026).
 - Tone words go in the voice line only (C3 §6).
 
 ### 4.4 Recipe V: test the vocabulary
@@ -334,7 +334,7 @@ One row per shot, per character, for any run of shots without a time jump:
 4. Steps timed, at most one main action per 4-5 s.
 5. Eyeline has a target, a direction and a dwell.
 6. Breath state set.
-7. Stillness named for any hold of 2 s or more.
+7. Every hold of 2 s or more filled with small timed actions, one at least every 2 s (rule 6).
 8. Display level fits the shot size.
 9. Must-not list filled, and none of it written as "no X" in the prompt.
 10. `state_in` = the previous `state_out`.
@@ -351,7 +351,7 @@ One row per shot, per character, for any run of shots without a time jump:
 
 **Per take:**
 1. Primary behaviour present, in order.
-2. Stillness held.
+2. Each person moves between the written actions (breath, eyes, small shifts), and nothing freezes.
 3. No must-not items.
 4. Eyeline and sides correct.
 5. Nobody speaks who should not.
@@ -365,7 +365,7 @@ One row per shot, per character, for any run of shots without a time jump:
 | Symptom | Cause | Fix |
 |---|---|---|
 | Generic "sad" or "shocked" face | Emotion word in prompt | §4.2 behaviours (rule 1) |
-| Nodding, blinking or swaying in a hold | Stillness unwritten | Name still parts and the one moving part; static camera; shorter clip; transfer (rule 6) |
+| Nodding or swaying in a hold, or a frozen face with moving lips | Held time left empty, or written as a list of still parts | Small timed actions, one at least every 2 s; one camera sentence; shorter clip; transfer (rule 6, rewritten) |
 | Parted lips produce a word | Native audio reads lips as speech | "No dialogue."; "without a sound" (rule 7) |
 | Half-smile turns full, or lands on the wrong side | Models average and randomise sides | Flip an approved still; transfer at intensity 2; mirror test (Example 3) |
 | Unwanted tears | Grief words; Wan's guide pairs "eyes glistening with tears" and Kling's "Sobbing" with grief [V] | Remove grief words; "tears" in the negative field |

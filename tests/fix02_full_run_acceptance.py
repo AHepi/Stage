@@ -1004,7 +1004,7 @@ def ring_insert_by_record(scratch):
              "- purpose: The proof in plain sight: Saye's hand lies on the table, the one that looks like her right."),
             ("a plain gold ring on it", "fingers spread"),
             ("the ring catches the lamp", "the hand catches the lamp"),
-            ("- end: the ringed hand still on the table's edge", "- end: the hand still on the table's edge"),
+            ("- end: the ringed hand flat on the table's edge", "- end: the hand flat on the table's edge"),
             ("- flip: never", "- flip: auto")]:
         texts = edit(texts, "scene", "SHOT SC10-SH090", find, replace)
     found = lines_of(checked(texts, ["SIDE-03"]), "SIDE-03", "SC10-SH090")

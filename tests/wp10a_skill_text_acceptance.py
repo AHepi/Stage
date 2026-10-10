@@ -523,7 +523,8 @@ SNAPSHOT = {
                   + ["CITE-%02d" % n for n in range(1, 8)] + ["COVER-%02d" % n for n in range(1, 9)]
                   + ["TIME-%02d" % n for n in range(1, 11)] + ["STATE-%02d" % n for n in range(1, 5)]
                   + ["SIDE-%02d" % n for n in range(1, 6)] + ["GEOM-%02d" % n for n in range(1, 9)]
-                  + ["CRAFT-%02d" % n for n in range(1, 27)] + ["INFO-%02d" % n for n in range(1, 3)]
+                  + ["CRAFT-%02d" % n for n in range(1, 29)]
+                  + ["PHYS-%02d" % n for n in range(1, 12)] + ["INFO-%02d" % n for n in range(1, 3)]
                   + ["REASON-%02d" % n for n in range(1, 10)] + ["WORDS-%02d" % n for n in range(1, 6)]
                   + ["PLAN-%02d" % n for n in range(1, 6)] + ["GEN-%02d" % n for n in range(1, 18)]
                   + ["FILM-%02d" % n for n in range(1, 13)]),

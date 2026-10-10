@@ -18,6 +18,8 @@ Example: The Catch scene 2, "Her hand closes on a rung and the rung TURNS." (lin
 6. **Which `time_treatment`?** Reading time longer than story time: `overlapping_slices` (shots at real speed whose story times overlap); a wait: `held_real_time`; long and repetitive: `elliptical`; otherwise `real_time_continuous`; `slow_motion` only where the camera system (CAMSYS) allows it (D11 R12; CRAFT-16; K30).
 7. **Write the `action_score`:** one row per **count** (one step of the action, an order, not a length), one column per body, the set and the camera; `+` applies force, `-` receives it, `=` holds still; `+` and `-` on one count means touching (D11 §4.2).
 8. **What is the camera fixed to?** It obeys the characters' physics and changes its **mount** (what it is fixed to) only on a cut hidden in black or a passing body, or as the film's one CAMSYS `break` (B1 R23; D11 R17).
+9. **Does one thing hit, push or break another?** Then cut at the contact: one shot ends as the bat reaches the jar, the next opens on the shards already falling, in a clearly different size or angle, with the crack on the cut (CRAFT-28; Project notes 42).
+10. **Could a real body do it?** Room to stand and climb, a reach it can make, one thing per hand, nothing heavy in the teeth, something to cut with, a door that opens the way the brace or the kick needs (PHYS-01 to PHYS-11).
 
 ## Rules
 
@@ -27,6 +29,7 @@ Example: The Catch scene 2, "Her hand closes on a rung and the rung TURNS." (lin
 4. **Several angles of one continuous action** become a designed shot or a chain (`start: from_end_of:`), not master and coverage (A3 R16; D11 R19).
 5. **Cut on the same motion mid-action**, the whole action in both clips; cutting away, let it rest first (A4 R3; D11 R9).
 6. **Never perform** height, speed, impact, falling or striking for reference (D11 R25).
+7. **Cut at contact.** A shot whose moments hold a cause and then its effect ("he swings the bat into the jar; the jar shatters") asks a video model for the one thing it cannot do: testers found that one thing never reliably breaks or pushes another at the moment of contact. End the shot as the bat reaches the jar; open the next on the shards already falling, a clearly different size or angle, the crack laid on the cut. Two framings too alike get blended into one move (CRAFT-28; a judgement from testers' notes, Project notes 42).
 
 ## Traps
 
@@ -37,6 +40,8 @@ Example: The Catch scene 2, "Her hand closes on a rung and the rung TURNS." (lin
 - **A fall that floats, or a clock that runs backwards** (the stripe shrinks between shots). Fix: compute the fall from `free_fall_half_g`; slices only move forward (D11 §8).
 - **Shake for excitement.** Test: does the camera share the characters' physics? Fix: lock it to what they ride (B1 R23).
 - **Bodies merge at the hit.** Fix: separate clips (D11 R28).
+- **The hit and its result in one shot** ("kicks the chair; the chair topples"). Test: does any shot hold the cause and then the effect? Fix: end on the contact, open the next shot on the result, in a clearly different size or angle, with the sound on the cut (CRAFT-28).
+- **A body asked to do the impossible**: a 2.4 metre shaft round a 2 metre car to climb in, a heavy 30 centimetre flashlight held in the teeth, a rung that rolls, a strap cut with nothing. Test: the physical sense questions (PHYS-01 to PHYS-11). Fix: change the plan, not the prompt.
 
 ## Words for AI models
 

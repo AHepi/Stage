@@ -29,6 +29,7 @@ HOW A FAMILY MODULE REGISTERS ITS CHECKS (for the builders of the other check fa
        stage_tools.checks_sides_geometry        SIDE and GEOM (WP4a)
        stage_tools.checks_craft_reasons_words   CRAFT, INFO, REASON and WORDS (WP4d)
        stage_tools.checks_plan_generation_film  PLAN, GEN and FILM (WP4e)
+       stage_tools.checks_physical_sense        PHYS-01 to PHYS-11 (Project notes 43, part B3)
 
 2. In the module, register one function per check ID of 7.2 with the decorator register_check (import it with a
    relative import, so the module registers with this very registry):
@@ -202,10 +203,11 @@ CHECK_FAMILY_MODULES = [
     "stage_tools.checks_sides_geometry",
     "stage_tools.checks_craft_reasons_words",
     "stage_tools.checks_plan_generation_film",
+    "stage_tools.checks_physical_sense",
 ]
 
-FAMILY_ORDER = ["FORM", "ID", "CITE", "COVER", "TIME", "STATE", "SIDE", "GEOM", "CRAFT", "INFO", "REASON", "WORDS",
-                "PLAN", "GEN", "FILM"]
+FAMILY_ORDER = ["FORM", "ID", "CITE", "COVER", "TIME", "STATE", "SIDE", "GEOM", "PHYS", "CRAFT", "INFO", "REASON",
+                "WORDS", "PLAN", "GEN", "FILM"]
 # The ending code writes after a story point once it is resolved to a beat: SC24 "She deletes the way home." = SC24-B03
 RESOLVED_ENDING = re.compile(r'("[^"]*"|“[^”]*”)\s*=\s*SC\d{2,3}[A-Z]?-B\d{2,3}')
 # Checks steps.json lists that another command runs (7.2: previs has its own checks in render_previs.py).

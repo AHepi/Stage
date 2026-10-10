@@ -203,11 +203,65 @@
    "meaning": "display: 3 at this size or tighter needs a why (CRAFT-25).",
    "source": "D15, A4 §6, B5 §3.3"
   },
-  "hold_needs_still_s": {
+  "hold_action_every_s": {
    "value": 2.0,
    "unit": "seconds",
-   "meaning": "A moment of this length or more, or a pause held on picture, needs a still item on the subject (CRAFT-26).",
-   "source": "D15"
+   "meaning": "A held moment (a moment of this length or more, or a pause held on picture) needs at least one small timed action every this many seconds: a breath, a blink, a swallow, a glance, a hand that adjusts something; never a list of parts that stay still (CRAFT-26).",
+   "source": "Project notes 42 and 43; the h3-storyboard testing notes (checked 10 October 2026): a list of still parts freezes the whole face, and time with nothing happening in it is squeezed out or frozen. Replaces hold_needs_still_s (D15 R6, now rewritten). Judgement (J), not yet tried on the user's own setup.",
+   "judgement": true
+  },
+  "body_pass_clearance_m": {
+   "value": 0.5,
+   "unit": "metres",
+   "meaning": "The narrowest gap a person can stand in or squeeze through; a mark in a narrower gap, or a door or opening narrower than this, is questioned (PHYS-01).",
+   "source": "Project notes 42 (W8: about half a metre to pass). Judgement (J).",
+   "judgement": true
+  },
+  "body_climb_clearance_m": {
+   "value": 0.75,
+   "unit": "metres",
+   "meaning": "The clear space a person needs in front of a ladder or rungs to climb it (PHYS-01).",
+   "source": "Project notes 42 (W8: more than half a metre to climb); ladder safety standards commonly ask for about 76 centimetres (30 inches) clear in front of a fixed ladder's rungs (not re-opened at the source on 10 October 2026). Judgement (J).",
+   "judgement": true
+  },
+  "teeth_hold_length_max_m": {
+   "value": 0.2,
+   "unit": "metres",
+   "meaning": "The longest thing a person can hold in their teeth for more than a moment; a longer thing, or one whose description says heavy, large or long, is questioned (PHYS-02).",
+   "source": "Project notes 42 (the handover's case: a heavy flashlight about 30 centimetres long, held in the teeth while climbing). Judgement (J).",
+   "judgement": true
+  },
+  "reach_share_of_height": {
+   "value": 0.6,
+   "unit": "share of the person's height",
+   "meaning": "How far a person reaches from where they stand, as a share of their height (CHARACTER height_m, else the body fallback height): 1.02 metres for a person 1.7 metres tall (PHYS-04).",
+   "source": "Judgement (J): arm span is about equal to height, so one arm reaches about half the height from the body's centre line; a tenth of the height is added for a lean toward the thing.",
+   "judgement": true
+  },
+  "visible_thing_min_size_m_by_size": {
+   "value": {
+    "extreme_wide": 0.3,
+    "wide": 0.1,
+    "medium_wide": 0.05
+   },
+   "unit": "metres",
+   "meaning": "The smallest real size of a thing given emphasis (visible_thing_emphasis_min or more) at each wide shot size; a smaller thing cannot be seen there (PHYS-11). Closer sizes are not checked.",
+   "source": "Project notes 42 and 43 (a small thing given weight in a far, wide shot cannot be seen). Judgement (J).",
+   "judgement": true
+  },
+  "visible_thing_emphasis_min": {
+   "value": 2,
+   "unit": "emphasis level",
+   "meaning": "The emphasis from which a thing must be big enough to see at the shot's size (PHYS-11); quiet plants at emphasis 1 stay small on purpose.",
+   "source": "B4 (plants are quiet); judgement (J).",
+   "judgement": true
+  },
+  "tall_person_height_m": {
+   "value": 1.85,
+   "unit": "metres",
+   "meaning": "A person at least this tall counts as big when someone written as weak holds them up or carries them (PHYS-08).",
+   "source": "Judgement (J).",
+   "judgement": true
   },
   "head_height_m": {
    "value": 0.23,

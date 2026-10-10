@@ -184,8 +184,8 @@ def plate_route_pictures():
 def plate_route_travel():
     texts = gold_texts()
     texts[SCENE_FILE] = replace_in_record(texts[SCENE_FILE], "### SHOT SC10-SH080 ",
-                                          "still: head, torso | travel: none\n- subject: CH-JUDE",
-                                          "still: head, torso | travel: frame_left\n- subject: CH-JUDE")
+                                          "display: 1 | travel: none\n- subject: CH-JUDE",
+                                          "display: 1 | travel: frame_left\n- subject: CH-JUDE")
     breakdown = breakdown_of(texts, with_story=EXCERPT.is_file())
     compiler, scene = compile_scene(breakdown)
     clip = next(clip for clip in scene.clips if clip.plan.identifier == "SC10-SH080")

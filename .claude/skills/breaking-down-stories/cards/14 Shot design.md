@@ -13,7 +13,7 @@ Shot 150 of The Catch's scene 10 is its turn shot, a close-up held on Iona throu
 3. **Has the script already marked the beat** (a line, a look, a change of state)? Then the camera adds nothing (B1 P11, B4 R23).
 4. **Is someone hiding a feeling?** Keep them one size wider than the progression would reach, except on a turn (B1 R5, R1).
 5. **What must the audience get from this shot, and which records justify it?** (A2 Step 9; REASON-01)
-6. **What does the body do, and what stays still?** (D15 P1, P4)
+6. **What does the body do, second by second, and which small actions fill the held time?** (D15 P1, R6)
 7. **How long must it stay up to be read?** (K08 to K10)
 
 ## The one-line shot list
@@ -44,7 +44,7 @@ Write each SHOT reason first: `purpose`, `because`, `role`, then the camera.
 - `because`: the ID of any story record that justifies the shot (scene, beat, value, character, state, place, prop, text, motif, rule, plan, camera rule, saved choice, look, fact, plant) or a `line:` reference; SCENE and SHOT take the same set. `default` only on a normal shot with no departure (REASON-01). A turn shot cites its turn beat (REASON-05); a saved choice (a rationed choice, RESERVE) cites its RC (REASON-06).
 - `why`: one sentence that quotes a line, names an object or action, or cites an ID, never a mood (REASON-03, REASON-04). Always on turn shots. Otherwise needed wherever a field departs from its default: `angle` eye_level; `height` the eye of the whose-scene character (the person whose point of view the scene holds) or of the subject; `lens_mm` the normal lens of CAMSYS; `move` static; `focus` moderate; `light` as_look; `room_sound` as_place; `silence` none; `music` none; `display` 1 in a close-up or tighter. `size` and `frame` never need one (REASON-02).
 - **The camera slots**, in order: size, angle and height, lens, focus, camera move, and frame shape only for footage inside the story (B1 §0; card 10). One camera move per shot (CRAFT-06).
-- **Behaviour, not emotion.** `does` holds visible behaviour, never emotion words (WORDS-01; A3 R2). A line that names a feeling ("Her face changes.") becomes two or three timed steps (D15 R1). **Display** is how openly a face shows: 1 contained, 2 visible, 3 open; the closer the shot, the lower the level, and `display: 3` at `display_3_needs_why_at_or_tighter` or tighter needs a `why` (D15 §2.2; CRAFT-25). `still` names what does not move, required on any hold of `hold_needs_still_s` or more (D15 R6; CRAFT-26). `eyeline` takes a `dwell_s`; `must_not` holds a look saved for a later beat (D15 R9, R10).
+- **Behaviour, not emotion.** `does` holds visible behaviour, never emotion words (WORDS-01; A3 R2). A line that names a feeling ("Her face changes.") becomes two or three timed steps (D15 R1). **Display** is how openly a face shows: 1 contained, 2 visible, 3 open; the closer the shot, the lower the level, and `display: 3` at `display_3_needs_why_at_or_tighter` or tighter needs a `why` (D15 §2.2; CRAFT-25). A held moment of `hold_action_every_s` or more carries a small timed action at least every `hold_action_every_s` (a breath, a blink, a swallow, a glance, a hand that adjusts something), never a list of parts that stay still, which video models read as an order to freeze (D15 R6, rewritten; CRAFT-26, CRAFT-27; a judgement from testers' notes). `eyeline` takes a `dwell_s`; `must_not` holds a look saved for a later beat (D15 R9, R10).
 - `moment` items: timed visible changes inside the screen time, no more main actions than `main_actions_per_seconds` allows (TIME-02, TIME-06); `end` is the last picture.
 - **Reading floors.** Code works out each shot's **time floor**: speech at the voice's pace (`speech_wps_default` unless the voice differs) plus `speech_floor_extra_s` a speech, or text by `text_floor`, whichever is longer, plus the pause owed, with `turn_reaction_min_s` after a turn. `screen_time` sits at or above it; never type the floor (TIME-01; K08 to K10).
 - `held: yes` where meaning depends on not cutting; turn shots count as held (GEN-10).
@@ -101,13 +101,13 @@ Yes or no (B1 §13; A2 §9; D15 §8).
 1. Is every shot before the turn shot at its size or wider?
 2. Is every beat and every line covered?
 3. Is every `does` free of emotion words?
-4. Is everything that must not move written in `still`?
+4. Does every held moment carry small timed actions, with no word asking for stillness?
 5. Does every `why` fit only this film?
 6. Is every screen time at or above its floor?
 
 ## Words for AI models
 
-Works: one camera move and one action per clip, as timed steps with an end state (C3 §5); behaviour, not labels: "She stops chewing. Her eyes lose focus and drift down; her lips part slightly; she holds very still." (C3 §6); "The camera does not move." on a hold (D15 R6); "she listens; no dialogue" for a listener (A1 §11). Fails: emotion words; purposes and reasons in prompt text (GEN-15); parted lips in silence without "No dialogue." (D15 R7).
+Works: one camera move and one action per clip, as timed steps with an end state (C3 §5); behaviour, not labels: "She stops chewing. Her eyes lose focus and drift down." (C3 §6), then small timed actions for the held time instead of its closing "she holds very still" (D15 R6, rewritten); one camera sentence on a static shot; "she listens; no dialogue" for a listener (A1 §11). Fails: emotion words; a list of parts that stay still (D15 R6, rewritten); purposes and reasons in prompt text (GEN-15); parted lips in silence without "No dialogue." (D15 R7).
 
 ## Look up for more
 

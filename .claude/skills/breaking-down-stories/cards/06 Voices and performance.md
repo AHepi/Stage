@@ -1,10 +1,10 @@
 # Card 06. Voices and performance
 
-Step 4 reads only "Voices"; steps 7 (Detailed) and 8 read only "Display and stillness"; add-on C reads only "Lip sync and voice takes". "D3 R13" names rule 13 in D3's numbered rules (§3); D15 and A1 rules are cited the same way.
+Step 4 reads only "Voices"; steps 7 (Detailed) and 8 read only "Display and timed actions"; add-on C reads only "Lip sync and voice takes". "D3 R13" names rule 13 in D3's numbered rules (§3); D15 and A1 rules are cited the same way.
 
 ## The job
 
-Give every speaking character one voice that can be made the same way every time, and every acting body a performance a model can follow: what it does to the other person, what we see, how much shows, what stays still, where the eyes go (D3 §1; D15 §1). Step 4 hands on VOICE records. Steps 7 and 8 hand on `tactic`, `does`, `display`, `still`, `eyeline`, `dwell_s` and `must_not` on every subject. Add-on C hands on voice takes and a lip-sync route for every shot with a speaking mouth.
+Give every speaking character one voice that can be made the same way every time, and every acting body a performance a model can follow: what it does to the other person, what we see, how much shows, what small actions fill a hold, where the eyes go (D3 §1; D15 §1). Step 4 hands on VOICE records. Steps 7 and 8 hand on `tactic`, `does`, `display`, `eyeline`, `dwell_s` and `must_not` on every subject, and timed `moment` items that fill every hold. Add-on C hands on voice takes and a lip-sync route for every shot with a speaking mouth.
 
 ## Questions in order
 
@@ -28,15 +28,15 @@ A VOICE record holds the fixed words for a voice (`voice_description`, `voice_de
 7. **Speech habits go in `speech`** and in the edit: a speaker who never contracts keeps it in every take (D3 R8); "Eli thinks before he answers. He always does." (line 1142) is a silence placed in the edit (D3 R9).
 8. **`source` defaults to `designed`,** a small choice. Cloning is only for the user's own voice or a consenting, verified adult with a RIGHTS record; never a celebrity, a minor, a dead person, or from films and recordings (D3 R16-R17; card 24).
 
-## Display and stillness
+## Display and timed actions
 
-**Display** is how openly the body shows the pressure: 1 contained (one or two small changes, the rest still), 2 visible (two or three changes nobody can miss), 3 open (whole body, audible) (D15 §2.2).
+**Display** is how openly the body shows the pressure: 1 contained (one or two small changes, while breath and blinks go on), 2 visible (two or three changes nobody can miss), 3 open (whole body, audible) (D15 §2.2).
 
 1. **The closer the shot, the lower the display.** Display 3 in a close-up reads as melodrama; `display: 3` at `display_3_needs_why_at_or_tighter` or tighter needs a `why` (D15 §2.2; A1 P10, R36; CRAFT-25).
 2. **Beat intensity is not display.** A beat of the highest intensity often plays best at display 1 (D15 §0; K14).
-3. **If the line, the eyeline or the cut already carries the beat,** use display 1: still, or one small action (D15 R3).
+3. **If the line, the eyeline or the cut already carries the beat,** use display 1: one small action, with breath and blinks going on (D15 R3).
 4. **On a turn,** write the five steps as timed behaviour: the want as an eyeline, seeing the obstacle, the choice as a held moment, the action, and the face before the line (D15 R2, §1).
-5. **Write stillness.** A moment of `hold_needs_still_s` or more, or a pause held on picture, names every still part in `still`, because models fill empty time with nods and drift (D15 R6, §1; CRAFT-26). Lips that part in silence need "No dialogue." and "closes it without a sound" (D15 R7).
+5. **Write small timed actions.** A moment of `hold_action_every_s` or more, or a pause held on picture, carries a small timed action at least every `hold_action_every_s`: a breath, a blink, a swallow, a glance, a hand that adjusts something. Never write a list of parts that stay still: testers found that video models read it as an order to freeze, so the face looks like a photo with moving lips, and that time with nothing in it is squeezed out (D15 R6, rewritten 10 October 2026; CRAFT-26, CRAFT-27; a judgement until the take log confirms it). The subject's old `still` part is left out. Lips that part in silence need "No dialogue." and "closes it without a sound" (D15 R7).
 6. **Eyes carry thought.** `eyeline` names a target and `dwell_s` how long; never "looks around". Singles made separately look past the lens on opposite sides and never into it (D15 R10; A1 R40, R44).
 7. **Energy changes inside a shot, never at a cut;** breath not seen (a helmet, a back) is carried in sound (D15 R12-R13).
 8. **Pauses:** tiers come from `pause_tiers`, with at most `long_pauses_per_scene_max` long pauses per scene (A1 R15; D15 R8); a turn's reaction lasts at least `turn_reaction_min_s` (TIME-05).
@@ -65,11 +65,11 @@ Delivery words come from the tactic: pressing becomes "level, quiet, unhurried, 
 
 ## Budgets and saved choices
 
-`long_pauses_per_scene_max`; `display_3_needs_why_at_or_tighter`; `hold_needs_still_s`; `on_screen_speakers_per_clip_max`; `acting_characters_per_clip_max`; `voice_description_words`; `voice_delivery_words_max`. One display peak per scene, at or after the main turn (D15 §8).
+`long_pauses_per_scene_max`; `display_3_needs_why_at_or_tighter`; `hold_action_every_s`; `on_screen_speakers_per_clip_max`; `acting_characters_per_clip_max`; `voice_description_words`; `voice_delivery_words_max`. One display peak per scene, at or after the main turn (D15 §8).
 
 ## The baseline is a strong answer
 
-Display 1, a still head, eyes on the other person, room sound and a clean designed voice at `speech_wps_default` are choices, not failures. Most reactions to a turn are contained: the camera magnifies (D15 §2.2; A1 P10).
+Display 1, eyes on the other person, a breath and a blink in the held time, room sound and a clean designed voice at `speech_wps_default` are choices, not failures. Most reactions to a turn are contained: the camera magnifies (D15 §2.2; A1 P10).
 
 ## Cliché traps
 
@@ -77,7 +77,7 @@ Tests: any-film, mood-word, stacking, sound-off (card 05).
 
 - "Looks sad" in `does` fails the mood-word test. Fix: two or three timed behaviours (D15 R1; WORDS-01).
 - Sobbing in a close-up: display 3 where 1 would land (A1 R36; CRAFT-25).
-- A hold with stillness unwritten comes back nodding and swaying (D15 §9).
+- A hold written as a list of still parts comes back frozen, and a hold with nothing in it is cut short or fills with nods. Fix: small timed actions (D15 R6, rewritten).
 - An early glance spends the later look (D15 R9).
 - Stacking: a sad face, a sad line and music under it (A1 P10).
 
@@ -93,28 +93,28 @@ Tests: any-film, mood-word, stacking, sound-off (card 05).
 The scene's closest frame holds Iona through the line. Her subject item at step 8, built from D15 Ex1:
 
 ```
-- subject: CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | does: chews steadily; chewing slows and stops; brows draw together slightly; eyes drift down; chews once more, very slowly | tactic: discovering | energy: held | display: 1 | still: head, hands, torso | must_not: looking at Eli
+- subject: CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | does: chews steadily; chewing slows and stops; brows draw together slightly; eyes drift down; chews once more, very slowly | tactic: discovering | energy: held | display: 1 | must_not: looking at Eli
 ```
 
 The glance at Eli is saved for "Iona moves between her and Eli." (line 476). A raised upper lip reads as disgust, but the taste is familiar and wrong, so it goes on the take review's list with tears (D15 Ex1, §8). The take's delivery is "breath caught, quiet"; Saye's reply stays in her answers voice for contrast (D3 §11.1).
 
 ### The Long Places: "two breaths entire" (line 419)
 
-Prose gives time in breaths: Melek "stood in the waiting, two breaths entire". Two calm breaths run longer than the long tier of `pause_tiers`, so the shot is a hold that needs a saved choice (K10; TIME-08). Breath is visible: the shoulders rise and fall twice and nothing else moves, so `still: head, hands` and `energy: held` (D15 Ex6). The knock passes to Yusuf and Nilay: record it once, as a MOTIF with `channel: body`, and keep its timing each time it returns (D15 Ex6).
+Prose gives time in breaths: Melek "stood in the waiting, two breaths entire". Two calm breaths run longer than the long tier of `pause_tiers`, so the shot is a hold that needs a saved choice (K10; TIME-08). Breath is visible: the moment is written as the two breaths themselves, timed, the shoulders rising and falling twice, with `energy: held` (D15 Ex6). The knock passes to Yusuf and Nilay: record it once, as a MOTIF with `channel: body`, and keep its timing each time it returns (D15 Ex6).
 
 ## Self-check
 
 - Does every recurring speaker have a VOICE with a description of `voice_description_words`, no real name, a pitch band, a pace and an accent from WORLD?
 - Does every subject have a tactic, a `does` with no emotion words and a display that fits the size?
-- Does every hold of `hold_needs_still_s` or more name its still parts?
+- Does every hold carry a small timed action at least every `hold_action_every_s`, with no list of still parts?
 - Does every `eyeline` have a dwell, and every saved look sit in earlier `must_not` items?
 - Is the listener used wherever it can carry the line?
 
 ## Words for AI models
 
-Works: behaviour steps joined by "then"; named body parts ("her lower lip"); stillness with its length ("her head and hands stay completely still; only her eyes move"); "The camera does not move." on a hold; "No dialogue." for silent lips (D15 §4.3, R6; C3 L14). Tone words only for the voice ("says quietly and unsteadily") (C3 §6). In a draft whose voice the video model makes, name the path: "his voice, heard only in her earpiece, thin; he is not visible" (C3 §7F).
+Works: behaviour steps joined by "then"; named body parts ("her lower lip"); held time filled with small timed actions ("she breathes in through her nose; at about 2 seconds she blinks; she swallows"); one camera sentence on a static shot; "No dialogue." for silent lips (D15 §4.3, R6; C3 L14). Tone words only for the voice ("says quietly and unsteadily") (C3 §6). In a draft whose voice the video model makes, name the path: "his voice, heard only in her earpiece, thin; he is not visible" (C3 §7F).
 
-Fails: emotion labels; `must_not` written as "no X" in a prompt (D15 §0); a one-sided expression's side in words (flip an approved still, D15 R19); long acting notes to a voice tool, which make the voice drift (D3 §2A).
+Fails: emotion labels; a list of parts that stay still, which models read as an order to freeze (D15 R6, rewritten); `must_not` written as "no X" in a prompt (D15 §0); a one-sided expression's side in words (flip an approved still, D15 R19); long acting notes to a voice tool, which make the voice drift (D3 §2A).
 
 ## Look up for more
 
