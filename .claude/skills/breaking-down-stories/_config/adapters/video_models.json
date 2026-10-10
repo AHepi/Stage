@@ -1950,7 +1950,7 @@
     },
     {
      "id": "H3R-07",
-     "says": "The spoken lines are the story's lines, word for word, and none is left out because the story's speeches are missing.",
+     "says": "The spoken lines are the story's lines, word for word, and none is left out: not because the story's speeches are missing, and not because a line is timed outside its shot (every line a shot hears reaches a clip).",
      "kind": "format",
      "source": "Stage: the story's lines are sent word for word (blueprint 8.1); MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
      "mark": "verified",

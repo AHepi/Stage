@@ -3033,7 +3033,7 @@
   "allowed_phrases_source": "'static, on a tripod, with no camera movement whatsoever' is the one camera line the h3-storyboard testers found holds (SKILL.md section 7.2); N/A is MiniMax's own word for an empty field."
  },
  "talk_about_speaking": {
-  "source": "h3-storyboard testing notes (SKILL.md section 6.2, cause 5, checked 10 October 2026): sentences in the prompt that talk about speaking get read aloud. Marked J. 'asks', 'says it', 'answer' and talk of lines passing were found reaching the route's prompts in the review of 10 October 2026 (Project notes 43, round 1, F10).",
+  "source": "h3-storyboard testing notes (SKILL.md section 6.2, cause 5, checked 10 October 2026): sentences in the prompt that talk about speaking get read aloud. Marked J. 'asks', 'says it', 'answer' and talk of lines passing were found reaching the route's prompts in the review of 10 October 2026 (Project notes 43, round 1, F10); 'voice' (\"Eli's voice\") in round 2 (N12): the code's own speaker phrase right before a line, \"a man's voice (S2) ... says:\", is allowed with the voice description.",
   "rule": "Route checks: outside the spoken lines a prompt says what the mouth does ('her lips close'), never talk about the speaking itself. Only 'says' (with its delivery) right before a line is allowed: the code writes it.",
   "words": [
    "sentence",
@@ -3062,7 +3062,10 @@
    "her line",
    "his line",
    "their line",
-   "the next line"
+   "the next line",
+   "voice",
+   "voices",
+   "'s voice"
   ],
   "allowed_before_a_line": [
    "says"

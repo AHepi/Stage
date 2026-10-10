@@ -83,6 +83,16 @@ IMAGE_SIDE_PHRASES = re.compile(
     r"(?<=\bto the )(left|right)\b|(?<=\btoward the )(left|right)\b|(?<=\btowards the )(left|right)\b|"
     r"(?<=\bon the )(left|right)(?! (?:hand|arm|foot|leg|shoulder|side of (?:his|her|their)))\b", re.IGNORECASE)
 QUOTES = {"“": '"', "”": '"', "‘": "'", "’": "'"}
+# What a cut leaves must start with its own subject (WordFixer.stands_alone; review N2): these words never start one
+NOT_A_SUBJECT_START = {"on", "in", "at", "by", "from", "to", "toward", "towards", "into", "onto", "under", "over",
+                       "beside", "behind", "across", "along", "around", "round", "through", "near", "against", "between", "above",
+                       "below", "off", "out", "up", "down", "away", "back", "either", "with", "without", "for", "of",
+                       "as", "like", "until", "while", "before", "after", "during", "inside", "outside", "past", "and",
+                       "but", "or", "nor", "yet", "so", "then", "also", "again", "once", "meanwhile", "still", "even"}
+SUBJECT_STARTS = {"the", "a", "an", "her", "his", "their", "its", "my", "our", "your", "she", "he", "they", "it", "we",
+                  "i", "you", "both", "neither", "each", "every", "one", "two", "three", "four", "this", "that", "these",
+                  "those", "someone", "somebody", "everyone", "nobody", "something", "everything", "all"}
+BE_AND_HAVE = {"is", "are", "was", "were", "has", "have", "had", "does", "do", "did", "be", "am"}
 
 
 # ---------------------------------------------------------------- the adapter files
@@ -479,6 +489,9 @@ class WordFixer:
         }
         self.allowed_phrases = [phrase.casefold() for phrase in
                                 (words.get("absence_words") or {}).get("allowed_phrases") or []]
+        stillness = words.get("stillness_words") or {}
+        self.verb_lists = (set(stillness.get("small_actions") or []), set(stillness.get("body_parts") or []),
+                           set(stillness.get("pose_words") or []))
 
     def verb_of(self, gerund):
         gerund = gerund.lower()
@@ -536,39 +549,97 @@ class WordFixer:
                     return match.group(0)
         return None
 
+    def has_verb(self, text):
+        """True when the words hold a verb ('breathes', 'is', 'will turn'), by the plan check's own reading
+        (checks_craft_reasons_words.looks_like_a_verb)."""
+        from .checks_craft_reasons_words import looks_like_a_verb
+        words = [word.strip(".,;:'\"").lower() for word in str(text or "").split()]
+        words = [word for word in words if word]
+        small_actions, body_parts, pose_words = self.verb_lists
+        return any(word in BE_AND_HAVE or looks_like_a_verb(words, index, small_actions, body_parts, pose_words)
+                   for index, word in enumerate(words))
+
+    def stands_alone(self, text, action=False):
+        """True when what a cut leaves can stand as a clause of its own: two words or more, starting with its own
+        subject (never a lone adverb such as 'unsteady', a lone place such as 'either side of the scar', or a verb
+        with its subject cut away such as 'then looks away'), and, for an action, holding a verb (review N2)."""
+        words = re.findall(r"[A-Za-z][\w'-]*", str(text or ""))
+        if len(words) < 2 or len(re.findall(r"[A-Za-z][\w'-]*", re.split(r",", str(text))[0])) < 2:
+            return False  # 'unsteady', or 'level, from the counter': a lone word where the subject stood
+        first, lowered = words[0], words[0].lower()
+        if lowered in NOT_A_SUBJECT_START or (lowered.endswith("ly") and not first[:1].isupper()):
+            return False
+        if (lowered not in SUBJECT_STARTS and not first[:1].isupper() and not lowered.endswith("'s")
+                and re.search(r"(?:[^s]s|ing|ed)$", lowered)):
+            return False  # 'looks away', 'turning back': the verb's subject was in the part cut
+        return self.has_verb(text) if action else True
+
+    def cut_kept_out(self, text, lists, action=False):
+        """(the words kept, True when the first clause's first piece was kept, [the pieces cut]) of text with only the
+        words of the named lists cut out: each comma piece holding one is cut at its first 'with', 'and', 'or', 'where'
+        or 'but' before the word ('a bare, clean kitchen with nothing on the walls' -> 'a bare, clean kitchen'), or
+        goes whole when what stands before is under two words. A clause whose first piece goes whole must leave words
+        that stand alone (stands_alone), and an action must keep a verb; otherwise the whole clause goes and is listed,
+        never a fragment such as 'unsteady' or 'either side of the scar' (review N2)."""
+        text = straight_quotes(str(text or "")).strip()
+        if not text or not lists or not self.kept_out_word(text, lists):
+            return text, True, []
+        sentences = [piece for piece in re.split(r"(?<=[.!?])\s+", text) if piece.strip()]
+        if len(sentences) > 1:
+            kept_sentences, first_kept, cut = [], True, []
+            for index, piece in enumerate(sentences):
+                words, first, pieces = self.cut_kept_out(piece, lists, action)
+                cut += pieces
+                first_kept = first_kept and (first or index > 0)
+                if words:
+                    ending = piece.strip()[-1] if piece.strip()[-1] in "!?" else "."
+                    kept_sentences.append(words.rstrip(".!?") + ending)
+            return " ".join(kept_sentences), first_kept, cut
+        ending = text[-1] if text[-1] in ".!?" else ""
+        text = text.rstrip(".!?")
+        kept_clauses, first_kept, cut = [], True, []
+        for clause_index, clause in enumerate(clause for clause in re.split(r"\s*;\s*", text) if clause.strip()):
+            if not self.kept_out_word(clause, lists):
+                kept_clauses.append(clause.strip())
+                continue
+            kept_pieces, clause_cut, subject_lost = [], [], False
+            for piece_index, piece in enumerate(piece for piece in re.split(r",\s*", clause) if piece.strip()):
+                if not self.kept_out_word(piece, lists):
+                    kept_pieces.append(piece)
+                    continue
+                lead = []
+                for part in re.split(r"\s+(?=(?:with|and|or|where|but)\s)", piece):
+                    if self.kept_out_word(part, lists):
+                        break
+                    lead.append(part)
+                standing = " ".join(lead).strip()
+                if standing and len(standing.split()) >= 2:
+                    kept_pieces.append(standing)
+                    clause_cut.append(piece[len(standing):].strip())
+                else:
+                    clause_cut.append(piece.strip())
+                    subject_lost = subject_lost or piece_index == 0
+            remainder = ", ".join(piece.strip() for piece in kept_pieces if piece.strip())
+            if remainder and ((subject_lost and not self.stands_alone(remainder, action))
+                              or (action and self.has_verb(clause) and not self.has_verb(remainder))):
+                clause_cut, remainder = [clause.strip()], ""  # a fragment would be left: the whole clause goes
+            cut += [piece for piece in clause_cut if piece]
+            if remainder:
+                kept_clauses.append(remainder)
+            if clause_index == 0 and (subject_lost or not remainder):
+                first_kept = False
+        kept = "; ".join(kept_clauses).strip(" ;,:")
+        return (kept + ending if kept else ""), first_kept, cut
+
     def drop_kept_out(self, text, lists, dropped=None):
-        """text without the clauses (between semicolons, then between commas) that hold a word of the named lists;
-        each piece left out is added to dropped. A clause left with fewer than two words goes whole."""
+        """text with only the words of the named lists cut out (cut_kept_out), never leaving a fragment; each piece
+        left out is added to dropped."""
         if not lists or not text or not self.kept_out_word(text, lists):
             return text
-        sentences = re.split(r"(?<=[.!?])\s+", str(text).strip())
-        kept_sentences = []
-        for sentence_text in sentences:
-            ending = sentence_text[-1] if sentence_text and sentence_text[-1] in ".!?" else ""
-            body = sentence_text[:-1] if ending else sentence_text
-            kept_clauses = []
-            for clause in re.split(r"\s*;\s*", body):
-                if not clause.strip():
-                    continue
-                if not self.kept_out_word(clause, lists):
-                    kept_clauses.append(clause.strip())
-                    continue
-                pieces = re.split(r",\s*", clause)
-                kept_pieces = [piece for piece in pieces if not self.kept_out_word(piece, lists)]
-                left = [piece.strip() for piece in pieces if self.kept_out_word(piece, lists)]
-                remainder = ", ".join(piece.strip() for piece in kept_pieces if piece.strip())
-                remainder = re.sub(r"^(?:and|but|or|then|nor|yet)\s+", "", remainder.strip(), flags=re.IGNORECASE)
-                if words_in(remainder) < 2 or not re.search(r"[A-Za-z]{3}", remainder):
-                    left = [clause.strip()]
-                    remainder = ""
-                if dropped is not None:
-                    dropped.extend(piece for piece in left if piece)
-                if remainder:
-                    kept_clauses.append(remainder)
-            joined = "; ".join(kept_clauses).strip(" ;,:")
-            if joined:
-                kept_sentences.append(joined + ending)
-        return " ".join(kept_sentences).strip()
+        kept, _, cut = self.cut_kept_out(text, lists)
+        if dropped is not None:
+            dropped.extend(piece for piece in cut if piece)
+        return kept.strip()
 
     def fix(self, text, left_out=None, what="", keep_out=(), why_out=""):
         """Swap words and rewrite negations; a sentence that still negates or holds a banned word is left out (and

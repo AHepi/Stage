@@ -381,7 +381,13 @@
   "cut_lands": "Does each cut land within about a second of its written time?",
   "tail_left_out": "Is the tail, after second {seconds}, left out of the kept part?",
   "contact_across_cut": "Does the hit happen across the cut, never on screen?",
-  "marks": "V blueprint 8.9 (yes/no questions built from the records; B2 R24 for the face question); C1 Rec11; 10 October 2026 (Project notes 42, W10): no question asks whether something stays still; the questions ask about the failures testers found (J)"
+  "actions_in_order": "Do these happen, in this order: {actions}?",
+  "action_happens": "Does this happen: {action}?",
+  "ends_on_this": "Does it end on this: {end}?",
+  "same_faces": "Are the faces the same as your pictures of {names}?",
+  "keep_moving": "Do {names} keep moving between the written actions: breathing, eyes, small shifts?",
+  "camera_moves": "Does the camera make its one move ({move}) smoothly, and stop where the shot ends?",
+  "marks": "V blueprint 8.9 (yes/no questions built from the records; B2 R24 for the face question); C1 Rec11; 10 October 2026 (Project notes 42, W10): no question asks whether something stays still; the questions ask about the failures testers found (J); 10 October 2026 (Project notes 43, round 2, N14 and N15): a clip's questions open with its own actions and end, ask about everyone once, and check a moving camera (J)"
  },
  "text_graphics": {
   "canvas": {

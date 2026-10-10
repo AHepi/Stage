@@ -1066,6 +1066,8 @@ def plain_problem_line(problem, run):
         where = name  # a scene's record says where it is: "Scene 10, shot 150"
     else:
         where = f"{name}, in {file_name}"
+    # a route line names its clip and shot as the clip pages do: "Scene 10, clip 07 (shot 150)" (review N9)
+    where = getattr(problem, "plain_where", None) or where
     where = where[:1].upper() + where[1:]
     return f"- {where}: {plain}."
 
