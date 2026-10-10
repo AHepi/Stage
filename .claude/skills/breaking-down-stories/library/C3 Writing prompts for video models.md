@@ -592,6 +592,7 @@ Prices are list prices per generated second on 27 September 2026; you pay for ev
 ## 18. Decision rules
 
 1. **If** the shot starts from an image, **then** write motion only and call people "the woman", "the man", **because** Google says re-describing the image confuses the model [P2].
+   *Note (10 October 2026):* MiniMax H3's reference mode is the exception. There each picture is tied to a person only through its label, so each person's fixed description is repeated word for word next to their `<Picture N>` label, and the start picture is one labelled reference among others, not a first frame to animate (Section 25; Project notes 42 and 43).
 2. **If** the clip is 8 s or shorter, **then** give one camera move and one main action, **because** makers report chained events come out muddled [P2][P11].
 3. **If** a camera move is in the unreliable list (Section 4), **then** swap it for a reliable move that serves the same story purpose, or supply a control video, **because** camera movement and focus are where models differ most [P43] and rotation and vertical moves are weaker [P44].
 4. **If** you use Omni Flash and need one shot, **then** write "In a single unbroken scene", **because** Omni makes several shots by default [P6].
@@ -1171,3 +1172,50 @@ CONTENT_RISK: high → shooter off-screen (implication); gunshot in sound; wound
 - [P53] fal, HappyHorse 1.0 text-to-video API (3–15 s, 720p/1080p, audio, seed, $0.14/$0.28 per s): https://fal.ai/models/alibaba/happy-horse/text-to-video
 - [P54] Runway Dev, models list (gen4.5 guide link points to the research page; wan3, seedance2_5, grok_imagine_1_5, gemini_omni_flash, aleph2 hosted): https://docs.dev.runwayml.com/guides/models.md
 - [P55] Kling, llms.txt (Kling 3.0 series, 5 Feb 2026, is the latest major version): https://kling.ai/llms.txt
+
+---
+
+## 25. MiniMax H3 in ComfyUI, reference mode (added 10 October 2026)
+
+*Added for Project notes 42 and 43. Everything in Sections 0 to 24 was checked on 27 September 2026; the facts below were checked on 10 October 2026.* The marks are this file's own: **[V]** read in the maker's own document on that date, **[U]** stated but not verified, **[J]** judgement (testers' notes or the hand-made clip file of Project notes 42).
+
+**Why it is its own route [V].** On MiniMax's own service a rewriting step, H3-Context-IR, turns a short prompt into a long structured one; it is hosted and "not included in this open-source release" [P57]. In ComfyUI H3 reads the prompt exactly as written, so the prompt must already be in that long form. Stage keeps two entries: `minimax-h3` (the hosted service) and `minimax-h3-comfyui-r2v` (ComfyUI, Reference to Video), and never shares one prompt between them.
+
+**The format, from MiniMax's reference-mode guide [V] [P56]:**
+1. Six sections in this order: `subject_definitions`, `summary`, `retention_analysis`, `detailed_description`, `overall_soundscape`, `non_diegetic_music`.
+2. Labels: `<Subject N>` is visible content to keep or change; `<Picture N>` is a reference image used as a target frame or shot-planning anchor.
+3. `retention_analysis` values: `fully_preserved`, `partially_preserved`, `attribute_transfer`, `weak_reference`; a speaker ID `(Sx)` never appears there.
+4. Speakers get stable IDs `(S1)`, `(S2)`; a subject speaking is written `<Subject N> (Sx)`; dialogue as `<d>[Language] ...</d>`.
+5. `detailed_description` is "normally 350-500 English words" for generation.
+6. `[Shot 1]` marks the opening shot and has no time; later shots are written `[Shot N] At MM:SS.mmm, ...`.
+7. The complete example writes `non_diegetic_music: N/A` when there is no music.
+
+**The model [V] [P57]:** output of 4 to 15 seconds at 24 frames a second; the short side is 768 by default; reference mode takes up to 9 pictures.
+
+**The ComfyUI template [V] [P58][P59]:**
+1. The template is "MiniMax H3 Reference to Video (R2V)", with up to 9 reference pictures tagged `<Picture 1>` onward.
+2. The Lightning LoRA checkbox runs a 4-step turbo mode "with slightly lower audio and motion quality"; 20 steps by default, and more steps are offered.
+3. `ref_image_size`: `match` scales references down for speed; `max` keeps up to a 2048-pixel short edge.
+4. Duration snaps up to the 17-frame-block grid, 17 × k + 5 frames at 24 frames a second (said for the T2V and I2V templates); the length input defaults to 124 frames. Native canvas 1344 × 768 at 16:9.
+5. "There is no negative branch and a negative prompt has no effect"; "an instruction that names an unwanted element adds that wording to the description the model reads"; "Say what should be in the shot instead."
+
+**Stated, not verified [U]:** the box names Boolean (Enable Lightning LoRA), Int (Full), Resolution Selector (Size), Float (Duration), RandomNoise and Input Text (Prompt), and the inputs `ref_image_0`, `ref_image_1` ... come from the clip file's reading of the template, not from ComfyUI's pages; the frame range 124 to 362 is Project notes 42's (362 is 15 seconds snapped up on the grid; 124 is the template's default; shorter lengths on the grid are untested); 1536 × 640 for a 2.39:1 film and 1152 × 480 for tests are the clip file's choices.
+
+**Testers' notes [J] [P60]** (found on 10 October 2026; none yet run on the user's own setup):
+1. A strong "do not move" line leaks across the whole shot; without continuous small motion a face looks like a photo with moving lips. Time with nothing happening is squeezed out.
+2. Listing "no push in, no zoom ..." made cuts drift and the camera move; one line works instead: "static, on a tripod, with no camera movement whatsoever".
+3. H3 often breaks into noise 1.2 to 1.7 seconds before the end: leave a tail of 1.3 to 1.5 seconds and throw it away.
+4. H3 cannot do contact-driven cause and effect: cut from the action to the result, with the sound on the cut.
+5. When a two-shot cuts to a closer single on the same line, the cut can be smoothed away; cuts hold when subject and framing differ clearly.
+6. Speech rhythm follows the seed, not the prompt: change the seed first when speech is wrong. A cut written at 2.0 seconds landed at 3.21, and lines started 1.4 to 1.9 seconds late.
+7. Shot and reverse shot need a lead-in, a shot showing both; text cannot replace it.
+8. In a shot where a hand moves a thing, the hand is the subject, kept on the thing. A comparison ("like ...") can make the model draw the thing compared; sentences that talk about speaking get read aloud.
+
+**How Stage uses this.** `stage.py compile --route h3-comfyui` groups each scene's shots into clips of one to three shots, writes each prompt in the six sections from the records, and runs the ROUTE checks. Format facts marked [V] are errors; every [J] rule stays a suggestion until the take log marks it confirmed on the user's own setup (Project notes 42, W11).
+
+**Sources for Section 25 (checked 2026-10-10):**
+- [P56] MiniMax, H3 video prompt writing guide, reference mode: https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md
+- [P57] MiniMax, H3 model page: https://huggingface.co/MiniMaxAI/MiniMax-H3
+- [P58] ComfyUI, MiniMax H3 templates and settings: https://docs.comfy.org/tutorials/video/minimax/minimax-h3-native
+- [P59] ComfyUI, MiniMax H3 prompt guide: https://docs.comfy.org/tutorials/video/minimax/minimax-h3-prompt-guide
+- [P60] h3-storyboard testing notes (skills/h3-storyboard/SKILL.md): https://github.com/phileiny/h3-storyboard-skill

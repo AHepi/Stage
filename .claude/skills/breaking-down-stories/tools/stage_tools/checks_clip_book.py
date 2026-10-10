@@ -605,7 +605,14 @@ def route_problems(run, packs, facts=None, marks=None):
                 level = level_of(mark)
                 if level is None:
                     continue
-                for field_name, what, fix in function(run, pack, entry, facts):
+                try:
+                    found = function(run, pack, entry, facts)
+                except (KeyError, TypeError, ValueError, IndexError) as error:  # an old or hand-edited machine file
+                    if hasattr(run, "skip"):
+                        run.skip(check_id, f"{entry.get('clip')} could not be read ({type(error).__name__}: {error}); "
+                                           "compile the route again")
+                    continue
+                for field_name, what, fix in found:
                     if level == "W":
                         what = f"{what} (a suggestion: rule {rule_id} is unclear until the take log decides it)"
                     problem = run.problem(level, check_id, entry["clip"], field_name, what, fix, file_name=page)

@@ -48,6 +48,20 @@ Pick one `SHOT.route` per shot, from its derived `needs` (C1 §5; C3 §20):
 - `plate_route_face_height`, `lip_sync_tight_face_height`: larger faces change the routes (blueprint 8.5).
 - **Drift** (an element changing across pictures) above one frame in ten: train a **LoRA**, a small file teaching an open model one face, or use a still with a push-in (C2 Rule 14; D5 R17).
 
+## The H3 route in ComfyUI
+
+Example first: scene 10's turn, shot 150, is 15 seconds; on this route it is clip 07, 362 frames (type 15.0 in Float (Duration)), and only its first 13.8 seconds fit before the tail, so the rest of the hold is made in the edit (ROUTE-13). A **route** is a model plus the place it runs. "MiniMax H3 in ComfyUI, Reference to Video" (`minimax-h3-comfyui-r2v`) is never chosen by routing: `stage.py compile --route h3-comfyui`, or the project's `video_route` set to `h3_comfyui_r2v` at add-on C's checkpoint, makes its **clip book** in `20 Prompts for AI video/MiniMax H3 in ComfyUI/` (C3 §25; Project notes 42, 43).
+
+Why it differs from every other route:
+1. **No rewriting step.** MiniMax's hosted service rewrites a short prompt into a long structured one; ComfyUI runs H3 on the words as written, so code writes the long form: six sections in MiniMax's order, with a label for every picture connected (C3 §25).
+2. **No negative side.** A word naming something absent adds it, so no "no", "not", "nothing" or "still" outside the spoken lines; a clause that needs one is left out and listed on the clip page. The one camera line is "static, on a tripod, with no camera movement whatsoever".
+3. **Descriptions repeated, word for word.** In reference mode a picture is tied to a person only through its label, so each person's fixed description and state line stand next to their `<Picture N>`. This is the exception to C3 R1's motion only, and GEN-05 never applies here.
+4. **Clips of one to three shots.** Short shots cut together inside one clip each hold one beat. A held take, a moving camera and part of a long shot are clips of their own; two singles of people facing each other share a clip only after a shot showing both; a **contact cut** (end the shot as one thing reaches another, open the next on the result, the sound on the cut) keeps its pair together.
+5. **The tail.** Lengths sit on H3's grid of 17 × k + 5 frames; every clip ends with a **tail** of at least 1.3 seconds, thrown away, because H3 breaks up near the end. The page gives the seconds to type and the seconds to keep.
+6. **Start pictures from master pictures.** One **master picture** per place, empty, made once; each clip's **start picture** is built from it and shows the clip's first moment: hands already on what they move, eyes on the task, mouths closed. H3 takes the camera, the people and the light from it more than from the words.
+7. **People are alive.** Each person "is alive in every second of this clip": breathing, eyes, weight, blinks at stated times; held time is small timed actions, never parts that stay still.
+8. **Rules are marked.** Format facts from MiniMax's and ComfyUI's documents are errors; every judgement rule (ROUTE checks marked unclear) stays a suggestion until two takes in the take log confirm it, and is dropped when the takes show it wrong.
+
 ## The baseline is a strong answer
 
 One scene model, one shot per clip, an approved start picture with a motion-only prompt, room sound, no music, and a still with a push-in where motion adds nothing are choices, not failures (C3 §10; K29; C3 R1, R10). Depart only for a need code can name.
@@ -59,7 +73,7 @@ Tests: any-film, mood-word, stacking and sound-off (card 05), and the **referenc
 - **The house style**: unasked light shafts, "cinematic", "moody" (B2 §12; GEN-12). Fix: look block and style words only.
 - **Creature clichés**: "robot", "alien", "glowing eyes" (C2 §9). Fix: plain shapes.
 - **Emotion labels** (C3 L07). Fix: two or three visible behaviours.
-- **Re-describing a start picture** (C3 R1; GEN-05). Fix: motion only, "the woman".
+- **Re-describing a start picture** (C3 R1; GEN-05). Fix: motion only, "the woman". On the H3 route in ComfyUI the opposite holds: each description is repeated word for word next to its picture label.
 - **Backwards text asked of a model** (C1 R7; GEN-06), or **"falling" for floating bodies** (C3 R13, §12). Fix: a flipped text graphic; "hair and straps drift up; nothing settles".
 - **"No people"** (K18; GEN-07). Fix: nouns in a **negative field** (a box of things to leave out) where the model has one, else positive words.
 
@@ -73,11 +87,11 @@ Tests: any-film, mood-word, stacking and sound-off (card 05), and the **referenc
 
 ### The Catch: SC10-SH150, "Not mint." (line 463)
 
-A static close-up of 15 seconds; with `handles_s` at each end its clip rounds up to 17, beyond `kling-3.0-omni`, so this held take routes to `seedance-2.5` as one take (blueprint 8.4). VT-SC10-D11-T01 carries "Not mint."; Saye's lines stay off screen, placed in the edit (D3 R20). A close-up's `face_height_by_size` is above `lip_sync_tight_face_height`, so the audio goes in as a reference (D3 R21). The prompt is motion only (C3 R1): "Her head and hands stay still; only her eyes move. The camera does not move. No background music." (blueprint 8.1).
+A static close-up of 15 seconds; with `handles_s` at each end its clip rounds up to 17, beyond `kling-3.0-omni`, so this held take routes to `seedance-2.5` as one take (blueprint 8.4). VT-SC10-D11-T01 carries "Not mint."; Saye's lines stay off screen, placed in the edit (D3 R20). A close-up's `face_height_by_size` is above `lip_sync_tight_face_height`, so the audio goes in as a reference (D3 R21). The prompt is motion only (C3 R1), and its held time is small timed actions: she chews, stops, frowns, chews once more, says the two words, swallows, and her eyes stay on Saye. It never lists parts that stay still: models read such a list as an order to freeze (Project notes 42).
 
 ### The Long Places: SC05, "She did not turn her head." (line 79)
 
-A contemplative, locked-off medium holds the dark at Nilay's right shoulder for 12 seconds; its 14-second clip is beyond `veo-3.1`, so the scene model must allow it (D13 §15.4). The warmth, "the way a cat commits itself", is never shown: the prompt says "the dark space at her right shoulder stays empty", and "cat" goes only into a negative field (K18; C3 R5). "Her head and hands stay still; only the lamp flame moves." (blueprint 8.1). The shoulder settling "with weight" is acted on a phone and transferred (C1 R12). When the refrain returns at first light, a shot whose light differs is a new take from its saved setup; the rest are reused (D13 R6).
+A contemplative, locked-off medium holds the dark at Nilay's right shoulder for 12 seconds; its 14-second clip is beyond `veo-3.1`, so the scene model must allow it (D13 §15.4). The warmth, "the way a cat commits itself", is never shown: the prompt says "the dark space at her right shoulder stays empty", and "cat" goes only into a negative field (K18; C3 R5). Her held time is written as small timed actions (a breath, a blink, the lamp flame wavering), never a list of parts that stay still (Project notes 42). The shoulder settling "with weight" is acted on a phone and transferred (C1 R12). When the refrain returns at first light, a shot whose light differs is a new take from its saved setup; the rest are reused (D13 R6).
 
 ## Self-check
 
