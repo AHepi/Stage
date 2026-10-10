@@ -1781,7 +1781,7 @@
    },
    "inputs": {
     "references_max": 9,
-    "people_pictures_max": 3,
+    "people_pictures_max": 4,
     "start_picture": "the start picture is <Picture 1>, wired to ref_image_0",
     "character_pictures": "each person's picture after it, in order: ref_image_1 is <Picture 2>, ref_image_2 is <Picture 3> ...",
     "guide_video": false,
@@ -1950,7 +1950,7 @@
     },
     {
      "id": "H3R-07",
-     "says": "The spoken lines are the story's lines, word for word.",
+     "says": "The spoken lines are the story's lines, word for word, and none is left out because the story's speeches are missing.",
      "kind": "format",
      "source": "Stage: the story's lines are sent word for word (blueprint 8.1); MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
      "mark": "verified",
@@ -1958,7 +1958,7 @@
     },
     {
      "id": "H3R-08",
-     "says": "[Shot 1] has no time; each later shot opens '[Shot N] At MM:SS.mmm,' and the times rise from 0.",
+     "says": "[Shot 1] has no time; each later shot opens '[Shot N] At 00:04.500,' (minutes and seconds, to the thousandth) and the times rise from 0.",
      "kind": "format",
      "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
      "mark": "verified",
@@ -1974,7 +1974,7 @@
     },
     {
      "id": "H3R-10",
-     "says": "Nothing is timed in the tail, and the tail after the keep point is at least 1.3 seconds: H3 often breaks up 1.2 to 1.7 seconds before the end.",
+     "says": "Nothing is timed in the tail, and the tail after the keep point is at least 1.3 seconds: H3 often breaks up 1.2 to 1.7 seconds before the end. No two lines are timed over each other, and each line ends at least a second before the keep point, because H3 starts lines 1.4 to 1.9 seconds late.",
      "kind": "judgement",
      "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
      "mark": "unclear",
@@ -2030,7 +2030,7 @@
     },
     {
      "id": "H3R-17",
-     "says": "Outside the spoken lines, no talk about speaking (sentence, words, speaks ...): H3 may say it aloud. 'says' just before a line is allowed.",
+     "says": "Outside the spoken lines, no talk about speaking (sentence, words, speaks, asks, answers ...): H3 may say it aloud. Only 'says' right before a line, which the code writes, is allowed.",
      "kind": "judgement",
      "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
      "mark": "unclear",
@@ -2078,7 +2078,7 @@
     },
     {
      "id": "H3R-23",
-     "says": "A clip holds one to three shots.",
+     "says": "A clip holds one to three shots and at most four people's pictures; a long shot made in parts has no moment running across the cut between two parts.",
      "kind": "judgement",
      "source": "Project notes 42 (the handover) and 43 (the build plan)",
      "mark": "unclear",
@@ -2110,7 +2110,7 @@
     },
     {
      "id": "H3R-27",
-     "says": "Every clip page names its master picture and its character pictures.",
+     "says": "Every clip page names its master picture and its character pictures, and says in plain words which part of the mirror world it cannot make safely.",
      "kind": "judgement",
      "source": "Project notes 42 (the handover) and 43 (the build plan)",
      "mark": "unclear",
@@ -2137,7 +2137,7 @@
     "frames": "V ComfyUI templates page: duration snaps up to 17 x k + 5 frames (said for the T2V and I2V templates); the length input defaults to 124 frames; U the range 124 to 362 (Project notes 42: 362 is 15 seconds snapped up; shorter lengths on the grid are untested) [checked 2026-10-10]",
     "tail_s_min": "J h3-storyboard testing notes: H3 often breaks up 1.2 to 1.7 seconds before the end; leave 1.3 to 1.5 s",
     "sizes": "V ComfyUI templates page: native canvas 1344 x 768 at 16:9; U 1536 x 640 for a 2.39 film and 1152 x 480 for tests (the clip file's choices); U 1024 x 576 as the 16:9 test size (Stage's choice)",
-    "inputs": "V ComfyUI templates page and MiniMax model page: up to 9 reference pictures, tags <Picture 1>; U the inputs ref_image_0, ref_image_1 ... (the clip file's reading of the template); J at most 3 character pictures a clip, the most the hand-made clip file wires (Project notes 43)",
+    "inputs": "V ComfyUI templates page and MiniMax model page: up to 9 reference pictures, tags <Picture 1>; U the inputs ref_image_0, ref_image_1 ... (the clip file's reading of the template); J at most 4 character pictures a clip, chosen on purpose: the hand-made clip file wires at most 3, but every face seen needs its picture and four-person shots are common (scene 10 has seven), so a cap of 3 would break the route's own rule on every such shot; 4 pictures and the start picture are 5 of H3's 9 (Project notes 43, round 1 review F3); untested above 3",
     "shots_per_clip_max": "J Project notes 42, question 2 (accepted): a clip holds one to three shots",
     "sections": "V MiniMax reference-mode guide: the six sections in this order [checked 2026-10-10]",
     "detailed_description_words": "V MiniMax reference-mode guide: 'normally 350-500 English words' [checked 2026-10-10]",

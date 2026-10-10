@@ -41,6 +41,18 @@ ROUTE_VALUE = "h3_comfyui_r2v"          # PROJECT video_route
 ROUTE_MODEL = "minimax-h3-comfyui-r2v"  # the adapter entry
 ROUTE_FILE_KIND = "clip_book"           # the marker the GEN lint reads: a route pack is checked by the route checks
 KEPT_OUT_LISTS = ("absence", "stillness", "talk", "comparison")
+HELD_WORDS = ("stays", "stay", "remains", "remain")
+# a voice clause longer than this, or tied to a time ('until', 'once he'), tells the character's story, not a sound
+# H3 can make ("with warmth held back until she spends it on one person near the end"; review F17, J)
+VOICE_CLAUSE_WORDS_MAX = 7
+VOICE_STORY_WORDS = re.compile(r"\b(?:until|unless|when|whenever|once|while|after|before|near the end|by the end|"
+                               r"someone|used to)\b", re.IGNORECASE)
+BODY_PARTS = ("hands", "hand", "fist", "fists", "fingers", "knuckles", "palm", "palms", "wrist", "wrists", "arm", "arms",
+              "sleeve", "sleeves", "cuff", "chest", "belly", "shoulder", "shoulders", "feet", "foot", "legs",
+              "knees", "boots")
+SPEAKING_MOMENT = re.compile(r"\b(?:says?|asks?|answers?|speaks?|calls?|words?|lines?|replies|reply)\b", re.IGNORECASE)
+LINE_GAP_S = 0.2           # between two lines, the second never starts before the first ends plus this
+LINE_END_MARGIN_S = 1.0    # a line should end this long before the keep point: lines start late in H3 (review F18, J)
 SIZE_SCALE = ["extreme_wide", "wide", "medium_wide", "medium", "medium_close_up", "close_up", "extreme_close_up"]
 SIZE_WORDS = {"extreme_wide": "extreme wide shot", "wide": "wide shot", "medium_wide": "medium wide shot",
               "medium": "medium shot", "medium_close_up": "medium close-up", "close_up": "close-up",
@@ -186,6 +198,19 @@ def sentence(text):
     return text if text[-1] in ".!?\"" or text.endswith("</d>") else text + "."
 
 
+def with_article(name):
+    """'the flask' for a thing's name, kept as it is when it already has 'the' or an owner ("Saye's scissors")."""
+    name = str(name or "").strip()
+    if re.match(r"^(?:the|a|an)\s", name, re.IGNORECASE) or re.search(r"\w's\b", name):
+        return name
+    return f"the {name}"
+
+
+def plural_noun(words):
+    """True when a list of parts reads as plural ('hands', 'fist and sleeve'), False for one singular part."""
+    return len(words) > 1 or (bool(words) and words[0].endswith("s"))
+
+
 def lower_first(text):
     from .compile_prompts import lower_first as compile_lower_first
     return compile_lower_first(text)
@@ -210,6 +235,53 @@ def record_words(breakdown, identifier):
 
 def scene_number_words(scene_identifier):
     return re.sub(r"^SC0*", "", scene_identifier or "") or "0"
+
+
+def trim_kept_out(fixer, text, lists):
+    """(the words kept, True when the first clause was kept, [the pieces cut]) of a description with only the words
+    of the named lists cut out: each comma clause holding one is cut at its first 'with', 'and', 'or', 'where' or
+    'but' before the word, or goes whole when what stands before is under two words (ClipWriter.trimmed)."""
+    text = straight_text(str(text or "")).strip()
+    if not text or not fixer.kept_out_word(text, lists):
+        return text, True, []
+    sentences = [piece for piece in re.split(r"(?<=[.!?])\s+", text) if piece.strip()]
+    if len(sentences) > 1:
+        kept_sentences, first_kept, cut = [], True, []
+        for index, piece in enumerate(sentences):
+            words, first, pieces = trim_kept_out(fixer, piece, lists)
+            cut += pieces
+            first_kept = first_kept and (first or index > 0)
+            if words:
+                kept_sentences.append(words.rstrip(".") + ".")
+        return " ".join(kept_sentences), first_kept, cut
+    ending = text[-1] if text[-1] in ".!?" else ""
+    text = text.rstrip(".!?")
+    kept_clauses, first_kept, cut = [], True, []
+    for clause_index, clause in enumerate(clause for clause in re.split(r"\s*;\s*", text) if clause.strip()):
+        kept_pieces = []
+        for piece_index, piece in enumerate(piece for piece in re.split(r",\s*", clause) if piece.strip()):
+            if not fixer.kept_out_word(piece, lists):
+                kept_pieces.append(piece)
+                continue
+            lead = []
+            for part in re.split(r"\s+(?=(?:with|and|or|where|but)\s)", piece):
+                if fixer.kept_out_word(part, lists):
+                    break
+                lead.append(part)
+            standing = " ".join(lead).strip()
+            if standing and len(standing.split()) >= 2:
+                kept_pieces.append(standing)
+                cut.append(piece[len(standing):].strip())
+            else:
+                cut.append(piece.strip())
+                if clause_index == 0 and piece_index == 0:
+                    first_kept = False
+        if kept_pieces:
+            kept_clauses.append(", ".join(kept_pieces))
+        elif clause_index == 0:
+            first_kept = False
+    kept = "; ".join(kept_clauses)
+    return (kept + ending if kept else ""), first_kept, cut
 
 
 # ---------------------------------------------------------------- clips and their shots
@@ -270,6 +342,13 @@ class RouteClip:
     filler_s: float = None
     words_unknown: list = dataclass_field(default_factory=list)
     timed: list = dataclass_field(default_factory=list)
+    starts_because: str = ""
+    joins: list = dataclass_field(default_factory=list)
+    over_cap: dict = dataclass_field(default_factory=dict)
+    mirror: dict = dataclass_field(default_factory=dict)
+    part_moments: list = dataclass_field(default_factory=list)
+    record_left_out: list = dataclass_field(default_factory=list)
+    lengthened: bool = False
 
     @property
     def length_s(self):
@@ -317,17 +396,36 @@ def size_steps(first, second):
     return None
 
 
-def differs_clearly(first, second):
-    """True when shot second differs clearly from shot first: two steps or more on the size scale, another angle,
-    another setup, or second is an insert (Project notes 43, A3)."""
+def difference_words(first, second):
+    """How shot second differs clearly from shot first, in plain words ('it is an insert', 'another angle' ...), or ''
+    when it does not: two steps or more on the size scale, another angle, another setup, or second is an insert
+    (Project notes 43, A3)."""
     if is_insert(second.shot):
-        return True
+        return "it is an insert"
     steps = size_steps(size_of(first.shot), size_of(second.shot))
     if steps is not None and steps >= 2:
-        return True
+        return f"{NUMBER_WORDS.get(steps, str(steps))} sizes apart"
     if normalise_word(first.shot.get("angle") or "eye_level") != normalise_word(second.shot.get("angle") or "eye_level"):
-        return True
-    return (first.shot.get("setup") or "") != (second.shot.get("setup") or "") or not first.shot.get("setup")
+        return "another angle"
+    if (first.shot.get("setup") or "") != (second.shot.get("setup") or "") or not first.shot.get("setup"):
+        return "another camera place"
+    return ""
+
+
+def differs_clearly(first, second):
+    """True when shot second differs clearly from shot first (difference_words)."""
+    return bool(difference_words(first, second))
+
+
+def flipped_in_edit(plan):
+    """True when the shot's take is made unflipped and flipped left to right in the edit (the mirror world's routes a
+    and b, 8.5): every shot of one clip must agree, because one take is flipped whole or not at all."""
+    return bool(getattr(plan, "prompt_flipped_all", False))
+
+
+def mirror_route_of(plan):
+    mirror = getattr(plan, "mirror", None)
+    return getattr(mirror, "route", "none") if mirror is not None else "none"
 
 
 def is_single(plan):
@@ -426,45 +524,68 @@ class Grouper:
         return found
 
     def can_join(self, shots, candidate, contact=False):
-        """(True, '') when candidate may join the clip of these shots; else (False, why)."""
+        """(True, why it joins) when candidate may join the clip of these shots; else (False, why it starts a new
+        clip). Both reasons are plain words for the clip page (Project notes 43, round 1 review F5)."""
         last = shots[-1]
-        if len(shots) >= self.route.shots_per_clip_max:
-            return False, "the clip already holds the most shots a clip may hold"
+        number, before = three_digits(candidate.identifier), three_digits(last.identifier)
+        most = self.route.shots_per_clip_max
+        if len(shots) >= most:
+            return False, f"the clip before already holds {NUMBER_WORDS.get(most, str(most))} shots, the most a clip may hold"
         kept = sum(clip_shot.length for clip_shot in shots) + candidate.length
         if not self.fits(kept):
-            return False, "together they are longer than the route's longest clip"
-        if any(clip_shot.plan.held for clip_shot in shots) or candidate.plan.held:
-            return False, "a held take is a clip of its own"
-        if not is_static(last.plan) or not is_static(candidate.plan):
-            return False, "a moving-camera shot is a clip of its own"
+            return False, (f"with the clip before it would keep {plain_number(kept)} seconds, too long for one clip "
+                           f"with its tail (H3 makes at most {plain_number(self.route.longest_s)} seconds)")
+        if any(clip_shot.plan.held for clip_shot in shots):
+            return False, f"shot {before} before it is a held take, which is always a clip of its own"
+        if candidate.plan.held:
+            return False, f"shot {number} is a held take, which is always a clip of its own"
+        if not is_static(last.plan):
+            return False, f"shot {before} before it has a moving camera, which is always a clip of its own"
+        if not is_static(candidate.plan):
+            return False, f"shot {number} has a moving camera, which is always a clip of its own"
         if candidate.parts > 1 or last.parts > 1:
-            return False, "a part of a long shot is a clip of its own"
+            return False, "a part of a long shot is always a clip of its own"
         place = self.place_of(candidate.plan)
         if place != self.place_of(last.plan):
-            return False, "another place"
+            return False, f"shot {number} is in another place"
+        if flipped_in_edit(last.plan) != flipped_in_edit(candidate.plan):
+            flipped = number if flipped_in_edit(candidate.plan) else before
+            return False, (f"shot {flipped} is made unflipped and flipped left to right in the edit (the mirror world) "
+                           "and the other is not, and one take is flipped whole or not at all")
+        references = self.references(shots)
         elements = {}
-        for reference in self.references(shots):
+        for reference in references:
             elements.setdefault(element_of(reference), reference)
         for person in people_of(candidate.plan):
             if person.element in elements and elements[person.element] != person.reference:
-                return False, f"{person.name} is in another state"
-        if len(set(self.references(shots)) | {person.reference for person in people_of(candidate.plan)}) > \
-                self.route.people_pictures_max:
-            return False, f"more than {self.route.people_pictures_max} people's pictures in one clip"
+                return False, f"{person.name} is in another state in shot {number} (other clothes or marks)"
+        # the cap counts pictures: a shot whose people are all wired already adds none, so it may always join
+        new = [person.reference for person in people_of(candidate.plan) if person.reference not in references]
+        total = len(set(references) | set(new))
+        cap = self.route.people_pictures_max
+        if new and total > cap:
+            return False, (f"shot {number} would make {NUMBER_WORDS.get(total, str(total))} people's pictures in one "
+                           f"clip, over the route's {NUMBER_WORDS.get(cap, str(cap))}")
+        pictures = (f"{NUMBER_WORDS.get(total, str(total))} people's picture{'s' if total != 1 else ''} in all"
+                    + ("" if new else ", none of them new"))
         if contact:
-            return True, ""
+            return True, (f"shot {number} opens on the result of the hit that ends shot {before}, so the cut lands on "
+                          f"the contact; {pictures}")
         side_last, side_next = setup_side(self.breakdown, last.plan), setup_side(self.breakdown, candidate.plan)
         if side_last and side_next and side_last != side_next:
-            return False, "the cut crosses the line"
-        if not differs_clearly(last, candidate):
-            return False, "the framing is too like the shot before"
+            return False, f"the cut from shot {before} to shot {number} crosses the line"
+        difference = difference_words(last, candidate)
+        if not difference:
+            return False, (f"shot {number} is framed too like shot {before} (the same camera place and angle, within "
+                           "one size), and H3 can smooth such a cut into one move")
         if is_single(candidate.plan):
             for clip_shot in shots:
                 if is_single(clip_shot.plan) and facing_each_other(clip_shot.plan, candidate.plan):
                     both = elements_seen(clip_shot.plan) | elements_seen(candidate.plan)
                     if not both <= elements_seen(shots[0].plan):
-                        return False, "two singles of people facing each other need a shot showing both first"
-        return True, ""
+                        return False, (f"shots {three_digits(clip_shot.identifier)} and {number} are singles of two "
+                                       "people facing each other, and the clip has no shot showing both first")
+        return True, f"shot {number} is in the same place, clearly different from shot {before} ({difference}); {pictures}"
 
     def place_of(self, plan):
         scene = self.breakdown.record(scene_of(plan.identifier), "SCENE")
@@ -499,49 +620,75 @@ class Grouper:
                 enumerate(pieces)], note
 
     def group(self, scene_identifier, plans):
-        clips, current, current_notes = [], [], []
+        clips, current, current_notes, joins = [], [], [], []
         contact_into = set()
+        why = {"start": ""}
 
         def close():
             if current:
-                clips.append((list(current), list(current_notes), sorted(contact_into)))
+                clips.append((list(current), list(current_notes), sorted(contact_into), why["start"], list(joins)))
             current.clear()
             current_notes.clear()
             contact_into.clear()
+            joins.clear()
 
         for plan in plans:
             if not plan.video:
                 continue
+            number = three_digits(plan.identifier)
             pieces, split_note = self.pieces_of(plan)
             if plan.held or len(pieces) > 1 or not is_static(plan):
                 close()
                 for piece in pieces:
                     current.append(piece)
                     if split_note:
-                        current_notes.append(f"shot {three_digits(plan.identifier)} is {split_note}")
+                        current_notes.append(f"shot {number} is {split_note}")
+                    if len(pieces) > 1:
+                        why["start"] = (f"shot {number} is {plain_number(plan.screen_time)} seconds long, too long "
+                                        f"for one clip with its tail, so it is made in {NUMBER_WORDS.get(len(pieces), str(len(pieces)))} "
+                                        f"parts; this is part {piece.part}, a clip of its own")
+                        why["after"] = f"shot {number} before it is made in parts, each a clip of its own"
+                    elif plan.held:
+                        why["start"] = f"shot {number} is a held take, which is always a clip of its own"
+                        why["after"] = f"shot {number} before it is a held take, which is always a clip of its own"
+                    else:
+                        why["start"] = f"shot {number} has a moving camera, which is always a clip of its own"
+                        why["after"] = f"shot {number} before it has a moving camera, which is always a clip of its own"
                     close()
                 continue
             piece = pieces[0]
             if current:
                 contact = contact_pair(current[-1].plan, plan, self.words)
-                ok, _ = self.can_join(current, piece, contact=contact)
+                ok, reason = self.can_join(current, piece, contact=contact)
                 if ok:
                     if contact:
                         contact_into.add(len(current))
                     current.append(piece)
+                    joins.append(reason)
                     continue
                 close()
+                why["start"] = reason
+            elif not clips:
+                why["start"] = f"shot {number} is the first shot of the scene made as video"
+            else:
+                why["start"] = why.get("after") or "the shot before is a clip of its own"
             current.append(piece)
         close()
         result = []
-        for number, (shots, notes, contacts) in enumerate(clips, start=1):
+        for number, (shots, notes, contacts, starts_because, joined) in enumerate(clips, start=1):
             clock = 0.0
             for clip_shot in shots:
                 clip_shot.clip_start = round(clock, 3)
                 clock += clip_shot.length
             clip = RouteClip(f"{scene_identifier}-CL{number:02d}", scene_identifier, number, shots,
                              contact_cuts=list(contacts), notes=list(notes),
-                             held=any(clip_shot.plan.held for clip_shot in shots))
+                             held=any(clip_shot.plan.held for clip_shot in shots),
+                             starts_because=starts_because, joins=list(joined))
+            over = len(self.references(shots))
+            if over > self.route.people_pictures_max and not (shots[0].parts > 1 and shots[0].part > 1):
+                # one shot that shows more people than the cap: reported once, on its first clip (review F3)
+                crowded = max(shots, key=lambda clip_shot: len(people_of(clip_shot.plan)))
+                clip.over_cap = {"shot": crowded.identifier, "pictures": over, "cap": self.route.people_pictures_max}
             kept = round(clock, 3)
             frames, fits = frames_for(kept, self.route)
             if not fits:
@@ -577,25 +724,32 @@ class ClipWriter:
         self.masters = master_pictures
         project = compiler.project
         self.language = ((project.get("language") if project is not None else None) or "english").capitalize()
+        # 'stays', 'remains': a held hand or a held look written as staying freezes like 'still' does (review F10, J);
+        # the route's gate leaves such clauses out, from the not_an_action words of stillness_words
+        held = (compiler.words.get("stillness_words") or {}).get("not_an_action") or []
+        self.fixer.word_lists.setdefault("held", [word for word in held if word in HELD_WORDS])
 
     # -- words
-    def gate(self, text, clip, where):
+    def gate(self, text, clip, where, record_level=False):
         """A record's words with the word swaps made, negations rewritten, and every clause H3 would show or say left
-        out (listed on the clip page with where it came from)."""
+        out (listed on the clip page with where it came from). A record-level piece (the place's state line, its set
+        objects, the room sound) is the same in every clip of the scene, so it is listed once, at the top of the
+        scene's page (review F4)."""
+        notes = clip.record_left_out if record_level else clip.left_out
         text = self.fixer.rewrite_negations(self.fixer.swap_words(straight_text(str(text or ""))))
         text = text.replace("words added later", "lettering added later")
-        dropped = []
-        text = self.fixer.drop_kept_out(text, KEPT_OUT_LISTS, dropped)
+        # only the words H3 would show or say are cut: 'looks up and speaks' keeps 'looks up' (review F10)
+        text, _, dropped = trim_kept_out(self.fixer, text, KEPT_OUT_LISTS + ("held",))
         for piece in dropped:
             note = f"{LEFT_OUT_WHY}: '{piece}' ({where}). Write what happens instead."
-            if note not in clip.left_out:
-                clip.left_out.append(note)
+            if note not in notes:
+                notes.append(note)
         sink = []
         text = self.fixer.fix(text, sink, where)
         for entry in sink:
             note = f"{LEFT_OUT_WHY}: {entry}"
-            if note not in clip.left_out:
-                clip.left_out.append(note)
+            if note not in notes:
+                notes.append(note)
         return text.strip()
 
     def key(self, text):
@@ -622,21 +776,125 @@ class ClipWriter:
         if phrase:
             rest = re.sub(r"^(?:a|an|the|his|her|their)\s+", "", phrase, flags=re.IGNORECASE)
             clothing = any(re.search(rf"\b{re.escape(word)}\b", rest.casefold()) for word in CLOTHING_NOUNS)
-            tag = f"the {noun} in the {rest}" if clothing and rest != phrase else (
-                f"the {noun} in {rest}" if clothing else f"the {noun} with {phrase}")
+            if clothing:
+                tag = f"the {noun} in the {rest}" if rest != phrase else f"the {noun} in {rest}"
+            elif re.match(r"^(?:a|an)\s", phrase, flags=re.IGNORECASE):
+                tag = f"the {noun} with {phrase}"
+            # anything else ('bare chest') reads badly after 'with': the noun alone (review F17)
         if self.fixer.kept_out_word(tag, KEPT_OUT_LISTS) or len(tag.split()) > 12:
             tag = f"the {noun}"
         return self.fixer.swap_words(tag)
 
     def voice_words(self, speaker):
-        """The speaker's voice description as its clauses that hold no word H3 would show or say, joined the same way
-        every time, so a voice reads the same in every clip."""
+        """The speaker's voice description as its clauses that hold no word H3 would show or say and describe a sound
+        (pitch, accent, pace), joined the same way every time, so a voice reads the same in every clip. A long clause
+        or one tied to a time tells the character's story and is left out (review F17)."""
         text = self.fixer.swap_words(self.writer.voice_description(speaker))
         clauses = [piece.strip().rstrip(".") for part in re.split(r"[;.]", text) for piece in part.split(",")]
         kept = [clause for clause in clauses if clause and not self.fixer.kept_out_word(clause, KEPT_OUT_LISTS)
-                and not self.fixer.negation_left(clause)]
+                and not self.fixer.negation_left(clause) and len(clause.split()) <= VOICE_CLAUSE_WORDS_MAX
+                and not VOICE_STORY_WORDS.search(clause)]
         kept = [re.sub(r"^(?:and|but|or)\s+", "", clause) for clause in kept]
         return lower_first(", ".join(clause for clause in kept if clause))
+
+    # -- the mirror world (8.5), through compile_prompts' own rules
+    def picture_turned(self, plan, reference):
+        """True when the picture of this element wired to H3 is a copy flipped left to right. H3 makes the take as the
+        finished film shows it on every route but a and b (which flip the take in the edit), so on the plate route a
+        mirrored person's wired picture is flipped as on the direct route (J: H3 draws the later shots of a clip from
+        the wired pictures, with no plate picture); compile_prompts.reference_turned decides the rest."""
+        from .compile_prompts import reference_turned
+        from .derive_fields import MirrorRoute
+        if mirror_route_of(plan) == "plate":
+            plan = dataclass_replace(plan, mirror=MirrorRoute("direct", "e", plan.mirror.text_graphic, []))
+        try:
+            return bool(reference_turned(self.compiler, plan, reference))
+        except Exception:  # the mirror states need the eras and set plans; a gap there must not stop the clip book
+            return False
+
+    def master_turned(self, plan, place_identifier):
+        """True when the clip's start picture is made from the master picture flipped left to right: on routes a and b
+        the take is made before the flip, and on the plate route the plate is (compile_prompts.reference_turned)."""
+        from .compile_prompts import reference_turned
+        from .derive_fields import MirrorRoute
+        if not place_identifier:
+            return False
+        if mirror_route_of(plan) == "plate":
+            plan = dataclass_replace(plan, mirror=MirrorRoute("flip_all", "a", plan.mirror.text_graphic, []))
+        try:
+            return bool(reference_turned(self.compiler, plan, place_identifier))
+        except Exception:
+            return False
+
+    def sides_turned(self, plan, person, for_picture=False):
+        """True when the picture described shows this person reversed from their own words, so their left and right
+        are turned in the words (compile_prompts.shows_pre_reversed; B1 method 1)."""
+        from .compile_prompts import shows_pre_reversed
+        turned = flipped_in_edit(plan) or (for_picture and mirror_route_of(plan) == "plate" and person.flipped)
+        return bool(shows_pre_reversed(self.breakdown, plan.shot, person.element, turned))
+
+    def person_keys(self, person, clip, plan=None, for_picture=False):
+        """(fixed description, state line, {kind: the stored words}) of a person as the picture described shows them:
+        the word swaps only, and left and right turned when the picture shows them reversed (never reworded)."""
+        fixed, state = self.key(person.fixed_description), self.key(person.state_line)
+        sources = {"fixed description": fixed, "state line": state}
+        if plan is None:
+            turned = person.element in (clip.mirror or {}).get("sides_turned", [])
+        else:
+            turned = self.sides_turned(plan, person, for_picture)
+        if turned:
+            from .compile_prompts import swap_own_sides
+            fixed, state = swap_own_sides(fixed), swap_own_sides(state)
+        return fixed, state, sources
+
+    def mirror_of(self, clip, people, place_record):
+        """The clip's mirror world: the shots' routes, whether the take is flipped in the edit, whose wired pictures
+        are flipped and whose own sides are turned in the words, the master picture's flip, and the parts the route
+        cannot make safely, in plain words (review F2)."""
+        routes = [mirror_route_of(clip_shot.plan) for clip_shot in clip.shots]
+        first = clip.shots[0].plan
+        found = {"routes": routes, "flip_in_edit": flipped_in_edit(first), "plate": routes[0] == "plate",
+                 "open": "open" in routes, "pictures_turned": [], "sides_turned": [], "problems": [],
+                 "master_turned": self.master_turned(first, place_record.identifier if place_record is not None else "")}
+        for person in people:
+            plans = [clip_shot.plan for clip_shot in clip.shots if person.element in elements_seen(clip_shot.plan)]
+            pictures = {self.picture_turned(plan, person.reference) for plan in plans}
+            sides = {self.sides_turned(plan, person) for plan in plans}
+            if True in pictures:
+                found["pictures_turned"].append(person.element)
+            if True in sides:
+                found["sides_turned"].append(person.element)
+            if len(pictures) > 1 or len(sides) > 1:
+                found["problems"].append(
+                    f"{person.name} is mirrored in some shots of this clip and shown as normal in others, and one wired "
+                    "picture and one description cannot be both. Give those shots clips of their own.")
+        for clip_shot, route in zip(clip.shots[1:], routes[1:]):
+            if route == "plate":
+                found["problems"].append(
+                    f"shot {three_digits(clip_shot.identifier)} is in the mirror world on the plate route (its mirrored "
+                    "people are made in one picture, flipped), but it is a later shot of this clip, so it has no picture "
+                    "of its own: H3 draws its mirrored people from their flipped pictures and the words alone, which is "
+                    "untested. Check the sides with the questions below, or give the shot a clip of its own.")
+        return found
+
+    def lengthen_for_late_lines(self, clip):
+        """A line that ends less than a second before the keep point may fall into the tail: H3 starts lines up to
+        about two seconds late (testers' notes). The clip is made one step longer on the grid when that still fits,
+        so the late line is finished before H3 breaks up; the keep point stays where the plan cuts (review F18, J)."""
+        late = [speech for speech in clip.speeches if clip.keep_s - speech.get("ends_s", 0.0) < LINE_END_MARGIN_S - 1e-6]
+        if not late:
+            return
+        longer = clip.frames + self.route.block
+        if clip.overflow_s <= 0 and longer <= self.route.max_frames:
+            clip.frames = longer
+            clip.seconds_to_type = duration_to_type(longer, self.route.fps, self.route.block, self.route.offset)
+            clip.lengthened = True
+        words = and_list([f'"{speech["line"]}"' for speech in late])
+        clip.notes.append(
+            f"the line{'s' if len(late) > 1 else ''} {words} end{'s' if len(late) == 1 else ''} less than a second "
+            f"before the keep point ({plain_number(clip.keep_s)} seconds), and H3 often starts lines late"
+            + (": the clip is made one step longer so the line still finishes before H3 breaks up; keep by what you "
+               "see" if clip.lengthened else ": keep by what you see, or move the line earlier in the shot"))
 
     # -- one clip
     def write(self, clip):
@@ -660,24 +918,40 @@ class ClipWriter:
         place_name = lower_first(place_record.title) if place_record is not None and place_record.title else "the place"
         master = self.masters.get(place_record.identifier if place_record is not None else "", {})
         clip.master_picture = dict(master)
+        # the mirror world: which pictures are wired flipped, whose own sides are turned in the words, whether the take
+        # is flipped in the edit, and what the route cannot make safely (8.5; review F2)
+        clip.mirror = self.mirror_of(clip, people, place_record)
+        if clip.mirror.get("master_turned") and master.get("file"):
+            from .compile_prompts import turned_file
+            clip.master_picture["flipped_file"] = turned_file(master["file"])
         # subject_definitions
         clip.keys, clip.key_problems = [], []
         definitions = [self.place_definition(clip, place_record, place_state, place_name)]
         for person in people:
-            fixed, state = self.key(person.fixed_description), self.key(person.state_line)
-            description = fixed.rstrip(".") + (f"; {state.rstrip('.')}" if state else "")
+            fixed, state, sources = self.person_keys(person, clip)
+            # a key that is 'none' or empty is left out, never joined as '; ...' (review F17)
+            if fixed:
+                description = fixed.rstrip(".") + (f"; {state.rstrip('.')}" if state else "")
+            else:
+                description = person.name + (f": {state.rstrip('.')}" if state else "")
             for kind, text, record in (("fixed description", fixed, person.element), ("state line", state, person.reference)):
                 if text:
-                    clip.keys.append({"record": record, "what": kind, "text": text})
+                    key = {"record": record, "what": kind, "text": text}
+                    if sources[kind] != text:
+                        # the picture H3 makes shows this person reversed from their own words: left and right are
+                        # turned, the one change the old compiler makes too (B1 method 1; GEN-04)
+                        key.update({"source": sources[kind], "sides_turned": True})
+                    clip.keys.append(key)
                     found = self.fixer.kept_out_word(text, KEPT_OUT_LISTS)
                     if found:
                         clip.key_problems.append({"record": record, "what": kind, "word": found,
                                                   "record_words": record_words(breakdown, record)})
-            possessive = person.pronoun[2]
+            subject_word, _, possessive = person.pronoun
+            verb = "are" if subject_word.lower() == "they" else "is"
             line = f"{subject_of[person.element]} is {description}. {possessive} face, hair and build come from " \
                    f"{picture_of[person.element]}"
             if person.element in in_start:
-                line += f", and {person.pronoun[0]} is {tags[person.element]} in <Picture 1>"
+                line += f", and {subject_word} {verb} {tags[person.element]} in <Picture 1>"
             definitions.append(line + ".")
         definitions.append(PICTURE_ONE if people else PICTURE_ONE_EMPTY)
         # summary
@@ -742,14 +1016,20 @@ class ClipWriter:
         clip.connections = [{"input": "ref_image_0", "picture": "the start picture you made for this clip",
                              "file": self.start_picture_file(clip), "label": "<Picture 1>"}]
         for index, person in enumerate(people, start=1):
-            from .compile_prompts import state_words_of
+            from .compile_prompts import state_words_of, turned_file
             file_name = f"Reference pictures/{person.name}{state_words_of(person.reference)}.png"
-            clip.character_pictures.append({"person": person.element, "state": person.reference, "name": person.name,
-                                            "file": file_name})
-            clip.connections.append({"input": f"ref_image_{index}", "picture": f"your {person.name} picture",
-                                     "file": file_name, "label": f"<Picture {index + 1}>"})
+            flipped = person.element in clip.mirror.get("pictures_turned", [])
+            wired = turned_file(file_name) if flipped else file_name
+            entry = {"person": person.element, "state": person.reference, "name": person.name, "file": wired}
+            if flipped:
+                entry.update({"flipped": True, "unflipped_file": file_name})
+            clip.character_pictures.append(entry)
+            clip.connections.append({"input": f"ref_image_{index}",
+                                     "picture": f"your {person.name} picture" + (", flipped left to right" if flipped else ""),
+                                     "file": wired, "label": f"<Picture {index + 1}>"})
         clip.start_picture = self.start_picture(clip, cast, place_record, place_name, tags)
         clip.questions, clip.check_notes = self.questions(clip, people)
+        self.lengthen_for_late_lines(clip)
         for clip_shot in clip.shots:
             found = contact_in_shot(clip_shot.shot, self.compiler.words)
             if found:
@@ -779,17 +1059,26 @@ class ClipWriter:
         return objects_of(place_record)
 
     def place_definition(self, clip, place_record, place_state, place_name):
-        state_line = self.key(place_state.get("state_line")) if place_state is not None else ""
-        if state_line:
+        """<Subject 1>: the place shown in <Picture 1>, its state line and its set objects. The place's state line
+        goes through the gate as its set objects and the room sound do: a clause naming something absent is left out
+        and listed once on the scene's page. Only people's keys are kept whole, because rewording those re-rolls a
+        face; the place's look comes from the start picture (review F4)."""
+        source = straight_text(self.key(place_state.get("state_line"))) if place_state is not None else ""
+        if source.lower() == "none":
+            source = ""
+        state_line = ""
+        if source:
             record = place_state.identifier
-            clip.keys.append({"record": record, "what": "state line", "text": state_line})
-            found = self.fixer.kept_out_word(state_line, KEPT_OUT_LISTS)
-            if found:
-                clip.key_problems.append({"record": record, "what": "state line", "word": found,
-                                          "record_words": record_words(self.breakdown, record)})
+            where = f"the state line of {record_words(self.breakdown, record)}"
+            state_line = self.gate(self.trimmed(source, clip, where)[0], clip, where, record_level=True)
+            if state_line:
+                key = {"record": record, "what": "state line", "text": state_line}
+                if state_line != source:
+                    key.update({"source": source, "gated": True})
+                clip.keys.append(key)
         objects = []
         for name, material in self.objects_of(place_record):
-            words = self.gate(f"the {name}, {material}", clip, f"the set object {name}")
+            words = self.gate(f"the {name}, {material}", clip, f"the set object {name}", record_level=True)
             if words and len(words.split()) > 1:
                 objects.append(words.rstrip("."))
         text = f"<Subject 1> is {place_name} shown in <Picture 1>"
@@ -806,6 +1095,10 @@ class ClipWriter:
     def camera(self, clip_shot, cast, clip):
         """(the camera's first sentence, the move sentence) of one shot, through compile's own camera words."""
         from .compile_prompts import Clip, ClipPiece, Routing
+        for person in clip_shot.plan.people:
+            # every shot's own people carry their names, so the camera never reads "at 's eye height" (review F17)
+            if person.is_person and not person.label:
+                person.label = person.name
         fake = Clip(clip_shot.identifier + ".1", clip_shot.identifier, clip.scene, self.route.name,
                     ClipPiece(clip_shot.identifier + ".1", 1, 1, clip_shot.shot_start, clip_shot.shot_end,
                               clip_shot.length, "", "", "", True), clip_shot.plan, Routing(""))
@@ -817,15 +1110,22 @@ class ClipWriter:
             move = self.gate(move, clip, f"shot {three_digits(clip_shot.identifier)}, its camera move")
         return first, move
 
-    def placement(self, person, cast):
-        """'on the left third of the frame, facing Saye' for a person in a shot, or ''."""
+    def placement(self, person, cast, plan, facing_too=True):
+        """'on the left third of the frame, facing Saye' for a person in a shot, or ''. Sides are swapped only when
+        the whole take is flipped in the edit (routes a and b), as the old compiler does for a video prompt: on the
+        plate route the clip starts from the finished picture, so nobody is turned in it (8.5; review F2)."""
         phrase = self.adapters.phrase
         place = person.at
-        if person.flipped and place:
+        turned = flipped_in_edit(plan)
+        if turned and place:
             place = {"left_third": "right_third", "right_third": "left_third", "left_edge": "right_edge",
                      "right_edge": "left_edge"}.get(place, place)
         where = phrase("placement", place, default="") if place else ""
+        if not facing_too:
+            return where
         faces = str(person.faces or "")
+        if turned:
+            faces = {"frame_left": "frame_right", "frame_right": "frame_left"}.get(faces, faces)
         if re.match(r"^(CH|PR|LOC)-", faces):
             target = cast.label(faces) if faces.startswith("CH-") else lower_first(element_name(self.breakdown, element_of(faces)))
             facing = phrase("facing", "person", default="facing {name}").replace("{name}", target)
@@ -861,6 +1161,8 @@ class ClipWriter:
             shows = without_quoted_speech(shows, spoken)
             shows = re.sub(r"\s*\b(?:and|then)\s*$", "", CUTAWAY_WORDS.sub(" ", shows).strip())
             shows = re.sub(r"\s*;\s*;", ";", re.sub(r"\s+([;,.])", r"\1", shows)).strip(" ;,")
+            if clip_shot.parts > 1 and (span[0] < clip_shot.shot_start - 1e-6 or span[1] > clip_shot.shot_end + 1e-6):
+                shows = self.share_of_moment(shows, span, clip_shot, clip)
             where = (f"shot {three_digits(plan.identifier)}, the moment from {plain_number(span[0])} to "
                      f"{plain_number(span[1])} seconds")
             words = self.gate(self.renamed(shows, cast, plan), clip, where)
@@ -875,11 +1177,32 @@ class ClipWriter:
             found.append((at, min(stop, until), words))
         return found
 
+    def share_of_moment(self, shows, span, clip_shot, clip):
+        """The part of a moment that falls inside this part of a long shot: its actions (split at semicolons, commas
+        and 'then') spread evenly over the moment's seconds, and each part keeps the actions that start inside it, so
+        no part performs the whole moment again. A moment of one action goes on in every part. The moment is listed,
+        so the page and the route check can ask for it to be split at the part's boundary (review F7)."""
+        clauses = [piece.strip() for part in re.split(r"\s*;\s*", shows)
+                   for piece in re.split(r",\s*(?:then\s+)?|\s+then\s+", part) if piece.strip()]
+        boundary = clip_shot.shot_start if span[0] < clip_shot.shot_start - 1e-6 else clip_shot.shot_end
+        entry = {"shot": clip_shot.identifier, "moment": f"{plain_number(span[0])}-{plain_number(span[1])}",
+                 "boundary_s": round(boundary, 3), "part": clip_shot.part}
+        if entry not in clip.part_moments:
+            clip.part_moments.append(entry)
+        if len(clauses) < 2:
+            return shows
+        share = (span[1] - span[0]) / len(clauses)
+        kept = [clause for index, clause in enumerate(clauses)
+                if clip_shot.shot_start - 1e-6 <= span[0] + index * share < clip_shot.shot_end - 1e-6]
+        return "; ".join(kept)
+
     def line_times(self, plan):
-        """{speech ID: seconds into the shot} for every line the shot hears. A line's own `at` first; a line seen
-        spoken without one starts with the moment that speaks it (as compile reads it); the others follow the order
-        the shot lists them in, each after the line before it (its words at its speaker's pace, and a short gap) or
-        just before the next line whose time is known."""
+        """{speech ID: seconds into the shot} for every line the shot hears. A line's own `at` first; an on-screen
+        line without one takes a speaking moment of its own (the moment that holds its words, else the next moment
+        that speaks, in the order the shot lists its lines: never the moment an earlier line took); the others follow
+        the order the shot lists them in, each after the line before it (its words at its speaker's pace, and a short
+        gap) or just before the next line whose time is known. No line without a time of its own starts before the
+        line before it has ended (review F1)."""
         from .compile_prompts import heard_line, parse_span
         heard = []
         for written in plan.shot.get_all("hear"):
@@ -888,39 +1211,56 @@ class ClipWriter:
             entry = next((entry for speech, _, entry in plan.on_screen + plan.off_screen if speech == identifier), None)
             if identifier and entry is not None:
                 heard.append((identifier, item, entry))
-        times = {}
+        moments = []
+        for written in plan.shot.get_all("moment"):
+            moment = split_item(written)
+            span = parse_span(moment.first)
+            if span:
+                moments.append((span, straight_text(moment.get("shows") or "").lower()))
+        times, fixed, used = {}, set(), set()
         for identifier, item, entry in heard:
             at = number_of(item.get("at"))
-            if at is None and normalise_word(item.get("speaker") or "") == "on_screen":
+            if at is not None:
+                fixed.add(identifier)
+            elif normalise_word(item.get("speaker") or "") == "on_screen":
                 line = straight_text(heard_line(item, entry)).lower()
-                for written in plan.shot.get_all("moment"):
-                    moment = split_item(written)
-                    span = parse_span(moment.first)
-                    words = straight_text(moment.get("shows") or "").lower()
-                    if span and ((line and line[:12] in words) or
-                                 re.search(r"\b(says?|asks?|answers?|speaks?|calls?|words?)\b", words)):
-                        at = span[0]
-                        break
+                chosen = next((index for index, (span, words) in enumerate(moments)
+                               if index not in used and line and line[:12] in words), None)
+                if chosen is None:
+                    after = max([moments[index][0][0] for index in used], default=-1.0)
+                    chosen = next((index for index, (span, words) in enumerate(moments)
+                                   if index not in used and span[0] > after and SPEAKING_MOMENT.search(words)), None)
+                if chosen is not None:
+                    used.add(chosen)
+                    at = moments[chosen][0][0]
             if at is not None:
                 times[identifier] = at
 
         def length_of(identifier, item, entry):
-            words = len(heard_line(item, entry).split())
-            pace = self.breakdown.pace_of(entry.get("speaker") or "") or 2.5
-            return words / pace + 0.3
+            return self.line_length(item, entry)
 
         clock = 0.3
         for index, (identifier, item, entry) in enumerate(heard):
             if identifier in times:
+                if identifier not in fixed and index and times[identifier] < clock - 1e-6:
+                    # its speaking moment starts before the line before has ended: the line waits for it
+                    times[identifier] = round(clock, 2)
                 clock = times[identifier] + length_of(identifier, item, entry)
                 continue
             later = next((times[other] for other, _, _ in heard[index + 1:] if other in times), None)
             moment = clock
             if later is not None:
-                moment = max(clock, later - length_of(identifier, item, entry) - 0.2)
+                moment = max(clock, later - length_of(identifier, item, entry) - LINE_GAP_S)
             times[identifier] = round(moment, 2)
             clock = moment + length_of(identifier, item, entry)
         return times
+
+    def line_length(self, item, entry):
+        """Seconds a line takes: its words at its speaker's pace, and a short breath."""
+        from .compile_prompts import heard_line
+        words = len(heard_line(item, entry).split())
+        pace = self.breakdown.pace_of(entry.get("speaker") or "") or 2.5
+        return words / pace + 0.3
 
     def speeches_of(self, clip_shot, clip, until):
         """[(clip seconds, identifier, item, entry, on screen)] of the lines heard in this part of the shot."""
@@ -1013,8 +1353,16 @@ class ClipWriter:
                 if index in clip.contact_cuts:
                     parts.append("The result of the hit is already there from the first frame of this shot.")
             for person in people_of(plan):
-                where = self.placement(person, cast)
                 lead = f"{subject_of[person.element]}, {person.name}, {tags[person.element]},"
+                if is_insert(plan.shot):
+                    # an insert shows only part of a person: say which part, and that the face is out of the frame
+                    where = self.placement(person, cast, plan, facing_too=False)
+                    seen = and_list(self.visible_parts(person, plan))
+                    parts.append(sentence(f"{lead} is in the shot only as {person.pronoun[1]} {seen}"
+                                          + (f", {where}" if where else "")
+                                          + f"; {person.pronoun[1]} face is outside the frame"))
+                    continue
+                where = self.placement(person, cast, plan)
                 parts.append(sentence(f"{lead} is {where}" if where else f"{lead} is in the shot"))
             for written in plan.shot.get_all("thing"):
                 text = self.thing_words(written, plan, cast, clip, mentioned_things)
@@ -1059,6 +1407,46 @@ class ClipWriter:
         text = str(look.get("look_block") or "").strip() if look is not None else ""
         return self.key(text) if text and text.lower() != "none" else ""
 
+    def visible_parts(self, person, plan):
+        """The parts of a person an insert shows ('fist', 'knuckles', 'sleeve'), in the order the person's own action
+        names them, at most three; a part another person owns ('her hands' in his action) is skipped; 'hands' when
+        none is named (review F9)."""
+        text = straight_text(str(person.item.get("does") or "")).lower()
+        own = person.pronoun[1].lower()
+        found = []
+        for match in re.finditer(r"\b(" + "|".join(BODY_PARTS) + r")\b", text):
+            before = re.findall(r"[\w']+", text[:match.start()])[-3:]
+            owners = [word for word in before if word in ("his", "her", "their", "its") or word.endswith("'s")]
+            if owners and owners[-1] not in (own, f"{person.name.lower()}'s"):
+                continue
+            word = match.group(1)
+            if word not in found and word.rstrip("s") not in found and word + "s" not in found:
+                found.append(word)
+        return found[:3] or ["hands"]
+
+    def trimmed(self, text, clip, where):
+        """A record's description with only the words that name something absent (or ask for stillness, talk about
+        speaking, compare) cut out: each clause holding one is cut at its first 'with', 'and', 'or' or 'where' before
+        the word ('a bare, clean kitchen with nothing on the walls' -> 'a bare, clean kitchen'; 'a bottle with a white
+        cap and no label' -> 'a bottle with a white cap'), or left out whole when no part of it stands alone. Returns
+        (the words kept, True when the first clause, the one that names the thing, was kept); what is cut is listed
+        once on the scene's page, with the record to reword (review F4 and F6)."""
+        words, first_kept, cut = trim_kept_out(self.fixer, text, KEPT_OUT_LISTS + ("held",))
+        for piece in cut:
+            note = f"{LEFT_OUT_WHY}: '{piece}' ({where}). Reword it to say what is there."
+            if note not in clip.record_left_out:
+                clip.record_left_out.append(note)
+        return words, first_kept
+
+    def described_thing(self, fixed, name, clip, where):
+        """A thing's fixed description with only the words that name something absent cut out ('... with a white
+        screw cap and no label' -> '... with a white screw cap'), or its plain name when the clause that names the
+        thing goes, so a sentence always keeps its subject (review F6)."""
+        if not fixed:
+            return name
+        words, first_kept = self.trimmed(fixed, clip, where)
+        return words if words and first_kept else name
+
     def thing_words(self, written, plan, cast, clip, mentioned):
         """A thing in the shot, once a clip: its fixed description and state when it has emphasis, else its name and
         state, and where it is."""
@@ -1082,9 +1470,14 @@ class ClipWriter:
         if fixed.lower() == "none":
             fixed = ""
         where = self.renamed(item.get("at") or "", cast, plan)
-        text = (fixed.rstrip(".") if emphasis >= 1 and fixed else name) + (f", {state_line}" if state_line else "")
+        called = with_article(name)  # never "the the flask" (review F17)
+        if emphasis >= 1 and fixed:
+            subject = self.described_thing(fixed.rstrip("."), name, clip, f"the description of {called}")
+        else:
+            subject = name
+        text = subject.rstrip(".") + (f", {state_line}" if state_line else "")
         text = leave_words_for_later(sentence(text + (f", {where}" if where else "")), composited_texts(self.breakdown, plan.shot))
-        return self.gate(text, clip, f"shot {three_digits(plan.identifier)}, the {name}")
+        return self.gate(text, clip, f"shot {three_digits(plan.identifier)}, {called}")
 
     def speech_words(self, clip, cast, plan, identifier, item, entry, on_screen, numbers, subject_of, at):
         from .compile_prompts import heard_line, person_noun
@@ -1104,7 +1497,8 @@ class ClipWriter:
         line_text = f"<d>[{self.language}] {line}</d>"
         when = f"At about {mm_ss_ms(at)}, " if at > 1e-6 else ""
         clip.speeches.append({"speech": identifier, "speaker": speaker, "line": line, "speaker_number": number,
-                              "on_screen": bool(on_screen and speaker in subject_of), "at": round(at, 3)})
+                              "on_screen": bool(on_screen and speaker in subject_of), "at": round(at, 3),
+                              "ends_s": round(at + self.line_length(item, entry) - 0.3, 3)})
         if on_screen and speaker in subject_of:
             text = f"{subject_of[speaker]} ({number})" + (f", {voice}," if voice else "") + f" {says} {line_text}"
             return (when + text) if when else text[:1].upper() + text[1:]
@@ -1120,13 +1514,31 @@ class ClipWriter:
 
     def alive_sentence(self, clip, people, until):
         """The 'alive' sentence: everyone seen breathes, moves their eyes and shifts their weight throughout, with
-        blinks every 2.5 to 3.5 seconds of the shots they are in, never in the tail (Project notes 42)."""
+        blinks every 2.5 to 3.5 seconds of the shots they are in, never in the tail (Project notes 42). A person seen
+        only in inserts of this clip shows no face: only their hands (or the parts the insert shows) move with their
+        breathing (review F9)."""
+        partial = [person for person in people if self.only_in_inserts(clip, person)]
+        people = [person for person in people if person not in partial]
+        extra = []
+        for person in partial:
+            plan = next(clip_shot.plan for clip_shot in clip.shots if person.element in elements_seen(clip_shot.plan))
+            parts = self.visible_parts(person, plan)
+            extra.append(f"{person.name}'s {and_list(parts)} {'are' if plural_noun(parts) else 'is'} alive in every "
+                         f"second of this clip, shifting a little with {person.pronoun[1]} breathing.")
+        if not people:
+            return " ".join(extra)
+        return " ".join([self.face_alive_sentence(clip, people, until)] + extra)
+
+    def only_in_inserts(self, clip, person):
+        return all(is_insert(clip_shot.shot) for clip_shot in clip.shots if person.element in elements_seen(clip_shot.plan))
+
+    def face_alive_sentence(self, clip, people, until):
         blink_lines = []
         for index, person in enumerate(people):
             blinks = []
             for clip_shot in clip.shots:
-                if person.element not in elements_seen(clip_shot.plan):
-                    continue
+                if person.element not in elements_seen(clip_shot.plan) or is_insert(clip_shot.shot):
+                    continue  # no blink where the face is out of the frame (review F9)
                 start, end = clip_shot.clip_start, min(clip_shot.clip_start + clip_shot.length, until)
                 moment = start + 1.0 + 0.4 * (index % 3)
                 while moment < end - 0.3:
@@ -1162,7 +1574,12 @@ class ClipWriter:
         if not (start < moment < keep):
             moment = round(start + (keep - start) / 2, 2)
         clip.filler_s = moment
-        if len(people) == 1:
+        if people and is_insert(clip_shot.shot):
+            parts = [self.visible_parts(person, clip_shot.plan) for person in people]
+            seen = and_list([f"{person.name}'s {and_list(part)}" for person, part in zip(people, parts)])
+            plural = len(people) > 1 or plural_noun(parts[0])
+            text = f"{seen} {'shift' if plural else 'shifts'} a little with the breathing"
+        elif len(people) == 1:
             person = people[0]
             text = (f"{person.name} breathes evenly, {person.pronoun[1]} eyes make small movements and "
                     f"{person.pronoun[1]} weight settles")
@@ -1179,7 +1596,7 @@ class ClipWriter:
         if silent:
             return "N/A"
         first = clip.shots[0]
-        room = self.gate(room_sound_of(self.breakdown, first.shot), clip, "the room sound")
+        room = self.gate(room_sound_of(self.breakdown, first.shot), clip, "the room sound", record_level=True)
         parts = [sentence(room)] if room else []
         most = int(number_of(constant(self.breakdown.constants, "named_sounds_per_prompt_max", 3), 3))
         effects = []
@@ -1207,18 +1624,55 @@ class ClipWriter:
         return f"Start pictures/Scene {scene_number_words(clip.scene)} - clip {clip.number:02d} - start picture.png"
 
     def start_picture(self, clip, cast, place_record, place_name, tags):
-        """The brief for the clip's start picture: its first shot's first moment, from the master picture."""
+        """The brief for the clip's start picture: its first shot's first frame, from the master picture. In the mirror
+        world it follows compile_prompts' own rules: on routes a and b the picture is made unflipped (the master
+        picture flipped, the people's sides turned) because the take is flipped in the edit; on the plate route it is
+        made in two steps, the plate (the place with its mirrored people, flipped) and then the others added
+        (compile_prompts.plate_route_prompts; 8.5, review F2). An insert shows only part of a person (review F9); a
+        later part of a long shot starts where the part before ends (review F7)."""
         clip_shot = clip.shots[0]
         plan = clip_shot.plan
+        mirror = clip.mirror or {}
         master = clip.master_picture or {}
         people = people_of(plan)
-        attach = [f"{master.get('code', 'the master picture')} ({master.get('file', '')})".replace(" ()", "")]
+        code = master.get("code", "the master picture")
+        master_file = master.get("flipped_file") or master.get("file", "")
+        master_words = f"{code} flipped left to right" if master.get("flipped_file") else code
         seen = {person.element for person in people}
-        attach += [f"your {entry['name']} picture ({entry['file']})" for entry in clip.character_pictures
-                   if entry["person"] in seen]
+        insert = is_insert(plan.shot)
+        moments = self.moments(clip_shot, cast, clip, clip.keep_s)
+        first_moment = moments[0][2] if moments else ""
+        opening = self.first_frame(first_moment)
+        names = [person.name for person in people]
+        if not names:
+            closing = deserted(place_name)
+        elif insert:
+            closing = (f"{and_list(names)} {'is the only person' if len(names) == 1 else 'are the only people'} in the "
+                       "picture, seen only as " + and_list([f"{person.name}'s {and_list(self.visible_parts(person, plan))}"
+                                                            for person in people]) + ".")
+        elif len(names) == 1:
+            closing = f"{names[0]} is the only person in the picture."
+        else:
+            closing = f"{and_list(names)} are the only people in the picture."
+        continuity = ""
+        if clip_shot.parts > 1 and clip_shot.part > 1:
+            continuity = (f"This picture goes on from the part before (shot {three_digits(clip_shot.identifier)}, part "
+                          f"{clip_shot.part - 1}): match its last kept frame, with the people, their hands and the "
+                          "props where that frame leaves them.")
+        if mirror.get("plate"):
+            return self.plate_start_picture(clip, cast, plan, people, place_name, master_words, master_file,
+                                            opening, continuity, closing, first_moment)
+        attach = [f"{master_words} ({master_file})".replace(" ()", "")]
+        for entry in clip.character_pictures:
+            if entry["person"] not in seen:
+                continue
+            flipped = " flipped left to right" if entry.get("flipped") else ""
+            attach.append(f"your {entry['name']} picture{flipped} ({entry['file']})")
         first, _ = self.camera(clip_shot, cast, clip)
-        parts = [f"Use {master.get('code', 'the master picture')} as the set and keep it exactly: {place_name}, with its "
-                 "walls, furniture and fittings where they are."]
+        parts = [f"Use {master_words} as the set and keep it exactly: {place_name}, with its walls, furniture and "
+                 "fittings where they are."]
+        if mirror.get("flip_in_edit"):
+            parts.append("This picture is made as the take is made, before it is flipped left to right in the edit.")
         setup = self.breakdown.record(plan.shot.get("setup") or "")
         position = ""
         if setup is not None and setup.get("use"):
@@ -1233,15 +1687,23 @@ class ClipWriter:
         camera = f"Camera: {first.rstrip('.')}" + (f", from the setup for {lower_first(position)}" if position else "") + \
                  (f", {lens_words}" if lens_words else "") + "."
         parts.append(camera)
-        moments = self.moments(clip_shot, cast, clip, clip.keep_s)
-        first_moment = moments[0][2] if moments else ""
         for person in people:
-            fixed, state = self.key(person.fixed_description), self.key(person.state_line)
-            where = self.placement(person, cast)
-            text = f"{person.name} (use my {person.name} picture for the face, hair and build): {fixed.rstrip('.')}"
-            if state:
-                text += f"; {state.rstrip('.')}"
-            text += "."
+            fixed, state, _ = self.person_keys(person, clip, plan, for_picture=True)
+            if insert:
+                where = self.placement(person, cast, plan, facing_too=False)
+                seen_parts = self.visible_parts(person, plan)
+                verb = "is" if len(seen_parts) == 1 and not seen_parts[0].endswith("s") else "are"
+                text = (f"{person.name} (use my {person.name} picture for the skin and clothes): only "
+                        f"{person.pronoun[1]} {and_list(seen_parts)} {verb} in the picture"
+                        + (f", {where}" if where else "") + ".")
+                if state:
+                    text += f" {person.pronoun[2]} clothes: {state.rstrip('.')}."
+                parts.append(text)
+                continue
+            where = self.placement(person, cast, plan)
+            text = f"{person.name} (use my {person.name} picture for the face, hair and build): "
+            text += (fixed.rstrip(".") + (f"; {state.rstrip('.')}" if state else "")) if fixed else state.rstrip(".")
+            text = text.rstrip(": ") + "."
             if where:
                 text += f" {person.name} is {where}."
             eyeline = str(person.item.get("eyeline") or "").strip()
@@ -1257,9 +1719,11 @@ class ClipWriter:
             else:
                 text += f" {person.pronoun[2]} eyes are on what {person.pronoun[0]} is doing, away from the camera; {person.pronoun[1]} mouth is closed."
             parts.append(text)
-        if first_moment:
-            parts.append(sentence(f"At this first moment, {lower_first(first_moment).rstrip('.')}; hands are already on "
-                                  "what they will move"))
+        if opening:
+            parts.append(sentence(f"The picture is the instant this begins: {lower_first(opening).rstrip('.')}"))
+        holds = self.things_in_hand(plan, cast)
+        if holds:
+            parts.append(sentence("At that instant " + and_list(holds)))
         mentioned = set()
         for written in plan.shot.get_all("thing"):
             words = self.thing_words(written, plan, cast, clip, mentioned)
@@ -1268,18 +1732,67 @@ class ClipWriter:
         light = self.light_words(plan)
         if light:
             parts.append(f"Light: {lower_first(light).rstrip('.')}.")
-        names = [person.name for person in people]
-        if not names:
-            closing = deserted(place_name)
-        elif len(names) == 1:
-            closing = f"{names[0]} is the only person in the picture."
-        else:
-            closing = f"{and_list(names)} are the only people in the picture."
+        if continuity:
+            parts.append(continuity)
         parts.append(closing)
         prompt = " ".join(part for part in parts if part)
         found = self.fixer.kept_out_word(prompt, ("absence",))
         return {"file": self.start_picture_file(clip), "master": master.get("code"), "attach": attach,
                 "prompt": prompt, "who": closing, "first_moment": first_moment, "kept_out_word": found or ""}
+
+    def plate_start_picture(self, clip, cast, plan, people, place_name, master_words, master_file, opening, continuity,
+                            closing, first_moment):
+        """The start picture on the plate route, in compile_prompts' two steps: the plate (the place and its mirrored
+        people as the model makes them, before the flip), flipped left to right, then the people shown as normal
+        added with an edit model (plate_route_prompts; 8.5, C2 R5)."""
+        from .compile_prompts import plate_route_prompts
+        plate, edit = plate_route_prompts(self.compiler, plan, self.fixer.fix(cast.rename(opening or "")))
+        mirrored = [person for person in people if person.flipped]
+        added = [person for person in people if not person.flipped]
+        first_attach = [f"{master_words} ({master_file})".replace(" ()", "")]
+        first_attach += [f"your {person.name} picture (as it is, unflipped)" for person in mirrored]
+        parts = [f"Step 1, the plate: use {master_words} as the set and keep it exactly: {place_name}, with its walls, "
+                 f"furniture and fittings where they are. Attach {and_list(first_attach)}.", plate,
+                 "Then flip this picture left to right."]
+        if edit:
+            parts.append("Step 2: give the flipped plate and " + and_list(
+                [f"your {person.name} picture" for person in added] or ["the plate alone"])
+                + " to an edit model, with these words: " + edit)
+        if continuity:
+            parts.append(continuity)
+        parts.append(closing)
+        prompt = " ".join(part for part in parts if part)
+        return {"file": self.start_picture_file(clip), "master": (clip.master_picture or {}).get("code"),
+                "attach": first_attach + [f"your {person.name} picture" for person in added], "prompt": prompt,
+                "who": closing, "first_moment": first_moment, "plate": True,
+                "kept_out_word": self.fixer.kept_out_word(prompt, ("absence",)) or ""}
+
+    @staticmethod
+    def first_frame(moment_words):
+        """The first action of a moment, which a still picture can catch the instant of: up to its first semicolon or
+        'then' (review F9: a picture cannot hold a sequence of actions)."""
+        first = re.split(r"\s*;\s*|,?\s+then\s+", str(moment_words or "").strip())[0]
+        return first.strip(" ,.")
+
+    def things_in_hand(self, plan, cast):
+        """'the flask is already in Eli's fist' for each thing the shot places in someone's hands (its `at`), in place
+        of a fixed phrase (review F9)."""
+        found = []
+        for written in plan.shot.get_all("thing"):
+            item = split_item(written)
+            reference = (item.first or "").strip()
+            if not reference or reference.lower() == "none" or reference.startswith(("MO-", "TX-")):
+                continue
+            where = self.renamed(item.get("at") or "", cast, plan)
+            match = re.search(r"\b(?:in|on|between|under)\b[^,;]*?\b(?:hand|hands|fist|fists|fingers|palm|palms|grip|"
+                              r"arms)\b", where, re.IGNORECASE)
+            if not match:
+                continue
+            name = lower_first(element_name(self.breakdown, element_of(reference)))
+            name = with_article(name)
+            verb = "are" if name.endswith("s") and not name.endswith("ss") else "is"
+            found.append(f"{name} {verb} already {match.group(0)}")
+        return found
 
     def light_words(self, plan):
         from .compile_prompts import light_sentence, look_of
@@ -1290,13 +1803,28 @@ class ClipWriter:
 
     def questions(self, clip, people):
         """(questions, what failure looks like and what to change first) for one clip (Project notes 42, W10)."""
+        from .compile_prompts import side_questions
         phrase = self.adapters.phrase
         questions = []
-        for person in people:
+        partial = [person for person in people if self.only_in_inserts(clip, person)]
+        faces = [person for person in people if person not in partial]
+        for person in faces:
             questions.append(f"Is it the same face as your {person.name} picture?")
+        for person in partial:
+            # an insert shows no face: ask about what it does show (review F9)
+            plan = next(clip_shot.plan for clip_shot in clip.shots if person.element in elements_seen(clip_shot.plan))
+            questions.append(f"Do {person.name}'s {and_list(self.visible_parts(person, plan))} and clothes match your "
+                             f"{person.name} picture?")
         if clip.speeches:
             questions.append(phrase("check_questions", "said_once", default="Is each line said once, by the right mouth?"))
-        for person in people:
+        for clip_shot in clip.shots:
+            # which side a ring or a scar is on, in the take as made (8.5; compile_prompts' own side questions), said
+            # per shot when the clip has several, since the sides change with the camera
+            for question in side_questions(self.compiler, clip_shot.plan):
+                if len(clip.shots) > 1:
+                    question = f"Shot {three_digits(clip_shot.identifier)}: {question[:1].lower()}{question[1:]}"
+                questions.append(question)
+        for person in faces:
             questions.append(phrase("check_questions", "moves_between",
                                     default="Does {name} move between the written actions: breathing, eyes, small shifts?")
                              .replace("{name}", person.name))
@@ -1325,6 +1853,8 @@ class ClipWriter:
                          "the result.")
         notes.append(f"Step through the last two seconds frame by frame: H3 often breaks up there. Keep only seconds 0 "
                      f"to {plain_number(clip.keep_s)}.")
+        if (clip.mirror or {}).get("flip_in_edit"):
+            notes.append("Answer the side questions on the take as it comes out of H3, before you flip it in the edit.")
         return list(dict.fromkeys(questions)), notes
 
 
@@ -1368,6 +1898,8 @@ def master_pictures(compiler, route):
         name = lower_first(record.title or element_name(breakdown, record.identifier))
         states = [state for state in breakdown.records_of("STATE") if state.get("element") == record.identifier]
         state_line = fixer.key_words(str(states[0].get("state_line") or "")) if states else ""
+        # the place's state line loses the clauses that name something absent, as in every clip (review F4)
+        state_line = trim_kept_out(fixer, state_line, KEPT_OUT_LISTS)[0] if state_line.lower() != "none" else ""
         parts = [f"Photograph of {name}, empty" + (f": {state_line.rstrip('.')}." if state_line else ".")]
         objects = [f"the {object_name}, {material}" for object_name, material in objects_of(record)]
         objects_text = fixer.drop_kept_out(fixer.swap_words("; ".join(objects)), KEPT_OUT_LISTS) if objects else ""
@@ -1469,6 +2001,9 @@ def clip_entry(clip, route, words):
         "start_picture": clip.start_picture, "master_picture": clip.master_picture,
         "character_pictures": clip.character_pictures, "questions": clip.questions, "check_notes": clip.check_notes,
         "problems": clip.problems, "left_out": clip.left_out, "notes": clip.notes, "words_unknown": clip.words_unknown,
+        "starts_because": clip.starts_because, "joins": clip.joins, "over_cap": clip.over_cap or None,
+        "mirror": clip.mirror, "part_moments": clip.part_moments, "record_left_out": clip.record_left_out,
+        "lengthened": clip.lengthened,
     }
 
 
@@ -1481,6 +2016,13 @@ def compile_scene(compiler, route, scene_identifier, masters):
     writer = ClipWriter(compiler, route, masters)
     for clip in clips:
         writer.write(clip)
+    # a mirror world not known yet is said once a scene, on its first clip that meets it (review F2)
+    unknown = next((clip for clip in clips if (clip.mirror or {}).get("open")), None)
+    if unknown is not None:
+        unknown.mirror["open_note"] = (
+            f"which people and things are mirrored in scene {scene_number_words(scene_identifier)} is not known yet: the "
+            "mirror rule's era lines were not found in the story given, so no picture is flipped and nobody's sides "
+            "are turned. Compile with the whole story (--story) before making these clips")
     return plans, clips
 
 
@@ -1490,11 +2032,20 @@ def route_pack(compiler, route, scene_identifier, plans, clips, masters, marks):
     shot_map = []
     for clip in clips:
         for clip_shot in clip.shots:
-            shot_map.append({"shot": clip_shot.identifier, "clip": clip.identifier, "part": clip_shot.part,
-                             "parts": clip_shot.parts, "clip_from_s": round(clip_shot.clip_start, 3),
-                             "clip_to_s": round(min(clip_shot.clip_start + clip_shot.length, clip.keep_s), 3),
-                             "title": clip_shot.shot.title})
+            entry = {"shot": clip_shot.identifier, "clip": clip.identifier, "part": clip_shot.part,
+                     "parts": clip_shot.parts, "clip_from_s": round(clip_shot.clip_start, 3),
+                     "clip_to_s": round(min(clip_shot.clip_start + clip_shot.length, clip.keep_s), 3),
+                     "title": clip_shot.shot.title}
+            if clip.overflow_s > 0:
+                # the plan holds the shot longer than H3 makes: the rest is made in the edit (review F18)
+                entry.update({"plan_s": round(clip_shot.length, 3), "made_in_edit_s": clip.overflow_s})
+            shot_map.append(entry)
     not_video = [plan.identifier for plan in plans if not plan.video]
+    not_video_kinds = {plan.identifier: ("a still, moved in the edit" if plan.still_only else
+                                         "a card" if plan.kind == "card" else
+                                         "black" if plan.kind == "black" else "made from its parts in the edit")
+                       for plan in plans if not plan.video}
+    titles = {plan.identifier: plan.shot.title for plan in plans if not plan.video}
     return {
         "about": ("The clip book of one scene for a route (a model plus the place it runs), compiled by stage.py "
                   "compile from the records; never edit it. Change a record and compile again."),
@@ -1507,6 +2058,7 @@ def route_pack(compiler, route, scene_identifier, plans, clips, masters, marks):
         "rule_marks": marks, "look_block": look_block_paragraph(compiler),
         "master_pictures": [master for master in masters.values() if master.get("first_scene")],
         "clips": [clip_entry(clip, route, compiler.words) for clip in clips], "shot_map": shot_map, "not_video": not_video,
+        "not_video_kinds": not_video_kinds, "not_video_titles": titles,
     }
 
 
@@ -1639,8 +2191,8 @@ def settings_page(compiler, route, packs):
               "breaks up.",
               "8. Keep the part given under KEEP and throw away the tail.",
               "9. If something is wrong, read If a clip goes wrong before changing anything.",
-              "10. Log every take in Takes.md, with its seed, settings, what you saw, and a verdict on the route's rules "
-              "it tested (see Take log).",
+              "10. Tell Claude what you saw in each take, with its seed and settings: Claude logs the take and what it "
+              "showed about the route's rules (see Take log).",
               "", "## Traps", "",
               "- The pictures' order must match the numbers in the prompt: the first picture wired is <Picture 1>.",
               "- Wiring a person's picture makes that person appear. People who are only heard are never wired.",
@@ -1682,6 +2234,23 @@ def pictures_page(compiler, route, packs, masters):
         lines += [f"### {master['code']} - {master['name']} (empty)", "",
                   "Attach: nothing.", "Prompt (picture style block first, then this):", "",
                   "```text", master["prompt"], "```", "", f"Save it as: {master['file']}", ""]
+    flipped = {}
+    for pack in packs:
+        for entry in pack.get("clips") or []:
+            clip_words = f"scene {scene_number_words(pack.get('scene'))}, clip {entry['number']:02d}"
+            master = entry.get("master_picture") or {}
+            if master.get("flipped_file"):
+                flipped.setdefault((master.get("file"), master["flipped_file"]), []).append(clip_words)
+            for picture in entry.get("character_pictures") or []:
+                if picture.get("flipped"):
+                    flipped.setdefault((picture.get("unflipped_file"), picture["file"]), []).append(clip_words)
+    if flipped:
+        # the mirror world: copies flipped left to right, made once each (8.5; review F2)
+        lines += ["## Copies flipped left to right (the mirror world)", "",
+                  "Make each picture as usual, then save a copy flipped left to right. The clips listed use the copy.", ""]
+        for (original, copy), clips in flipped.items():
+            lines.append(f"- {original} -> {copy}: {'; '.join(dict.fromkeys(clips))}.")
+        lines.append("")
     lines += ["## Start pictures", "",
               "- Make each clip's start picture from the master picture and character pictures listed on its page, "
               "never from the last frame of an earlier clip: every copy of a copy loses quality.",
@@ -1715,6 +2284,32 @@ def scene_page(compiler, route, pack):
              + (f" ({crop})." if crop else "."),
              "- Settings, the picture style block and the master pictures are in this folder's other pages.",
              "- Never change a prompt here. Change the shot in the breakdown and compile again.", ""]
+    # notes that hold for the whole scene, written once (review F2 and F4)
+    scene_notes = []
+    for entry in pack["clips"]:
+        open_note = (entry.get("mirror") or {}).get("open_note")
+        if open_note and sentence(open_note) not in scene_notes:
+            scene_notes.append(sentence(open_note))
+        for problem in entry.get("key_problems") or []:
+            # a description is the same in every clip, so its problem is said once a scene (review F4)
+            note = sentence(f"the {problem['what']} of {problem.get('record_words') or problem['record']} holds "
+                            f"'{problem['word']}', which H3 would show or say; it is pasted word for word in every clip "
+                            "that shows them, so reword it to say what is there")
+            if note not in scene_notes:
+                scene_notes.append(note)
+    record_notes = []
+    for entry in pack["clips"]:
+        for note in entry.get("record_left_out") or []:
+            if note not in record_notes:
+                record_notes.append(note)
+    if scene_notes or record_notes:
+        lines += ["## For every clip of this scene", ""]
+        lines += [f"- {note}" for note in scene_notes]
+        if record_notes:
+            lines.append("- These words of the place and its things are left out of every clip's prompt and pictures, "
+                         "because H3 would show what they name:")
+            lines += [f"  - {note}" for note in record_notes]
+        lines.append("")
     for entry in pack["clips"]:
         shots = entry["shots"]
         numbers = ", ".join(three_digits(shot["shot"]) + (f" (part {shot['part']} of {shot['parts']})" if shot["parts"] > 1 else "")
@@ -1722,8 +2317,13 @@ def scene_page(compiler, route, pack):
         count = NUMBER_WORDS.get(len(shots), str(len(shots)))
         lines += [f"## Clip {entry['number']:02d} - {entry['title']}", "",
                   f"Scene {scene_number_words(pack['scene'])} - plan shot{'s' if len(shots) > 1 else ''} {numbers} - "
-                  f"{count} shot{'s' if len(shots) > 1 else ''}",
-                  f"Length: {entry['frames']} frames ({entry['length_s']:.2f} seconds). Type {entry['seconds_to_type']} "
+                  f"{count} shot{'s' if len(shots) > 1 else ''}"]
+        # why the clip starts here, and why its shots share it (review F5)
+        if entry.get("starts_because"):
+            lines.append(sentence(f"Starts a new clip because {entry['starts_because']}"))
+        for reason in entry.get("joins") or []:
+            lines.append(sentence(f"Shares this clip: {reason}"))
+        lines += [f"Length: {entry['frames']} frames ({entry['length_s']:.2f} seconds). Type {entry['seconds_to_type']} "
                   "in Float (Duration).", "", "### Start picture", ""]
         picture = entry["start_picture"]
         master = entry.get("master_picture") or {}
@@ -1751,16 +2351,25 @@ def scene_page(compiler, route, pack):
         if entry.get("overflow_s"):
             lines.append(f"- The plan holds this shot {plain_number(entry['overflow_s'])} seconds longer than H3 can "
                          "make: make the rest in the edit, or redesign the shot.")
-        extras = entry.get("problems", []) + entry.get("notes", [])
+        mirror = entry.get("mirror") or {}
+        if mirror.get("flip_in_edit"):
+            lines.append("- Flip the kept part left to right in the edit before you cut it in: this clip is in the "
+                         "mirror world, and H3 makes it unflipped.")
+        for moment in entry.get("part_moments") or []:
+            lines.append(f"- The part before or after this one shares the moment from {moment['moment'].replace('-', ' to ')} "
+                         f"seconds of shot {three_digits(moment['shot'])}: match the people, hands and props at the join "
+                         f"(second {plain_number(moment['boundary_s'])} of the shot).")
+        extras = entry.get("problems", []) + mirror.get("problems", []) + entry.get("notes", [])
+        if entry.get("over_cap"):
+            over = entry["over_cap"]
+            extras.append(f"shot {three_digits(over['shot'])} shows {over['pictures']} people, so this clip connects "
+                          f"{over['pictures']} people's pictures, more than the {over['cap']} the route allows: H3 may mix "
+                          "up faces. Frame fewer people, or split the shot into shots of fewer people each")
         if entry.get("words_unknown"):
             count = len(entry["words_unknown"])
-            extras.append(f"the words of {count} spoken line{'s are' if count != 1 else ' is'} not known here, because "
-                          "the story's speeches are missing: read the story (stage.py read) or compile with --story, "
-                          "then compile again")
-        for problem in entry.get("key_problems") or []:
-            extras.append(f"the {problem['what']} of {problem.get('record_words') or problem['record']} holds "
-                          f"'{problem['word']}', which H3 would show or say; it is pasted word for word, so reword it to "
-                          "say what is there")
+            extras.append(f"{count} spoken line{'s are' if count != 1 else ' is'} left out of this prompt, because the "
+                          "story's speeches are missing, so this clip is not ready: read the story (stage.py read) or "
+                          "compile with --story, then compile again")
         if extras or entry.get("left_out"):
             lines += ["", "### Notes", ""]
             lines += [f"- {sentence(note)}" for note in extras]
@@ -1776,16 +2385,30 @@ def scene_page(compiler, route, pack):
 def shot_map_page(route, packs):
     lines = [f"# {route.display}: shot map", "",
              "## How to use this page", "",
-             "- Every plan shot made on this route: which clip holds it and which seconds of the clip are that shot. "
-             "The edit is put together from this list.", "",
+             "- Every plan shot of the scenes compiled, in film order: which clip holds it and which seconds of the clip "
+             "are that shot, or how the edit makes it. The edit is put together from this list.", "",
              "| Plan shot | Clip | Seconds in the clip | Title |", "|---|---|---|---|"]
     for pack in packs:
+        from .record_format import sort_key_for_identifier
+        rows = []
         for entry in pack.get("shot_map") or []:
             part = f" (part {entry['part']} of {entry['parts']})" if entry.get("parts", 1) > 1 else ""
             clip_number = entry["clip"].split("-CL")[-1]
-            lines.append(f"| Scene {scene_number_words(pack['scene'])}, shot {three_digits(entry['shot'])}{part} | "
-                         f"clip {clip_number} | {plain_number(entry['clip_from_s'])} to {plain_number(entry['clip_to_s'])} | "
-                         f"{entry.get('title') or ''} |")
+            seconds = f"{plain_number(entry['clip_from_s'])} to {plain_number(entry['clip_to_s'])}"
+            if entry.get("made_in_edit_s"):
+                seconds += (f" (the plan holds {plain_number(entry['plan_s'])} seconds: the last "
+                            f"{plain_number(entry['made_in_edit_s'])} made in the edit)")
+            rows.append((entry["shot"], entry.get("part", 1),
+                         f"| Scene {scene_number_words(pack['scene'])}, shot {three_digits(entry['shot'])}{part} | "
+                         f"clip {clip_number} | {seconds} | {entry.get('title') or ''} |"))
+        kinds = pack.get("not_video_kinds") or {}
+        titles = pack.get("not_video_titles") or {}
+        for identifier in pack.get("not_video") or []:
+            rows.append((identifier, 1, f"| Scene {scene_number_words(pack['scene'])}, shot {three_digits(identifier)} | "
+                                        f"made in the edit ({kinds.get(identifier, 'no clip')}) | none | "
+                                        f"{titles.get(identifier) or ''} |"))
+        rows.sort(key=lambda row: (sort_key_for_identifier(row[0]), row[1]))
+        lines += [row[2] for row in rows]
     return plain(lines)
 
 
@@ -1793,7 +2416,7 @@ def troubleshooting_page(route):
     lines = [f"# {route.display}: if a clip goes wrong", "",
              "## How to use this page", "",
              "- Change one thing at a time, with the seed fixed, so you can tell what helped.",
-             "- Find what you see, then make the first change given. Log the take either way.", ""]
+             "- Find what you see, then make the first change given. Tell Claude about the take either way.", ""]
     for entry in route.facts.get("troubleshooting") or []:
         lines += [f"## {entry.get('symptom')}", "", sentence(f"First change: {entry.get('first_change')}"), ""]
     return plain(lines)
@@ -1801,24 +2424,27 @@ def troubleshooting_page(route):
 
 def take_log_page(compiler, route, marks):
     breakdown = compiler.breakdown
+    counts = route.facts.get("rule_marks_from_takes", {})
     lines = [f"# {route.display}: take log", "",
              "## How to use this page", "",
              "- The route's rules start unclear: each is a suggestion until real takes decide it.",
-             "- After each take, write a TAKE record in Takes.md with a rule line for every rule the take tested: the "
-             "rule, then confirmed, wrong or unclear, and what you saw.",
-             f"- A rule is confirmed when at least {route.facts.get('rule_marks_from_takes', {}).get('takes_to_confirm', 2)} "
-             "takes say confirmed and none says wrong; it is dropped as wrong when at least "
-             f"{route.facts.get('rule_marks_from_takes', {}).get('takes_to_drop', 2)} takes say wrong and more say wrong "
-             "than confirmed. A confirmed or verified rule's check is an error; an unclear one is a suggestion; a "
-             "wrong one is not run.", "", "## The route's rules", "",
-             "| Rule | What it says | Kind | Mark | Takes that decided it |", "|---|---|---|---|---|"]
+             "- After each take, tell Claude what you saw. Claude logs the take and, for each rule the take tested, "
+             "whether it held (confirmed), failed (wrong) or could not tell (unclear).",
+             f"- A rule is confirmed when at least {counts.get('takes_to_confirm', 2)} takes say confirmed and none says "
+             f"wrong; it is dropped as wrong when at least {counts.get('takes_to_drop', 2)} takes say wrong and more say "
+             "wrong than confirmed. A confirmed rule, or one the makers' own documents state, stops a clip until it is "
+             "fixed; an unclear one is a suggestion; a wrong one is no longer checked.",
+             "- Times in the rules are written as minutes and seconds, 00:04.500 being 4.5 seconds.", "",
+             "## The route's rules", "",
+             "| Rule | What it says | Where it comes from | Mark | Takes that decided it |", "|---|---|---|---|---|"]
     for rule in route.rules():
         mark = marks.get(rule["id"], {})
-        decided = mark.get("confirmed", []) + mark.get("wrong", [])
+        decided = [take_words(identifier) for identifier in mark.get("confirmed", []) + mark.get("wrong", [])]
         shown = mark.get("mark", rule.get("mark"))
         if shown == "wrong":
-            shown = "wrong (dropped: its check is not run)"
-        lines.append(f"| {rule['id']} | {rule['says']} | {rule.get('kind')} | {shown} | "
+            shown = "wrong (dropped: no longer checked)"
+        kind = "the makers' documents" if rule.get("kind") == "format" else "testers' notes and judgement"
+        lines.append(f"| {rule_words(rule['id'])} | {rule['says']} | {kind} | {shown} | "
                      f"{', '.join(decided) if decided else 'none yet'} |")
     lines += ["", "## Takes on this route", ""]
     takes = [take for take in breakdown.records_of("TAKE")
@@ -1829,9 +2455,23 @@ def take_log_page(compiler, route, marks):
         verdicts = []
         for written in take.get_all("rule"):
             item = split_item(written)
-            verdicts.append(f"{(item.first or '').strip()} {item.get('verdict') or 'unclear'}")
+            verdicts.append(f"{rule_words((item.first or '').strip())} {item.get('verdict') or 'unclear'}")
         kept = take.get("kept") or "not decided"
-        lines.append(f"- {take.identifier}: clip {take.get('clip')}, seed {take.get('seed') or 'not written'}, "
+        lines.append(f"- {take_words(take.identifier)}: seed {take.get('seed') or 'not written'}, "
                      f"settings {take.get('settings') or 'not written'}; kept: {kept}"
-                     + (f"; rules: {', '.join(verdicts)}" if verdicts else "") + ".")
+                     + (f"; {', '.join(verdicts)}" if verdicts else "") + ".")
     return plain(lines)
+
+
+def rule_words(identifier):
+    """'rule 15' for the route rule H3R-15: the user reads no codes (review F14)."""
+    match = re.search(r"(\d+)$", identifier or "")
+    return f"Rule {int(match.group(1))}" if match else "a rule"
+
+
+def take_words(identifier):
+    """'scene 10, clip 07, take 1' for the take TK-SC10-CL07-T01."""
+    match = re.match(r"^TK-SC0*(\d+)-CL(\d+)-T0*(\d+)$", identifier or "")
+    if not match:
+        return "a take"
+    return f"scene {match.group(1)}, clip {match.group(2)}, take {match.group(3)}"
