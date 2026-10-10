@@ -368,9 +368,13 @@ def check_held_too_long(run, pack, entry, facts):
 
 def check_length(run, pack, entry, facts):
     words = len(section_text(entry["prompt"], "detailed_description").split())
-    if words < 200 or words > 700:
+    if words < 200:
         return [("prompt", f"its detailed_description has {words} words; MiniMax's guide says normally 350 to 500",
-                 "Fix: write more small timed actions in the shot's moments, or split a long clip; then compile again.")]
+                 "Fix: write more small timed actions in the shot's moments, then compile again.")]
+    if words > 700:
+        return [("prompt", f"its detailed_description has {words} words; MiniMax's guide says normally 350 to 500",
+                 "Fix: shorten the moments and things the shots carry, or give one of the clip's shots a clip of its "
+                 "own (fewer people or shots per clip), then compile again.")]
     return []
 
 
