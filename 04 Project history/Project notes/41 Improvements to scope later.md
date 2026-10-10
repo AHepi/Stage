@@ -89,14 +89,26 @@ From Project notes 32 and 36; some may have been fixed along the way.
 Added in entry 43. Each item's "done when" is in note 42, section 6. Where it stands is updated each round.
 
 50. **W1. Test run first:** three clips on your rented computer, two seeds each, as Stage wrote them before entry 43 and as the clip file writes them; twelve runs in the take log. *High.* Waits: you asked not to use the RunPod setup yet.
-51. **W2. Stop asking for stillness.** *High.*
-52. **W3. Only say what is there.** *High.*
-53. **W4. Routes, not only models:** H3 on MiniMax's service and H3 in ComfyUI as separate entries. *High.*
-54. **W5. Compile in MiniMax's reference format** for the ComfyUI route, with the route's own checks. *High.*
-55. **W6. Clips as the unit:** one to three shots per clip, a shot map back to plan shots. *High.*
-56. **W7. Start pictures:** master set pictures and one start picture brief per clip. *High.*
-57. **W8. Physical sense checks.** *Medium.*
-58. **W9. Cut at contact.** *Medium.*
-59. **W10. Questions that catch real failures**, never rewarding stillness. *Medium.*
-60. **W11. The take log teaches the rules:** each route rule marked confirmed, wrong or unclear by real takes. *Medium.*
+51. **W2. Stop asking for stillness.** *High.* Done in entry 43 (met for scene 10).
+52. **W3. Only say what is there.** *High.* Done in entry 43 (met for scene 10).
+53. **W4. Routes, not only models:** H3 on MiniMax's service and H3 in ComfyUI as separate entries. *High.* Done in entry 43; the template's box names are still unverified.
+54. **W5. Compile in MiniMax's reference format** for the ComfyUI route, with the route's own checks. *High.* Built in entry 43; the clip-for-clip comparison with scenes 1 to 6 waits for their plan.
+55. **W6. Clips as the unit:** one to three shots per clip, a shot map back to plan shots. *High.* Built in entry 43 (scene 10: 11 clips for 18 video shots); scene 1's count waits for its plan.
+56. **W7. Start pictures:** master set pictures and one start picture brief per clip. *High.* Done in entry 43.
+57. **W8. Physical sense checks.** *Medium.* Built in entry 43: 11 checks catch 11 of the clip file's 18 slip types, 3 in part, 4 not.
+58. **W9. Cut at contact.** *Medium.* Built in entry 43; the clips 21, 22 and 28 comparison waits for the plan of scenes 3 to 5.
+59. **W10. Questions that catch real failures**, never rewarding stillness. *Medium.* Done in entry 43.
+60. **W11. The take log teaches the rules:** each route rule marked confirmed, wrong or unclear by real takes. *Medium.* Done in entry 43; every judgement rule is unclear until the test run.
 61. **W12 (later). Send clips straight to ComfyUI** from Stage, with no copying by hand. *Low for now.*
+
+## 10. Left over from entry 43 (note 43)
+
+62. **The plan checks still miss some wordings** (held-out set after the fixes: 2 false alarms, 12 misses): "kneels", "lies", "doesn't budge", "stays right where", "staggers", "crumples", "tumble", "stamps on", a list after "grabs", a log that rolls, "in her mouth" after a leading clause; false alarms "the dog jumps up" and "she freezes the leftovers". *Low.*
+63. **A voice description can end on a dangling word** after its other clauses are cut ("clear and quick, quieter"). Better: a short sound-only voice line in the VOICE record. *Low.*
+64. **Still pictures for the edit say a face "shows small movements".** The old picture prompt's display sentence. *Low.*
+65. **A shot-list line that held a quoted line reads "Dr Saye, unseen"** in a clip's summary. *Low.*
+66. **Big clips run long:** a clip of three shots and four people can pass MiniMax's normal 350 to 500 words (scene 10, clip 01: 782). It is a suggestion; whether it matters is for the test run. *Low.*
+67. **Shot 150's hold is 1.22 seconds longer than H3 can make** with its tail. The page says what to do; the plan itself is unchanged. *Low.*
+68. **Several guides and kit files sit near their word limits** (CLAUDE.md 293 of 299, README 246 of 250, the Gemini guide 1,093 of 1,100). Any added sentence may fail the length test. *Low.*
+69. **SKILL.md is still about 5,500 tokens**, against the paper's 1,100 for the first two layers; only two sections moved out. *Low.*
+70. **Untested choices of entry 43:** four people's pictures in one clip; off-screen lines sent in the prompt; the closing "goes on with what she is doing" line; mirror-world shots kept as later shots of a clip; the 2.4:1 frame at 1152 x 480. All marked J; the test run decides. *Medium.*

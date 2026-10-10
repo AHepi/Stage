@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 6 October 2026 (log entry 41).
+Last updated: 10 October 2026 (log entry 43).
 
 ## The goal
 
@@ -15,12 +15,14 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 ## Where things stand
 
 **Built and uploaded:**
-- Everything is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage".
+- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 and 43 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
+- **New in entry 43:** a way of making video with MiniMax H3 in ComfyUI. For each scene it makes a clip book: one page per clip with the start picture to make, the pictures to connect, the prompt in MiniMax's own format, the seconds to type, what to check and which seconds to keep. Stage no longer asks any video model for stillness, and it checks plans for physical slips (no room to climb, a heavy torch held in the teeth, nothing to cut a strap with).
+- **The repository is laid out as numbered folders** (entry 43): `CONTEXT.md` at the top says where to go; then `01 Start here`, `02 Example`, `03 Kits to upload` and `04 Project history`.
 - The kit is a Claude skill with its own checking program. It also comes as a bundle for ChatGPT and Gemini, with setup guides for each app.
 - There is one finished model scene (The Catch, scene 10, Saye's kitchen) and its 3D mock-up.
 
 **Tested:**
-- The automatic tests: 22 of 23 test files pass (entry 40). The failing one checks a size target, explained under "Known issues".
+- The automatic tests: 25 of 27 test files pass (entry 43). The two that fail failed before entry 43: one checks a size target (see "Known issues"), the other reads a PDF with a converter this computer lacks.
 - A fresh AI with only the kit planned the whole of The Catch and broke down three scenes (entries 23 to 25). Its 36 problems are fixed.
 - **The whole of The Catch, all 30 scenes, from start to finished book (entries 28 to 31).** It made 514 shots and about 43 minutes of film. 29 of 30 scenes pass the kit's own scoring. The run also found 18 groups of problems, listed in `Project notes/31 Test - The Catch - full run.md`.
 - **All 18 problem groups are fixed, and the fixes were cross-examined (entries 32 to 34).** A second helper tried to prove the fixes wrong and found five that went too far. Those are repaired too. Re-checking The Catch's finished breakdown now gives no errors and 37 warnings (126 before), and "what's next" says "Finished". Only the handouts for the biggest scenes are still a little too large to read in one go.
@@ -37,7 +39,8 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - A real person answering the questions. In the tests, the answers were always "defaults" and "no changes".
 - The Long Places (you asked to leave it for later).
 - The chat-app route in the real ChatGPT and Gemini apps. It is designed and bundled, but was only simulated here.
-- Actually making pictures, videos or voices. This computer has no accounts for those services, so the prompt packs stop at "ready to send, checked and priced".
+- Actually making pictures, videos or voices. This computer has no accounts for those services, so the prompt packs stop at "ready to send, checked and priced". For MiniMax H3 in ComfyUI, a test run of 16 clips is ready to run on your rented computer (entry 43); until then the route's judgement rules are only suggestions.
+- The H3 route on scenes 1 to 6 of The Catch: their plan is not in the session where entry 43 was done, so the clip-for-clip comparison with your hand-made clip file waits.
 
 **Known issues:**
 - **Everything open is listed in `Project notes/41 Improvements to scope later.md`,** with where it came from and how much it matters. The main points are below.
@@ -48,7 +51,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - Three of the chat-app files are 26% to 49% longer than the blueprint aimed for. This may matter in Gemini, because Google does not publish how much a Gem can hold.
 - The start page's "last checked" line only updates at the next save, not straight after a check.
 - The repository is public, so the quoted passages from both stories are public (entry 19).
-- No pull request yet: the repository has no main branch to merge into.
+- Your handover note (42) is in the public repository and quotes a few lines of clip 03's prompt, from scenes 1 to 6. You have not yet said whether to keep it as it is.
 
 ## How the pieces fit
 
@@ -65,15 +68,20 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 
 | Part | Where | What it does | What it hands on |
 |---|---|---|---|
-| Research library | `.claude/skills/breaking-down-stories/library/` | 32 fact-checked files on film craft and AI tools, each with a short summary | The rules, numbers and examples the cards are made from |
-| Knowledge cards | `.../cards/` (24 files) | The research boiled down to working rules, traps to avoid, and good and bad reasons in pairs | The craft each piece of work needs, cut to size |
-| Step files | `.../steps/` (17 files) | What to do at each of the 12 steps and the 4 add-ons, with a version for chat apps that cannot run code | Instructions for each piece of work |
+| Where to go | `CONTEXT.md` at the top, and one in each big folder of the kit | Says where to go for what you want to do | The right folder or step |
+| Guides | `01 Start here/` | How to start in each app, how to read a breakdown, the word list | What you open first |
+| Research library | `.claude/skills/breaking-down-stories/references/library/` | 32 fact-checked files on film craft and AI tools, each with a short summary | The rules, numbers and examples the cards are made from |
+| Knowledge cards | `.../references/cards/` (24 files) | The research boiled down to working rules, traps to avoid, and good and bad reasons in pairs | The craft each piece of work needs, cut to size |
+| Step instructions | `.../stages/` (one folder per step, 17 in all) | What to do at each of the 12 steps and the 4 add-ons, with a version for chat apps that cannot run code | Instructions for each piece of work |
 | House rules | `.../SKILL.md` | How the AI works, talks to you and saves | The loop the AI follows every time |
-| Data format | `.../schema/`, `.../rules/` | 47 kinds of record and 576 fields, each with a plain meaning, plus every number the checker uses | What a correct breakdown looks like |
-| Checking program | `.../tools/stage.py` and `stage_tools/` | Reads stories; numbers lines; checks about 90 things; works out timings, sides and camera distances; builds handouts; exports; estimates cost; writes video prompts; builds 3D mock-ups | Checked, readable files |
-| Templates and model scene | `.../templates/`, `.../examples/` | Empty forms, and the finished scene 10 | A model to copy |
-| Guides and bundles | Repository top: `01` to `09` | How to start in each app; the chat-app bundle; the skill file for Claude; the example folder | What you open first |
-| Project notes | `Project notes/` | The blueprint, the test reports, the fix notes and the cross-examination | The record of how it was built and tested |
+| Data format and settings | `.../_config/` (schema, rules, model facts), with the record format and word list in `.../references/formats/` | 47 kinds of record and their fields, each with a plain meaning, plus every number and word list the checker uses | What a correct breakdown looks like |
+| Checking program | `.../tools/stage.py` and `stage_tools/` | Reads stories; numbers lines; checks over 100 things; works out timings, sides and camera distances; builds handouts; exports; estimates cost; writes video prompts and clip books; builds 3D mock-ups | Checked, readable files |
+| H3 clip book | made in a project's `20 Prompts for AI video/MiniMax H3 in ComfyUI/` | Groups shots into clips, writes each prompt in MiniMax's format, the start and master pictures, settings, shot map and take log | Pages you carry out in ComfyUI without having to think |
+| Templates and model scene | `.../references/templates/`, `.../references/examples/` | Empty forms, and the finished scene 10 | A model to copy |
+| Kits to upload and example | `03 Kits to upload/`, `02 Example - The Catch, scene 10/` | The chat-app bundle, the skill file for Claude, the example folder | What you upload, and what you look at first |
+| Project history | `04 Project history/` | The project story, and the project notes: blueprint, test reports, fix notes, cross-examinations, decisions, lessons, status, glossary | The record of how it was built and tested |
+
+**An example of the H3 clip book.** You ask for the prompts and answer "b" to "Which way will you make the video?". Stage groups scene 10's 18 video shots into 11 clips. Clip 07 is shot 150, "Not mint.": its page says to make the start picture from the empty kitchen (master picture M1) and your Iona picture, connect the start picture first and your Iona picture second, paste the prompt, type 15.0, keep seconds 0 to 13.78 and throw the rest away. You tell Claude what you saw in each take; the take log turns that into confirmed or wrong rules.
 
 ## Word list
 
@@ -84,7 +92,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 | Beat | One action and the reaction it causes, such as "Saye tests; Iona fails". |
 | Turn | The moment a scene changes direction, such as "Not mint." in scene 10. |
 | Shot | One continuous piece of film between two cuts. |
-| Clip | One piece a video model makes. A long shot may need several clips. |
+| Clip | One piece a video model makes. A long shot may need several clips; with MiniMax H3 in ComfyUI one clip holds one to three shots. |
 | Take | One attempt at making a clip. |
 | Reason | Every shot says what it is for and which story line, object or rule justifies it. Moods alone ("to build tension") are refused. |
 | Record | One entry in a breakdown file, such as one shot or one character. |
@@ -127,6 +135,19 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 | Locked record | A record you approved. It cannot change unless you answer a question that unlocks it. |
 | False alarm | A warning about something that is not really a problem. |
 | Effort | How long and how carefully a helper thinks before answering. "Highest" (xhigh) is the slowest and most careful. |
+| Route | A video model plus the place it runs, such as "MiniMax H3 in ComfyUI, Reference to Video". |
+| ComfyUI | A free program that runs video models such as H3 on your own or a rented computer. |
+| Clip book | All the clip pages for one route: settings, pictures to make first, one page per clip, the shot map and the take log. |
+| Start picture | The still made for a clip's first moment; the prompt calls it Picture 1. |
+| Master picture | An empty picture of a place, made once; start pictures are built from it. |
+| Tail | The last second and a half or so of an H3 clip, made to be thrown away because H3 often breaks up there. |
+| Contact cut | Ending a shot as one thing hits another, and starting the next shot with the result already there. |
+| Small timed actions | A breath, a blink, a swallow, a glance, written at stated seconds to fill a held moment, instead of asking a model to keep still. |
+| Physical sense check | A question the checker asks when the plan asks a body to do something impossible. |
+| Take log | The record of every run: seed, settings, result, verdict, and what it showed about each rule. |
+| Rule mark | Whether a route's rule is verified (in the makers' documents), confirmed or wrong (by two takes), or unclear. Only verified and confirmed rules are enforced. |
+| Test run | A few real clips made on your own setup to confirm or reject the rules. |
+| CONTEXT.md | A short "where to go" page; there is one at the top of the repository and one in each big folder of the kit. |
 
 ## Numbered log
 
@@ -240,7 +261,18 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - File: `Project notes/40 Fixes - after the second full run.md`.
 41. **Gathered everything still open into one list,** as promised: 49 items, from the notes, the project story, the blueprint, the code and the update run, each with where it came from and how much it matters. From now on it is kept up to date each round.
     - File: `Project notes/41 Improvements to scope later.md`.
+42. **You handed over a note on what Stage should make for video, and why** (note 42, written in another session). Stage's plan of The Catch had been turned by hand into 36 clips for MiniMax H3 in ComfyUI (the "clip file"). Almost nothing could go straight from the plan into H3. Stage asked for stillness ("her head, hands and torso stay still": 44 times in scene 10), wrote what is absent ("nothing else"), ignored where the model runs, made one clip per shot and let physical slips through. The note set out a work list, W0 to W12, with a "done when" for each.
+43. **Carried out the handover, then restructured the repository, with never more than two helpers at once, as you asked.**
+    - First I checked the handover's sources: MiniMax's guides and model page, ComfyUI's two H3 pages and the testers' notes. They hold up, with two narrower points (decision 17 in `43 Decisions.md`).
+    - Two builders worked side by side. One built the new route: MiniMax H3 in ComfyUI, Reference to Video, with clips of one to three shots, prompts in MiniMax's six sections, start and master pictures, a settings page, a shot map, a take log and 27 rules marked by real takes. The other turned the stillness rule round (held moments are now small timed actions), added a contact-cut check and eleven physical sense checks, rewrote the guidance and the model scene 10.
+    - You asked for the repository to be restructured around a paper on folders as stages (Van Clief and McDermott, 2026). A third helper did it: a "where to go" page, four numbered folders at the top, and inside the kit one folder per step, the references and the settings apart. Your two folders and every breakdown's own layout were kept as they were.
+    - Two rounds of cross-examination, each by two read-only reviewers, then two fixers. Round 1 found 20 faults, 3 serious: lines stacked at second 0, no mirror-world support, and a people cap applied wrongly. Round 2 found 22 more, including one a repair had made: a spoken line could vanish without an error. All were repaired; the plan checks' wording only in part.
+    - Failure of mine: I capped H3 clips at three people's pictures. A helper showed that scene 10 alone has seven four-person shots, each of which would warn with nothing to fix. The cap is now four, counting only new pictures.
+    - Results: scene 10 makes 11 clips for its 18 video shots. The H3 prompts hold no "stays still" (44 before) and no "The camera does not move." (18 before). 25 of 27 test files pass; the two that fail failed before.
+    - Not done: the test run on your rented computer (you asked me not to use the RunPod setup yet). Also scenes 1 to 6 for the route, because their plan is not in this session.
+    - Made for you, outside git because it holds story text: a test-run pack of 16 clips with a take log to fill.
+    - Files: `Project notes/43 H3 route, plan fixes and restructure.md`, `43 Decisions.md`, `43 Lessons.md`, `43 Status.md`, `43 Glossary.md`.
 
 ## Next step
 
-Decide one design question: may the shot details step add a camera or move a person, as an addition you see (item 1 of `Project notes/41 Improvements to scope later.md`)? It would clear the most repair work. Once you decide, I build it and test it.
+Run the test pack on your rented computer: 16 clips at the small test size, two seeds each (`43 Test run pack - MiniMax H3 in ComfyUI.md`). When you want to, send the RunPod setup and I will help you run it. Then tell me what you saw, run by run, and the route's rules get their first real marks.
