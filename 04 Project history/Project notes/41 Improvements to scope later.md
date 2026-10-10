@@ -88,7 +88,7 @@ From Project notes 32 and 36; some may have been fixed along the way.
 
 Added in entry 43. Each item's "done when" is in note 42, section 6. Where it stands is updated each round.
 
-50. **W1. Test run first:** three clips on your rented computer, two seeds each, as Stage wrote them before entry 43 and as the clip file writes them; twelve runs in the take log. *High.* Waits: you asked not to use the RunPod setup yet.
+50. **W1. Test run first:** three clips on your rented computer, two seeds each, as Stage wrote them before entry 43 and as the clip file writes them; twelve runs in the take log. *High.* Entry 44: researched how to run it on RunPod (note 44); waits on your two decisions there.
 51. **W2. Stop asking for stillness.** *High.* Done in entry 43 (met for scene 10).
 52. **W3. Only say what is there.** *High.* Done in entry 43 (met for scene 10).
 53. **W4. Routes, not only models:** H3 on MiniMax's service and H3 in ComfyUI as separate entries. *High.* Done in entry 43; the template's box names are still unverified.

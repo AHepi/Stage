@@ -15,7 +15,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 ## Where things stand
 
 **Built and uploaded:**
-- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 and 43 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
+- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 to 44 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
 - **New in entry 43:** a way of making video with MiniMax H3 in ComfyUI. For each scene it makes a clip book: one page per clip with the start picture to make, the pictures to connect, the prompt in MiniMax's own format, the seconds to type, what to check and which seconds to keep. Stage no longer asks any video model for stillness, and it checks plans for physical slips (no room to climb, a heavy torch held in the teeth, nothing to cut a strap with).
 - **The repository is laid out as numbered folders** (entry 43): `CONTEXT.md` at the top says where to go; then `01 Start here`, `02 Example`, `03 Kits to upload` and `04 Project history`.
 - The kit is a Claude skill with its own checking program. It also comes as a bundle for ChatGPT and Gemini, with setup guides for each app.
@@ -273,6 +273,16 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - Made for you, outside git because it holds story text: a test-run pack of 16 clips with a take log to fill.
     - Files: `Project notes/43 H3 route, plan fixes and restructure.md`, `43 Decisions.md`, `43 Lessons.md`, `43 Status.md`, `43 Glossary.md`.
 
+44. **Tried the test run on a new rented pod; stopped, then researched RunPod as you asked.**
+    - With your new go-ahead I rented a new pod (one H200 graphics card, $5.29 an hour) and started a small helper on it, so I could run commands without a browser.
+    - Preparing the test material was blocked by this session's safety check, because the prompts quote The Catch and it wants your decision before story text leaves this computer. I stopped the pod after 5 minutes; nothing was installed or sent. Cost: $0.44.
+    - You asked me to research how to use RunPod first. Two researchers, two checkers, a critic and two gap-fillers, never more than two at once, read RunPod's documents and software and your setup's manual.
+    - Failures of mine they found: I replaced the pod's normal startup, which your manual forbids; my money cap was untested and used an old command; I used RunPod's older interface, which retires in November.
+    - Also found: my pod's machine has an older graphics driver (12.8) than your setup expects (13.0), and RunPod put a secure-shell setting into the pod that would switch on secure shell, which your setup forbids. Your old pod still exists, stopped, costing about $1.60 a day.
+    - The plan: a new pod on a machine with the right driver, the normal startup kept, the helper alongside it, a three-layer money cap that is tested at the end, and a 14-run test for about $15 to $20.
+    - Waits on two decisions of yours: sending the test material to the pod, and using the password-protected helper instead of the manual's 3-minute download link.
+    - Files: `Project notes/44 RunPod - how to run the test properly.md`; lesson 12 in `43 Lessons.md`.
+
 ## Next step
 
-Run the test pack on your rented computer: 16 clips at the small test size, two seeds each (`43 Test run pack - MiniMax H3 in ComfyUI.md`). When you want to, send the RunPod setup and I will help you run it. Then tell me what you saw, run by run, and the route's rules get their first real marks.
+Decide the two questions in note 44: may I send the test material to a new pod, and may I use the password-protected helper there? With both yeses I make the new pod, run the 14 runs, bring back the clips with a take log to fill, stop the pod and report the cost.
