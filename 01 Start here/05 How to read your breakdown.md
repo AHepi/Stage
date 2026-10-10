@@ -2,7 +2,7 @@
 
 ## A scene page, read on one example
 
-Here is the top of scene 10's page, from the folder **09 Example - The Catch, scene 10**, cut short where you see "...":
+Here is the top of scene 10's page, from the folder **02 Example - The Catch, scene 10**, cut short where you see "...":
 
 ```
 # Scene 10 - Saye's kitchen

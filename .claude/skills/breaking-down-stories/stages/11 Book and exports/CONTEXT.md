@@ -27,7 +27,7 @@ All records, turned into `For machines - do not edit/breakdown.json` by `stage.p
 
 ## Card parts to open
 
-At every depth: card 23, whole; `reference/07 Report and message formats.md`, whole.
+At every depth: card 23, whole; `references/formats/07 Report and message formats.md`, whole.
 
 ## Procedure
 
@@ -65,7 +65,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-The book step's last message (`reference/07 Report and message formats.md`), for The Catch:
+The book step's last message (`references/formats/07 Report and message formats.md`), for The Catch:
 
 ```
 Done: step 12 of 12, the book and exports. Your breakdown is finished.

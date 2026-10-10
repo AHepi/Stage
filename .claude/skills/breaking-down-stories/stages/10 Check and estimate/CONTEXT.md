@@ -16,7 +16,7 @@ Once, after the film pass. At quick depth it runs without the questions and scor
 
 ## Inputs
 
-All records; the checker's report; `12 Whole-film check.md`; the adapter files and `adapters/prices.json` for the lint and the money; the story, read only in the lines each question cites.
+All records; the checker's report; `12 Whole-film check.md`; the adapter files and `_config/adapters/prices.json` for the lint and the money; the story, read only in the lines each question cites.
 
 ## Outputs
 
@@ -26,7 +26,7 @@ All records; the checker's report; `12 Whole-film check.md`; the adapter files a
 
 ## Card parts to open
 
-At every depth: `reference/05 Quality rubric.md`, whole; card 21, part "Cost".
+At every depth: `references/formats/05 Quality rubric.md`, whole; card 21, part "Cost".
 
 ## Procedure
 
@@ -37,13 +37,13 @@ At every depth: `reference/05 Quality rubric.md`, whole; card 21, part "Cost".
 5. **The questions.** Run `stage.py questions --sample`. It writes yes/no questions for every turn shot, turn beat and must-keep shot, every shot that needs mirror, text or violence handling, and a seeded share (`question_sample_share`) of the rest, each citing the lines it can be checked against (C5 R11; D7 R3, R5): "Does Iona's face change before she says 'Not mint.' (lines 454 to 463)?"
 6. **Fresh answers.** Units U-10-QUESTIONS-B1, B2 and on, each a fresh unit that wrote none of the records (C5 R12), answer one batch against the story, reading only the records and lines its questions cite. Each answer is an `answer` item on its scene's REVIEW, with its evidence. Each "no" also becomes a FINDING (`source: review`); a fault no question asked about goes in the unit's report, not in a finding. A finding without quoted evidence is dropped (D7 R4); a sampled shot with a blocking finding widens the sample (D7 R6).
 7. **Fix, then check again.** Fix the findings as in item 3 above, then run `stage.py check --all` once more.
-8. **Scores** (U-10-SCORES). Only once `check --all` reports no error, because scores on a broken file measure the break (D7 R1). A fresh unit scores the ten criteria of `reference/05 Quality rubric.md`, 0 to 3, with one line of evidence each, per scene in scope and for the film. The film passes by the pass rule in `reference/05`; a score under 2 carries a FINDING with its fix, and one FINDING may be cited by several scores. RV-FILM's `answer` items are step 9's four film-pass questions (sound-off, stranger, heavy-handedness, different-film), answered from the film strip and `12 Whole-film check`. Scores are advice: judges agree with people only weakly (D7 §8), so the user reads three scenes.
+8. **Scores** (U-10-SCORES). Only once `check --all` reports no error, because scores on a broken file measure the break (D7 R1). A fresh unit scores the ten criteria of `references/formats/05 Quality rubric.md`, 0 to 3, with one line of evidence each, per scene in scope and for the film. The film passes by the pass rule in `references/formats/05`; a score under 2 carries a FINDING with its fix, and one FINDING may be cited by several scores. RV-FILM's `answer` items are step 9's four film-pass questions (sound-off, stranger, heavy-handedness, different-film), answered from the film strip and `12 Whole-film check`. Scores are advice: judges agree with people only weakly (D7 §8), so the user reads three scenes.
 9. **The three scenes to read** (`scenes_to_read`): the climax scene, the scene with the most dialogue, and the biggest action scene. The Catch: scene 26, scene 13, scene 06.
 10. **Check.** Run `stage.py check --step 10`, then give the report below.
 
 ## Record template
 
-`templates/13 Health check.md` (REVIEW, FINDING).
+`references/templates/13 Health check.md` (REVIEW, FINDING).
 
 ## IDs you will be given
 
@@ -67,7 +67,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-The finished check's message (`reference/07 Report and message formats.md`), filled with the computed numbers:
+The finished check's message (`references/formats/07 Report and message formats.md`), filled with the computed numbers:
 
 ```
 Done: step 11 of 12, the health check. In short: one thing needs you (reading three
@@ -95,7 +95,7 @@ The finished check. It waits for the answer; "defaults" accepts [no]. At most `a
 Every line reference is a quote anchor: each question and each evidence line quotes the story or the record, at least `quote_anchor_words_min` words, never a line number.
 
 1. The health check runs in check chats, never in the chat that wrote the files: one per group of scenes, attaching the group's scene files, `02 Whole-film summary`, `10 Film rules`, your story, `11 Steps 09-11 and 16 - film pass, check, book, resume`, `05 Checks in words`, and the previous group's health-check file so the finding numbers go on from it. The user types "Check my group of scenes."
-2. That chat runs `reference/06 Checks in words.md` part 2, then writes the review questions by hand: every turn shot, turn beat and must-keep shot, every shot with mirror, text or violence handling, and one remaining shot in every ten, in shot order. It answers them against the story, scores the rubric for each scene, and saves `13 Health check - group 3.md`: the group's REVIEW and FINDING records, the checks-in-words table, the END line.
+2. That chat runs `references/formats/06 Checks in words.md` part 2, then writes the review questions by hand: every turn shot, turn beat and must-keep shot, every shot with mirror, text or violence handling, and one remaining shot in every ten, in shot order. It answers them against the story, scores the rubric for each scene, and saves `13 Health check - group 3.md`: the group's REVIEW and FINDING records, the checks-in-words table, the END line.
 3. Criteria scored only by measuring (1, 5, 6, 8 and 9) are scored from the checks in words, labelled "checked in words", and scored again at the real check.
 4. The estimate is rough and labelled rough: screen time added up from the scene files; no money is printed without the checker and fresh prices.
 5. After the last group, one short chat attaching the group files, `12 Whole-film check` and `00 Start here` writes `13 Health check.md`: its plain part, `RV-FILM`, the END line. The three scenes are read as the plain parts of their scene files.

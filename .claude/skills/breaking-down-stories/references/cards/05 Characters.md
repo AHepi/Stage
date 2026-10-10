@@ -111,4 +111,4 @@ Fails: left and right on bodies (fix the side in an edited still); words on clot
 
 ## Look up for more
 
-B5 §3.2 (the face), §5 (how people move, status, distance), §6 (non-human characters), §7.2 (fixed description rules), §9 (R1-R26), §10 (The Catch's cast), §11, §13, §14; B4 §6 (costume); K03 and K26 in `library/00 Resolved conflicts.md`. Print one rule with `stage.py lib B5 R21`.
+B5 §3.2 (the face), §5 (how people move, status, distance), §6 (non-human characters), §7.2 (fixed description rules), §9 (R1-R26), §10 (The Catch's cast), §11, §13, §14; B4 §6 (costume); K03 and K26 in `references/library/00 Resolved conflicts.md`. Print one rule with `stage.py lib B5 R21`.

@@ -121,4 +121,4 @@ The plan reaches prompts only through later records, so write it as things a cam
 
 ## Look up for more
 
-`stage.py lib D16 §4` (roles, sequences, peaks), `D16 §8` (The Catch), `D2 §5`, `§6`, `§8`, `D13 §4.1`, `B3 §2.6`, `B4 §3.1`, `A4 §6.5`, `A2 Step 7`, `A3 §3.2`; the files are in `library/`.
+`stage.py lib D16 §4` (roles, sequences, peaks), `D16 §8` (The Catch), `D2 §5`, `§6`, `§8`, `D13 §4.1`, `B3 §2.6`, `B4 §3.1`, `A4 §6.5`, `A2 Step 7`, `A3 §3.2`; the files are in `references/library/`.

@@ -1,11 +1,11 @@
 # Resolved conflicts (K01 to K31)
 
-**Example first.** C3 calls the dialogue-through-glass shot "13-04", but the story's thirteenth heading is the glass partition, and the shot C3 describes happens in the eleventh (the treatment floor, morning). Conflict K01 settles it: this pipeline counts scenes in heading order, so the shot belongs to SC11, and `library/01 What the codes mean.md` translates every old number. Every row below works the same way: it names the research files that disagreed, says what this pipeline does instead, and says whether the user is asked.
+**Example first.** C3 calls the dialogue-through-glass shot "13-04", but the story's thirteenth heading is the glass partition, and the shot C3 describes happens in the eleventh (the treatment floor, morning). Conflict K01 settles it: this pipeline counts scenes in heading order, so the shot belongs to SC11, and `references/library/01 What the codes mean.md` translates every old number. Every row below works the same way: it names the research files that disagreed, says what this pipeline does instead, and says whether the user is asked.
 
 **How to read a row.**
 
-- **Research**: the files and places that disagreed. "B1 R14" is rule 14 of B1's decision rules; "B1 §10.2" is a section; "B1 Ex1" is a worked example; "B1 P11" is a principle. `library/01 What the codes mean.md` explains every label, and `library/02 Errata.md` lists the research sentences these decisions overrule.
-- **Decision**: what the pipeline does. Numbers live in `rules/constants.json` and are named here, never retyped as rules.
+- **Research**: the files and places that disagreed. "B1 R14" is rule 14 of B1's decision rules; "B1 §10.2" is a section; "B1 Ex1" is a worked example; "B1 P11" is a principle. `references/library/01 What the codes mean.md` explains every label, and `references/library/02 Errata.md` lists the research sentences these decisions overrule.
+- **Decision**: what the pipeline does. Numbers live in `_config/rules/constants.json` and are named here, never retyped as rules.
 - **Asked**: "no" means the decision is fixed. "B item 5" means the user sees it at the big choices (checkpoint B), item 5, with the default shown. A "small choice" is a CHOICE with `asked: no`, listed at checkpoint B under "small choices I made".
 - **Where it lives**: the files, fields and checks that carry the decision now.
 
@@ -18,7 +18,7 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Research**: C5 §10.1 (ID rules) and C5 E3 (`SC06-SH140`, crew label "6P"); A2, A3, A4, B3, B4, C2 and C5 count the thirty headings in order; A1 §7 writes the recording scene as `scene_id: 07` with a beat `7.4`; B1 and C1 name scenes by what happens in them; B2 §8.5 numbers twenty-three colour-script rows; B3 §2.7 has nine stretches; C3 §22 numbers shots on other scene numbers ("13-04", "09-22"); A2 §8 and §11 write `sc10.B1.a`; A3 §5.9 labels a setup `6C`, A3 §1 a look `IONA-L2`; C1 Recipe 10 writes `S07_03`; C2 §6.6 writes `SC014_SH03` and §5 rule 29 `SC012_SH03_start.png`; C4's previs kit writes `CATCH_SC06_SH14`.
 - **Decision**: C5 §10.1. Scenes SC01-SC30 in heading order; beats `SC10-B07`; shots `SC10-SH150` in tens, an added shot between two (`SH155`); the crew letter labels are derived by code and appear only in the shot-list spreadsheet. Code issues or pre-issues every ID. Every research example is mapped once: C3's 13-04 is SC11; 09-22 and 09-15 are SC06; 11-07A, 11-07B and 11-08 are SC07; 14-05A and 14-05B are SC15; 18-31 to 18-33 are SC25; A1's 07 and 7.4 are SC13; C4's `CATCH_SC06_SH14` is `SC06-SH140`. B2's rows become `sub_row` items of the visual plans VS-SQ01 to VS-SQ09.
 - **Asked**: no.
-- **Where it lives**: ID patterns in `schema/schema.json`; checks ID-01 to ID-09; the full map of old numbers in `library/01 What the codes mean.md`.
+- **Where it lives**: ID patterns in `_config/schema/schema.json`; checks ID-01 to ID-09; the full map of old numbers in `references/library/01 What the codes mean.md`.
 
 ## K02 How mirrored shots are made
 
@@ -47,7 +47,7 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 
 - **Research**: B1 §10.2 and §16 (recommendations: the Fs as exception props, world screens mirrored, the copied name backwards, world screen text backwards with longer reading time, the scene 6 recording flipped when shown in era b); C2 §7.4 (leaves the F, world screens and the copied name open); A3 Ex4 (asks whether the visor reads backwards); B5 §4.4 (the suit's lettering: "Every word printed on it reads backwards to her"); C3 §13B (visor graphics as edit graphics, orientation not stated).
 - **Decision**: B1's recommendations, each a RULE record listing what it governs: `WR-F-EXCEPTION` (the toy carriage's Fs read as scripted), `WR-WORLD-SCREENS` (world screens mirrored in era b), `WR-COPIED-NAME` (the copied "IONA VALE" label backwards), `WR-SCREEN-TEXT-B` (visor, wrist and monitor text backwards in era b, with reading time doubled), `WR-REPLAY` (the SC06 recording flipped when shown in era b), `WR-TITLES` (title cards always read normally).
-- **Later research**: D12 §12 and D6 §12 keep the suit's words backwards after her final turn too, because the suit turns with her (B1 §16's "snap readable" is not followed); see `library/02 Errata.md`.
+- **Later research**: D12 §12 and D6 §12 keep the suit's words backwards after her final turn too, because the suit turns with her (B1 §16's "snap readable" is not followed); see `references/library/02 Errata.md`.
 - **Asked**: B item 5, grouped (accept).
 - **Where it lives**: RULE records in `06 World and style.md`; check SIDE-05; card 17.
 
@@ -79,7 +79,7 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Research**: A1 §11 (McKee's 2 to 3 words a second, so 16 to 24 words in 8 seconds); A2 Step 9 and §15 (words divided by 2.5, plus half a second; slower for weighted speakers such as Saye); A4 AI5 (split past about 15 to 17 words in 8 seconds); C3 R8 (at most 2.5 words a second, one speaker change per 3 seconds); C5 §6.6 check 5 (at most 2.5 words a second).
 - **Decision**: the sum over a clip's speeches of words divided by pace stays within the clip length less a margin (`clip_speech_rule`); the default pace is `speech_wps_default`, and each VOICE may set `pace_wps` (Saye speaks slower). A1's 16 to 24 words is retired.
 - **Asked**: no.
-- **Where it lives**: `rules/constants.json`; checks GEN-03, TIME-01.
+- **Where it lives**: `_config/rules/constants.json`; checks GEN-03, TIME-01.
 
 ## K09 Reading time for text and inserts
 
@@ -87,14 +87,14 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Decision**: one formula, `text_floor`: the larger of its minimum and a base plus characters divided by the reading rate; plot-critical text (emphasis 2 or more) gets B1's read-twice floor; mirrored text doubles. "Goods only. No persons." needs 4.0 seconds, 8.0 mirrored. Inserts without text follow their emphasis.
 - **Later research**: D12 §12 compares its design targets with this floor; the floor is the enforced minimum.
 - **Asked**: no.
-- **Where it lives**: `text_floor` in `rules/constants.json`; check TIME-01.
+- **Where it lives**: `text_floor` in `_config/rules/constants.json`; check TIME-01.
 
 ## K10 Pauses, holds and handles
 
 - **Research**: A1 R15 (pauses short, medium or long, at most two long ones per scene); A2 Step 9 ("(beat)" about a second; "Silence." or "She waits." 2 to 3 seconds; "a long moment" 3 to 4; a turning point's reaction at least 2); A4 §6.1 (shot length by beat intensity) and §10 (handles of 0.75 seconds); C5 R15 (handles of half a second to a second).
 - **Decision**: A2's dialogue length is a floor for each speech; A4's table sets shots without dialogue and where cuts fall. Pause tiers are half-open ranges with no gaps (`pause_tiers`): short, medium and long, and anything longer is a `hold` that needs a saved choice. The long tier starts where A2's "Silence." starts, not at A1's 3 seconds, so no length is left unnamed. At most `long_pauses_per_scene_max` long pauses per scene; a turn's reaction lasts at least `turn_reaction_min_s`; handles are `handles_s`.
 - **Asked**: no.
-- **Where it lives**: `rules/constants.json`; checks TIME-01, TIME-04, TIME-05, TIME-08.
+- **Where it lives**: `_config/rules/constants.json`; checks TIME-01, TIME-04, TIME-05, TIME-08.
 
 ## K11 How loud a plant may be
 
@@ -124,14 +124,14 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Research**: A2 §6 Step 6 (beat intensity 1 to 5 within a scene); B3 §0.1 and §2.7 (story intensity 1 to 10 across the film, one 10, never converted); B2 §8 (frame value and saturation 1 to 5); B4 §3.4 (emphasis L0 to L3 for things, S0 to S3 for sounds); B1 P11 (one "emphasis device" per beat) against B4 R23 (one "added signal"); C4 §9 and §4.4 (previs levels 0 to 5, with a 1b; stand-in detail 1 to 5).
 - **Decision**: separate names and ranges, never converted: `beat_intensity`, `scene_intensity`, `emphasis`, `sound_emphasis`, `frame_value`, `saturation`, `previs_level`, `standin_level` (ranges in `scales`). B1's device and B4's added signal merge into `added_emphasis`, 0 or 1 per beat.
 - **Asked**: no.
-- **Where it lives**: `scales` and `added_emphasis_per_beat_max` in `rules/constants.json`; checks CRAFT-05, CRAFT-09, CRAFT-10.
+- **Where it lives**: `scales` and `added_emphasis_per_beat_max` in `_config/rules/constants.json`; checks CRAFT-05, CRAFT-09, CRAFT-10.
 
 ## K15 Speech syntax for Veo
 
 - **Research**: A1 §11 (Google's October 2025 guide: speech in quotation marks); A4 §7.8 (a sound line with quoted speech); C3 §2B, §7A and §16 (September 2026 documents: Veo and Omni in colon form without quotes, because quotes can be drawn as text; Kling, Wan and LTX quoted).
 - **Decision**: speaker syntax per model adapter: Veo and Omni colon form without quotes; Kling, Wan and LTX quoted. The freshness rule forces a re-check before a paid batch.
 - **Asked**: no.
-- **Where it lives**: `adapters/video_models.json`; checks GEN-09, GEN-11.
+- **Where it lives**: `_config/adapters/video_models.json`; checks GEN-09, GEN-11.
 
 ## K16 Voices
 
@@ -139,7 +139,7 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Decision**: voices first for every recurring speaker, one locked voice each; voices generated inside a clip only for drafts and one-line parts; off-screen delivery wherever A1 and A2 choose the listener.
 - **Later research**: D3 (voice design, paths, consent, lip-sync routes) builds on this.
 - **Asked**: no.
-- **Where it lives**: VOICE records; `adapters/audio_models.json`; card 06.
+- **Where it lives**: VOICE records; `_config/adapters/audio_models.json`; card 06.
 
 ## K17 Readable text
 
@@ -154,14 +154,14 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Research**: C2 §6.3 (location prompts with "No people, no text"); B2 §8.2 (write swatch prompts in positive terms, because models add what a prompt names); C3 §21 linter item L14 (no negation of a visible thing except documented "No ..." lines); B3 R29 (clear glass has no reflections, keep the camera's side darker); C1 §9 and C2 §9 ("faint reflections").
 - **Decision**: exclusions go to a negative field where the model has one, otherwise only the documented "No ..." lines; never "no people" in picture prompts. Glass wording follows the glass state: clear glass is "seen through perfectly clear glass; the room on the camera's side is dark"; reflecting glass uses B3's reflection phrase.
 - **Asked**: no.
-- **Where it lives**: `adapters/phrasebook.json`; check GEN-07.
+- **Where it lives**: `_config/adapters/phrasebook.json`; check GEN-07.
 
 ## K19 "Torch" and the light side in the SC01 bolt-hole insert
 
 - **Research**: B2 Ex1 (the flashlight enters from frame-right; B2 §0.1 writes "flashlight" in prompts, because "torch" draws a flame); B1 §15 (Example 1's prompt: "torchlight from the left"); C1's test prompt and C3 §22.0's look block for the cage both say "torch".
-- **Decision**: `prompt_words` swaps "torch" for "flashlight" in every compiled prompt; quotes of the script keep "torch". The insert takes B2's main-light side (frame-right). B1's example is corrected in `library/02 Errata.md`.
+- **Decision**: `prompt_words` swaps "torch" for "flashlight" in every compiled prompt; quotes of the script keep "torch". The insert takes B2's main-light side (frame-right). B1's example is corrected in `references/library/02 Errata.md`.
 - **Asked**: no.
-- **Where it lives**: PROJECT `prompt_words`; `rules/words.json`; check GEN-12; card 11.
+- **Where it lives**: PROJECT `prompt_words`; `_config/rules/words.json`; check GEN-12; card 11.
 
 ## K20 The SC06 fall
 
@@ -183,7 +183,7 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Research**: B3 Ex1 and §6.3 (camera A at 85 millimetres from about 6.3 metres on the table's axis; Iona sets the lamp down before the raised hands; Eli deep in the same frame); A2 §11 (beat 5 with Saye in the foreground); B1 §9.2 (no 85 before SC13).
 - **Decision**: default is B3's tested version: camera A 6.3 metres back on the table's axis at 85 millimetres under `LX-01`; Iona sets the lamp down before the raised hands, an invention listed for keep or cut; Eli small and deep in the centre. Option b is A2's version with Saye in the foreground. Shown again at checkpoint C for SQ03.
 - **Asked**: small choice.
-- **Where it lives**: LOCATION `LOC-SAYE-KITCHEN` set plan; the gold scene in `examples/`.
+- **Where it lives**: LOCATION `LOC-SAYE-KITCHEN` set plan; the gold scene in `references/examples/`.
 
 ## K23 Previs formats
 
@@ -226,7 +226,7 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Research**: A1 to A4 fill-in templates in YAML; C5 R29 (lowercase snake_case values, compared ignoring case) and C5 §10 (JSON, `none` for empty); C1 Recipe 10 and C2 §6.6 use null; C2 §7.3 and B3 §8 write values in capitals (NORMAL, MIRRORED, CLEAR); A2 and A4 values contain spaces and hyphens; A1 and A2 write actions as -ing words, A3 as infinitives.
 - **Decision**: the record text of the pipeline; lowercase snake_case values compared ignoring case; `none`, never null; `yes` and `no`; one -ing field named `tactic`; A3's infinitives converted.
 - **Asked**: no.
-- **Where it lives**: `reference/01 Record format.md`; `schema/schema.json`; checks FORM-04, FORM-13.
+- **Where it lives**: `references/formats/01 Record format.md`; `_config/schema/schema.json`; checks FORM-04, FORM-13.
 
 ## K29 Model routing
 
@@ -234,7 +234,7 @@ Worked story values (The Catch) are defaults for that story, not rules for every
 - **Decision**: one scene model by default; overrides for single shots are logged with their reason and followed by drift questions; control of open models is tested once, and the working route is written into the adapter.
 - **Later research**: D8 §10 item 3 settles the frame-rate question by frame count.
 - **Asked**: no.
-- **Where it lives**: SHOT `scene_model` and `model`; `adapters/routing.json`.
+- **Where it lives**: SHOT `scene_model` and `model`; `_config/adapters/routing.json`.
 
 ## K30 Slow motion
 

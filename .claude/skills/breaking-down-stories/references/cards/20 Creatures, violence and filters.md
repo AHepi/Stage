@@ -54,4 +54,4 @@ Works: "shaped like a person", never "humanoid"; the visible quality, "soft pale
 
 ## Look up for more
 
-`stage.py lib B5 §6` (non-human characters), `B5 §10.9` (the figure): `library/B5 Character design for story.md`. `C1 §4`, `C1 §6`; `C3 §14`; `D4 §3.6`, `D4 §4`; `D11 R28`. Card 24 for rights and content flags.
+`stage.py lib B5 §6` (non-human characters), `B5 §10.9` (the figure): `references/library/B5 Character design for story.md`. `C1 §4`, `C1 §6`; `C3 §14`; `D4 §3.6`, `D4 §4`; `D11 R28`. Card 24 for rights and content flags.

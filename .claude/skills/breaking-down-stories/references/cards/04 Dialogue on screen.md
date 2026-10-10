@@ -123,4 +123,4 @@ Works: each quote with its speaker named in the same sentence; a reaction clip t
 
 ## Look up for more
 
-`stage.py lib A1 §6` (rules, tie-breaks), `A1 §7`, `A1 §10`: `library/A1 Dialogue as action and subtext.md`. `D3 §5`, `§11`: `library/D3 Voices and dialogue audio.md`. `A2 §12` (scene 13).
+`stage.py lib A1 §6` (rules, tie-breaks), `A1 §7`, `A1 §10`: `references/library/A1 Dialogue as action and subtext.md`. `D3 §5`, `§11`: `references/library/D3 Voices and dialogue audio.md`. `A2 §12` (scene 13).

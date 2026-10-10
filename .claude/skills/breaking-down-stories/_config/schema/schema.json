@@ -396,7 +396,7 @@
    "pattern": "^U-\\d{2}-[A-Z0-9.]+(?:-[A-Z0-9]+)*$",
    "syntax": "U-<step two digits>-<scope>[-<batch or part>]",
    "example": "U-08-SC10-B2",
-   "declared_by": "schema/steps.json",
+   "declared_by": "_config/schema/steps.json",
    "shown_to_user_as": "not shown"
   },
   "SHOT_IN_LIST": {
@@ -11334,7 +11334,7 @@
     {
      "name": "score",
      "label": "Score",
-     "meaning": "A rubric criterion's score (reference/05).",
+     "meaning": "A rubric criterion's score (references/formats/05).",
      "kind": "sub_parts",
      "depth": "s",
      "writer": "ai",

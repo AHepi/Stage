@@ -2,7 +2,7 @@
  "about": "Word lists the checker reads (WORDS-01 to WORDS-05, REASON-04, GEN-06, GEN-07, GEN-12, FORM-08, FORM-13) and the word list of blueprint 5.7 as data. Written by WP1 on 2026-09-28. Every list names its research source; entries marked [judgement] extend a research list in its own spirit.",
  "flag_modes": {
   "always": "WORDS-02 flags the word in field values and in user-facing text, outside double quotes that match the story.",
-  "user_text": "Flagged only in user-facing text: everything above a file's divider, reports, the book, reference/07 and checkpoint messages.",
+  "user_text": "Flagged only in user-facing text: everything above a file's divider, reports, the book, references/formats/07 and checkpoint messages.",
   "in_fields": "Flagged only in the fields named in in_fields ('*.origin' means the origin field of any record type).",
   "field_name": "A retired field or sub-part name: FORM-03 reports it with 'did you mean' the replacement, and the tidy fix renames it when the replacement is a single field (FORM-13).",
   "prompts": "Flagged only in compiled prompt text (GEN-12).",

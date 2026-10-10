@@ -1,6 +1,6 @@
 # Word list
 
-One plain word for each thing. Write "turn shot", never "key shot"; in a record that is `- role: turn`. Use the middle column in every record, card, step file and message, and never the retired words in the last column. Where the AI's word and the user's word differ, the user's word is the only one allowed above a file's divider and in messages ("group 3", never "SQ03"). The same list, as data the checker reads, is `rules/words.json`; the user's plainer version is `06 Word list.md`.
+One plain word for each thing. Write "turn shot", never "key shot"; in a record that is `- role: turn`. Use the middle column in every record, card, step file and message, and never the retired words in the last column. Where the AI's word and the user's word differ, the user's word is the only one allowed above a file's divider and in messages ("group 3", never "SQ03"). The same list, as data the checker reads, is `_config/rules/words.json`; the user's plainer version is `06 Word list.md`.
 
 ## The words and the fields they map to
 
@@ -88,6 +88,6 @@ Only the user's words go above a file's divider, into reports and into messages:
 
 ## Where the checker looks
 
-WORDS-02 warns on a retired word in a field value or in user-facing text, read in its retired sense ("camera movement", "a sound bed"; "his movement" is plain English). Each entry in `rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03), only in prompts (GEN-12), or nowhere (`emblem` as a PROP kind, `spine` as a MOTIF rank).
+WORDS-02 warns on a retired word in a field value or in user-facing text, read in its retired sense ("camera movement", "a sound bed"; "his movement" is plain English). Each entry in `_config/rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03), only in prompts (GEN-12), or nowhere (`emblem` as a PROP kind, `spine` as a MOTIF rank).
 
 Always allowed: "Stage" as the product's name and `stage.py`; story words inside double quotes (a script's "torch" stays); the field names `CHARACTER.movement` (label "How they move") and `SETUP.look_at` (label "Aimed at"); research codes in AI-facing files. Mood-only reasons, emotion words and banned prompt words have their own lists (REASON-04, WORDS-01, GEN-12).

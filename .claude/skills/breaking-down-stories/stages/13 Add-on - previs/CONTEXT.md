@@ -42,7 +42,7 @@ At every depth: card 22, whole.
 
 ## Record template
 
-`templates/18 Add-on jobs.md` (PREVIS).
+`references/templates/18 Add-on jobs.md` (PREVIS).
 
 ## IDs you will be given
 

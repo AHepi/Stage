@@ -55,7 +55,7 @@ After characters, places and things: units of scenes in story order, then the bi
 
 ## Record template
 
-`templates/09 Continuity.md` (STATE), `templates/01 Choices.md` (CHOICE, SETVALUE).
+`references/templates/09 Continuity.md` (STATE), `references/templates/01 Choices.md` (CHOICE, SETVALUE).
 
 ## IDs you will be given
 
@@ -83,7 +83,7 @@ After each unit, a short report; after the last, the big-choices message.
 
 ## Checkpoint
 
-Checkpoint B, shown to the user as "the big choices". It blocks. One message, at most `checkpoint_b_items_max` numbered items, each one or two lines with its default and reason, in this order: the climax reading; style and frame shape (with the home tone in the same line, only when it is unclear); place and time; music; the story-world rules (grouped, with eras and exceptions); what each principal's appearance must say (one sentence each); "small choices I made" (one accept item pointing to `01 Choices`). Mark with * the `checkpoint_b_marked_items` choices whose change would redo the most records (from each CHOICE's `affects`; for The Catch: the frame shape, the mirror world, the climax). The Catch (`reference/07`):
+Checkpoint B, shown to the user as "the big choices". It blocks. One message, at most `checkpoint_b_items_max` numbered items, each one or two lines with its default and reason, in this order: the climax reading; style and frame shape (with the home tone in the same line, only when it is unclear); place and time; music; the story-world rules (grouped, with eras and exceptions); what each principal's appearance must say (one sentence each); "small choices I made" (one accept item pointing to `01 Choices`). Mark with * the `checkpoint_b_marked_items` choices whose change would redo the most records (from each CHOICE's `affects`; for The Catch: the frame shape, the mirror world, the climax). The Catch (`references/formats/07`):
 
 ```
 Done: steps 4 to 6 of 12 (world and style; characters, places and things; continuity).
@@ -129,7 +129,7 @@ Every line reference is a quote anchor: `from` and `cause` quote the story exact
 
 1. Save each unit's STATE records in one copy box: `09 Continuity.md` first, then `09 Continuity - scenes 06-10.md` and so on (merged by ID, G10).
 2. After the big-choices answers, write in copy boxes: `01 Choices.md` again, whole, with every choice's `status` (`answered` or `defaulted`), `answer` and `date`; `00 Start here.md` again, whole, with "Big choices so far" and the PROJECT values the answers set (`frame_shape`) or earlier steps filled (`genre`, `tone_home`, `tone_range`, `prompt_words`); `06 World and style.md` again, whole, with the answered values in place of `open` (STYLE `medium`, WORLD `place` and `period`, RULE `era`) and any other file whose values an answer changed; then unit U-05-SUMMARY, `02 Whole-film summary.md`: the scene list with events, sequences and plan fields, fixed descriptions, state lines, voices, the `movement` field and status lines, FACT and PLANT lines and world rules, without set plans, at most `whole_film_summary_words_max` words. Tell the user which earlier choice files to delete. Leave `locked` as saved; `adopt` sets the locks from the answered choices.
-3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line:
 
 ```

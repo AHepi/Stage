@@ -51,7 +51,7 @@ At every depth: card 24, part "The rights question".
 
 ## Record template
 
-`templates/00 Start here.md` (PROJECT), `templates/01 Choices.md` (CHOICE), `templates/22 Rights and credits.md` (RIGHTS). The self-test's SHOT template is in its handout.
+`references/templates/00 Start here.md` (PROJECT), `references/templates/01 Choices.md` (CHOICE), `references/templates/22 Rights and credits.md` (RIGHTS). The self-test's SHOT template is in its handout.
 
 ## IDs you will be given
 
@@ -76,7 +76,7 @@ Answer each question yes or no from what you just wrote; each "no" is a fix befo
 
 ## The report
 
-The welcome, filled from the user's own story (The Catch here; `reference/07 Report and message formats.md`):
+The welcome, filled from the user's own story (The Catch here; `references/formats/07 Report and message formats.md`):
 
 ```
 Hello. I'll turn The Catch into a scene-by-scene plan for making it as a film,
@@ -129,11 +129,11 @@ The rights question, worded as in the welcome. It blocks: nothing else runs unti
 
 No code here (Gemini, or any app without it), so there is no numbered story: from now on every line reference is a quote anchor, a short exact quotation of the story (G5).
 
-1. **Self-test in words.** In your first reply quote the story's first line and its last line exactly ("= THE CATCH" and "= THE END"). If you cannot, the app did not read the whole file: ask the user to paste the missing part (`reference/07`, "When something goes wrong"). Then `batch_size: 12`, `code_execution: no`, `surface: gemini` (or `other`).
+1. **Self-test in words.** In your first reply quote the story's first line and its last line exactly ("= THE CATCH" and "= THE END"). If you cannot, the app did not read the whole file: ask the user to paste the missing part (`references/formats/07`, "When something goes wrong"). Then `batch_size: 12`, `code_execution: no`, `surface: gemini` (or `other`).
 2. Find the turn, write the example shot and send the welcome exactly as above.
 3. After the answer, write three files, each in its own copy box with "Save as:" above it: `00 Start here.md`, `01 Choices.md`, `22 Rights and credits.md`. Each box holds the plain part (for `00 Start here`, the template's six sections, with "Checked by the checker: never"), the divider line, the records, then the checks-in-words table and the END line.
 4. Write CHOICE-001 to CHOICE-003 whole: options (rights as in "Checkpoint"; depth a standard, b quick, c detailed; privacy a not confirmed, b off), one `sets` line per option, `answer`, `status`, `date`. Write every field the templates mark "in a chat without code you write it" (PROJECT `title` from the first title-page line, `source_fingerprint: none`, `checker_last_run: never`), every record's `status` and `locked`, and what the choices set: PROJECT `rights`, `depth`, `training_off`; RT-001 `subject`, `clearance`, `holder`.
-5. Run the checks of `reference/06 Checks in words.md` part 1 on each file; the table goes after a `---` line below the last record, before the END line, and rows about beats and shots say "PASS (no beats or shots in this file)". Print one line: "Checked in words: 14 of 14 passed" (or only the failures).
+5. Run the checks of `references/formats/06 Checks in words.md` part 1 on each file; the table goes after a `---` line below the last record, before the END line, and rows about beats and shots say "PASS (no beats or shots in this file)". Print one line: "Checked in words: 14 of 14 passed" (or only the failures).
 6. Tell the user once: make a folder "The Catch - breakdown" and save each box in it under its "Save as" name.
 7. End with the four-part report, then:
 

@@ -1,6 +1,17 @@
 # Record format
 
-Every numbered file in a project stores its records in "record text": plain lines that people can read and code can check. This page is the whole grammar (rules G1 to G13), three examples, and the ten mistakes that come up most, with their fixes. Field names, kinds and allowed values live in `schema/schema.json`; `reference/03 Field guide.md` lists them in words.
+Every numbered file in a project stores its records in "record text": plain lines that people can read and code can check. This page is the whole grammar (rules G1 to G13), three examples, and the ten mistakes that come up most, with their fixes. Field names, kinds and allowed values live in `_config/schema/schema.json`; `references/formats/03 Field guide.md` lists them in words.
+
+## What you most often need
+
+This short list was the section "Records: what you most often need" of `SKILL.md`.
+
+- The grammar is on this page (G1 to G13): `### TYPE ID title`; `- field: value`; named sub-parts after ` | `; `none` empty, `open` undecided, `auto` code's choice; `> ` a note; one END line, `END OF FILE | <what the file holds> | <n> records`.
+- Never put a shortening marker ("...", "etc.", "same as above") inside a record (G11), or split a record across replies.
+- Field names and values come only from `_config/schema/schema.json`; words from `references/formats/02 Word list.md`; numbers by name from `_config/rules/constants.json` (without code, the last table of `references/formats/06`).
+- Code issues scene, chapter and speech IDs, and a block for the rest (beats SC10-B01 to SC10-B30; shots SC10-SH010 to SC10-SH400 in tens).
+- Before step 7, a moment inside a scene is a story point: the scene ID and a quote anchor (`SC24 "She deletes the way home."`).
+- When two rules disagree, the higher in `references/formats/04 Rule order.md` wins; the `why` says which.
 
 ## Example 1: one record
 
@@ -99,7 +110,7 @@ Below this line: details for the AI and the checker. You never need to read them
 END OF FILE | Continuity, scene 7 | 1 records
 ```
 
-This is Example 1 as it is saved from a chat app. The plain part comes first, then the fixed divider line, then the records, then the checks-in-words table after a `---` line, then the END line. The real table has a row for each of the 14 checks (`reference/06` part 1). In chat every line reference is a quote anchor; `stage.py adopt` turns anchors into numbers later.
+This is Example 1 as it is saved from a chat app. The plain part comes first, then the fixed divider line, then the records, then the checks-in-words table after a `---` line, then the END line. The real table has a row for each of the 14 checks (`references/formats/06` part 1). In chat every line reference is a quote anchor; `stage.py adopt` turns anchors into numbers later.
 
 ## Example 3: the turn shot of scene 10, and one scene item
 
@@ -120,7 +131,7 @@ This is Example 1 as it is saved from a chat app. The plain part comes first, th
 - why: "Her face changes." puts the turn inside her mouth, so the scene's closest frame is spent here.
 ```
 
-The lines above are some of the shot's fields, in their order; the whole record, with every Standard field, is in `examples/01 The Catch - scene 10.md`. In the same scene file the turn picture, written before any shot, reads `- turn_picture: SC10-B07 | picture: Iona close, eyes on Saye just off the lens, her mouth stopped mid-chew`.
+The lines above are some of the shot's fields, in their order; the whole record, with every Standard field, is in `references/examples/01 The Catch - scene 10.md`. In the same scene file the turn picture, written before any shot, reads `- turn_picture: SC10-B07 | picture: Iona close, eyes on Saye just off the lens, her mouth stopped mid-chew`.
 
 ## The ten most common mistakes
 

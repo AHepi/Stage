@@ -54,7 +54,7 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
 
 ## Record template
 
-`templates/06 World and style.md` (STYLE, WORLD, RULE), `templates/01 Choices.md` (CHOICE, SETVALUE), and the PROJECT part of `templates/00 Start here.md` for `prompt_words`.
+`references/templates/06 World and style.md` (STYLE, WORLD, RULE), `references/templates/01 Choices.md` (CHOICE, SETVALUE), and the PROJECT part of `references/templates/00 Start here.md` for `prompt_words`.
 
 ## IDs you will be given
 
@@ -115,7 +115,7 @@ Every line reference is a quote anchor: `evidence` items, RULE start and end lin
 1. Harvest the locale cues yourself from the attached story: search it for place words, signs, vehicles, money and institutions, and quote each exactly.
 2. Write `06 World and style.md` in one copy box with "Save as:" above it, and the new CHOICE and SETVALUE records in a second box saved as `01 Choices - world and style.md` (`adopt` merges it with `01 Choices.md` by ID, G10). Leave the user's fields `open` in STYLE `medium`, WORLD `place` and `period` and RULE `era` until the big choices are answered; step 5's chat writes them then. PROJECT `prompt_words` waits for the next save of `00 Start here`.
 3. Write each CHOICE's `status: open`, each record's `status` and `locked`, and STYLE `provisional: yes` and `named_reference_policy: describe_qualities_only`.
-4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 5. Report as above, then the resume line:
 
 ```

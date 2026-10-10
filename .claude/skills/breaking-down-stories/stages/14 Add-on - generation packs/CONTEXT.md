@@ -16,7 +16,7 @@ On request, after the book and exports; packs on any app, spending only with a c
 
 ## Inputs
 
-Every shot-related record; STYLE; CHARACTER, VOICE and STATE; LOOK; SOUNDPLAN; RIGHTS and PROJECT `rights`; the dated adapter files and `adapters/prices.json`.
+Every shot-related record; STYLE; CHARACTER, VOICE and STATE; LOOK; SOUNDPLAN; RIGHTS and PROJECT `rights`; the dated adapter files and `_config/adapters/prices.json`.
 
 ## Outputs
 
@@ -46,7 +46,7 @@ At every depth: card 21, whole; card 06, part "Lip sync and voice takes"; card 2
 
 ## Record template
 
-`templates/18 Add-on jobs.md` (PIC, TAKE, VOICETAKE), `templates/22 Rights and credits.md` (RIGHTS), `templates/01 Choices.md` (CHOICE).
+`references/templates/18 Add-on jobs.md` (PIC, TAKE, VOICETAKE), `references/templates/22 Rights and credits.md` (RIGHTS), `references/templates/01 Choices.md` (CHOICE).
 
 ## IDs you will be given
 

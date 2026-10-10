@@ -53,4 +53,4 @@ Works: the behaviour itself, "she holds the wheel so hard her skinned palm opens
 
 ## Look up for more
 
-`stage.py lib A3 §7.2`, `§7.4`, `§7.8`: `library/A3 Script breakdown, directing and adaptation.md`. `A1 R32` to `R34`: `library/A1 Dialogue as action and subtext.md`. `A4 T2`, `A4 §5`: `library/A4 Editing, transitions, rhythm and sound.md`.
+`stage.py lib A3 §7.2`, `§7.4`, `§7.8`: `references/library/A3 Script breakdown, directing and adaptation.md`. `A1 R32` to `R34`: `references/library/A1 Dialogue as action and subtext.md`. `A4 T2`, `A4 §5`: `references/library/A4 Editing, transitions, rhythm and sound.md`.

@@ -25,7 +25,7 @@ shot 190, wide, 9 seconds, the second turn: held from the high corner: "Look at 
 
 The whole breakdown is a folder of numbered files you can read: the scene list, the characters, places and things, the film's rules, one page for each scene, a health check, the running time and cost, a readable book, a shot-list spreadsheet and captions. When you ask, it adds storyboards, grey previews (rough grey 3D versions of the hardest shots), prompts for AI video tools and a plan for the edit.
 
-To see a finished scene now, open `15 The breakdown/The breakdown.html` in the folder **09 Example - The Catch, scene 10** in your web browser.
+To see a finished scene now, open `15 The breakdown/The breakdown.html` in the folder **02 Example - The Catch, scene 10** in your web browser.
 
 ## Which app to use
 

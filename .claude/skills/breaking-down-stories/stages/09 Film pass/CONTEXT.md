@@ -48,7 +48,7 @@ At every depth: card 09, part "Film pass".
 
 ## Record template
 
-`templates/13 Health check.md`, its FINDING part (the same record in `12 Whole-film check.md`); `templates/01 Choices.md` (CHOICE).
+`references/templates/13 Health check.md`, its FINDING part (the same record in `12 Whole-film check.md`); `references/templates/01 Choices.md` (CHOICE).
 
 ## IDs you will be given
 
@@ -72,7 +72,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-Fill it from the project; these are illustrative counts for The Catch (message shapes: `reference/07 Report and message formats.md`):
+Fill it from the project; these are illustrative counts for The Catch (message shapes: `references/formats/07 Report and message formats.md`):
 
 ```
 Done: step 10 of 12, the film pass.
@@ -101,7 +101,7 @@ None that waits. Only findings that change a creative choice reach the user, as 
 Every line reference is a quote anchor: each finding's `evidence` quotes the record and the story line exactly, at least `quote_anchor_words_min` words, never a line number.
 
 1. There is no film strip. The film pass runs in check chats, one per group of scenes, after the last group's own check. Each chat attaches that group's scene files (in two messages when they pass the app's file limit), `02 Whole-film summary`, `10 Film rules`, `05 Checks in words`, `11 Steps 09-11 and 16 - film pass, check, book, resume`, and the last saved `12 Whole-film check` (for the first group, the last `13 Health check` instead), and the user types "Run the film pass on these scenes."
-2. In that chat, quote this step's one-line task, then answer step 9's questions of `reference/06 Checks in words.md` part 2 for the group, and check by hand the two errors you can count: each character camera rule (nothing closer than its `limit_before` before its `closest` story point; nothing on its `never` list) and each saved choice's uses against `max_uses` and `allowed_in`.
+2. In that chat, quote this step's one-line task, then answer step 9's questions of `references/formats/06 Checks in words.md` part 2 for the group, and check by hand the two errors you can count: each character camera rule (nothing closer than its `limit_before` before its `closest` story point; nothing on its `never` list) and each saved choice's uses against `max_uses` and `allowed_in`.
 3. Save the findings as `12 Whole-film check.md`, the whole file each time: the earlier groups' findings carried forward, then this group's, numbered on from the highest FIND number in the attached files, the checks-in-words table, the END line. Choices go in `01 Choices - film pass.md`.
 4. The other film checks (the ladder, rhymes, colour, sameness, counts) need code: they run at the real check on a code surface, where `adopt` is followed by `check --film`. Say so once in the report.
 5. Report, then the resume line; after the last group it names step 10's first health-check chat:

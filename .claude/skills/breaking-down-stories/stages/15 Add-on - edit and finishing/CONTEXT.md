@@ -43,7 +43,7 @@ At every depth: card 23, whole.
 
 ## Record template
 
-`templates/18 Add-on jobs.md` (FINISH, MUSIC), `templates/22 Rights and credits.md` (RIGHTS).
+`references/templates/18 Add-on jobs.md` (FINISH, MUSIC), `references/templates/22 Rights and credits.md` (RIGHTS).
 
 ## IDs you will be given
 

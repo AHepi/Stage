@@ -56,7 +56,7 @@ Each unit opens only the parts listed for it (steps.json):
 
 ## Record template
 
-`templates/07 Characters and voices.md` (CHARACTER, VOICE), `templates/08 Places and things.md` (LOCATION, PROP, TEXT, MOTIF, CAMERA), `templates/01 Choices.md`.
+`references/templates/07 Characters and voices.md` (CHARACTER, VOICE), `references/templates/08 Places and things.md` (LOCATION, PROP, TEXT, MOTIF, CAMERA), `references/templates/01 Choices.md`.
 
 ## IDs you will be given
 
@@ -113,7 +113,7 @@ Every line reference is a quote anchor: `evidence` items, `gesture` lines, PROP 
 2. Each unit's records go in one copy box with "Save as:" above it. The first unit that writes a file saves it under its name (`07 Characters and voices.md`); later units save theirs by content (`07 Characters and voices - Saye.md`), and choices as `01 Choices - characters.md`; `adopt` merges them by ID (G10).
 3. You write TEXT `words`, LOCATION `headings` and `voice: none` yourself. The things unit saves `04 Scene list.md` again, whole, with each device scene's `host`; `05 Story plan.md` again, whole, with the new FACT `element` lines; and the name checks as `22 Rights and credits - name checks.md`.
 4. Small choices (`asked: no`) are written `status: defaulted`, and their default values go into the records at once (`likeness_basis: invented`, VOICE `source: designed`); a change at the big choices saves that file again.
-5. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+5. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 6. Report as above, then the resume line naming every file saved so far that the next unit needs:
 
 ```

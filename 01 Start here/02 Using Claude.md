@@ -23,7 +23,7 @@ Do this once, before you upload a story that is not published: open **Settings**
 You need Claude desktop and a paid plan (Pro or Max).
 
 1. Download the Stage folder and unzip it where you keep your work. On GitHub: the green **Code** button, then **Download ZIP**.
-2. In Claude desktop, open **Customize**, then **Skills**, and upload `08 Skill for Claude apps.zip` from the Stage folder (the same clicks as in way 3, step 2).
+2. In Claude desktop, open **Customize**, then **Skills**, and upload `Skill for Claude apps.zip` from the folder `03 Kits to upload` in Stage (the same clicks as in way 3, step 2).
 3. Choose **Cowork** in the message box and connect the Stage folder, so that Claude can read and write its files.
 4. Put your story in the folder `My stories`.
 5. Type: **Break down my story.**
@@ -43,7 +43,7 @@ You need Claude Code and a paid plan (Pro or Max).
 This works on every plan, the free one too.
 
 1. **Settings**, then **Capabilities**: turn on **"Code execution and file creation"**. The skill needs it, because it lets Claude run the checker.
-2. **Customize**, then **Skills**, then **+**, **Create skill**, **Upload a skill**, and choose `08 Skill for Claude apps.zip`.
+2. **Customize**, then **Skills**, then **+**, **Create skill**, **Upload a skill**, and choose `Skill for Claude apps.zip` from `03 Kits to upload`.
 3. Test it: in a new chat, type **Which skills do you have?** The answer should name breaking-down-stories.
 4. Make a project for your film (**Projects**, then **New project**), named after your story. The free plan allows five projects.
 5. In a new chat in that project, attach your story and type: **Break down my story.**

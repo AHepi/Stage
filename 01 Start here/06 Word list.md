@@ -1,6 +1,6 @@
 # Word list
 
-Stage uses one plain word for each thing, always the same one. The examples come from The Catch, most from scene 10 (the folder **09 Example - The Catch, scene 10**).
+Stage uses one plain word for each thing, always the same one. The examples come from The Catch, most from scene 10 (the folder **02 Example - The Catch, scene 10**).
 
 ## The story
 

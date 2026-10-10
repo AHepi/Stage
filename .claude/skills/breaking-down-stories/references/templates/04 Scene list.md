@@ -14,7 +14,7 @@
 
 Below this line: details for the AI and the checker. You never need to read them.
 
-> The scene's list fields (step 1) and plan fields (step 2) live here; its design fields live in its scene file (templates/11 Scene.md). The copies merge by ID.
+> The scene's list fields (step 1) and plan fields (step 2) live here; its design fields live in its scene file (references/templates/11 Scene.md). The copies merge by ID.
 
 ### SCENE <SCnn> <the place, in plain words>
 - heading: <quick, code copies it from the story when source_is_screenplay; you write it when source_not_screenplay; in a chat without code you write it: text>

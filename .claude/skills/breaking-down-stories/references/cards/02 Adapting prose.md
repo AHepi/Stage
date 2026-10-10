@@ -123,4 +123,4 @@ Works: letters and documents as text graphics, exact words, never drawn by the m
 
 ## Look up for more
 
-`stage.py lib A3 §7` and `A3 Ex5`: `library/A3 Script breakdown, directing and adaptation.md`. `D2 §4`, `§8`: `library/D2 Adapting a whole work.md`. `D14 §2`, `§5` to `§9`: `library/D14 Reading any story format.md`. `A1 R32` to `R34`.
+`stage.py lib A3 §7` and `A3 Ex5`: `references/library/A3 Script breakdown, directing and adaptation.md`. `D2 §4`, `§8`: `references/library/D2 Adapting a whole work.md`. `D14 §2`, `§5` to `§9`: `references/library/D14 Reading any story format.md`. `A1 R32` to `R34`.

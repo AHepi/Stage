@@ -41,7 +41,7 @@ At every depth: card 21, whole.
 
 ## Record template
 
-`templates/18 Add-on jobs.md` (PIC), `templates/01 Choices.md` (CHOICE).
+`references/templates/18 Add-on jobs.md` (PIC), `references/templates/01 Choices.md` (CHOICE).
 
 ## IDs you will be given
 

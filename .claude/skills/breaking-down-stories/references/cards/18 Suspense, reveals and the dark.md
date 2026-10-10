@@ -63,4 +63,4 @@ In scene 6 Eli's arm leaves the bottom of the frame: `keep_hidden: FT-03 | how: 
 
 ## Look up for more
 
-`stage.py lib A4 §6.5`, `A4 §6.6`, `A4 §9`: `library/A4 Editing, transitions, rhythm and sound.md`. `A1 §6`; `A3 §9`; `B1 §10.4`; `B2 §7`; card 17.
+`stage.py lib A4 §6.5`, `A4 §6.6`, `A4 §9`: `references/library/A4 Editing, transitions, rhythm and sound.md`. `A1 §6`; `A3 §9`; `B1 §10.4`; `B2 §7`; card 17.

@@ -1,6 +1,6 @@
 # Card 21. Making pictures and video with AI
 
-Add-ons A and C read it whole; step 10 reads only "Cost". "C1 R9" is rule 9 in C1 §6; "C2 Rule 12" is rule 12 in C2 §5 and "C2 R6" its recipe 6; "C3 R1" is rule 1 in C3 §18 and "C3 L14" its linter check 14. Model facts live only in `adapters/*.json`, dated (C1 §0).
+Add-ons A and C read it whole; step 10 reads only "Cost". "C1 R9" is rule 9 in C1 §6; "C2 Rule 12" is rule 12 in C2 §5 and "C2 R6" its recipe 6; "C3 R1" is rule 1 in C3 §18 and "C3 L14" its linter check 14. Model facts live only in `_config/adapters/*.json`, dated (C1 §0).
 
 ## The job
 

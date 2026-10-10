@@ -17,7 +17,7 @@ ChatGPT Plus can run Stage's tools in its own workspace, so it checks every piec
 ## What you need
 
 - ChatGPT Plus or higher. A project on Plus holds up to 25 files; the kit uses 12, plus the text for the instruction box.
-- The folder `07 Chat kit` from Stage.
+- The folder `Chat kit`, in `03 Kits to upload` in Stage.
 
 ## First, privacy
 
@@ -26,8 +26,8 @@ Do this once, before you upload a story that is not published: open **Settings**
 ## Set up a project, once for each film
 
 1. Make a project (**Projects**, then **New project**) and name it after your story. If ChatGPT asks about memory, choose the memory that stays inside this project.
-2. Open the project's instructions and paste the whole of `00 Paste into instructions.txt` from `07 Chat kit`. It is under 6,000 characters, so it fits.
-3. Add the other 12 files of `07 Chat kit` to the project's files, `07 Tools.zip` included. ChatGPT takes 10 files at a time, so add them in two goes.
+2. Open the project's instructions and paste the whole of `00 Paste into instructions.txt` from `Chat kit`. It is under 6,000 characters, so it fits.
+3. Add the other 12 files of `Chat kit` to the project's files, `07 Tools.zip` included. ChatGPT takes 10 files at a time, so add them in two goes.
 4. In the model picker, choose **Thinking**. The quicker model cannot hold a whole story at once.
 
 If your app shows different names for these menus, follow the app: the makers move them from time to time.

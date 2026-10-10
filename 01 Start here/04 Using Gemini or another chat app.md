@@ -22,7 +22,7 @@ The first line ends the copy box: this END line counts the records (the entries 
 
 - **Gemini AI Pro or higher.** The kit's knowledge is about 75,000 words, about 100,000 tokens (the pieces AI apps count text in). The free plan gives 32,000 tokens; with your story and the day's files added, a working chat needs AI Pro.
 - **A free Claude account**, for the check at the end of each group of scenes.
-- The folder `07 Chat kit` from Stage.
+- The folder `Chat kit`, in `03 Kits to upload` in Stage.
 
 ## First, privacy
 
@@ -32,7 +32,7 @@ Do this once, before you upload a story that is not published: open **Gemini App
 
 1. Make a new Gem and name it Stage.
 2. Paste the whole of `00 Paste into instructions.txt` into its instructions.
-3. Add the six knowledge files `01` to `06` of `07 Chat kit`. Leave out `07 Tools.zip`, which Gemini cannot run, and the step files `08` to `12`.
+3. Add the six knowledge files `01` to `06` of `Chat kit`. Leave out `07 Tools.zip`, which Gemini cannot run, and the step files `08` to `12`.
 4. Make a folder on your computer named after your story, such as **The Catch - breakdown**, with a folder **11 Scenes** inside it.
 
 If your app shows different names for these menus, follow the app.

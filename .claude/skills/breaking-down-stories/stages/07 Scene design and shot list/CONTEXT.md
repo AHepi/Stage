@@ -54,7 +54,7 @@ In this order; shots come last.
 
 ## Record template
 
-`templates/11 Scene.md` (SCENE design fields, PART, BEAT, SPEECH, MOVE, SETUP, SHOTLIST).
+`references/templates/11 Scene.md` (SCENE design fields, PART, BEAT, SPEECH, MOVE, SETUP, SHOTLIST).
 
 ## IDs you will be given
 
@@ -78,7 +78,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-After each scene a short report (in chat ending with the list); after a sequence's last scene, checkpoint C's message (`reference/07`; your own counts):
+After each scene a short report (in chat ending with the list); after a sequence's last scene, checkpoint C's message (`references/formats/07`; your own counts):
 
 ```
 Done: group 3, scenes 7 to 10 (step 8 of 12). 58 shots, about 4 minutes.
@@ -122,7 +122,7 @@ if you prefer.
 Every line reference is a quote anchor: beat `lines`, `because` lines and story points quote the scene exactly, at least `quote_anchor_words_min` words, found once in it (`- lines: "Iona chews it." to "street signs either."`). Never add a ` = <beat>` ending.
 
 1. Number the speeches in cue order yourself (`SC10-D01` is the first cue); prose gets SPEECH records with the exact words.
-2. Write the scene file in one copy box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+2. Write the scene file in one copy box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 3. Write `status: approved`, `locked: yes` and SHOTLIST `approved: yes`; if the user changes the list, save the scene file again.
 4. Step 8 follows the group message; the check chat follows the group's last batch. Mid-group:
 

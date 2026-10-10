@@ -4,7 +4,7 @@
 
 ## The research files
 
-| Code | Plain title (file in `library/`) | Code | Plain title |
+| Code | Plain title (file in `references/library/`) | Code | Plain title |
 |---|---|---|---|
 | A1 | Dialogue as action and subtext | D1 | Running the pipeline in chat apps |
 | A2 | Scene design, values and beats | D2 | Adapting a whole work |
@@ -25,13 +25,13 @@
 | | | D17 | World and place research |
 | | | D18 | Captions, audio description and translation |
 
-Each file has a digest in `library/digests/` with the same name plus " - digest".
+Each file has a digest in `references/library/digests/` with the same name plus " - digest".
 
 ## How to read a citation
 
 - **"B1 R14"** is rule 14 in the file's decision rules (B1 §11 here). Where a file numbers its rules without an R, the number is still written with R ("C5 R29" is rule 29 of C5 §5).
 - **"§10.2"** is a section, **"Ex1"** a worked example, **"P5"** a principle from the file's first sections.
-- **Digests number their rules again from 1** and give the full-file source in square brackets: B4 digest rule 17 is "[R23]", so it is B4 R23. Older notes that say "rule N" (for example "B4 rule 17" or "A3 rule 33") mean the digest's number; `library/02 Errata.md` lists the ones found. Always cite the full file.
+- **Digests number their rules again from 1** and give the full-file source in square brackets: B4 digest rule 17 is "[R23]", so it is B4 R23. Older notes that say "rule N" (for example "B4 rule 17" or "A3 rule 33") mean the digest's number; `references/library/02 Errata.md` lists the ones found. Always cite the full file.
 - **Square brackets inside the research** are sources and evidence labels, not rules: [S12] and [P45] are numbered sources, [V] verified, [V-sec] verified at a secondary source, [U] unverified, [J] judgement.
 - **Labels that belong to one file:**
 
@@ -101,4 +101,4 @@ The part after the hyphen is C3's own shot count, not a shot ID. The pipeline is
 | `SFX-`, `AMB-`, `TH-`, SOUND record | D9 | proposals only; the schema has `effect` items, room sound and MUSIC (`MU-nn`) |
 | checkpoint M; T; F, G, H | D2; D14; D8 | checkpoint P (the story plan, step 2); part of step 1; the stops inside add-on D |
 
-The full list of retired words with their replacements is in `rules/words.json` and `reference/02 Word list.md`.
+The full list of retired words with their replacements is in `_config/rules/words.json` and `references/formats/02 Word list.md`.

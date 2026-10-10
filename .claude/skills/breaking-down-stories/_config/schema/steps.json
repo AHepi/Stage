@@ -95,7 +95,7 @@
  },
  "cards": {
   "01": {
-   "file": "cards/01 Reading the whole story.md",
+   "file": "references/cards/01 Reading the whole story.md",
    "type": "department",
    "parts": {
     "length": {
@@ -121,7 +121,7 @@
    ]
   },
   "02": {
-   "file": "cards/02 Adapting prose.md",
+   "file": "references/cards/02 Adapting prose.md",
    "type": "department",
    "parts": {
     "intake": {
@@ -152,7 +152,7 @@
    ]
   },
   "03": {
-   "file": "cards/03 Scenes, values and beats.md",
+   "file": "references/cards/03 Scenes, values and beats.md",
    "type": "department",
    "parts": {
     "whole": {
@@ -173,7 +173,7 @@
    ]
   },
   "04": {
-   "file": "cards/04 Dialogue on screen.md",
+   "file": "references/cards/04 Dialogue on screen.md",
    "type": "department",
    "parts": {
     "landing_face": {
@@ -209,7 +209,7 @@
    ]
   },
   "05": {
-   "file": "cards/05 Characters.md",
+   "file": "references/cards/05 Characters.md",
    "type": "department",
    "parts": {
     "state_lines": {
@@ -235,7 +235,7 @@
    ]
   },
   "06": {
-   "file": "cards/06 Voices and performance.md",
+   "file": "references/cards/06 Voices and performance.md",
    "type": "department",
    "parts": {
     "voices": {
@@ -271,7 +271,7 @@
    ]
   },
   "07": {
-   "file": "cards/07 Places, things and motifs.md",
+   "file": "references/cards/07 Places, things and motifs.md",
    "type": "department",
    "parts": {
     "emphasis": {
@@ -297,7 +297,7 @@
    ]
   },
   "08": {
-   "file": "cards/08 World, style and genre.md",
+   "file": "references/cards/08 World, style and genre.md",
    "type": "department",
    "parts": {
     "genre_and_tone": {
@@ -323,7 +323,7 @@
    ]
   },
   "09": {
-   "file": "cards/09 Film rules and restraint.md",
+   "file": "references/cards/09 Film rules and restraint.md",
    "type": "department",
    "parts": {
     "film_pass": {
@@ -349,7 +349,7 @@
    ]
   },
   "10": {
-   "file": "cards/10 Camera.md",
+   "file": "references/cards/10 Camera.md",
    "type": "department",
    "parts": {
     "camera_system": {
@@ -380,7 +380,7 @@
    ]
   },
   "11": {
-   "file": "cards/11 Light and colour.md",
+   "file": "references/cards/11 Light and colour.md",
    "type": "department",
    "parts": {
     "lighting_plan": {
@@ -421,7 +421,7 @@
    ]
   },
   "12": {
-   "file": "cards/12 Staging and composition.md",
+   "file": "references/cards/12 Staging and composition.md",
    "type": "department",
    "parts": {
     "set_plans": {
@@ -462,7 +462,7 @@
    ]
   },
   "13": {
-   "file": "cards/13 Cutting, rhythm and sound.md",
+   "file": "references/cards/13 Cutting, rhythm and sound.md",
    "type": "department",
    "parts": {
     "sound_plan": {
@@ -498,7 +498,7 @@
    ]
   },
   "14": {
-   "file": "cards/14 Shot design.md",
+   "file": "references/cards/14 Shot design.md",
    "type": "department",
    "parts": {
     "shot_list": {
@@ -529,7 +529,7 @@
    ]
   },
   "15": {
-   "file": "cards/15 Action scenes.md",
+   "file": "references/cards/15 Action scenes.md",
    "type": "situation",
    "tags": [
     "action"
@@ -560,7 +560,7 @@
    ]
   },
   "16": {
-   "file": "cards/16 Glass, mirrors and sides.md",
+   "file": "references/cards/16 Glass, mirrors and sides.md",
    "type": "situation",
    "tags": [
     "glass_and_reflection",
@@ -592,7 +592,7 @@
    ]
   },
   "17": {
-   "file": "cards/17 Screens, text and in-story cameras.md",
+   "file": "references/cards/17 Screens, text and in-story cameras.md",
    "type": "situation",
    "tags": [
     "screens_and_text",
@@ -629,7 +629,7 @@
    ]
   },
   "18": {
-   "file": "cards/18 Suspense, reveals and the dark.md",
+   "file": "references/cards/18 Suspense, reveals and the dark.md",
    "type": "situation",
    "tags": [
     "suspense_and_reveal",
@@ -661,7 +661,7 @@
    ]
   },
   "19": {
-   "file": "cards/19 Inner life, montage and time.md",
+   "file": "references/cards/19 Inner life, montage and time.md",
    "type": "situation",
    "tags": [
     "prose_interior",
@@ -693,7 +693,7 @@
    ]
   },
   "20": {
-   "file": "cards/20 Creatures, violence and filters.md",
+   "file": "references/cards/20 Creatures, violence and filters.md",
    "type": "situation",
    "tags": [
     "creature",
@@ -725,7 +725,7 @@
    ]
   },
   "21": {
-   "file": "cards/21 Making pictures and video with AI.md",
+   "file": "references/cards/21 Making pictures and video with AI.md",
    "type": "production",
    "parts": {
     "cost": {
@@ -741,7 +741,7 @@
    "anatomy": null
   },
   "22": {
-   "file": "cards/22 Previs.md",
+   "file": "references/cards/22 Previs.md",
    "type": "production",
    "parts": {
     "whole": {
@@ -752,7 +752,7 @@
    "anatomy": null
   },
   "23": {
-   "file": "cards/23 Finishing, captions and delivery.md",
+   "file": "references/cards/23 Finishing, captions and delivery.md",
    "type": "production",
    "parts": {
     "whole": {
@@ -763,7 +763,7 @@
    "anatomy": null
   },
   "24": {
-   "file": "cards/24 Rights, consent and disclosure.md",
+   "file": "references/cards/24 Rights, consent and disclosure.md",
    "type": "production",
    "parts": {
     "rights_question": {
@@ -784,7 +784,7 @@
    "anatomy": null
   },
   "R05": {
-   "file": "reference/05 Quality rubric.md",
+   "file": "references/formats/05 Quality rubric.md",
    "type": "reference",
    "parts": {
     "whole": {
@@ -795,7 +795,7 @@
    "anatomy": null
   },
   "R07": {
-   "file": "reference/07 Report and message formats.md",
+   "file": "references/formats/07 Report and message formats.md",
    "type": "reference",
    "parts": {
     "whole": {
@@ -857,7 +857,7 @@
   {
    "step": 0,
    "name": "Start",
-   "step_file": "steps/00 Start.md",
+   "step_file": "stages/00 Start/CONTEXT.md",
    "user_number": 1,
    "user_name": "starting",
    "purpose": "Make the project, test the app, settle rights, show what the user will get.",
@@ -951,7 +951,7 @@
   {
    "step": 1,
    "name": "Read the story",
-   "step_file": "steps/01 Read the story.md",
+   "step_file": "stages/01 Read the story/CONTEXT.md",
    "user_number": 2,
    "user_name": "reading the story",
    "purpose": "Turn any story file into numbered text and fix the scene (or chapter) IDs everything hangs on.",
@@ -1088,7 +1088,7 @@
   {
    "step": 2,
    "name": "Story plan",
-   "step_file": "steps/02 Story plan.md",
+   "step_file": "stages/02 Story plan/CONTEXT.md",
    "user_number": 3,
    "user_name": "planning the whole story",
    "purpose": "The film-level plan: events, sequences, one climax and a crisis, peaks, plants and payoffs, who knows what, genre and tone; for prose the macro plans and the step outline.",
@@ -1273,7 +1273,7 @@
   {
    "step": 3,
    "name": "World and style",
-   "step_file": "steps/03 World and style.md",
+   "step_file": "stages/03 World and style/CONTEXT.md",
    "user_number": 4,
    "user_name": "world and style",
    "purpose": "Decide once where and when the story happens, what the film looks like, and the story-world rules.",
@@ -1369,7 +1369,7 @@
   {
    "step": 4,
    "name": "Characters, places and things",
-   "step_file": "steps/04 Characters, places and things.md",
+   "step_file": "stages/04 Characters, places and things/CONTEXT.md",
    "user_number": 5,
    "user_name": "characters, places and things",
    "purpose": "Design everything the film shows more than once: characters and voices, places with set plans, things, text in picture, motifs, in-story cameras.",
@@ -1613,7 +1613,7 @@
   {
    "step": 5,
    "name": "Continuity",
-   "step_file": "steps/05 Continuity.md",
+   "step_file": "stages/05 Continuity/CONTEXT.md",
    "user_number": 6,
    "user_name": "continuity",
    "purpose": "Know the state of every changeable element in every scene, with the line that changed it, and every side.",
@@ -1733,7 +1733,7 @@
   {
    "step": 6,
    "name": "Film rules",
-   "step_file": "steps/06 Film rules.md",
+   "step_file": "stages/06 Film rules/CONTEXT.md",
    "user_number": 7,
    "user_name": "the film's rules",
    "purpose": "Write each department's system for the whole film before any scene, keyed to the one sequence list and the one climax.",
@@ -1909,7 +1909,7 @@
   {
    "step": 7,
    "name": "Scene design and shot list",
-   "step_file": "steps/07 Scene design and shot list.md",
+   "step_file": "stages/07 Scene design and shot list/CONTEXT.md",
    "user_number": 8,
    "user_name": "designing the scenes and listing their shots",
    "purpose": "Per scene: what happens, who wants what, where it turns, how bodies move, each department's one idea, the turn pictures, the dial, and a one-line shot list that fixes the shot IDs.",
@@ -2233,7 +2233,7 @@
   {
    "step": 8,
    "name": "Shot details",
-   "step_file": "steps/08 Shot details.md",
+   "step_file": "stages/08 Shot details/CONTEXT.md",
    "user_number": 9,
    "user_name": "writing the shots",
    "purpose": "Expand the approved one-line list into full SHOT and CUT records, batch by batch.",
@@ -2548,7 +2548,7 @@
   {
    "step": 9,
    "name": "Film pass",
-   "step_file": "steps/09 Film pass.md",
+   "step_file": "stages/09 Film pass/CONTEXT.md",
    "user_number": 10,
    "user_name": "the film pass",
    "purpose": "Judge the whole film as a structure before any picture is made.",
@@ -2653,7 +2653,7 @@
   {
    "step": 10,
    "name": "Check and estimate",
-   "step_file": "steps/10 Check and estimate.md",
+   "step_file": "stages/10 Check and estimate/CONTEXT.md",
    "user_number": 11,
    "user_name": "the health check",
    "purpose": "Prove the breakdown is complete and consistent, score its quality, and say what it will cost.",
@@ -2761,7 +2761,7 @@
   {
    "step": 11,
    "name": "Book and exports",
-   "step_file": "steps/11 Book and exports.md",
+   "step_file": "stages/11 Book and exports/CONTEXT.md",
    "user_number": 12,
    "user_name": "the book and exports",
    "purpose": "Hand the user the deliverable.",
@@ -2832,7 +2832,7 @@
   {
    "step": 12,
    "name": "Add-on - storyboards",
-   "step_file": "steps/12 Add-on - storyboards.md",
+   "step_file": "stages/12 Add-on - storyboards/CONTEXT.md",
    "user_number": null,
    "user_name": "storyboards",
    "purpose": "First D5's style test; then storyboard frames (PIC records, use: storyboard), frame prompts and the storyboard page.",
@@ -2933,7 +2933,7 @@
   {
    "step": 13,
    "name": "Add-on - previs",
-   "step_file": "steps/13 Add-on - previs.md",
+   "step_file": "stages/13 Add-on - previs/CONTEXT.md",
    "user_number": null,
    "user_name": "grey previews",
    "purpose": "PREVIS records, plan files, grey renders, blocking reports and contact sheets (Claude Code on the user's computer only).",
@@ -3008,7 +3008,7 @@
   {
    "step": 14,
    "name": "Add-on - generation packs",
-   "step_file": "steps/14 Add-on - generation packs.md",
+   "step_file": "stages/14 Add-on - generation packs/CONTEXT.md",
    "user_number": null,
    "user_name": "prompts for AI video",
    "purpose": "Style test if needed; reference-picture jobs, start and end picture jobs, the voice line script and voice takes, compiled prompts per model, lint, cost, take records.",
@@ -3194,7 +3194,7 @@
   {
    "step": 15,
    "name": "Add-on - edit and finishing",
-   "step_file": "steps/15 Add-on - edit and finishing.md",
+   "step_file": "stages/15 Add-on - edit and finishing/CONTEXT.md",
    "user_number": null,
    "user_name": "planning the edit",
    "purpose": "Finishing jobs created from shots, music cues if any, the assembly guide and the disclosure text.",
@@ -3284,7 +3284,7 @@
   {
    "step": 16,
    "name": "Resume and recovery",
-   "step_file": "steps/16 Resume and recovery.md",
+   "step_file": "stages/16 Resume and recovery/CONTEXT.md",
    "user_number": null,
    "user_name": "carrying on",
    "purpose": "Pick up where the work stopped, in any app, and recover from a cut-off reply, skipped records, a full chat, a lost file or a refusal.",

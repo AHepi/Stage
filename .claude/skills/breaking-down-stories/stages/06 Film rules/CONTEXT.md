@@ -56,7 +56,7 @@ Work in this order (card 09, questions in order). Every line cites a plan, chara
 
 ## Record template
 
-`templates/10 Film rules.md` (CAMSYS, CAMRULE, RESERVE, LENS, LOOK, VISUAL, SOUNDPLAN, LADDER), `templates/01 Choices.md`, and the PROJECT part of `templates/00 Start here.md` for `fps`.
+`references/templates/10 Film rules.md` (CAMSYS, CAMRULE, RESERVE, LENS, LOOK, VISUAL, SOUNDPLAN, LADDER), `references/templates/01 Choices.md`, and the PROJECT part of `references/templates/00 Start here.md` for `fps`.
 
 ## IDs you will be given
 
@@ -108,7 +108,7 @@ Every line reference is a quote anchor: every story point (`break`, `closest`, `
 
 1. Save the three units' records as `10 Film rules.md`, then `10 Film rules - looks.md` and `10 Film rules - colour, sound and ladder.md`; `adopt` merges them by ID (G10). Save the voice choice, a small choice written `status: defaulted`, as `01 Choices - film rules.md`, and write its default (`voice_policy: designed_only`) in SOUNDPLAN, with `music_policy` as answered at the big choices and `clip_audio: No music in any clip.`
 2. Write each record's `status: approved` and `locked: yes`: film rules are locked on writing. Save `00 Start here.md` again, whole, with PROJECT `fps` and the log line.
-3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line for the first scene chat:
 
 ```

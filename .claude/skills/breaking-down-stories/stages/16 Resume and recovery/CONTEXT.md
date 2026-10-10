@@ -26,7 +26,7 @@ None, or the missing records sent again; on the Claude website and ChatGPT a sav
 
 ## Card parts to open
 
-At every depth: `reference/07 Report and message formats.md`, whole.
+At every depth: `references/formats/07 Report and message formats.md`, whole.
 
 ## Procedure
 
@@ -46,7 +46,7 @@ At every depth: `reference/07 Report and message formats.md`, whole.
 
 ## Record template
 
-None of its own. Records sent again follow the template of the step that was interrupted (for shots, the SHOT part of `templates/11 Scene.md`).
+None of its own. Records sent again follow the template of the step that was interrupted (for shots, the SHOT part of `references/templates/11 Scene.md`).
 
 ## IDs you will be given
 
@@ -69,7 +69,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-The resume line, then the next unit's own report (`reference/07 Report and message formats.md`):
+The resume line, then the next unit's own report (`references/formats/07 Report and message formats.md`):
 
 ```
 Yesterday we finished scenes 1 to 12. Next: scene 13. Nothing is waiting for you.

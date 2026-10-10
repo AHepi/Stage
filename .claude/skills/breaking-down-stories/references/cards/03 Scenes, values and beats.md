@@ -129,4 +129,4 @@ Works: behaviour from the tactic, "she stops chewing, frowns, chews once more, s
 
 ## Look up for more
 
-`stage.py lib A2 §6` (the method), `A2 §7` (rules), `A2 §11`, `§12`, `§14` (worked scenes): `library/A2 Scene design, values and beats.md`. `A3 §3.2` (the director's pass): `library/A3 Script breakdown, directing and adaptation.md`.
+`stage.py lib A2 §6` (the method), `A2 §7` (rules), `A2 §11`, `§12`, `§14` (worked scenes): `references/library/A2 Scene design, values and beats.md`. `A3 §3.2` (the director's pass): `references/library/A3 Script breakdown, directing and adaptation.md`.

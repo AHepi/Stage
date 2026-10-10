@@ -44,7 +44,7 @@ Once, after step 0: code reads the story and you confirm its odd lines, or, in c
 
 ## Record template
 
-`templates/04 Scene list.md` (SCENE), `templates/05 Story plan.md` (CHAPTER), `templates/07 Characters and voices.md` (CHARACTER), `templates/01 Choices.md` (CHOICE).
+`references/templates/04 Scene list.md` (SCENE), `references/templates/05 Story plan.md` (CHAPTER), `references/templates/07 Characters and voices.md` (CHARACTER), `references/templates/01 Choices.md` (CHOICE).
 
 ## IDs you will be given
 
@@ -67,7 +67,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-For a screenplay, checkpoint A's message, with the first estimate as code computed it, a range (D13 R4). The Catch (`reference/07`):
+For a screenplay, checkpoint A's message, with the first estimate as code computed it, a range (D13 R4). The Catch (`references/formats/07`):
 
 ```
 Done: step 2 of 12, reading the story.
@@ -113,7 +113,7 @@ There is no numbered story, so every line reference is a quote anchor: the exact
 3. Prose: one chapter per reply, a CHAPTER with `title`, `lines` as an anchor pair, `words` (your count), and `first_line` and `last_line` quoted exactly (a first line that recurs, as the letters do, is matched within its chapter), saved as `05 Story plan - chapter I.md`; step 2 saves it again, whole, with the digest.
 4. The first estimate is a rough range labelled "rough", from the page check of D13 R22 or the word count, never a total you added up (D13 R4).
 5. Write CHOICE-004 (`format`, `asked: no`, `status: defaulted`, `short` under `short_runtime_max_s` by the rough estimate) and, for a screenplay, the length choice (`asked: yes`, `status: open`; option a sets `runtime_target_s: as_written` and `scope: all`) in `01 Choices - scene list.md`. After the answer, save that file again with `answer`, `status` and `date`, and `00 Start here.md` again, whole.
-6. Each file goes in one copy box with "Save as:" above it: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06` part 1), the END line; a second reply for the same file is saved as `04 Scene list - scenes 16-30.md` (merged by ID, G10). Print "Checked in words: 14 of 14 passed" (or only the failures).
+6. Each file goes in one copy box with "Save as:" above it: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06` part 1), the END line; a second reply for the same file is saved as `04 Scene list - scenes 16-30.md` (merged by ID, G10). Print "Checked in words: 14 of 14 passed" (or only the failures).
 7. Report as above, with the estimate marked rough, then the resume line:
 
 ```

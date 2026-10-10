@@ -78,13 +78,13 @@ At the end of each group of scenes the resume line sends the user to a new chat 
 | REASON-01 | Every shot has a `purpose` and a `because` naming a story ID or line (`default` only when nothing departs from the defaults). |
 | REASON-03 | Every `why` holds a quote from the scene's lines, an ID, or a named element of the scene. |
 | REASON-04 | No `why` holds a mood-only phrase ("to build tension", "for drama", "cinematic", "moody", "dynamic", or "to emphasise" with no object). |
-| WORDS-01 | No `does` or `task` holds an emotion adjective (angry, sad, afraid; `emotion_adjectives` in `rules/words.json`); write what the body does. |
+| WORDS-01 | No `does` or `task` holds an emotion adjective (angry, sad, afraid; `emotion_adjectives` in `_config/rules/words.json`); write what the body does. |
 
 **The time floor by hand.** Floor = the larger of the speech floor and the text floor, plus the pause owed. Speech floor: for each `hear` item, the speech's words ÷ the speaker's `pace_wps` (`speech_wps_default` if the voice has none), plus `speech_floor_extra_s`. Text floor: `text_floor` for each text to read (plot-critical or with emphasis), doubled when mirrored. Pause owed: for each beat this shot ends (the last shot naming it), its `pause_after` seconds, or `turn_reaction_min_s` for a turn if that is larger. Scene 10, shot 150: Saye 19 words at 2.0 = 9.5 s, Iona 2 words at 2.5 = 0.8 s, three speeches add 1.5 s, so the speech floor is 11.8 s; the turn at beat 7 owes 2.0 s; the floor is 13.8 s, and 15 passes.
 
-**Held moments, contacts and physical sense, by hand** (step 8; suggestions, marked as judgements from testers' notes, never errors). Split each moment's `shows` at ";" and "then": a moment of `hold_action_every_s` or more needs one small timed action (a breath, a blink, a swallow, a glance, a hand that adjusts something) for every 2 s of it, and a clause that only stays, waits or listens is no action (CRAFT-26). No moment, `does`, `start` or `end` asks for stillness ("stays still", "does not move", "frozen"; `stillness_words` in `rules/words.json`); write what happens instead (CRAFT-27). No shot holds a hit and its result ("kicks the chair; the chair topples"): end the shot at the contact and open the next on the result, in a clearly different size or angle (CRAFT-28). Then ask of each scene: is there room for a body where people stand, pass and climb? Can a person hold that in their teeth, and speak round it? Can they reach it from there? What do they cut it with? What covers them from above? Can a fixed bar roll? Can someone written as weak run, or hold up someone heavy? Which way does the door open? Two hands, how many things? Can the audience see that thing at that size? (PHYS-01 to PHYS-11.)
+**Held moments, contacts and physical sense, by hand** (step 8; suggestions, marked as judgements from testers' notes, never errors). Split each moment's `shows` at ";" and "then": a moment of `hold_action_every_s` or more needs one small timed action (a breath, a blink, a swallow, a glance, a hand that adjusts something) for every 2 s of it, and a clause that only stays, waits or listens is no action (CRAFT-26). No moment, `does`, `start` or `end` asks for stillness ("stays still", "does not move", "frozen"; `stillness_words` in `_config/rules/words.json`); write what happens instead (CRAFT-27). No shot holds a hit and its result ("kicks the chair; the chair topples"): end the shot at the contact and open the next on the result, in a clearly different size or angle (CRAFT-28). Then ask of each scene: is there room for a body where people stand, pass and climb? Can a person hold that in their teeth, and speak round it? Can they reach it from there? What do they cut it with? What covers them from above? Can a fixed bar roll? Can someone written as weak run, or hold up someone heavy? Which way does the door open? Two hands, how many things? Can the audience see that thing at that size? (PHYS-01 to PHYS-11.)
 
-**Then the questions,** once the user reaches those steps. Step 9: with the sound off, does each turn picture tell its beat? Could a stranger say what each scene is about from its turn pictures and purposes? Is there a symbol not in the story, a scene with more than `plant_inserts_per_scene_max` plant inserts, music under an unsaid line, a light cue on the line that states the point, a rhyme the story does not support? Does any shot feel like a different film? Step 10: the questions and scores of `reference/05 Quality rubric.md`. Answer each yes or no against the story, quoting the record and the line (D7 R3).
+**Then the questions,** once the user reaches those steps. Step 9: with the sound off, does each turn picture tell its beat? Could a stranger say what each scene is about from its turn pictures and purposes? Is there a symbol not in the story, a scene with more than `plant_inserts_per_scene_max` plant inserts, music under an unsaid line, a light cue on the line that states the point, a rhyme the story does not support? Does any shot feel like a different film? Step 10: the questions and scores of `references/formats/05 Quality rubric.md`. Answer each yes or no against the story, quoting the record and the line (D7 R3).
 
 **What the check chat returns:** one copy box with "Save as: 13 Health check - group 3.md" (the group's number) above it: the plain part ("In short: 2 things need you, 5 findings to fix", then what to fix first, one line each), the divider, one REVIEW per scene of the group (`RV-SC07` ...) with its answers (and its scores once the user has reached step 10), one FINDING per failed check or "no" answer (`record`, `rule`, `evidence`, `fix`, `source: review`, `status: open`), numbered on from the attached health-check file, and the END line. `adopt` merges the group files by ID. The next working chat attaches it, fixes those findings first, and marks each `fixed`.
 
@@ -94,7 +94,7 @@ Words are weaker than code. At the end of each group, or at least before accepta
 
 ## Numbers this page uses
 
-Copied from `rules/constants.json`, which wins if they ever differ.
+Copied from `_config/rules/constants.json`, which wins if they ever differ.
 
 | Name | Value |
 |---|---|
@@ -112,7 +112,7 @@ Copied from `rules/constants.json`, which wins if they ever differ.
 
 ## Numbers the step files name
 
-Without code there is no `rules/constants.json`; the step files name these numbers, and their values are here. Copied from `rules/constants.json` and `rules/limits.json`, which win if they ever differ.
+Without code there is no `_config/rules/constants.json`; the step files name these numbers, and their values are here. Copied from `_config/rules/constants.json` and `_config/rules/limits.json`, which win if they ever differ.
 
 | Name | Value |
 |---|---|

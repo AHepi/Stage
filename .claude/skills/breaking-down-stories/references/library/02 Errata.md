@@ -2,7 +2,7 @@
 
 **Example first.** B1's example prompt for the bolt-hole insert in SC01 says "torchlight from the left". Read it as "a flashlight beam entering low from frame-right": B2 Ex1 placed the main light, K19 chose B2's side, and every compiled prompt says "flashlight". The research files themselves are kept as they were written; this page lists the sentences in them that the pipeline no longer follows, and what to read instead.
 
-**How to use this page.** Before acting on a library section, check this page for its code. Each entry starts with an "Applies to" line in the same form as a citation ("B1 §15", "B1 Ex1"); `stage.py lib` prints the entries whose "Applies to" line names the section or rule it prints. Where a correction comes from a resolved conflict, the K row in `library/00 Resolved conflicts.md` gives the full reasoning. Corrections that each research file already made to its own text during its fact-check are listed in that file's own fact-check note and need no action here (C3 §0; C1 §13; C5 §12; D1, D4, D11, D12, D13, D14 and D15 at the top of the file; D17 marks them "(corrected: ...)").
+**How to use this page.** Before acting on a library section, check this page for its code. Each entry starts with an "Applies to" line in the same form as a citation ("B1 §15", "B1 Ex1"); `stage.py lib` prints the entries whose "Applies to" line names the section or rule it prints. Where a correction comes from a resolved conflict, the K row in `references/library/00 Resolved conflicts.md` gives the full reasoning. Corrections that each research file already made to its own text during its fact-check are listed in that file's own fact-check note and need no action here (C3 §0; C1 §13; C5 §12; D1, D4, D11, D12, D13, D14 and D15 at the top of the file; D17 marks them "(corrected: ...)").
 
 ---
 
@@ -34,7 +34,7 @@
 
 - **Applies to**: C3 §22, C3 Ex1, C3 Ex2, C3 Ex3, C3 Ex4, C3 Ex5, C3 Ex6; C4 §12; A1 §7.
 - **The research says**: C3's shot labels ("13-04", "09-22", "11-07A", "14-05A", "18-31") and C4's kit plan `CATCH_SC23_SH09_chest_opens` use scene numbers that do not match the story's headings; A1 §7 calls the recording scene "07".
-- **Read instead**: the map in `library/01 What the codes mean.md`: "13-04" is SC11, the chest opens in SC25, A1's "07" is SC13.
+- **Read instead**: the map in `references/library/01 What the codes mean.md`: "13-04" is SC11, the chest opens in SC25, A1's "07" is SC13.
 
 ### 5. "Build the world mirrored" (K02)
 
@@ -165,7 +165,7 @@ These come from testers' notes and from a clip file made by hand for MiniMax H3,
 
 ### 25. H3's camera line (C3 §4; the adapter entries for MiniMax H3)
 
-- **Applies to**: C3 §4's H3 row; `camera_static` of `minimax-h3` and `minimax-h3-max` in `adapters/video_models.json`; the phrasebook's `hold` line.
+- **Applies to**: C3 §4's H3 row; `camera_static` of `minimax-h3` and `minimax-h3-max` in `_config/adapters/video_models.json`; the phrasebook's `hold` line.
 - **The research says**: H3's static camera is written "holds a perfectly static shot [static]", and Stage added "The camera does not move." after it.
 - **Read instead**: for both H3 entries (the hosted service and the ComfyUI route) the camera gets one sentence, "The shot is static, on a tripod, with no camera movement whatsoever." Testers found that extra camera lines ("no push in, no zoom ...") made cuts drift and the camera move, and that this one line holds (the h3-storyboard testing notes, section 7.2, checked 10 October 2026). Marked J until the take log confirms it.
 

@@ -50,7 +50,7 @@ Write each SHOT reason first: `purpose`, `because`, `role`, then the camera.
 - `held: yes` where meaning depends on not cutting; turn shots count as held (GEN-10).
 - The film-level extreme close-up and push-in (the camera travelling toward the subject) are spent only where their RESERVE allows (FILM-08).
 - At the main turn at most `departments_changing_at_main_turn_max` departments change, named in `scene_idea` (B3 R7; B1 P11; CRAFT-19). Holding the baseline is a full **department idea**, the scene's one idea for camera, light, staging, sound or design (`holds_baseline`).
-- When rules disagree, the higher wins and the `why` names it: the story, readability, physical honesty, systems and budgets, flaws, turns, emotion over continuity, conflict type, beat defaults, the baseline (A1 §6; B1 §11; B2 §7; reference/04).
+- When rules disagree, the higher wins and the `why` names it: the story, readability, physical honesty, systems and budgets, flaws, turns, emotion over continuity, conflict type, beat defaults, the baseline (A1 §6; B1 §11; B2 §7; references/formats/04).
 
 ## Translation menus with pitfalls
 
