@@ -1,6 +1,6 @@
 # 43 Glossary
 
-Log entry 43 started this file. The terms the authority documents use for making video with MiniMax H3, each with a plain meaning and where to find it. Stage's own words are in `reference/02 Word list.md`; this list is for the words that come from outside Stage.
+Log entry 43 started this file. The terms the authority documents use for making video with MiniMax H3, each with a plain meaning and where to find it. Stage's own words are in `.claude/skills/breaking-down-stories/references/formats/02 Word list.md`; this list is for the words that come from outside Stage.
 
 The authority documents, checked on 10 October 2026:
 - **MiniMax's reference-mode guide:** huggingface.co/MiniMaxAI/MiniMax-H3, file `docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md`.
