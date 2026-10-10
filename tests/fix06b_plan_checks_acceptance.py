@@ -20,6 +20,11 @@ Groups:
   rung that rolls; a weak man holding up a heavy man; a weak man running; a chair wedged under a door handle; a
   door kicked open; more than two things in one person's hands; a tiny thing given emphasis in a wide shot; a thing
   out of reach); each line is a warning that asks a question;
+- after the round 1 cross-examination of Project notes 43, on realistic writer wordings in neutral words: F11
+  CRAFT-26 counts held moments only and reads commas and "and"; F15 CRAFT-27 counts a stillness word only where
+  it describes a person; F12 CRAFT-28 reads "swings the bottle into", effect-as-cause and a thing as the effect's
+  subject; F16 the physical sense checks read more wordings and drop a false alarm; F13 the kit texts no longer
+  teach stillness; F4 and F6 the gold's kitchen and bottle say what is there, so the route raises no ROUTE-15;
 - the gold scene 10 (and its chat-saved copy) raises none of the new warnings, and none of the old checks either;
 - the new checks are warnings, registered with a plain sentence, listed for steps 4, 7 and 8 in _config/schema/steps.json,
   and their titles say they are judgements (J);
@@ -244,6 +249,122 @@ GENERIC_WORLD = """
 - screen_time: 3
 - moment: 0-3 | shows: the climber takes hold of the ropes; she breathes out
 """
+
+# Realistic writer wordings for the round 1 findings of Project notes 43 (F11, F12, F15, F16), in neutral words: a
+# woman (Anna) and a man (Ben) in a small kitchen. Each case becomes one shot of scene 91.
+WORDING_WORLD = """
+### CHARACTER CH-TEST-WOMAN The woman
+- names: WOMAN, THE WOMAN, ANNA
+- fixed_description: the woman, a tall woman in her forties in a grey coat
+- height_m: 1.72
+
+### CHARACTER CH-TEST-MAN The man
+- names: MAN, THE MAN, BEN
+- fixed_description: the man, a young man in a blue jacket
+- height_m: 1.8
+
+### LOCATION LOC-TEST-ROOM The room
+- headings: INT. ROOM - NIGHT
+- dressing: a small kitchen with a table and a window
+
+### PROP PR-TEST-LAMP The lamp
+- names: lamp, the lamp
+- fixed_description: a small brass oil lamp
+- real_size: [0.12, 0.12, 0.3]
+
+### PROP PR-TEST-PHONE The phone
+- names: phone, the phone
+- fixed_description: a small black phone
+- real_size: [0.07, 0.15, 0.01]
+
+### PROP PR-TEST-ROPE The rope
+- names: rope, the rope
+- fixed_description: a coil of blue rope
+- real_size: [0.3, 0.3, 0.1]
+
+### SCENE SC91 The room
+- location: LOC-TEST-ROOM
+- characters: CH-TEST-WOMAN, CH-TEST-MAN
+"""
+
+# F11, CRAFT-26: (should be flagged, held, span, shows).
+HELD_WORDINGS = [
+    (False, "no", "0-4", "Anna walks slowly round the end of the table and stops square between the two men, facing Ben"),
+    (False, "yes", "8-15", "she swallows once, breathes out slowly through her nose, blinks, her lips press together, "
+                           "a slow breath in, her eyes on Ben, she blinks again"),
+    (False, "yes", "8-15", "she swallows once and breathes out slowly through her nose and blinks and presses her lips "
+                           "together and blinks again"),
+    (False, "no", "0-6", "Ben climbs the ladder rung by rung toward the hatch"),
+    (False, "yes", "0-9", "she reads the letter, her lips moving, turns the page, frowns, reads on to the end"),
+    (False, "yes", "0-6", "a breath; a blink; a small frown"),
+    (True, "yes", "0-7", "her face; her eyes on Ben; Ben's words land; the fridge hums"),
+    (True, "yes", "0-7", "Anna does nothing at all; she takes it in; it sinks in; she is a statue"),
+    (True, "no", "0-6", "her eyes on the door, her hands in her lap"),
+    (True, "no", "0-8", "Anna listens; she nods"),
+    (True, "yes", "0-10", "Ben looks at her"),
+]
+
+# F15, CRAFT-27: (should be flagged, shows).
+STILLNESS_WORDINGS = [
+    (False, "her hair still wet from the rain, she looks up"),
+    (False, "she presses a bag of frozen peas to Ben's shoulder"),
+    (False, "she tugs at the rigid collar of her shirt"),
+    (False, "her eyes go to the still water in the glass"),
+    (False, "Ben, still in his coat, sits down"),
+    (True, "she doesn't stir; not a muscle moves"),
+    (True, "she sits like a statue"),
+    (True, "she holds her position, unblinking"),
+    (True, "Ben stands frozen in the doorway"),
+    (True, "she sits still beside him"),
+]
+
+# F12, CRAFT-28: (should be flagged, first moment, a second moment or None).
+CONTACT_WORDINGS = [
+    (True, "she swings the bottle into the window; the glass cracks", None),
+    (True, "the glass shatters as the bottle smashes into it", None),
+    (True, "Ben bumps the table and the water glass tips over", None),
+    (True, "she slams the flask down on the counter and the cap pops off", None),
+    (True, "Ben trips over the cable and goes down", None),
+    (True, "she throws the cup at the wall", "the cup shatters against it"),
+    (False, "rain hits the window and drops run down the glass", None),
+    (False, "she hits the light switch; the room drops into shadow", None),
+    (False, "Ben's word hits her; her face falls", None),
+    (False, "someone knocks at the back door; the room falls silent", None),
+    (False, "she pushes the door open and the light falls across the floor", None),
+]
+
+# F16, PHYS: (the check that should fire or None, the field, the words).
+PHYSICAL_WORDINGS = [
+    ("PHYS-09", "moment", "Anna wedges a chair under the back door's handle"),
+    ("PHYS-02", "moment", "Ben climbs with the lamp gripped by his teeth"),
+    ("PHYS-10", "subject", "climbs out, the lit phone in one hand, the lamp and the rope in the other"),
+    ("PHYS-10", "moment", "Ben holds the lit phone, the lamp and the rope"),
+    (None, "moment", "Anna grips the chair's top rail and rolls her shoulders"),
+    (None, "moment", "Ben steadies himself on the rail as the boat rolls"),
+    (None, "moment", "Anna braces herself against the door frame"),
+]
+
+
+def wording_shot(number, shows, held="no", span="0-3", does="looks on", extra="", second=None):
+    """One shot of scene 91 for a wording case."""
+    end = float(span.split("-")[1]) + (3 if second else 0)
+    lines = [f"### SHOT SC91-SH{number:03d} Case {number}", "- size: medium",
+             f"- subject: CH-TEST-WOMAN | does: {does}"] + ([extra] if extra else []) + [
+             f"- screen_time: {end:g}", f"- moment: {span} | shows: {shows}"]
+    if second:
+        lines.append(f"- moment: {span.split('-')[1]}-{end:g} | shows: {second}")
+    lines.append(f"- held: {held}")
+    return "\n" + "\n".join(lines) + "\n"
+
+
+def flagged_cases(result, check_ids):
+    """{case number: set of check IDs} of the scene 91 lines of a run."""
+    found = {}
+    for line in result.all_problems:
+        if line.record.startswith("SC91-SH") and line.check_id in check_ids:
+            found.setdefault(int(line.record[7:]), set()).add(line.check_id)
+    return found
+
 
 # Each physical sense check, the generic record it must flag, and the field.
 PHYSICAL_SLIPS = [
@@ -540,6 +661,124 @@ def main():
         lines = [str(line) for line in lines_of(result)]
         assert not lines, lines
         return f"{len(replacements)} mends; no line"
+
+    @group("F11: CRAFT-26 counts held moments only and reads commas and 'and': a long walk, a comma list and an "
+           "'and' list of small actions pass; poses, non-actions and one small action in a long moment are flagged")
+    def held_wordings():
+        text = WORDING_WORLD + "".join(wording_shot(number, shows, held=held, span=span)
+                                       for number, (_, held, span, shows) in enumerate(HELD_WORDINGS, 1))
+        found = flagged_cases(run(fresh(gold_texts(), text), ["CRAFT-26"]), {"CRAFT-26"})
+        wrong = [f"{'missed' if expected else 'false alarm'}: [held {held}, {span}] {shows}"
+                 for number, (expected, held, span, shows) in enumerate(HELD_WORDINGS, 1)
+                 if bool(found.get(number)) != expected]
+        assert not wrong, wrong
+        return (f"{sum(1 for case in HELD_WORDINGS if not case[0])} wordings pass, "
+                f"{sum(1 for case in HELD_WORDINGS if case[0])} are flagged, as they should be")
+
+    @group("F15: CRAFT-27 leaves 'still wet', 'frozen peas', 'the rigid collar', 'the still water' and 'Ben, still in "
+           "his coat' alone, and flags 'doesn't stir', 'like a statue', 'holds her position, unblinking'")
+    def stillness_wordings():
+        text = WORDING_WORLD + "".join(wording_shot(number, shows)
+                                       for number, (_, shows) in enumerate(STILLNESS_WORDINGS, 1))
+        found = flagged_cases(run(fresh(gold_texts(), text), ["CRAFT-27"]), {"CRAFT-27"})
+        wrong = [f"{'missed' if expected else 'false alarm'}: {shows}"
+                 for number, (expected, shows) in enumerate(STILLNESS_WORDINGS, 1)
+                 if bool(found.get(number)) != expected]
+        assert not wrong, wrong
+        return f"{len(STILLNESS_WORDINGS)} wordings judged as they should be"
+
+    @group("F12: CRAFT-28 reads 'swings the bottle into', an effect before its cause with 'as', 'bumps' and 'slams "
+           "... down', and leaves rain, light, a room and a face alone")
+    def contact_wordings():
+        text = WORDING_WORLD + "".join(wording_shot(number, first, second=second)
+                                       for number, (_, first, second) in enumerate(CONTACT_WORDINGS, 1))
+        result = run(fresh(gold_texts(), text), ["CRAFT-28"])
+        found = flagged_cases(result, {"CRAFT-28"})
+        wrong = [f"{'missed' if expected else 'false alarm'}: {first}" + (f" / {second}" if second else "")
+                 for number, (expected, first, second) in enumerate(CONTACT_WORDINGS, 1)
+                 if bool(found.get(number)) != expected]
+        assert not wrong, wrong
+        effect_first = [line for line in result.all_problems if line.record == "SC91-SH002"]
+        assert effect_first and '"shatters" as "smashes into"' in effect_first[0].what, effect_first
+        return f"{len(CONTACT_WORDINGS)} wordings judged as they should be; for example: {effect_first[0].what}"
+
+    @group("F16: the physical sense checks read 'the back door's handle', 'gripped by his teeth', 'in one hand ... "
+           "in the other' and a moment's hands, and leave 'rolls her shoulders' and 'the door frame' alone")
+    def physical_wordings():
+        things = "\n".join(f"- thing: {name} | emphasis: 1" for name in ("PR-TEST-LAMP", "PR-TEST-PHONE",
+                                                                          "PR-TEST-ROPE"))
+        text = WORDING_WORLD
+        for number, (_, field_name, words) in enumerate(PHYSICAL_WORDINGS, 1):
+            if field_name == "subject":
+                text += wording_shot(number, "she moves on", does=words, extra=things)
+            else:
+                text += wording_shot(number, words, extra=things)
+        checks = [f"PHYS-{number:02d}" for number in range(1, 12)]
+        found = flagged_cases(run(fresh(gold_texts(), text), checks), set(checks))
+        wrong = [f"{expected or 'no line'} wanted, got {sorted(found.get(number, []))}: {words}"
+                 for number, (expected, _, words) in enumerate(PHYSICAL_WORDINGS, 1)
+                 if sorted(found.get(number, [])) != ([expected] if expected else [])]
+        assert not wrong, wrong
+        return f"{len(PHYSICAL_WORDINGS)} wordings judged as they should be"
+
+    @group("F13: the kit texts no longer teach stillness: step 14, the schema's TAKE example, D15 rule 3, the "
+           "record-format example, card 10 and the A4 digest; errata 23 lists D15 R3 and D15 marks its old prompts "
+           "withdrawn")
+    def texts_without_stillness():
+        read = lambda *parts: SKILL.joinpath(*parts).read_text(encoding="utf-8")  # noqa: E731
+        stage_14 = read("stages", "14 Add-on - generation packs", "CONTEXT.md")
+        assert "Only her mouth moves" not in stage_14 and "said once, by the right mouth" in stage_14
+        take = next(field for field in SCHEMA.record_types["TAKE"]["fields"] if field["name"] == "review")
+        assert "only" not in take["example"].lower() and "move between the written actions" in take["example"]
+        d15 = read("references", "library", "D15 Directing performance.md")
+        rule_3 = next(line for line in d15.splitlines() if line.startswith("3. If the line, eyeline or cut"))
+        assert 'with "still" or one movement' not in rule_3 and "breath and blinks going on" in rule_3, rule_3
+        for number, following in ((1, 2), (2, 3), (6, None)):
+            start = d15.index(f"### Example {number}.")
+            section = d15[start:d15.index(f"### Example {following}.") if following else d15.index("## 11.")]
+            assert "withdrawn" in section and "10 October 2026" in section, f"Example {number} is not marked withdrawn"
+        assert "| still:" not in read("references", "formats", "01 Record format.md")
+        assert "while she stays still" not in read("references", "cards", "10 Camera.md")
+        digest = read("references", "library", "digests", "A4 Editing, transitions, rhythm and sound - digest.md")
+        rule_55 = next(line for line in digest.splitlines() if line.startswith("55. "))
+        assert 'prompt "listening, does not speak"' not in rule_55 and "lips closed" in rule_55, rule_55
+        errata = read("references", "library", "02 Errata.md")
+        entry_23 = errata[errata.index("### 23."):errata.index("### 24.")]
+        assert "D15 R3" in entry_23 and "### 27." in errata, entry_23[:300]
+        return "six texts rewritten; errata 23 lists D15 R3; entry 27 covers the listener rule"
+
+    @group("F4 and F6, the gold part: the kitchen's state line and the bottle say what is there, and the route "
+           "raises no ROUTE-15 line for the chat-saved scene 10")
+    def gold_says_what_is_there():
+        absence = [word for word in WORDS["absence_words"]["words"]]
+        pattern = re.compile(r"(?<![A-Za-z'])(" + "|".join(re.escape(word) for word in absence) + r")(?![A-Za-z'])",
+                             re.I)
+        values = []
+        for path in [GOLD_FILES["context"], CHAT_FOLDER / "08 Places and things.md",
+                     CHAT_FOLDER / "09 Continuity.md"]:
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if line.startswith(("- state_line: a bare, clean kitchen", "- fixed_description: a clear, unlabelled")):
+                    values.append(line)
+        assert len(values) == 4, values
+        holding = [value for value in values if pattern.search(value)]
+        assert not holding, holding
+        import os
+        import shutil
+        import subprocess
+        project = temporary / "route project"
+        shutil.copytree(CHAT_FOLDER, project)
+        environment = dict(os.environ)
+        environment["STAGE_LOCK_WAIT_SECONDS"] = "2"
+        completed = subprocess.run([sys.executable, str(TOOLS / "stage.py"), "compile", "--project", str(project),
+                                    "--scene", "SC10", "--route", "h3-comfyui", "--story", str(EXCERPT)],
+                                   capture_output=True, text=True, encoding="utf-8", cwd=str(REPOSITORY),
+                                   env=environment, timeout=900)
+        output = completed.stdout + completed.stderr
+        assert "clips for MiniMax H3 in ComfyUI" in output, output[-800:]
+        assert "ROUTE-15" not in output, [line for line in output.splitlines() if "ROUTE-15" in line][:3]
+        page = next((project / "20 Prompts for AI video").rglob("Scene 10*.md")).read_text(encoding="utf-8")
+        assert "A clear, unlabelled plastic water bottle" in page and "no label" not in page
+        return "4 values with no absence word; compile --route: no ROUTE-15 line, the bottle described in its clip"
 
     @group("the gold scene 10 and its chat-saved copy raise none of the new warnings, and the new rules break no "
            "other check there")

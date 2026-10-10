@@ -100,7 +100,7 @@ Source: `research/A4_editing_transitions_rhythm_sound.md` (840 lines). Refs: C#,
 52. [AI2] If a transition is not a cut, then make it in the editor, never in the prompt, because models make clips, not edits.
 53. [AI5] If a line runs past ~15–17 words per 8 s clip (2.5 words/s, ~1 s of margin), then split it at a phrase boundary under a listener shot. Recurring speakers get one fixed voice plus lip-sync, because both joins and voice drift show.
 54. [AI6] If clips must join invisibly, then start clip B from clip A's cut-point frame, because a shared frame makes separate generations meet.
-55. [AI7] If a shot shows listening, then prompt "listening, does not speak", strip the audio and lay the line over it, because lips stay still and cuts stay movable.
+55. [AI7, read through errata 27, 10 October 2026] If a shot shows listening, then prompt what the listener does, as small timed actions with the lips closed ("her lips closed; she breathes in; at about two seconds she blinks"), strip the audio and lay the line over it, because the lips stay closed and cuts stay movable; never "listening, does not speak", which names no action and names what is absent.
 56. [WE1] If a clip shows free fall or hanging liquid, then use under 3 s of it and strip the audio, because models make physics errors there.
 57. [§7.8, judgment] If sourcing sound, then take:
     - dialogue: native, or a voice model plus lip-sync;
@@ -319,7 +319,7 @@ A "no" needs a fix or a written reason [§12].
 
   Include only what happens in that clip. Veo's own advice: "Use quotes for specific speech", "Explicitly describe sounds", "Describe the environment's soundscape".
 - **Worked line** (sc6, shot 2): `Close on a woman's elbow driving into a steel STOP button on an old freight-lift control box. SFX: a heavy button clunk on impact; cage motor whine; loose grid rattling. Ambience: brick shaft, echo. No music. No dialogue.` The motor and rattle are replaced in the edit, but asking for them stops the model inventing other sounds.
-- **Listener clips:** "listening, does not speak", with no quoted line. Given another's line, a model may mouth it or give it to the wrong face [judgment; check every take].
+- **Listener clips:** small timed actions with the lips closed ("her lips closed; she breathes in; she blinks"), with no quoted line (errata 27; never "listening, does not speak"). Given another's line, a model may mouth it or give it to the wrong face [judgment; check every take].
 - **Every prompt states** screen direction (vertical too) and continuity states.
 - **Inserts** use macro wording.
 - **Faces:** ask for small, open expressions, because AI faces over-act. Constant blinking leaves no cut marks.

@@ -153,9 +153,9 @@ These come from testers' notes and from a clip file made by hand for MiniMax H3,
 
 ### 23. Stillness written as a list of still parts (D15 R6)
 
-- **Applies to**: D15 R6, D15 R8, D15 §1, D15 §4.3, D15 §8, D15 §9; D15 Ex1, D15 Ex2, D15 Ex6; C3 §6.
-- **The research says**: D15 rule 6 (item 8 of the digest, which Project notes 42 calls "rule 8"): "If a hold is 2 s or longer, then name every still part and the one moving part, and add 'The camera does not move.', because models fill empty time [J]." Its examples and checklists write stillness the same way ("her head and hands stay completely still"; "stillness held").
-- **Read instead**: a hold of `hold_action_every_s` or more is written as small timed actions, one at least every 2 seconds (a breath, a blink, a swallow, a glance, a hand that adjusts something), and the camera gets one plain sentence. Testers found that models read a list of still parts as an order to freeze (a strong "do not move" line spreads over the whole shot, so a face looks like a photo with moving lips), and that time with nothing happening in it is squeezed out or frozen (the h3-storyboard testing notes, checked 10 October 2026). "Less display, more time" stays: the time is filled with small actions. The subject's `still` part is no longer asked for or sent to a model (checks CRAFT-26 and CRAFT-27; D15 R6 is rewritten in place, dated).
+- **Applies to**: D15 R3, D15 R6, D15 R8, D15 §1, D15 §2.2, D15 §4.3, D15 §8, D15 §9; D15 Ex1, D15 Ex2, D15 Ex6; C3 §6; card 10's camera example.
+- **The research says**: D15 rule 6 (item 8 of the digest, which Project notes 42 calls "rule 8"): "If a hold is 2 s or longer, then name every still part and the one moving part, and add 'The camera does not move.', because models fill empty time [J]." Its examples and checklists write stillness the same way ("her head and hands stay completely still"; "stillness held"), and rule 3 asks for display level 1 "with 'still' or one movement".
+- **Read instead**: a hold of `hold_action_every_s` or more is written as small timed actions, one at least every 2 seconds (a breath, a blink, a swallow, a glance, a hand that adjusts something), and the camera gets one plain sentence. Testers found that models read a list of still parts as an order to freeze (a strong "do not move" line spreads over the whole shot, so a face looks like a photo with moving lips), and that time with nothing happening in it is squeezed out or frozen (the h3-storyboard testing notes, checked 10 October 2026). "Less display, more time" stays: the time is filled with small actions. The subject's `still` part is no longer asked for or sent to a model (checks CRAFT-26 and CRAFT-27). D15 R6 and R3 are rewritten in place, dated: display level 1 is one small action, with breath and blinks going on. The prompts of D15 Ex1, Ex2 and Ex6 are marked withdrawn where they stand (added 10 October 2026 after the cross-examination of Project notes 43).
 
 ### 24. Motion only with a start picture, on MiniMax H3 in reference mode (C3 R1)
 
@@ -174,6 +174,12 @@ These come from testers' notes and from a clip file made by hand for MiniMax H3,
 - **Applies to**: card 21's worked examples (The Catch, shot 150; The Long Places, scene 5) and step 14's purpose paragraph, as written before 10 October 2026.
 - **The research says**: the prompt for shot 150 ends "Her head and hands stay still; only her eyes move. The camera does not move. No background music.", quoted as good practice.
 - **Read instead**: that ending is withdrawn (entry 23): a held moment is written as small timed actions, the camera gets one sentence, and for a model with no negative side music with none is written "N/A". Card 21 and step 14 now quote the new form.
+
+### 27. A listener written as "listening, does not speak" (A4 AI7)
+
+- **Applies to**: A4 AI7 (rule 55 of the A4 digest, and its "Listener clips" line); the D3 digest's listener line; card 14's listener example (A1 §11).
+- **The research says**: "If a shot shows listening, then prompt 'listening, does not speak', strip the audio and lay the line over it, because lips stay still and cuts stay movable."
+- **Read instead**: write what the listener does, as small timed actions with the lips closed ("her lips closed; she breathes in; at about two seconds she blinks; her eyes stay on him"), then strip the audio and lay the line over it as before. "Listening" is no action (CRAFT-26 counts it as none), and "does not speak" names what is absent, which a model with no negative side adds to the picture instead (ComfyUI's MiniMax H3 prompt guide; the h3-storyboard testing notes, both checked 10 October 2026; Project notes 42 and 43). Marked J until the take log confirms it.
 
 ---
 

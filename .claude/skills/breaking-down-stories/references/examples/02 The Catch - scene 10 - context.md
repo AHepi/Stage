@@ -765,7 +765,7 @@ Below this line: details for the AI and the checker. You never need to read them
 ### PROP PR-BOTTLE The water bottle
 - names: a water bottle
 - category: consumable
-- fixed_description: a clear plastic water bottle with a white screw cap and no label
+- fixed_description: a clear, unlabelled plastic water bottle with a white screw cap
 - real_size: [0.07, 0.07, 0.22]
 - side: cap thread | own: right | plot: yes
 - text: none
@@ -953,7 +953,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - element: LOC-SAYE-KITCHEN
 - from: SC10 | line: 399
 - cause: 404 | quote: "A kitchen with nothing of anybody in it."
-- state_line: a bare, clean kitchen with nothing on the walls or the fridge door
+- state_line: a bare, clean kitchen, its walls and fridge door bare
 - changes: first seen, through the back door
 - side: none
 - handedness: reversed

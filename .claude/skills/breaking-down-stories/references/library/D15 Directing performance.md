@@ -68,7 +68,7 @@ Labels: **[V]** verified on the web on 2026-09-27; **[U]** found but not confirm
 
 | Level | What shows | Use |
 |---|---|---|
-| 1 contained | One or two small movements (eyes, a stopped hand, one breath); the rest is still | Most turning-point reactions; guarded or powerful characters; close-ups |
+| 1 contained | One or two small movements (eyes, a stopped hand, one breath), with breath and blinks going on (rewritten 10 October 2026; errata 23) | Most turning-point reactions; guarded or powerful characters; close-ups |
 | 2 visible | Two or three movements nobody can miss (a step back, a head turn with the eyes following) | Medium shots; physical stress |
 | 3 open | Whole-body, audible, maybe tears or a raised voice | Only where the script is loud ("She swings the cylinder with both hands."), or in wides |
 
@@ -121,7 +121,7 @@ Write `none` rather than deleting a field (C3's convention).
 **Writing the block**
 1. If a script line names an emotion ("Her face changes.", "not steady"), then write two or three timed behaviour steps and keep the word only in `notes` and in the voice delivery, because every maker guide asks for visible cues (4.1) and A3 R2 bans emotion adjectives.
 2. If a beat is a turning point or has A2 intensity 4 or more, then write A2's five steps as timed steps (desire as eyeline; antagonism as what is seen; choice as a held half-second; action; expression), because the choice needs its own screen time (A2 P10 and Step 8: "give step 2 (seeing the obstacle) and step 3 (choosing) their own screen time").
-3. If the line, eyeline or cut already carries the beat, then use display level 1, with "still" or one movement, because B5's restraint rule saves bigger faces for turning points.
+3. If the line, eyeline or cut already carries the beat, then use display level 1: one small action, with breath and blinks going on, because B5's restraint rule saves bigger faces for turning points. (Rewritten 10 October 2026: until then this rule asked for display level 1 with the word "still" or one movement, and models read "still" as an order to freeze: rule 6; library/02 Errata, entry 23.)
 4. If a character is alone or acts only on objects, then fill `task` and write `tactic: (task only)`, because only an attempt on a person can be played (A3 §3.2).
 5. If a behaviour step is shorter than about 0.5 s, then lengthen it or plan a transfer, because B5 puts micro-expressions at "a quarter to half a second", only 6-12 frames at 24 fps [J].
 
@@ -429,7 +429,7 @@ performance:
 - B8's tactic is *absorbing* (A2). Its step: "eyes stay down; at 'street signs either' they come up slowly to Saye and stay".
 - One continuous driving take cut at that point gives both clips the same breath.
 
-**Prompt fallback** (Veo 3.1, image-to-video from the approved start still, colon speaker format per C3 §7A) [J]: "Close-up, static camera. The woman chews slowly, her eyes on the older woman off-screen at frame left. Her chewing slows, then stops; her head and hands stay completely still. Her brows draw together slightly and her eyes lose focus and drift down toward the table. Then she chews once more, very slowly, and holds still. A woman says quietly and unsteadily: Not mint. No background music."
+**Prompt fallback, withdrawn 10 October 2026** (library/02 Errata, entries 23 and 26: it writes the hold as parts that stay still, which models read as an order to freeze; write the hold as small timed actions instead, as rule 6 says and card 21 shows; the `stillness` list and the "completely still" step above are withdrawn with it) (Veo 3.1, image-to-video from the approved start still, colon speaker format per C3 §7A) [J]: "Close-up, static camera. The woman chews slowly, her eyes on the older woman off-screen at frame left. Her chewing slows, then stops; her head and hands stay completely still. Her brows draw together slightly and her eyes lose focus and drift down toward the table. Then she chews once more, very slowly, and holds still. A woman says quietly and unsteadily: Not mint. No background music."
 
 ### Example 2. sc13: the "Silence." hold (A1 pause ranking)
 
@@ -482,7 +482,7 @@ performance:
 
 **Rule 9 in this scene.** Eli's must-not "looking at Iona" runs from B1 to B13, with one scripted exception: at B12 "He watches her look at it." Play that look at her palm, and add "meets her eyes" to that shot's `must_not`, so that B14 ("Now he looks at her.") is the first time his eyes meet hers.
 - **Route:** image-to-video from the approved wide still, 4 s, trimmed to 3.
-- **Prompt:** "Nobody speaks. The three people stay completely still for the whole shot; the only movements are one slow blink from the woman at frame left and one slow breath from the man at frame right. The camera does not move. No dialogue. No background music."
+- **Prompt, withdrawn 10 October 2026** (library/02 Errata, entry 23: a list of what stays still and "The camera does not move." freeze the whole frame; write each person's small timed actions, a blink or a breath at least every 2 s, and one camera sentence, as rule 6 says; the "completely still" behaviour lines and `stillness` lists above are withdrawn with it): "Nobody speaks. The three people stay completely still for the whole shot; the only movements are one slow blink from the woman at frame left and one slow breath from the man at frame right. The camera does not move. No dialogue. No background music."
 - **If two takes fail:** act the three parts yourself as three 4 s face takes, transfer each, and composite them in the edit (C3 post operations).
 
 ### Example 3. sc28: Eli's wrong-side smile (B5 Ex2), a transfer and mirror test
@@ -587,12 +587,12 @@ Nobody can hold a breath for a whole climb, and nothing on screen should suggest
 > "the hand went out and hung with its manners on, and nothing took it, and nothing refused it, and he repossessed it slowly, like a man who has offered his hand to weather. After a while — Yusuf said two breaths; Nilay, later, could not make it shorter than the length of a drummed finger — the elder on the far wall raised his own palm" (ch. VII)
 
 **Prose gives durations in breaths.** A calm adult breath takes about 3-5 s: clinical sources give a resting rate of 12-20 breaths a minute (Cleveland Clinic: "12 to 18") [V], so "two breaths entire" is about 6-10 s. That agrees with B5 Ex5: "about two breaths (roughly six to eight seconds) of stillness, which the edit must hold".
-- Melek's wait is a long hold (A1 R15 applies to prose too). Breath is `controlled` and visible: the shoulders rise and fall twice, and nothing else moves.
+- Melek's wait is a long hold (A1 R15 applies to prose too). Breath is `controlled` and visible: the shoulders rise and fall twice, and nothing else moves. (That last phrase is withdrawn, 10 October 2026, library/02 Errata, entry 23: in a prompt, write the hold as the two breaths and a blink or a glance between them, never as what does not move.)
 - The knock-and-two-breaths is a **tell passed between characters**. Yusuf, Nilay and Márton all learn it, as Iona's flat hand passes to Jude and the figure. Log it once in `tells` and keep its timing each time it returns: the novel's point is who keeps "the two breaths entire".
 
 **Márton's hand** [J]:
 - `tactic: offering`.
-- `behavior`: "0-1.5: steps forward, right hand out at handshake height; 1.5-5: the hand hangs, still, fingers open; 5-8: draws it back slowly to his side".
+- `behavior`: "0-1.5: steps forward, right hand out at handshake height; 1.5-5: the hand hangs, still, fingers open; 5-8: draws it back slowly to his side". ("The hand hangs, still" is withdrawn, 10 October 2026, library/02 Errata, entry 23: write "1.5-5: the hand hangs in the air, fingers open; his fingers curl a little; he breathes out" instead.)
 - `must_not`: a fast drop; embarrassed gestures.
 - Yusuf's "making the sounds of a man keeping his breathing voluntary" is `controlled` breath carried in sound (rule 13).
 

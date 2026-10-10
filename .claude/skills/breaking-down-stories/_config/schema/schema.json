@@ -11860,7 +11860,7 @@
      "kind": "sub_parts",
      "depth": "m",
      "writer": "ai",
-     "example": "Only her mouth moves, and only at 6-8 s? | answer: yes | evidence: watched twice",
+     "example": "Does Iona move between the written actions: breathing, eyes, small shifts? | answer: yes | evidence: watched twice",
      "repeat": true,
      "first_part": {
       "kind": "text",

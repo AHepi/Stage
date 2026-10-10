@@ -79,7 +79,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - element: LOC-SAYE-KITCHEN
 - from: SC10 | line: "At the blood."
 - cause: "A kitchen with nothing of anybody in it." | quote: "A kitchen with nothing of anybody in it."
-- state_line: a bare, clean kitchen with nothing on the walls or the fridge door
+- state_line: a bare, clean kitchen, its walls and fridge door bare
 - changes: first seen, through the back door
 - side: none
 - handedness: reversed

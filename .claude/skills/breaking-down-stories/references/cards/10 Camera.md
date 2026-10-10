@@ -104,7 +104,7 @@ Yes or no (B1 §13).
 
 ## Words for AI models
 
-Works: "The camera holds completely still for the whole shot."; "The camera moves slowly closer to her face while she stays still." (B1 §15); one move per clip, saying where it ends; "over Iona's left shoulder toward Saye" (C3 §4). Fails: rack focus, dolly zoom, whip pan, zoom as distinct from push-in, "objective camera", a frame shape in the prompt (B1 §15; C3 §4). A lens number is a hint: write "compressed background, shallow focus" (C3 §4).
+Works: "The camera holds completely still for the whole shot."; "The camera moves slowly closer to her face while she breathes and blinks." (B1 §15); one move per clip, saying where it ends; "over Iona's left shoulder toward Saye" (C3 §4). Fails: rack focus, dolly zoom, whip pan, zoom as distinct from push-in, "objective camera", a frame shape in the prompt (B1 §15; C3 §4). A lens number is a hint: write "compressed background, shallow focus" (C3 §4).
 
 ## Look up for more
 
