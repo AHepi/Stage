@@ -94,7 +94,7 @@ def load(path):
 
 
 def adapters_documents():
-    return {name: load(SKILL / "adapters" / name) for name in
+    return {name: load(SKILL / "_config" / "adapters" / name) for name in
             ("video_models.json", "image_models.json", "audio_models.json", "routing.json", "phrasebook.json")}
 
 
@@ -599,10 +599,10 @@ def hosted_h3_words(project):
 @group("no email address in any new or changed file of this work")
 def no_email(project):
     files = [SKILL / "tools" / "stage_tools" / "clip_book.py", SKILL / "tools" / "stage_tools" / "checks_clip_book.py",
-             Path(__file__), SKILL / "adapters" / "video_models.json", SKILL / "adapters" / "phrasebook.json",
-             SKILL / "library" / "C3 Writing prompts for video models.md",
-             SKILL / "cards" / "21 Making pictures and video with AI.md",
-             SKILL / "steps" / "14 Add-on - generation packs.md"]
+             Path(__file__), SKILL / "_config" / "adapters" / "video_models.json", SKILL / "_config" / "adapters" / "phrasebook.json",
+             SKILL / "references" / "library" / "C3 Writing prompts for video models.md",
+             SKILL / "references" / "cards" / "21 Making pictures and video with AI.md",
+             SKILL / "stages" / "14 Add-on - generation packs" / "CONTEXT.md"]
     files += sorted((project / BOOK).glob("*.md")) + [project / PROMPTS / f"SC10 - {ROUTE}.json"]
     found = []
     for path in files:

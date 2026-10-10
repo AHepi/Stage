@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """WP4a acceptance test: the fields code derives (blueprint 5.6), the SIDE and GEOM checks (7.2) and the build
-command, on the WP12a gold fixture (examples/01 The Catch - scene 10.md with its context file).
+command, on the WP12a gold fixture (references/examples/01 The Catch - scene 10.md with its context file).
 
 What it checks, in plain words:
 - test T2's derived numbers (blueprint 14.3): shot 150's time floor of 13.8 seconds (speech 11.8 + pause 2.0),
@@ -32,7 +32,7 @@ from pathlib import Path
 REPOSITORY = Path(__file__).resolve().parents[1]
 SKILL = REPOSITORY / ".claude" / "skills" / "breaking-down-stories"
 TOOLS = SKILL / "tools"
-EXAMPLES = SKILL / "examples"
+EXAMPLES = SKILL / "references" / "examples"
 SCENE_FILE = "01 The Catch - scene 10.md"
 CONTEXT_FILE = "02 The Catch - scene 10 - context.md"
 EXCERPT = REPOSITORY / "tests" / "fixtures" / "The Catch - lines 397-489.txt"
@@ -193,7 +193,7 @@ def main():
         plan = derive.clip_plan(breakdown, shot("SC10-SH150"))
         assert plan.clip_lengths == [17.0] and plan.held and plan.held_reason == "a turn shot" and not plan.split_at, \
             f"got {plan.as_dict()}"
-        # Model facts are WP8's (adapters/video_models.json); these stand-ins have only the lengths clip_plan reads.
+        # Model facts are WP8's (_config/adapters/video_models.json); these stand-ins have only the lengths clip_plan reads.
         stand_ins = {"kling-3.0-omni": {"length_s": {"min": 3, "max": 15, "step": 1}},
                      "seedance-2.5": {"length_s": {"min": 4, "max": 30, "step": 1}},
                      "wan-3.0": {"length_s": {"min": 2, "max": 30, "step": 1}}}
@@ -215,7 +215,7 @@ def main():
         real = "WP8's adapter file not present yet: model lengths from stand-ins"
         if original:
             real_plan = derive.clip_plan(breakdown, shot("SC10-SH150"), "kling-3.0-omni")
-            real = f"with adapters/video_models.json on kling-3.0-omni: {real_plan.as_dict()}"
+            real = f"with _config/adapters/video_models.json on kling-3.0-omni: {real_plan.as_dict()}"
         return (f"17 s, held (a turn shot); on a 15-second model it is not split and goes whole to "
                 f"{', '.join(on_kling.models_allowing)}; a normal 18 s shot with a cutaway at 8 s splits there into "
                 f"{split.clip_lengths} s on the same model; {real}")

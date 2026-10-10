@@ -1,24 +1,25 @@
-"""Acceptance test for work package 10a: SKILL.md and reference/05, 06 and 07 (the skill's house rules,
-the quality rubric, the checks in words, and the report and message formats).
+"""Acceptance test for work package 10a: SKILL.md and references/formats/05, 06, 07 and 08 (the skill's house
+rules, the quality rubric, the checks in words, the report and message formats, and the commands table).
 
 What it checks, in plain words:
 1. SKILL.md: front matter with name breaking-down-stories and a third-person description under 1,024
    characters; under 500 lines and under 4,500 words (counted both as English words and as every
    whitespace-separated token); the required sections of blueprint 2.3; the ten principles; the run command
    sentence; the loop; a step table that names all 17 step files with the user's step numbers from
-   schema/steps.json; every command of blueprint 7.1, in order, each with its "if you cannot run code" twin;
-   every stage.py command named anywhere in the four files exists; the privacy rules.
-2. reference/05: the ten criteria of blueprint 11.3 with their names, how each is measured and what 2 and 3
-   mean; the four anchors; the pass rule.
-3. reference/06: part 1 lists exactly the 14 in-reply checks of schema/steps.json (in the template table and
-   in the how-to table), part 2 exactly the 20 check-chat checks; the numbers table matches
-   rules/constants.json; the shot 150 worked floor adds up.
-4. reference/07: WORDS-02 (retired words) and WORDS-04 (abbreviations and internal codes) clean on the whole
-   file, as blueprint 7.2 requires; every checkpoint shape named by what it is; the four-part ending; the
+   _config/schema/steps.json; every command of blueprint 7.1, in order, each with its "if you cannot run code"
+   twin (the table is in references/formats/08 Commands.md, which SKILL.md points to); every stage.py command
+   named anywhere in the five files exists; the privacy rules.
+2. references/formats/05: the ten criteria of blueprint 11.3 with their names, how each is measured and what 2
+   and 3 mean; the four anchors; the pass rule.
+3. references/formats/06: part 1 lists exactly the 14 in-reply checks of _config/schema/steps.json (in the
+   template table and in the how-to table), part 2 exactly the 20 check-chat checks; the numbers table matches
+   _config/rules/constants.json; the shot 150 worked floor adds up.
+4. references/formats/07: WORDS-02 (retired words) and WORDS-04 (abbreviations and internal codes) clean on the
+   whole file, as blueprint 7.2 requires; every checkpoint shape named by what it is; the four-part ending; the
    welcome's rights question; the command list of blueprint 13.4.
-5. All four files: every check ID exists in blueprint 7.2; every backticked constant-like name exists in
-   rules/constants.json, rules/limits.json or schema/schema.json; every research citation (B3 R26, D7 §5.2)
-   points to a real rule or section of the library's full file; no email address.
+5. All five files: every check ID exists in blueprint 7.2; every backticked constant-like name exists in
+   _config/rules/constants.json, _config/rules/limits.json or _config/schema/schema.json; every research citation
+   (B3 R26, D7 §5.2) points to a real rule or section of the library's full file; no email address.
 
 Run from anywhere:
     python tests/wp10a_skill_text_acceptance.py [--blueprint <path to blueprint.md>]
@@ -36,12 +37,14 @@ from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parents[1]
 SKILL = REPOSITORY / ".claude" / "skills" / "breaking-down-stories"
-LIBRARY = SKILL / "library"
+LIBRARY = SKILL / "references" / "library"
 FILES = {
     "skill": SKILL / "SKILL.md",
-    "rubric": SKILL / "reference" / "05 Quality rubric.md",
-    "checks": SKILL / "reference" / "06 Checks in words.md",
-    "messages": SKILL / "reference" / "07 Report and message formats.md",
+    "rubric": SKILL / "references" / "formats" / "05 Quality rubric.md",
+    "checks": SKILL / "references" / "formats" / "06 Checks in words.md",
+    "messages": SKILL / "references" / "formats" / "07 Report and message formats.md",
+    # the commands table, moved out of SKILL.md's "Tools: one command" (Project notes 43); SKILL.md points to it
+    "commands": SKILL / "references" / "formats" / "08 Commands.md",
 }
 
 results = []
@@ -119,11 +122,11 @@ def load_json(relative):
 
 
 def all_constant_names():
-    constants = load_json("rules/constants.json")
+    constants = load_json("_config/rules/constants.json")
     names = set(constants["constants"]) | set(constants["from_blueprint_text"]["constants"])
-    limits = load_json("rules/limits.json")
+    limits = load_json("_config/rules/limits.json")
     names |= set(limits)
-    schema = load_json("schema/schema.json")
+    schema = load_json("_config/schema/schema.json")
     for record_type in schema["record_types"].values():
         for field in record_type["fields"]:
             names.add(field["name"])
@@ -135,7 +138,7 @@ def all_constant_names():
     for field in schema.get("common_fields", []) or []:
         if isinstance(field, dict):
             names.add(field.get("name", ""))
-    words = load_json("rules/words.json")
+    words = load_json("_config/rules/words.json")
     names |= set(words)
     for record_type in schema["record_types"].values():
         for field in record_type["fields"]:
@@ -144,7 +147,7 @@ def all_constant_names():
 
 
 def constant_values():
-    constants = load_json("rules/constants.json")
+    constants = load_json("_config/rules/constants.json")
     values = {name: entry.get("value") for name, entry in constants["constants"].items()}
     values.update({name: entry.get("value") for name, entry in constants["from_blueprint_text"]["constants"].items()})
     return values
@@ -189,7 +192,7 @@ def resolve(code, token):
 # ---------------------------------------------------------------- WORDS-02 and WORDS-04
 
 def retired_word_hits(text, modes):
-    words = load_json("rules/words.json")
+    words = load_json("_config/rules/words.json")
     hits = []
     for entry in words["retired"]:
         if entry.get("flag") not in modes:
@@ -211,7 +214,7 @@ def retired_word_hits(text, modes):
 
 
 def words_04_hits(text):
-    words = load_json("rules/words.json")
+    words = load_json("_config/rules/words.json")
     abbreviations = words["abbreviations"]
     hits = []
     for word in abbreviations["words"]:
@@ -288,7 +291,8 @@ def check_skill(lists, steps):
     report(not problems and len(step_rows) == 17, "SKILL.md: step table names all 17 step files with the user's count",
            "; ".join(problems) if problems else f"{len(step_rows)} rows")
 
-    tools_rows = table_rows(section(body, "Tools: one command") or "")[1:]
+    points_there = "`references/formats/08 Commands.md`" in (section(body, "Tools: one command") or "")
+    tools_rows = table_rows(FILES["commands"].read_text(encoding="utf-8"))[1:]
     table_commands = []
     empty_twins = []
     for row in tools_rows:
@@ -296,8 +300,9 @@ def check_skill(lists, steps):
         table_commands.extend(names)
         if len(row) < 3 or not row[2]:
             empty_twins.append(row[0])
-    report(table_commands == lists["commands"] and not empty_twins,
-           "SKILL.md: every command of blueprint 7.1, in order, with its 'if you cannot run code' twin",
+    report(table_commands == lists["commands"] and not empty_twins and points_there,
+           "SKILL.md points to references/formats/08 Commands.md: every command of blueprint 7.1, in order, with its "
+           "'if you cannot run code' twin",
            f"{len(table_commands)} commands" + ("; no twin: " + ", ".join(empty_twins) if empty_twins else ""))
     check_commands_against_stage_py(tools_rows)
 
@@ -364,14 +369,14 @@ def check_rubric(lists):
                 wanted[index] = wanted[index].replace(old, new)
         if row[:5] != wanted[:5]:
             problems.append(f"criterion {expected[0]}: {row[:5]} differs from {wanted[:5]}")
-    report(not problems, "reference/05: the ten criteria of blueprint 11.3 (name, how, 2 means, 3 means)", "; ".join(problems))
+    report(not problems, "references/formats/05: the ten criteria of blueprint 11.3 (name, how, 2 means, 3 means)", "; ".join(problems))
     anchors = [row[0] for row in table_rows(section(text, "The anchors") or "")[1:]]
-    report(anchors == ["0", "1", "2", "3"], "reference/05: the four anchors 0 to 3", "")
+    report(anchors == ["0", "1", "2", "3"], "references/formats/05: the four anchors 0 to 3", "")
     rule = section(text, "The pass rule") or ""
     needed = ["no ERROR", "no criterion scores 0", "criteria 1, 3 and 6 score 2 or more", "20 or more of 30",
               "one line of evidence and a fix"]
     absent = [phrase for phrase in needed if phrase not in rule]
-    report(not absent, "reference/05: the pass rule of 11.3", "missing: " + ", ".join(absent) if absent else "")
+    report(not absent, "references/formats/05: the pass rule of 11.3", "missing: " + ", ".join(absent) if absent else "")
 
 
 def check_checks_in_words(steps):
@@ -382,11 +387,11 @@ def check_checks_in_words(steps):
     template_ids = re.findall(r"(?m)^\| ([A-Z]+-\d\d) \|", template)
     part1 = [row[0] for row in table_rows(section(text, "Part 1") or "")[1:]]
     part2 = [row[0] for row in table_rows(section(text, "Part 2") or "")[1:]]
-    report(template_ids == in_reply and part1 == in_reply, "reference/06 part 1: exactly the 14 in-reply checks of steps.json",
+    report(template_ids == in_reply and part1 == in_reply, "references/formats/06 part 1: exactly the 14 in-reply checks of steps.json",
            f"template {len(template_ids)}, how-to {len(part1)}")
-    report(part2 == check_chat, "reference/06 part 2: exactly the 20 check-chat checks of steps.json", f"{len(part2)} rows")
+    report(part2 == check_chat, "references/formats/06 part 2: exactly the 20 check-chat checks of steps.json", f"{len(part2)} rows")
     report("END OF FILE | " in template and "\n---\n" in template and "Checked in words: 14 of 14 passed." in template,
-           "reference/06: the template has the --- line, the one line and the END line", "")
+           "references/formats/06: the template has the --- line, the one line and the END line", "")
 
     values = constant_values()
     numbers_table = {row[0]: row[1] for row in table_rows(section(text, "Numbers this page uses") or "")[1:]}
@@ -419,21 +424,21 @@ def check_checks_in_words(steps):
             if float(number) not in found:
                 problems.append(f"{name} lacks {number}")
     extra = [name for name in numbers_table if name not in expectations]
-    report(not problems and not extra, "reference/06: the numbers table matches rules/constants.json",
+    report(not problems and not extra, "references/formats/06: the numbers table matches _config/rules/constants.json",
            "; ".join(problems + ["unexpected row " + e for e in extra]) or f"{len(numbers_table)} rows")
 
     speech = 19 / 2.0 + 2 / values["speech_wps_default"] + 3 * values["speech_floor_extra_s"]
     floor = speech + values["turn_reaction_min_s"]
     report(abs(speech - 11.8) < 0.05 and abs(floor - 13.8) < 0.05 and "the floor is 13.8 s" in text,
-           "reference/06: the shot 150 floor adds up (11.8 s + 2.0 s = 13.8 s)", f"{speech:.1f} + {values['turn_reaction_min_s']}")
+           "references/formats/06: the shot 150 floor adds up (11.8 s + 2.0 s = 13.8 s)", f"{speech:.1f} + {values['turn_reaction_min_s']}")
 
 
 def check_messages(steps):
     text = FILES["messages"].read_text(encoding="utf-8")
     retired = retired_word_hits(text, ("always", "user_text"))
-    report(not retired, "reference/07: WORDS-02 clean (retired words)", "; ".join(f"{a}: {b}" for a, b in retired))
+    report(not retired, "references/formats/07: WORDS-02 clean (retired words)", "; ".join(f"{a}: {b}" for a, b in retired))
     codes = words_04_hits(text)
-    report(not codes, "reference/07: WORDS-04 clean (abbreviations and internal codes)", "; ".join(f"{a}: {b}" for a, b in codes))
+    report(not codes, "references/formats/07: WORDS-04 clean (abbreviations and internal codes)", "; ".join(f"{a}: {b}" for a, b in codes))
 
     names = []
     for step in steps["steps"]:
@@ -441,24 +446,24 @@ def check_messages(steps):
         if checkpoint.get("user_name"):
             names.append(checkpoint["user_name"])
     absent = [name for name in names if name.lower() not in text.lower()]
-    report(not absent, "reference/07: every checkpoint named by what it is", "missing: " + ", ".join(absent) if absent else f"{len(names)} names")
+    report(not absent, "references/formats/07: every checkpoint named by what it is", "missing: " + ", ".join(absent) if absent else f"{len(names)} names")
     headings = ["Every reply's ending", "The welcome", "The scene list", "How the book becomes a film", "The big choices",
                 "Each group of shots", "The finished check", "Add-ons", "Resuming", "When something goes wrong",
                 "What the user can type", "00 Start here"]
     missing = [heading for heading in headings if section(text, heading) is None]
-    report(not missing, "reference/07: sections for 13.2 to 13.7", "missing: " + ", ".join(missing) if missing else "")
+    report(not missing, "references/formats/07: sections for 13.2 to 13.7", "missing: " + ", ".join(missing) if missing else "")
     ending = section(text, "Every reply's ending") or ""
     order = [ending.find(part) for part in ("Done:", "Example from your story:", "Made:", "Needs you:", "Next:")]
     report(all(position >= 0 for position in order) and order == sorted(order) and "Save as:" in ending and "To continue later:" in ending,
-           "reference/07: the four-part ending in order, then Next, and the chat lines", "")
+           "references/formats/07: the four-part ending in order, then Next, and the chat lines", "")
     rights = steps["steps"][0]["checkpoint"]["question"]
-    report(rights in text, "reference/07: the welcome asks the rights question with its default", "")
+    report(rights in text, "references/formats/07: the welcome asks the rights question with its default", "")
     typed = ["Break down my story.", "Continue my breakdown.", "Where are we?", "Why shot 150?", "Change ...",
              "Go deeper on scene 13", "Quick / Standard / Detailed", "Redo step 6", "Stop here", "Check", "continue", "next",
              "defaults", "Make storyboards", "Make grey previews", "Get it ready for AI video", "Plan the edit"]
     command_list = section(text, "What the user can type") or ""
     absent = [item for item in typed if item not in command_list]
-    report(not absent, "reference/07: the plain-word command list of 13.4", "missing: " + ", ".join(absent) if absent else "")
+    report(not absent, "references/formats/07: the plain-word command list of 13.4", "missing: " + ", ".join(absent) if absent else "")
 
 
 def check_all_files(lists):
@@ -485,7 +490,7 @@ def check_all_files(lists):
                     bad_citations.append(f"{path.name}: {code} {token}")
         emails += [f"{path.name}: {m}" for m in re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", text)]
     report(not unknown_checks, "every check ID in the four files exists in blueprint 7.2", "; ".join(unknown_checks))
-    report(not unknown_names, "every backticked constant or field name exists in rules/ or the schema", "; ".join(sorted(set(unknown_names))))
+    report(not unknown_names, "every backticked constant or field name exists in _config/rules/ or the schema", "; ".join(sorted(set(unknown_names))))
     report(not bad_citations, "every research citation points to a real rule or section of the library",
            "; ".join(bad_citations) if bad_citations else f"{citation_count} citations")
     report(not emails, "no email address in the four files", "; ".join(emails))
@@ -495,7 +500,7 @@ def check_all_files(lists):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Acceptance test for SKILL.md and reference/05, 06, 07.")
+    parser = argparse.ArgumentParser(description="Acceptance test for SKILL.md and references/formats/05, 06, 07.")
     parser.add_argument("--blueprint", default=os.environ.get("STAGE_BLUEPRINT"))
     arguments = parser.parse_args()
     missing = [str(path) for path in FILES.values() if not path.exists()]
@@ -503,7 +508,7 @@ def main():
         print("FAIL  files missing: " + ", ".join(missing))
         return 1
     lists = load_lists(arguments.blueprint)
-    steps = load_json("schema/steps.json")
+    steps = load_json("_config/schema/steps.json")
     check_skill(lists, steps)
     check_commands_named(lists)
     check_rubric(lists)

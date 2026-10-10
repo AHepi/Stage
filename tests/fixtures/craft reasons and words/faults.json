@@ -1,5 +1,5 @@
 {
- "about": "One or more faulty fixtures per build-1 CRAFT, INFO, REASON and WORDS check (blueprint 7.2), made by tests/wp4d_acceptance.py from a temporary copy of the WP12a gold. Each fault edits text inside a named record (or, with record null, the file's plain part above the divider) and expects the check to fire on the named record and field, in 7.2's line format. file is 'scene' (examples/01 The Catch - scene 10.md) or 'context' (examples/02 The Catch - scene 10 - context.md). needs_story: the check needs the story's lines (the scene 10 excerpt).",
+ "about": "One or more faulty fixtures per build-1 CRAFT, INFO, REASON and WORDS check (blueprint 7.2), made by tests/wp4d_acceptance.py from a temporary copy of the WP12a gold. Each fault edits text inside a named record (or, with record null, the file's plain part above the divider) and expects the check to fire on the named record and field, in 7.2's line format. file is 'scene' (references/examples/01 The Catch - scene 10.md) or 'context' (references/examples/02 The Catch - scene 10 - context.md). needs_story: the check needs the story's lines (the scene 10 excerpt).",
  "faults": [
   {"check": "CRAFT-01", "record": "SC10-SH190", "field": "move", "about": "a second push-in in scene 10",
    "edits": [{"file": "scene", "record": "SHOT SC10-SH150", "find": "- move: static", "replace": "- move: push_in"},

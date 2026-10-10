@@ -1,7 +1,7 @@
 """Conformance test for work package 12a (templates and the gold example of The Catch, scene 10).
 
-Reads schema/schema.json and checks, with its own simple line parser:
-1. the gold example (examples/01 and 02): every record type is known, every ID fits its type's pattern,
+Reads _config/schema/schema.json and checks, with its own simple line parser:
+1. the gold example (references/examples/01 and 02): every record type is known, every ID fits its type's pattern,
    every field name belongs to its record type (a SETVALUE's lines are checked against its target's type),
    every value fits its kind, allowed words, sub-part keys, number ranges and patterns, END counts match,
    the divider line is there, and every Standard field (depth quick or standard, conditions evaluated, the
@@ -32,11 +32,11 @@ from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parent.parent
 SKILL = REPOSITORY / ".claude" / "skills" / "breaking-down-stories"
-SCHEMA_FILE = SKILL / "schema" / "schema.json"
-CONSTANTS_FILE = SKILL / "rules" / "constants.json"
-GOLD = SKILL / "examples" / "01 The Catch - scene 10.md"
-GOLD_CONTEXT = SKILL / "examples" / "02 The Catch - scene 10 - context.md"
-TEMPLATES = SKILL / "templates"
+SCHEMA_FILE = SKILL / "_config" / "schema" / "schema.json"
+CONSTANTS_FILE = SKILL / "_config" / "rules" / "constants.json"
+GOLD = SKILL / "references" / "examples" / "01 The Catch - scene 10.md"
+GOLD_CONTEXT = SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"
+TEMPLATES = SKILL / "references" / "templates"
 FIXTURES = REPOSITORY / "tests" / "fixtures"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
 CHAT_COPY = FIXTURES / "chat saved scene 10"
@@ -1240,7 +1240,7 @@ def main():
     parser.add_argument("--story", help="the whole story, or a Stage excerpt that holds scene 10 (default: the excerpt fixture)")
     arguments = parser.parse_args()
     if not GOLD.is_file() or not GOLD_CONTEXT.is_file():
-        report(False, "gold example present", "examples/01 or 02 is missing")
+        report(False, "gold example present", "references/examples/01 or 02 is missing")
         print("RESULT: FAIL")
         return 1
     gold_files = [RecordFile(GOLD, GOLD.name), RecordFile(GOLD_CONTEXT, GOLD_CONTEXT.name)]

@@ -1,5 +1,5 @@
 {
- "about": "One faulty fixture per SIDE and GEOM check (blueprint 7.2), made by wp4a_derive_acceptance.py from a temporary copy of the WP12a gold (with the staging patch while the gold needs it). Each fault edits lines inside named records; the test expects the check to fire on the named record. file is 'scene' (examples/01 The Catch - scene 10.md) or 'context' (examples/02 The Catch - scene 10 - context.md).",
+ "about": "One faulty fixture per SIDE and GEOM check (blueprint 7.2), made by wp4a_derive_acceptance.py from a temporary copy of the WP12a gold (with the staging patch while the gold needs it). Each fault edits lines inside named records; the test expects the check to fire on the named record. file is 'scene' (references/examples/01 The Catch - scene 10.md) or 'context' (references/examples/02 The Catch - scene 10 - context.md).",
  "faults": [
   {"check": "SIDE-01", "record": "CH-SAYE.S01", "about": "Saye's ring has no own side",
    "edits": [{"file": "context", "record": "STATE CH-SAYE.S01", "find": "- side: wedding ring | own: left | plot: yes", "replace": "- side: wedding ring | plot: yes"}]},
