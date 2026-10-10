@@ -65,6 +65,8 @@ QUOTED = re.compile(r'["“]([^"“”]+)["”]')
 SCENE_BEFORE_QUOTE = re.compile(r"\b(SC\d{2,3}[A-Z]?)\s+$")
 SCENE_ID = re.compile(r"^SC(\d+)([A-Z]?)$")
 CLIP_ID = re.compile(r"^(SC\d{2,3}[A-Z]?-SH\d{3})\.\d$")
+# A clip of a route's clip book (MiniMax H3 in ComfyUI, Project notes 43): one to three shots of one scene.
+ROUTE_CLIP_ID = re.compile(r"^(SC\d{2,3}[A-Z]?)-CL\d{2}$")
 NUMBER_AT_END = re.compile(r"^(.*?)(\d+)$")
 WORD = re.compile(r"[A-Za-z0-9]+(?:'[A-Za-z0-9]+)*")
 DOUBLE_QUOTED_SPEECH = re.compile(r'["“]([^"“”]*)["”]')
@@ -181,6 +183,10 @@ def identifier_exists(run, identifier):
     if clip:
         shot = run.record(clip.group(1))
         return shot is not None, shot
+    route_clip = ROUTE_CLIP_ID.match(identifier)
+    if route_clip:
+        scene = run.record(route_clip.group(1))
+        return scene is not None, scene
     return False, None
 
 

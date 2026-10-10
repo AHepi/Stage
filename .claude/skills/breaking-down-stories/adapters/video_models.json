@@ -12,7 +12,8 @@
   "price_usd_per_s: dollars per generated second by resolution ('720p'), by sound ('audio', 'silent', 'voice_control') or 'default'; a [low, high] pair is a range across routes, priced at its high end. Prices come from the date in checked_on; above model_facts_max_age_days no pack is marked paid and no money is printed (GEN-11).",
   "status: current, test_first (new or untested: two cheap test takes first) or retired (then it is only in the 'retired' list, with its replacements). use: generation, edit, performance_transfer or talking_head.",
   "licensed_data: true only for models trained on licensed footage (PROJECT licensed_data_only routes only to these).",
-  "marks: one mark per fact: V verified (a maker's page or two agreeing sources, as the research file says), U unverified, J judgement, with the research file, section and source number. sources: the pages to re-read when refreshing (stage.py refresh-models)."
+  "marks: one mark per fact: V verified (a maker's page or two agreeing sources, as the research file says), U unverified, J judgement, with the research file, section and source number. sources: the pages to re-read when refreshing (stage.py refresh-models).",
+  "kind: route marks an entry that is a model plus the place it runs (route_of names the model), such as minimax-h3-comfyui-r2v. A route is never chosen automatically: compile makes its clip book only when asked (compile --route, or PROJECT video_route). Its frames, tail_s_min, sizes, settings (by the tool's own box names), troubleshooting and rules (each with its kit mark and check) are read by clip_book.py and checks_clip_book.py."
  ],
  "models": {
   "veo-3.1": {
@@ -1523,13 +1524,12 @@
    ],
    "released": "2026-07-31",
    "access": [
-    "Hailuo app",
-    "MiniMax API",
+    "Hailuo app (MiniMax's hosted service, with its rewriting step)",
+    "MiniMax API (hosted, with its rewriting step)",
     "fal",
     "Runway",
     "Krea",
-    "Pika",
-    "open weights (768p)"
+    "Pika"
    ],
    "length_s": {
     "min": 4,
@@ -1570,9 +1570,9 @@
    "end_state": null,
    "speaker": "{who} (S{n}) speaks {delivery}, <d>[{language}] {line}</d>",
    "speaker_quotes": false,
-   "camera_static": "holds a perfectly static shot [static]",
+   "camera_static": "static, on a tripod, with no camera movement whatsoever",
    "soundscape_label": "overall_soundscape:",
-   "music_label": "non_diegetic_music: none.",
+   "music_label": "non_diegetic_music: N/A",
    "prompt_limit": {
     "characters": 7000
    },
@@ -1604,17 +1604,21 @@
     "order": "V C3 §3B [P22][P31]",
     "time_marker": "V C3 §2A [P31]",
     "speaker": "V C3 §7A [P31] (the structured form); U whether it helps through the API",
-    "camera_static": "V C3 §4 [P31][P32]",
+    "camera_static": "J h3-storyboard testing notes: 'static, on a tripod, with no camera movement whatsoever' is the one camera line that holds (Project notes 42); was V C3 §4 [P31][P32] 'holds a perfectly static shot [static]'",
     "prompt_limit": "V C3 §2A [P32]",
     "price_usd_per_s": "V C1 §3A [S25]; MiniMax list U",
     "strengths": "V C1 §3D [S31][S32][S62]",
     "weaknesses": "V C1 §3D [S31][S32]",
-    "licence_notes": "V C1 §3C [S32]"
+    "licence_notes": "V C1 §3C [S32]",
+    "access": "V MiniMax model page: H3-Context-IR is hosted and not in the open-source release [checked 2026-10-10]",
+    "route_note": "V MiniMax model page [checked 2026-10-10]; J Project notes 42 and 43",
+    "music_label": "V MiniMax reference-mode guide: non_diegetic_music: N/A [checked 2026-10-10]"
    },
    "sources": [
     "C1 [S31] https://www.minimax.io/blog/minimax-h3",
     "C1 [S32] https://huggingface.co/MiniMaxAI/MiniMax-H3"
-   ]
+   ],
+   "route_note": "MiniMax's hosted H3, where a rewriting step (H3-Context-IR) turns a short prompt into a long structured one. For H3 in ComfyUI on your own or a rented computer, which has no rewriting step, use the route minimax-h3-comfyui-r2v (compile --route h3-comfyui)."
   },
   "minimax-h3-max": {
    "name": "MiniMax H3 Max",
@@ -1672,9 +1676,9 @@
    "end_state": null,
    "speaker": "{who} (S{n}) speaks {delivery}, <d>[{language}] {line}</d>",
    "speaker_quotes": false,
-   "camera_static": "holds a perfectly static shot [static]",
+   "camera_static": "static, on a tripod, with no camera movement whatsoever",
    "soundscape_label": "overall_soundscape:",
-   "music_label": "non_diegetic_music: none.",
+   "music_label": "non_diegetic_music: N/A",
    "prompt_limit": {
     "characters": 7000
    },
@@ -1703,16 +1707,459 @@
     "order": "V C3 §3B [P22][P31]",
     "time_marker": "V C3 §2A [P31]",
     "speaker": "V C3 §7A [P31] (the structured form); U whether it helps through the API",
-    "camera_static": "V C3 §4 [P31][P32]",
+    "camera_static": "J h3-storyboard testing notes: 'static, on a tripod, with no camera movement whatsoever' is the one camera line that holds (Project notes 42); was V C3 §4 [P31][P32] 'holds a perfectly static shot [static]'",
     "prompt_limit": "V C3 §2A [P32]",
     "price_usd_per_s": "V C1 §3A, §10 [S61]",
     "strengths": "V C1 §3D [S31][S32][S62]",
     "weaknesses": "V C1 §3D [S31][S32]",
-    "licence_notes": "V C1 §3C [S32]"
+    "licence_notes": "V C1 §3C [S32]",
+    "music_label": "V MiniMax reference-mode guide: non_diegetic_music: N/A [checked 2026-10-10]"
    },
    "sources": [
     "C1 [S31] https://www.minimax.io/blog/minimax-h3",
     "C1 [S32] https://huggingface.co/MiniMaxAI/MiniMax-H3"
+   ]
+  },
+  "minimax-h3-comfyui-r2v": {
+   "name": "MiniMax H3 in ComfyUI, Reference to Video",
+   "maker": "MiniMax (model); ComfyUI (template)",
+   "tier": "open",
+   "kind": "route",
+   "route_of": "minimax-h3",
+   "aliases": [
+    "MiniMax H3 in ComfyUI",
+    "H3 in ComfyUI",
+    "H3 R2V",
+    "H3 ComfyUI",
+    "h3-comfyui",
+    "h3_comfyui_r2v",
+    "MiniMax H3 R2V",
+    "H3 Reference to Video"
+   ],
+   "status": "test_first",
+   "use": [
+    "generation"
+   ],
+   "place": "ComfyUI on your own computer or a rented one, with the template \"MiniMax H3 Reference to Video (R2V)\" from ComfyUI's Template Library",
+   "access": [
+    "ComfyUI, your own or a rented computer (open weights, 768p by default)"
+   ],
+   "rewriting_step": false,
+   "adapter": "h3_reference",
+   "negative_field": null,
+   "audio": "native",
+   "fps": 24,
+   "frames": {
+    "block": 17,
+    "offset": 5,
+    "min": 124,
+    "max": 362
+   },
+   "tail_s_min": 1.3,
+   "sizes": {
+    "2.39": {
+     "full": [
+      1536,
+      640
+     ],
+     "test": [
+      1152,
+      480
+     ]
+    },
+    "16_9": {
+     "full": [
+      1344,
+      768
+     ],
+     "test": [
+      1024,
+      576
+     ]
+    },
+    "other_shapes": "make it at the 16_9 sizes and crop to the film's frame shape in the edit"
+   },
+   "inputs": {
+    "references_max": 9,
+    "people_pictures_max": 4,
+    "start_picture": "the start picture is <Picture 1>, wired to ref_image_0",
+    "character_pictures": "each person's picture after it, in order: ref_image_1 is <Picture 2>, ref_image_2 is <Picture 3> ...",
+    "guide_video": false,
+    "audio_reference": false
+   },
+   "shots_per_clip_max": 3,
+   "sections": [
+    "subject_definitions",
+    "summary",
+    "retention_analysis",
+    "detailed_description",
+    "overall_soundscape",
+    "non_diegetic_music"
+   ],
+   "detailed_description_words": [
+    350,
+    500
+   ],
+   "camera_static": "static, on a tripod, with no camera movement whatsoever",
+   "speaker": "{subject} ({speaker}), {voice}, says: <d>[{language}] {line}</d>",
+   "speaker_quotes": false,
+   "music": "N/A",
+   "blink_every_s": [
+    2.5,
+    3.5
+   ],
+   "rule_marks_from_takes": {
+    "takes_to_confirm": 2,
+    "takes_to_drop": 2,
+    "how": "a rule is confirmed when at least takes_to_confirm takes say confirmed and none says wrong; wrong when at least takes_to_drop takes say wrong and more say wrong than confirmed; otherwise it keeps its kit mark. Verified or confirmed: its check is an error; unclear: a warning, shown as a suggestion; wrong: not run, listed on the take log page as dropped."
+   },
+   "settings": [
+    {
+     "box": "Boolean (Enable Lightning LoRA)",
+     "set": "false (Lightning off)",
+     "why": "Lightning is a 4-step turbo mode with slightly lower sound and motion quality; it can make movement stiff."
+    },
+    {
+     "box": "Int (Full)",
+     "set": "20 (the default); 25 for a clip where a face carries the moment",
+     "why": "20 steps is the template's default and more steps are offered; testers found more steps move better."
+    },
+    {
+     "box": "Resolution Selector (Size)",
+     "set": "delete the two wires from this box into the MiniMax H3 box (width and height), then type the width and height on the H3 box",
+     "why": "the template starts at a small preview size; the clip pages give the full and the test size."
+    },
+    {
+     "box": "Float (Duration)",
+     "set": "the seconds given under each clip, for example 11.5 for 277 frames",
+     "why": "the template rounds the seconds up to the next length H3 makes (17 x k + 5 frames); typing a clip's exact seconds can tip it into a longer length with no prompt behind the extra part."
+    },
+    {
+     "box": "ref_image_size",
+     "set": "max",
+     "why": "max keeps the pictures up to 2048 pixels on the short side, so faces stay closer to your pictures; it is slower."
+    },
+    {
+     "box": "RandomNoise",
+     "set": "a fixed seed while testing; for a clip with speech, run 2 or 3 seeds and keep the clean one",
+     "why": "one change at a time tells you something; testers found the timing of speech follows the seed."
+    },
+    {
+     "box": "Input Text (Prompt)",
+     "set": "the clip's prompt, from the line after COPY FROM HERE to the line before COPY TO HERE",
+     "why": "the prompt names the pictures by number, which is how the Reference to Video template reads them."
+    }
+   ],
+   "troubleshooting": [
+    {
+     "symptom": "People look stiff or frozen",
+     "first_change": "check Lightning is off; use 25 steps; check the start picture shows people in the middle of doing something; search the prompt for a word asking for stillness; then run another seed"
+    },
+    {
+     "symptom": "The motion is in slow motion",
+     "first_change": "run another seed; then use 25 steps"
+    },
+    {
+     "symptom": "Speech is wrong: the wrong mouth, a line said twice, mumbled or extra words",
+     "first_change": "change the seed first and run 2 or 3 seeds; change words only after that"
+    },
+    {
+     "symptom": "The wrong people, or an extra person",
+     "first_change": "look at the start picture and the connected pictures first: a connected person's picture makes them appear"
+    },
+    {
+     "symptom": "Faces are unlike your people",
+     "first_change": "set ref_image_size to max; use a clearer, bigger face in the character picture; check each description is pasted exactly (rewording re-rolls the face)"
+    },
+    {
+     "symptom": "A contact goes wrong: the thing breaks before it is hit, or on its own",
+     "first_change": "trim that shot to end earlier; the next shot already shows the result"
+    },
+    {
+     "symptom": "A cut lands in the wrong place",
+     "first_change": "cuts can land about a second late and lines start up to a second and a half late: trim by what you see; if a shot is squeezed out, run another seed"
+    },
+    {
+     "symptom": "The picture breaks up at the end",
+     "first_change": "that is the tail: trim it; if it breaks up before the keep point, check the length typed in Float (Duration)"
+    },
+    {
+     "symptom": "Something appears that should not",
+     "first_change": "take it out of the start picture, and check the prompt does not name it"
+    },
+    {
+     "symptom": "The camera moves in a clip with cuts",
+     "first_change": "run another seed; never add more camera lines, which testers found made it worse"
+    },
+    {
+     "symptom": "Printed words come out garbled",
+     "first_change": "run it again, or lay the words in during the edit as a text graphic"
+    }
+   ],
+   "price_usd_per_s": null,
+   "price_note": "the time on your own or a rented computer; not priced here",
+   "seed": true,
+   "rules": [
+    {
+     "id": "H3R-01",
+     "says": "The prompt has six sections in MiniMax's order, each starting on its own line: subject_definitions, summary, retention_analysis, detailed_description, overall_soundscape, non_diegetic_music.",
+     "kind": "format",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+     "mark": "verified",
+     "check": "ROUTE-01"
+    },
+    {
+     "id": "H3R-02",
+     "says": "There is one <Picture N> label for each picture connected, numbered in the order the pictures are connected (the start picture is <Picture 1>), and no more than 9 pictures.",
+     "kind": "format",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md; ComfyUI MiniMax H3 templates and settings, https://docs.comfy.org/tutorials/video/minimax/minimax-h3-native",
+     "mark": "verified",
+     "check": "ROUTE-02"
+    },
+    {
+     "id": "H3R-03",
+     "says": "Every <Subject N> the prompt uses is defined in subject_definitions.",
+     "kind": "format",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+     "mark": "verified",
+     "check": "ROUTE-03"
+    },
+    {
+     "id": "H3R-04",
+     "says": "Every person whose picture is connected is placed in a shot: a connected picture makes that person appear.",
+     "kind": "judgement",
+     "source": "Project notes 42 (the handover) and 43 (the build plan); the clip file's traps",
+     "mark": "unclear",
+     "check": "ROUTE-04"
+    },
+    {
+     "id": "H3R-05",
+     "says": "Speakers are numbered (S1), (S2) in the order they first speak, and no speaker number is written in retention_analysis.",
+     "kind": "format",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+     "mark": "verified",
+     "check": "ROUTE-05"
+    },
+    {
+     "id": "H3R-06",
+     "says": "Every spoken line is inside <d>[Language] ... </d>, with the tags balanced.",
+     "kind": "format",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+     "mark": "verified",
+     "check": "ROUTE-06"
+    },
+    {
+     "id": "H3R-07",
+     "says": "The spoken lines are the story's lines, word for word.",
+     "kind": "format",
+     "source": "Stage: the story's lines are sent word for word (blueprint 8.1); MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+     "mark": "verified",
+     "check": "ROUTE-07"
+    },
+    {
+     "id": "H3R-08",
+     "says": "[Shot 1] has no time; each later shot opens '[Shot N] At MM:SS.mmm,' and the times rise from 0.",
+     "kind": "format",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+     "mark": "verified",
+     "check": "ROUTE-08"
+    },
+    {
+     "id": "H3R-09",
+     "says": "One 'From ... to the end' line of small actions starts inside the last shot, before the keep point, so the tail is never empty.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md); Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-09"
+    },
+    {
+     "id": "H3R-10",
+     "says": "Nothing is timed in the tail, and the tail after the keep point is at least 1.3 seconds: H3 often breaks up 1.2 to 1.7 seconds before the end.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-10"
+    },
+    {
+     "id": "H3R-11",
+     "says": "The clip's length in frames is on the 17 x k + 5 grid at 24 frames a second, with a one-decimal value to type that lands on it.",
+     "kind": "format",
+     "source": "ComfyUI MiniMax H3 templates and settings, https://docs.comfy.org/tutorials/video/minimax/minimax-h3-native",
+     "mark": "verified",
+     "check": "ROUTE-11"
+    },
+    {
+     "id": "H3R-12",
+     "says": "The clip's length is between 124 and 362 frames (the template's default and 15 seconds snapped up on the grid; shorter lengths on the grid are untested).",
+     "kind": "judgement",
+     "source": "ComfyUI MiniMax H3 templates and settings, https://docs.comfy.org/tutorials/video/minimax/minimax-h3-native; Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-12"
+    },
+    {
+     "id": "H3R-13",
+     "says": "H3 makes at most 15 seconds, so a held take longer than that, with its tail, cannot be made as planned: the rest is made in the edit or the shot is redesigned.",
+     "kind": "format",
+     "source": "MiniMax H3 model page, https://huggingface.co/MiniMaxAI/MiniMax-H3",
+     "mark": "verified",
+     "check": "ROUTE-13"
+    },
+    {
+     "id": "H3R-14",
+     "says": "detailed_description is about 350 to 500 words (MiniMax: 'normally'); under 200 or over 700 is reported.",
+     "kind": "judgement",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+     "mark": "unclear",
+     "check": "ROUTE-14"
+    },
+    {
+     "id": "H3R-15",
+     "says": "Outside the spoken lines and printed words, no word that names something absent (no, not, nothing, never, none ...): H3 in ComfyUI has no negative side, and naming a thing adds it. The one exception is 'with no camera movement whatsoever'.",
+     "kind": "judgement",
+     "source": "ComfyUI MiniMax H3 prompt guide, https://docs.comfy.org/tutorials/video/minimax/minimax-h3-prompt-guide; h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-15"
+    },
+    {
+     "id": "H3R-16",
+     "says": "Outside the spoken lines, no word that asks for stillness (still, frozen, does not move ...): people are written as small timed actions.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-16"
+    },
+    {
+     "id": "H3R-17",
+     "says": "Outside the spoken lines, no talk about speaking (sentence, words, speaks ...): H3 may say it aloud. 'says' just before a line is allowed.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-17"
+    },
+    {
+     "id": "H3R-18",
+     "says": "Outside the spoken lines, no comparison ('like a ...', 'as if'): H3 may draw the thing compared.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-18"
+    },
+    {
+     "id": "H3R-19",
+     "says": "A static clip has one camera sentence, 'static, on a tripod, with no camera movement whatsoever', and no camera-move words.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-19"
+    },
+    {
+     "id": "H3R-20",
+     "says": "Each person's fixed description and state line are written word for word next to their label: rewording re-rolls the face.",
+     "kind": "judgement",
+     "source": "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md; Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-20"
+    },
+    {
+     "id": "H3R-21",
+     "says": "detailed_description opens with the style sentence made from the film's style words.",
+     "kind": "judgement",
+     "source": "Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-21"
+    },
+    {
+     "id": "H3R-22",
+     "says": "The start picture brief says who is in the picture ('... are the only people in the picture', or '... is deserted').",
+     "kind": "judgement",
+     "source": "Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-22"
+    },
+    {
+     "id": "H3R-23",
+     "says": "A clip holds one to three shots.",
+     "kind": "judgement",
+     "source": "Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-23"
+    },
+    {
+     "id": "H3R-24",
+     "says": "Two shots cut together in one clip differ clearly in size (two steps or more), angle or setup, or the second is an insert: a cut between similar framings can be smoothed away.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-24"
+    },
+    {
+     "id": "H3R-25",
+     "says": "Two singles of two people facing each other share a clip only after a shot showing both in that clip; otherwise each single is a clip of its own.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)",
+     "mark": "unclear",
+     "check": "ROUTE-25"
+    },
+    {
+     "id": "H3R-26",
+     "says": "A contact (one thing driven into another, then the result) is never shown inside one shot: cut at the contact and open the next shot on the result, with the sound on the cut.",
+     "kind": "judgement",
+     "source": "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md); Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-26"
+    },
+    {
+     "id": "H3R-27",
+     "says": "Every clip page names its master picture and its character pictures.",
+     "kind": "judgement",
+     "source": "Project notes 42 (the handover) and 43 (the build plan)",
+     "mark": "unclear",
+     "check": "ROUTE-27"
+    }
+   ],
+   "strengths": [
+    "no rewriting step between your words and the model: the prompt is read as written",
+    "up to 9 reference pictures tied to the prompt by numbered labels"
+   ],
+   "weaknesses": [
+    "the last 1.2 to 1.7 seconds of a clip often break up (testers)",
+    "contact between things (a hit, a push) is unreliable on screen (testers)",
+    "a negative prompt has no effect"
+   ],
+   "marks": {
+    "kind": "J Project notes 43 (a route: a model plus the place it runs)",
+    "place": "V ComfyUI templates page (template name MiniMax H3 Reference to Video (R2V)) [checked 2026-10-10]",
+    "access": "V MiniMax model page (open weights, 768p by default) [checked 2026-10-10]",
+    "rewriting_step": "V MiniMax model page: H3-Context-IR is hosted and not included in the open-source release [checked 2026-10-10]",
+    "negative_field": "V ComfyUI prompt guide: there is no negative branch and a negative prompt has no effect [checked 2026-10-10]",
+    "audio": "V MiniMax model page [checked 2026-10-10]",
+    "fps": "V MiniMax model page: 24 frames a second [checked 2026-10-10]",
+    "frames": "V ComfyUI templates page: duration snaps up to 17 x k + 5 frames (said for the T2V and I2V templates); the length input defaults to 124 frames; U the range 124 to 362 (Project notes 42: 362 is 15 seconds snapped up; shorter lengths on the grid are untested) [checked 2026-10-10]",
+    "tail_s_min": "J h3-storyboard testing notes: H3 often breaks up 1.2 to 1.7 seconds before the end; leave 1.3 to 1.5 s",
+    "sizes": "V ComfyUI templates page: native canvas 1344 x 768 at 16:9; U 1536 x 640 for a 2.39 film and 1152 x 480 for tests (the clip file's choices); U 1024 x 576 as the 16:9 test size (Stage's choice)",
+    "inputs": "V ComfyUI templates page and MiniMax model page: up to 9 reference pictures, tags <Picture 1>; U the inputs ref_image_0, ref_image_1 ... (the clip file's reading of the template); J at most 4 character pictures a clip (Project notes 43)",
+    "shots_per_clip_max": "J Project notes 42, question 2 (accepted): a clip holds one to three shots",
+    "sections": "V MiniMax reference-mode guide: the six sections in this order [checked 2026-10-10]",
+    "detailed_description_words": "V MiniMax reference-mode guide: 'normally 350-500 English words' [checked 2026-10-10]",
+    "camera_static": "J h3-storyboard testing notes: the one camera line that holds",
+    "speaker": "V MiniMax reference-mode guide: <Subject N> (Sx) and <d>[Language] ...</d> [checked 2026-10-10]",
+    "music": "V MiniMax reference-mode guide: the complete example writes non_diegetic_music: N/A [checked 2026-10-10]",
+    "blink_every_s": "J the clip file's 'alive' sentence (Project notes 42)",
+    "rule_marks_from_takes": "J Project notes 42, W11, and 43 (the numbers are Stage's choice)",
+    "settings": "V ComfyUI templates page: the Lightning LoRA checkbox runs a 4-step turbo mode with slightly lower audio and motion quality; 20 steps by default; ref_image_size max keeps up to a 2048 px short edge [checked 2026-10-10]; U the box names Boolean (Enable Lightning LoRA), Int (Full), Resolution Selector (Size), Float (Duration), RandomNoise and Input Text (Prompt) (the clip file's reading of the template); J 25 steps and 2 or 3 seeds for speech (testers)",
+    "troubleshooting": "J h3-storyboard testing notes and the clip file's section 9, generalised",
+    "price_usd_per_s": "J not priced: the user's own or rented computer time",
+    "seed": "U the RandomNoise box (the clip file's reading of the template)",
+    "rules": "J each rule carries its own mark: verified (from MiniMax's or ComfyUI's documents) or unclear (a judgement until the take log decides it)",
+    "strengths": "V MiniMax model page and ComfyUI pages [checked 2026-10-10]",
+    "weaknesses": "J h3-storyboard testing notes; V ComfyUI prompt guide (negative prompt)"
+   },
+   "sources": [
+    "MiniMax H3 reference-mode prompt guide, https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/docs/VIDEO_PROMPT_WRITING_GUIDE_ref_en.md",
+    "MiniMax H3 model page, https://huggingface.co/MiniMaxAI/MiniMax-H3",
+    "ComfyUI MiniMax H3 templates and settings, https://docs.comfy.org/tutorials/video/minimax/minimax-h3-native",
+    "ComfyUI MiniMax H3 prompt guide, https://docs.comfy.org/tutorials/video/minimax/minimax-h3-prompt-guide",
+    "h3-storyboard testing notes, https://github.com/phileiny/h3-storyboard-skill (skills/h3-storyboard/SKILL.md)"
    ]
   },
   "runway-gen-4.5": {

@@ -128,24 +128,11 @@
   "marks": "V blueprint 8.1 rule 10; A4 C5"
  },
  "display": {
-  "1": "small, contained movements",
+  "1": "small movements",
   "2": "clear, visible movements",
   "3": "large, open movements",
   "sentence": "{Whose} face and body show {level}.",
-  "marks": "V blueprint 8.1 (subjects row: the display level as the size of the visible behaviour); D15 §2"
- },
- "still": {
-  "sentence_parts": "{Whose} {parts} stay still.",
-  "sentence_whole": "{Whose} whole body stays still.",
-  "only_moving": "Only {whose} {parts} move.",
-  "parts": [
-   "head",
-   "eyes",
-   "mouth",
-   "hands",
-   "torso"
-  ],
-  "marks": "V blueprint 8.1 rule 9; D15 rule 6 ('Her head and hands stay completely still ...; only her eyes move.')"
+  "marks": "V blueprint 8.1 (subjects row: the display level as the size of the visible behaviour); D15 §2; 10 October 2026: level 1 no longer says 'contained' (Project notes 42: words about holding back read as an order to freeze); H3 prompts leave the display sentence out (J)"
  },
  "must_not": {
   "sentence": "{Who} does not {behaviour}.",
@@ -335,9 +322,9 @@
   "omni_label": "Sound design:",
   "h3_labels": {
    "soundscape": "overall_soundscape:",
-   "music": "non_diegetic_music: none."
+   "music": "non_diegetic_music: N/A"
   },
-  "marks": "V C3 §7E-§7F, R10, R21 [P1][P6][P8][P26][P31]; K31 (no music in any clip)"
+  "marks": "V C3 §7E-§7F, R10, R21 [P1][P6][P8][P26][P31]; K31 (no music in any clip); MiniMax's reference-mode guide writes non_diegetic_music: N/A when there is no music (V, checked 2026-10-10)"
  },
  "one_shot": {
   "default": "Single continuous shot.",
@@ -385,12 +372,16 @@
   "side": "Is {whose} {feature} {where}?",
   "mouth": "Does only {whose} mouth move for the line, and only at {t0} to {t1} seconds?",
   "no_music": "Is there no music and no other voice?",
-  "still": "Do {whose} {parts} stay still?",
-  "camera_still": "Does the camera stay still?",
+  "camera_holds": "Does the camera hold its framing, with no drift or zoom?",
   "text_blank": "Are the surfaces blank, with no letters?",
   "one_take": "Is it one continuous take, with no cut inside it?",
   "end": "Does it end on {end}?",
-  "marks": "V blueprint 8.9 (yes/no questions built from the records; B2 R24 for the face question); C1 Rec11"
+  "moves_between": "Does {name} move between the written actions: breathing, eyes, small shifts?",
+  "said_once": "Is each line said once, by the right mouth?",
+  "cut_lands": "Does each cut land within about a second of its written time?",
+  "tail_left_out": "Is the tail, after second {seconds}, left out of the kept part?",
+  "contact_across_cut": "Does the hit happen across the cut, never on screen?",
+  "marks": "V blueprint 8.9 (yes/no questions built from the records; B2 R24 for the face question); C1 Rec11; 10 October 2026 (Project notes 42, W10): no question asks whether something stays still; the questions ask about the failures testers found (J)"
  },
  "text_graphics": {
   "canvas": {
@@ -462,5 +453,9 @@
    "caption"
   ],
   "marks": "V D12 §4 Rec7 (title card: 1920 x 804, Plex Medium, #EDEBE6 on black), R6-R7 (cap heights 4%, 2.5-3%, under 1.5%), R17 (non-story graphics never mirrored); C2 R6 (mirror transform); fonts and licences V D12 §7; the sign and screen sizes and the other canvases are J"
+ },
+ "h3": {
+  "camera_sentence": "The shot is static, on a tripod, with no camera movement whatsoever.",
+  "marks": "J h3-storyboard testing notes: the one camera line that holds; a second camera line made cuts drift"
  }
 }

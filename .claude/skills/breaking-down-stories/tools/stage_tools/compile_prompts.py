@@ -21,10 +21,11 @@ In plain words:
 - routed_model(breakdown, shot) tells other tools (the shot list's Model column, the estimate) the model a shot goes to.
 
 Command: compile [--scene <one ID, a comma list or SC07..SC10>] [--model <list>] [--force-model <name>]
-[--storyboard] [--lint-only] [--story <path>]. Exit 0: no GEN error; 1: GEN errors printed; 2: could not run.
+[--route <name>] [--storyboard] [--lint-only] [--story <path>]. Exit 0: no GEN error; 1: GEN errors printed; 2: could
+not run. With --route (or PROJECT video_route h3_comfyui_r2v) it makes a route's clip book instead (clip_book.py).
 
 Numbers come from rules/constants.json by name (handles_s, on_screen_speakers_per_clip_max,
-named_sounds_per_prompt_max, model_facts_max_age_days, hold_needs_still_s) and from the adapter files.
+named_sounds_per_prompt_max, model_facts_max_age_days) and from the adapter files.
 Standard library only.
 
 After the full run on The Catch (Project notes 31 and 32):
@@ -36,6 +37,14 @@ After the second full run (Project notes 39 and 40):
 - after its cross-examination: words that stand for their thing become the thing the TEXT's title names, a single
   mark a letter or a number with the right article, a quoted cue "that line"; a speaking shot is kept whole only
   when chaining it would cut through its line.
+
+After the H3 handover (Project notes 42 and 43):
+- no sentence from a subject's old `still` sub-part is written for any model, display level 1 says "small
+  movements", and no take question asks whether something stays still;
+- for MiniMax H3 (hosted, both entries) the clauses that name something absent or ask for stillness are left out and
+  listed, a must-not and the display sentence are left out, the camera has one sentence and music is N/A;
+- a route (kind: route, such as MiniMax H3 in ComfyUI) is never chosen by routing; compile --route makes its clip
+  book (clip_book.py), and PROJECT video_route h3_comfyui_r2v makes it the default.
 """
 
 import datetime
@@ -458,6 +467,17 @@ class WordFixer:
                               for line in (words.get("allowed_negations") or {}).get("lines") or []}
         self.delivery = {key: value for key, value in (adapters.phrase("delivery_rewrites", default={}) or {}).items()
                          if key not in ("note", "marks")}
+        # The words a model with no negative side would show (absence) or freeze on (stillness), and the words the
+        # H3 route also keeps out (talk about speaking, comparisons): rules/words.json (Project notes 42 and 43).
+        self.word_lists = {
+            "absence": list((words.get("absence_words") or {}).get("words") or []),
+            "stillness": list((words.get("stillness_words") or {}).get("words") or [])
+            + list((words.get("stillness_words") or {}).get("phrases") or []),
+            "talk": list((words.get("talk_about_speaking") or {}).get("words") or []),
+            "comparison": list((words.get("comparison_markers") or {}).get("markers") or []),
+        }
+        self.allowed_phrases = [phrase.casefold() for phrase in
+                                (words.get("absence_words") or {}).get("allowed_phrases") or []]
 
     def verb_of(self, gerund):
         gerund = gerund.lower()
@@ -496,10 +516,70 @@ class WordFixer:
     def banned_in(self, text):
         return [word for word in self.banned if re.search(r"(?<!\w)" + re.escape(word) + r"(?!\w)", text, re.IGNORECASE)]
 
-    def fix(self, text, left_out=None, what=""):
+    def kept_out_word(self, text, lists):
+        """The first word of the named lists (absence, stillness, talk, comparison) in text, or None. Spoken lines
+        (<d>...</d>), printed words in quotation marks and the allowed phrases ('with no camera movement
+        whatsoever', 'N/A') are never counted."""
+        plain = re.sub(r"<d>.*?</d>", " ", straight_quotes(str(text or "")), flags=re.DOTALL)
+        plain = re.sub(r'"[^"]*"', " ", plain).casefold()
+        for phrase in self.allowed_phrases:
+            plain = plain.replace(phrase, " ")
+        for name in lists:
+            for word in sorted(self.word_lists.get(name) or [], key=len, reverse=True):
+                lowered = word.casefold()
+                if lowered == "n't":
+                    match = re.search(r"\b\w+n't\b", plain)
+                else:
+                    match = re.search(r"(?<![\w-])" + re.escape(lowered) + r"(?![\w-])", plain)
+                if match:
+                    return match.group(0)
+        return None
+
+    def drop_kept_out(self, text, lists, dropped=None):
+        """text without the clauses (between semicolons, then between commas) that hold a word of the named lists;
+        each piece left out is added to dropped. A clause left with fewer than two words goes whole."""
+        if not lists or not text or not self.kept_out_word(text, lists):
+            return text
+        sentences = re.split(r"(?<=[.!?])\s+", str(text).strip())
+        kept_sentences = []
+        for sentence_text in sentences:
+            ending = sentence_text[-1] if sentence_text and sentence_text[-1] in ".!?" else ""
+            body = sentence_text[:-1] if ending else sentence_text
+            kept_clauses = []
+            for clause in re.split(r"\s*;\s*", body):
+                if not clause.strip():
+                    continue
+                if not self.kept_out_word(clause, lists):
+                    kept_clauses.append(clause.strip())
+                    continue
+                pieces = re.split(r",\s*", clause)
+                kept_pieces = [piece for piece in pieces if not self.kept_out_word(piece, lists)]
+                left = [piece.strip() for piece in pieces if self.kept_out_word(piece, lists)]
+                remainder = ", ".join(piece.strip() for piece in kept_pieces if piece.strip())
+                remainder = re.sub(r"^(?:and|but|or|then|nor|yet)\s+", "", remainder.strip(), flags=re.IGNORECASE)
+                if words_in(remainder) < 2 or not re.search(r"[A-Za-z]{3}", remainder):
+                    left = [clause.strip()]
+                    remainder = ""
+                if dropped is not None:
+                    dropped.extend(piece for piece in left if piece)
+                if remainder:
+                    kept_clauses.append(remainder)
+            joined = "; ".join(kept_clauses).strip(" ;,:")
+            if joined:
+                kept_sentences.append(joined + ending)
+        return " ".join(kept_sentences).strip()
+
+    def fix(self, text, left_out=None, what="", keep_out=(), why_out=""):
         """Swap words and rewrite negations; a sentence that still negates or holds a banned word is left out (and
-        listed in left_out)."""
+        listed in left_out). keep_out names word lists (absence, stillness, talk, comparison) whose clauses are left
+        out first, for a model with no negative side (H3), each listed with why_out."""
         text = self.rewrite_negations(self.swap_words(str(text or "")))
+        if keep_out:
+            dropped = []
+            text = self.drop_kept_out(text, keep_out, dropped)
+            if left_out is not None:
+                for piece in dropped:
+                    left_out.append(f"{what}: \"{piece}\": {why_out or 'left out, because the model would show it'}")
         kept = []
         for piece in re.split(r"(?<=[.!?;])\s+", text):
             if not piece.strip():
@@ -865,9 +945,15 @@ def is_silent_model(facts):
     return audio is False or (isinstance(audio, str) and audio.split(",")[0].strip().lower() in ("none", "silent", "no"))
 
 
+def is_route(facts):
+    """True for a route entry (kind: route): a model plus the place it runs, such as MiniMax H3 in ComfyUI. A route
+    is made only when asked (compile --route, or PROJECT video_route), never chosen by routing (Project notes 43)."""
+    return normalise_word((facts or {}).get("kind") or "") == "route"
+
+
 def is_candidate(facts):
     return (facts.get("status") == "current" and "generation" in (facts.get("use") or [])
-            and bool(allowed_lengths(facts)))
+            and bool(allowed_lengths(facts)) and not is_route(facts))
 
 
 def chain_cuts_speech(plan, lengths):
@@ -985,12 +1071,16 @@ def route_shot(adapters, plan, scene_model, forced=None, licensed_only=False):
         return Routing(forced, note=f"every shot is compiled for {adapters.display(forced)} to test its words (--force-model)")
     if plan.author_model:
         name, facts, retired = adapters.find(plan.author_model)
-        if name:
+        if name and is_route(facts):
+            warning = (f"the shot names {adapters.display(name)}, a route made only as a clip book (compile --route), "
+                       "so routing chooses a model for this pack")
+        elif name:
             warning = (f"{plan.author_model} is retired; it is compiled for {adapters.display(name)}, its replacement "
                        "(blueprint 8.2)") if retired else ""
             why = plan.author_model_why or "the shot names it"
             return Routing(name, note=f"the shot's own choice: {why}", override=name != scene_model, warning=warning)
-        warning = f"the shot names {plan.author_model}, which is not in the model facts, so routing chooses"
+        else:
+            warning = f"the shot names {plan.author_model}, which is not in the model facts, so routing chooses"
     else:
         warning = ""
     if scene_model:
@@ -1355,6 +1445,21 @@ class PromptWriter:
     def phrase(self, *path, default=""):
         return self.adapters.phrase(*path, default=default)
 
+    def is_h3(self, clip):
+        """True for MiniMax H3, hosted (both entries): a model with no negative side (Project notes 42, W3)."""
+        return (self.adapters.video.get(clip.model) or {}).get("adapter") == "h3"
+
+    def keep_out(self, clip):
+        """The word lists whose clauses are left out of this clip's prompt: for H3, the words that name something
+        absent and the words that ask for stillness (Project notes 42, W2 and W3); none for other models."""
+        return ("absence", "stillness") if self.is_h3(clip) else ()
+
+    H3_LEFT_OUT = "left out, because H3 has no negative side and would show it: write what happens instead"
+
+    def fix_for(self, text, clip, what):
+        """The fixer's words for this clip's model (word swaps, negations, and for H3 the clauses it would show)."""
+        return self.fixer.fix(text, clip.left_out, what, keep_out=self.keep_out(clip), why_out=self.H3_LEFT_OUT)
+
     def clean(self, text, cast, flipped, clip, what):
         """A record's visible words, fit for the prompt: names as labels, image sides swapped for a flipped picture,
         word swaps, negations rewritten, IDs taken out."""
@@ -1364,7 +1469,7 @@ class PromptWriter:
             text = swap_image_sides(text)
         text = RECORD_ID.sub(lambda match: cast.label(match.group(0)) if match.group(0).startswith("CH-")
                              else lower_first(element_name(self.breakdown, match.group(0))), text)
-        return self.fixer.fix(text, clip.left_out, what)
+        return self.fix_for(text, clip, what)
 
     def camera_words(self, clip, cast, motion_only):
         shot = clip.plan.shot
@@ -1478,26 +1583,11 @@ class PromptWriter:
             if template:
                 segments.append(Segment(template.replace("{who}", capital_label)))
         several = len([other for other in clip.plan.people if other.is_person]) > 1
-        still = [normalise_word(part) for part in split_list(item.get("still") or "") if not is_none(part)]
-        if still and not for_picture:
-            owner = pronoun_capital if (motion_only and not several) or not person.is_person else f"{label}'s"
-            owner = owner[:1].upper() + owner[1:]
-            if "whole_body" in still:
-                segments.append(Segment(self.phrase("still", "sentence_whole", default="{Whose} whole body stays still.")
-                                        .replace("{Whose}", owner)))
-            else:
-                parts = self.phrase("still", "parts", default=["head", "eyes", "mouth", "hands", "torso"])
-                moving = [part for part in parts if part not in still and part in ("eyes", "mouth")]
-                text = self.phrase("still", "sentence_parts", default="{Whose} {parts} stay still.").replace(
-                    "{Whose}", owner).replace("{parts}", and_list(still))
-                if len(still) == 1 and still[0] not in ("hands", "eyes"):
-                    text = text.replace(" stay still", " stays still")
-                if moving and person.is_person:
-                    whose_moving = pronoun_possessive
-                    text = text.rstrip(".") + "; " + lower_first(self.phrase("still", "only_moving", default="Only {whose} {parts} move.")
-                                                                 .replace("{whose}", whose_moving).replace("{parts}", and_list(moving)))
-                segments.append(Segment(text))
+        # The subject's old `still` sub-part is never written: a list of parts that stay still reads as an order to
+        # freeze (Project notes 42, W2); held time is written as small timed actions in the moments instead.
         display = str(item.get("display") or "").strip()
+        if self.is_h3(clip):
+            display = ""  # H3: the display sentence is left out (Project notes 43, A9)
         if display in ("1", "2", "3") and person is clip.plan.people[0] and person.is_person:
             level = self.phrase("display", display, default="")
             if level:
@@ -1505,7 +1595,10 @@ class PromptWriter:
                 segments.append(Segment(self.phrase("display", "sentence", default="{Whose} face and body show {level}.")
                                         .replace("{Whose}", owner[:1].upper() + owner[1:]).replace("{level}", level)))
         must_not = item.get("must_not")
-        if must_not and not is_none(must_not):
+        if must_not and not is_none(must_not) and self.is_h3(clip):
+            # H3 has no negative side: "does not ..." would show the behaviour, so it is left out and listed
+            clip.left_out.append(f"{person.name}'s must-not: \"{str(must_not).strip()}\": {self.H3_LEFT_OUT}")
+        elif must_not and not is_none(must_not):
             behaviour = self.behaviour_from_must_not(must_not)
             if behaviour:
                 text = self.phrase("must_not", "sentence", default="{Who} does not {behaviour}.").replace(
@@ -1583,7 +1676,7 @@ class PromptWriter:
                 text = name + (f", {state_line}" if state_line else "")
             text = sentence(text + (f", {where}" if where else ""))
             text = leave_words_for_later(text, composited_texts(self.breakdown, shot))
-            segments.append(Segment(self.fixer.fix(text, clip.left_out, f"{name}")))
+            segments.append(Segment(self.fix_for(text, clip, f"{name}")))
         for written in (shot.get_all("glass") if glass else []):
             item = split_item(written)
             surface = (item.first or "glass").strip()
@@ -1686,7 +1779,7 @@ class PromptWriter:
             template = self.adapters.generic.get("speaker") or "{who} ({delivery}): \"{line}\""
         description = who_capital
         if "{description}" in template:
-            voice = self.fixer.fix(self.voice_description(speaker), clip.left_out, "the voice description")
+            voice = self.fix_for(self.voice_description(speaker), clip, "the voice description")
             voice = lower_first(voice).rstrip(".")
             description = f"{who_capital}, in the voice of {voice}," if voice else f"{who_capital}, {delivery},"
             if path_words:
@@ -1706,7 +1799,7 @@ class PromptWriter:
         if silence == "true_silence":
             return [], "", []
         most = int(number_of(constant(self.breakdown.constants, "named_sounds_per_prompt_max", 3), 3))
-        room = "" if silence == "drop_out" else self.fixer.fix(room_sound_of(self.breakdown, shot), clip.left_out, "room sound")
+        room = "" if silence == "drop_out" else self.fix_for(room_sound_of(self.breakdown, shot), clip, "room sound")
         effects = []
         for written in shot.get_all("effect"):
             item = split_item(written)
@@ -1790,7 +1883,7 @@ class PromptWriter:
         if not motion_only:
             location_line = location_state_line(self.breakdown, shot)
             if location_line and not is_none(location_line):
-                setting.append(Segment(sentence(self.fixer.fix(location_line, clip.left_out, "the place"))))
+                setting.append(Segment(sentence(self.fix_for(location_line, clip, "the place"))))
             setting += self.things_block(clip, cast)
             look = look_of(self.breakdown, shot)
             if look is not None and not is_none(look.get("look_block")):
@@ -1866,7 +1959,13 @@ class PromptWriter:
             camera_segments = [Segment(camera_first)]
             if camera_move:
                 static = facts.get("camera_static")
-                if normalise_word(shot.get("move") or "static") == "static" and static:
+                if normalise_word(shot.get("move") or "static") == "static" and style == "h3":
+                    # one camera sentence, in the wording testers found holds; a second camera line made cuts drift
+                    # and the camera move (Project notes 42, W3)
+                    camera_segments.append(Segment(self.phrase(
+                        "h3", "camera_sentence",
+                        default="The shot is static, on a tripod, with no camera movement whatsoever.")))
+                elif normalise_word(shot.get("move") or "static") == "static" and static:
                     camera_segments.append(Segment(sentence(f"The camera {static}" if not static.startswith(("fixed", "holds")) else
                                                             ("Fixed camera" if static.startswith("fixed") else f"The camera {static}"))))
                     camera_segments.append(Segment(self.phrase("hold", "camera_does_not_move", default="The camera does not move.")))
@@ -2249,17 +2348,17 @@ def check_questions(compiler, clip, facts):
                              .replace("{t0}", number_text(window[0])).replace("{t1}", number_text(window[1])))
         else:
             questions.append(f"Does only {name}'s mouth move for the line?")
-    for person in plan.people:
-        still = [normalise_word(part) for part in split_list(person.item.get("still") or "") if not is_none(part)]
-        if still and person.is_person:
-            if "whole_body" in still:
-                questions.append(f"Does {person.name}'s whole body stay still?")
-            elif len(still) == 1 and still[0] not in ("hands", "eyes"):
-                questions.append(f"Does {person.name}'s {still[0]} stay still?")
-            else:
-                questions.append(f"Do {person.name}'s {and_list(still)} stay still?")
+    if clip.speeches:
+        questions.append(phrase("check_questions", "said_once", default="Is each line said once, by the right mouth?"))
+    # Never ask whether something stays still: checks catch known failures, and a face that never moves between
+    # the written actions is the failure testers found (Project notes 42, W10).
+    for person in faces:
+        questions.append(phrase("check_questions", "moves_between",
+                                default="Does {name} move between the written actions: breathing, eyes, small shifts?")
+                         .replace("{name}", person.name))
     if normalise_word(shot.get("move") or "static") == "static":
-        questions.append(phrase("check_questions", "camera_still", default="Does the camera stay still?"))
+        questions.append(phrase("check_questions", "camera_holds",
+                                default="Does the camera hold its framing, with no drift or zoom?"))
     if plan.held:
         questions.append(phrase("check_questions", "one_take", default="Is it one continuous take, with no cut inside it?"))
     if text_in_frame(compiler.breakdown, shot):
@@ -3119,6 +3218,8 @@ def add_compile_arguments(parser):
     parser.add_argument("--storyboard", action="store_true", help="write the storyboard frame prompts instead of video packs")
     parser.add_argument("--lint-only", dest="lint_only", action="store_true", help="route and lint without writing packs")
     parser.add_argument("--story", help="a story file to read the speeches from (default: the project's)")
+    parser.add_argument("--route", help="make the clip book of a route, a model plus the place it runs (for example "
+                        "h3-comfyui: MiniMax H3 in ComfyUI, Reference to Video)")
 
 
 def write_text(path, text):
@@ -3155,7 +3256,9 @@ def run_compile(context):
     forced = None
     if getattr(arguments, "force_model", None):
         forced, facts, retired = adapters.find(arguments.force_model)
-        if not forced:
+        if forced and is_route(facts):
+            arguments.route, forced = forced, None
+        elif not forced:
             raise StageStop(f"The model \"{arguments.force_model}\" is not in the model facts. Known models: "
                             + ", ".join(sorted(adapters.video)) + ".")
         if retired:
@@ -3171,6 +3274,10 @@ def run_compile(context):
     project = Project(folder, context.schema, context.words)
     if getattr(arguments, "storyboard", False):
         return write_storyboards(context, compiler, project, scenes)
+    route = chosen_route(adapters, breakdown, arguments, forced)
+    if route:
+        from .clip_book import compile_route
+        return compile_route(context, compiler, project, scenes, route, lint_only=bool(getattr(arguments, "lint_only", False)))
     results = [compiler.compile_scene(scene, forced) for scene in scenes]
     for result in results:
         compiler.current_scene_model = result.scene_model
@@ -3230,6 +3337,28 @@ def run_compile(context):
     return 1 if errors else 0
 
 
+def chosen_route(adapters, breakdown, arguments, forced):
+    """The route entry compile makes a clip book for: --route (a name or alias), else the project's video_route when
+    it names a route and no model is asked for; None for the usual packs (Project notes 43, A2)."""
+    from .project_files import StageStop
+    written = getattr(arguments, "route", None)
+    if written:
+        name, facts, _ = adapters.find(written)
+        if not name or not is_route(facts):
+            routes = sorted(key for key, value in adapters.video.items() if is_route(value))
+            raise StageStop(f'The route "{written}" is not in the model facts. Known routes: ' + ", ".join(routes) + ".")
+        return name
+    if forced or getattr(arguments, "model", None):
+        return None
+    project = breakdown.project
+    value = normalise_word(project.get("video_route") or "") if project is not None else ""
+    if value and value not in ("auto", "per_scene", "none", "open"):
+        name, facts, _ = adapters.find(value)
+        if name and is_route(facts):
+            return name
+    return None
+
+
 def write_packs(context, compiler, project, results, packs, chosen, forced, wanted_models):
     folder = Path(project.folder)
     machine = folder / MACHINE_FOLDER / (SYNTAX_TEST_FOLDER if forced else PROMPTS_FOLDER)
@@ -3240,8 +3369,8 @@ def write_packs(context, compiler, project, results, packs, chosen, forced, want
         for result in results:
             for old in machine.glob(f"{result.scene} - *.json"):
                 model = old.stem[len(result.scene) + 3:]
-                if model.endswith(" pictures"):
-                    continue
+                if model.endswith(" pictures") or is_route(compiler.adapters.video.get(model)):
+                    continue  # a route's clip book is kept: compile --route makes it
                 if (result.scene, model) not in chosen and (wanted_models is None or model in wanted_models):
                     old.unlink()
             for (scene, model), pack in chosen.items():

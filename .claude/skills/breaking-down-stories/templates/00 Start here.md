@@ -41,6 +41,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - rights: <quick, the user's answer, set through a choice: mine, permission, public_domain, study_only or unknown>
 - intended_use: <add-on, AI video, the user's answer, set through a choice: personal, festival, online_free, online_monetised or commercial>
 - licensed_data_only: <add-on, AI video, the user's answer, set through a choice: yes or no; default no>
+- video_route: <add-on, AI video, the user's answer, set through a choice: auto, per_scene or h3_comfyui_r2v; default auto>
 - format: <quick, the user's answer, set through a choice: short, feature or limited_series>
 - runtime_target_s: <quick, the user's answer, set through a choice: seconds, or as_written>
 - scope: <quick, the user's answer, set through a choice: IDs of SCENE (SC10), separated by commas, or all>
