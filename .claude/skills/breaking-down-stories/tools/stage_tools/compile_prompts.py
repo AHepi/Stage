@@ -3352,7 +3352,7 @@ def chosen_route(adapters, breakdown, arguments, forced):
         return None
     project = breakdown.project
     value = normalise_word(project.get("video_route") or "") if project is not None else ""
-    if value and value not in ("auto", "none", "open"):
+    if value and value not in ("auto", "per_scene", "none", "open"):
         name, facts, _ = adapters.find(value)
         if name and is_route(facts):
             return name

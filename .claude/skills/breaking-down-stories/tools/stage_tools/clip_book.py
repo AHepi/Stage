@@ -545,10 +545,11 @@ class Grouper:
             kept = round(clock, 3)
             frames, fits = frames_for(kept, self.route)
             if not fits:
-                clip.overflow_s = round(kept - self.route.longest_kept_s, 2)
-                kept = round(self.route.longest_kept_s, 2)
+                kept_fit = math.floor(self.route.longest_kept_s * 100 + 1e-6) / 100
+                clip.overflow_s = round(kept - kept_fit, 2)
+                kept = kept_fit
             clip.frames = frames
-            clip.keep_s = round(kept, 2)
+            clip.keep_s = math.floor(kept * 100 + 1e-6) / 100  # never rounded up into the tail
             clip.seconds_to_type = duration_to_type(frames, self.route.fps, self.route.block, self.route.offset)
             result.append(clip)
         return result
@@ -932,7 +933,9 @@ class ClipWriter:
                 continue
             moment = round(clip_shot.clip_start + at - clip_shot.shot_start, 3)
             if moment >= until - 1e-9:
-                note = f"the line {identifier} falls after the part kept, so it is laid in during the edit"
+                from .compile_prompts import heard_line
+                words = heard_line(item, entry) or "a line"
+                note = f'the line "{words}" falls after the part kept, so it is laid in during the edit'
                 if note not in clip.notes:
                     clip.notes.append(note)
                 continue
@@ -996,6 +999,13 @@ class ClipWriter:
                 look = self.look_block(plan)
                 if look:
                     parts.append(look if look.endswith(".") else look + ".")
+                    from .compile_prompts import look_of
+                    record = look_of(breakdown, plan.shot)
+                    clip.keys.append({"record": record.identifier, "what": "look block", "text": look})
+                    found = self.fixer.kept_out_word(look, KEPT_OUT_LISTS)
+                    if found:
+                        clip.key_problems.append({"record": record.identifier, "what": "look block", "word": found,
+                                                  "record_words": f"the look {record.title or ''}".strip()})
             else:
                 article = "an" if first[:1].lower() in "aeiou" else "a"
                 parts = [f"[Shot {index + 1}] At {mm_ss_ms(clip_shot.clip_start)}, the camera cuts to {article} "
@@ -1743,9 +1753,10 @@ def scene_page(compiler, route, pack):
                          "make: make the rest in the edit, or redesign the shot.")
         extras = entry.get("problems", []) + entry.get("notes", [])
         if entry.get("words_unknown"):
-            extras.append(f"the words of {', '.join(entry['words_unknown'])} are not known here, because the story's "
-                          "speeches are missing: read the story (stage.py read) or compile with --story, then compile "
-                          "again")
+            count = len(entry["words_unknown"])
+            extras.append(f"the words of {count} spoken line{'s are' if count != 1 else ' is'} not known here, because "
+                          "the story's speeches are missing: read the story (stage.py read) or compile with --story, "
+                          "then compile again")
         for problem in entry.get("key_problems") or []:
             extras.append(f"the {problem['what']} of {problem.get('record_words') or problem['record']} holds "
                           f"'{problem['word']}', which H3 would show or say; it is pasted word for word, so reword it to "

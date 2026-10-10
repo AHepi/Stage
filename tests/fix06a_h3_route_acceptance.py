@@ -452,7 +452,28 @@ def project_route(project):
     code, output = stage(["compile", "--scene", "SC10", "--model", "kling-3.0-omni", "--project", project,
                           "--story", EXCERPT])
     assert "Kling 3.0 Omni" in output and "clips for MiniMax H3 in ComfyUI" not in output, output[-800:]
-    return "video_route makes the clip book; asking for a model still makes the usual pack"
+    # set through a CHOICE, as step 14's checkpoint asks: the user's field is backed by the answer (no FORM-10)
+    choices = project / "01 Choices.md"
+    text = choices.read_text(encoding="utf-8")
+    count = int(re.search(r"END OF FILE \| Choices \| (\d+) records", text).group(1))
+    choice = ("### CHOICE CHOICE-099 Way the video is made\n"
+              "- question: Which way will you make the video?\n"
+              "- why: The clip book for MiniMax H3 in ComfyUI is made only when asked.\n"
+              "- option: a | text: Stage picks a model for each scene\n"
+              "- option: b | text: MiniMax H3 in ComfyUI, Reference to Video\n"
+              "- default: a | reason: Stage picks a model for each scene unless asked\n"
+              "- answer: b\n- asked: yes\n- checkpoint: e\n- affects: PROJECT.video_route\n"
+              "- sets: PROJECT.video_route | value: per_scene | when: a\n"
+              "- sets: PROJECT.video_route | value: h3_comfyui_r2v | when: b\n"
+              "- status: answered\n- date: 2026-10-10\n\n")
+    text = re.sub(r"END OF FILE \| Choices \| \d+ records", f"END OF FILE | Choices | {count + 1} records", text)
+    text = text.replace(f"END OF FILE | Choices | {count + 1} records", choice + f"END OF FILE | Choices | {count + 1} records")
+    choices.write_text(text, encoding="utf-8")
+    code, checked = stage(["check", "--project", project])
+    wrong = [line for line in checked.splitlines() if ("video_route" in line or "CHOICE-099 sets" in line)
+             and re.match(r"^E (FORM|ID)-", line)]
+    assert not wrong, wrong
+    return "video_route makes the clip book; asking for a model still makes the usual pack; a CHOICE sets it"
 
 
 @group("every clip page names its master picture and character pictures; the settings page names only boxes the "

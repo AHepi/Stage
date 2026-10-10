@@ -829,10 +829,11 @@
     {
      "name": "video_route",
      "label": "Way the video is made",
-     "meaning": "How the video is made: auto (Stage picks a model for each scene, as before) or h3_comfyui_r2v (MiniMax H3 in ComfyUI, Reference to Video: compile makes the clip book). Set by a CHOICE at add-on C's checkpoint (Project notes 43).",
+     "meaning": "How the video is made: auto (the default) or per_scene, Stage picks a model for each scene as before; h3_comfyui_r2v, MiniMax H3 in ComfyUI, Reference to Video: compile makes the clip book. Set by a CHOICE at add-on C's checkpoint, whose option a writes per_scene (a choice cannot write auto, the word for 'code decides') and option b h3_comfyui_r2v (Project notes 43).",
      "kind": "word",
      "values": [
       "auto",
+      "per_scene",
       "h3_comfyui_r2v"
      ],
      "depth": "m",

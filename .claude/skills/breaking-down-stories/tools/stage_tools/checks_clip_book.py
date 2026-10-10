@@ -424,7 +424,8 @@ def check_keys(run, pack, entry, facts):
                           "Fix: compile again; descriptions are pasted, never reworded."))
             continue
         record = breakdown.record(key["record"]) if breakdown is not None else None
-        field = "fixed_description" if key["what"] == "fixed description" else "state_line"
+        field = {"fixed description": "fixed_description", "state line": "state_line",
+                 "look block": "look_block"}.get(key["what"], "state_line")
         if record is not None and record.get(field):
             current = fixer.key_words(str(record.get(field)).strip())
             if normalised(current).rstrip(".") != normalised(text).rstrip("."):
