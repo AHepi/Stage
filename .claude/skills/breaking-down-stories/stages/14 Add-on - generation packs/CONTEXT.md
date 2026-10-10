@@ -8,7 +8,7 @@ Quote the one-line task back, word for word, before you do anything else.
 
 ## Purpose
 
-Turn approved records into pictures and clips, deciding nothing again: scene 10, shot 150 is 15 seconds; with `handles_s` at each end its clip is 17 seconds, longer than Kling 3.0 Omni allows. A turn shot is a held take, never split, so it goes to Seedance 2.5 as one take. Its prompt is motion only ("the woman"), because a start picture is attached (C3 R1); its held time is small timed actions (she chews, stops, swallows), never a list of parts that stay still, and it ends "No background music." Its pack asks: "Only her mouth moves, and only at 6 to 8 seconds?", "Does Iona move between the written actions: breathing, eyes, small shifts?", and "Is Iona's face as readable and as true in colour as the other faces in this frame?" (B2 R24).
+Turn approved records into pictures and clips, deciding nothing again: scene 10, shot 150 is 15 seconds; with `handles_s` at each end its clip is 17 seconds, longer than Kling 3.0 Omni allows. A turn shot is a held take, never split, so it goes to Seedance 2.5 as one take. Its prompt is motion only ("the woman"), because a start picture is attached (C3 R1); its held time is small timed actions (she chews, stops, swallows), never a list of parts that stay still, and it ends "No background music." Its pack asks: "Is each line said once, by the right mouth?", "Does Iona move between the written actions: breathing, eyes, small shifts?", and "Is Iona's face as readable and as true in colour as the other faces in this frame?" (B2 R24).
 
 ## When it runs
 

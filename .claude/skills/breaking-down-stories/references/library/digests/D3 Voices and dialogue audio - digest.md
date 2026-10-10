@@ -186,7 +186,7 @@ Starting strings (all ran on FFmpeg 7.0.2 on 27 Sept 2026; use as `ffmpeg -i in.
 - **Others:** OpenAI `instructions` (voices `marin`, `cedar`); Hume `description` and `speed` 0.5–2.0; Chatterbox `exaggeration` 0.7+, `cfg_weight` ~0.3; Dia `[S1]`/`[S2]` and `(laughs)`.
 - **Playable action → delivery string** [§5.2]: to warn = "low, firm, urgent, falling ends" (Natural, 1.0); to press = "level, quiet, unhurried, no rise" (Robust, 0.95); to soothe = "soft, warm, slower" (Natural, 0.9); to dismiss = "flat, quick, clipped" (Robust, 1.1); to plead = "breathy, rising, uneven" (Creative, 0.95).
 - **Design prompts:** 30–50 words, fixed order (age and sex, pitch and texture, `{accent}`, delivery, "close, clean studio recording"), never a real name.
-- **Native-audio drafts only:** name the path in the same sentence and say "is not visible" (C3 R21): "Jude's voice, heard only in her earpiece, crackly; he is not visible". Listener clips: "listening, does not speak", no quoted dialogue (A4 AI7).
+- **Native-audio drafts only:** name the path in the same sentence and say "is not visible" (C3 R21): "Jude's voice, heard only in her earpiece, crackly; he is not visible". Listener clips: small timed actions with the lips closed ("her lips closed; she breathes in; she blinks"), no quoted dialogue (A4 AI7, read through errata 27).
 - **To the LLM:** use P4's prompt verbatim; never ask it to paraphrase a line "for the voice".
 
 ## 7. The Catch

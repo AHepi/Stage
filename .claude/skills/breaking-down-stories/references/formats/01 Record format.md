@@ -124,7 +124,7 @@ This is Example 1 as it is saved from a chat app. The plain part comes first, th
 - frame: single
 - size: close_up
 - move: static
-- subject: CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | dwell_s: 15 | does: chews slowly; stops chewing; a small frown | still: head, hands, torso
+- subject: CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | dwell_s: 15 | does: chews slowly; stops chewing; a small frown
 - hear: SC10-D11 | speaker: on_screen
 - screen_time: 15
 - moment: 4-6 | shows: stops chewing; a small frown; chews once more, slowly
