@@ -10,7 +10,7 @@
 
 ## Things
 
-- The water bottle: a clear plastic water bottle with a white screw cap and no label.
+- The water bottle: a clear, unlabelled plastic water bottle with a white screw cap.
 - Saye's medical case: a worn black leather doctor's case with a brass clasp, about 40 centimetres long.
 - The flask: a small dented steel vacuum flask with a black screw cap, the kind that keeps coffee hot, about 25 centimetres tall.
 - The lamp: a small table lamp with a warm fabric shade and a heavy round base.
@@ -110,7 +110,7 @@ Below this line: details for the AI and the checker. You never need to read them
 ### PROP PR-BOTTLE The water bottle
 - names: a water bottle
 - category: consumable
-- fixed_description: a clear plastic water bottle with a white screw cap and no label
+- fixed_description: a clear, unlabelled plastic water bottle with a white screw cap
 - real_size: [0.07, 0.07, 0.22]
 - side: cap thread | own: right | plot: yes
 - text: none

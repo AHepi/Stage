@@ -83,7 +83,7 @@ The crisis is scene 24, "She deletes the way home."; the climax is scenes 26 to 
 
 **Things**
 
-- The water bottle: a clear plastic water bottle with a white screw cap and no label.
+- The water bottle: a clear, unlabelled plastic water bottle with a white screw cap.
 - Saye's medical case: a worn black leather doctor's case with a brass clasp, about 40 centimetres long.
 - The flask: a small dented steel vacuum flask with a black screw cap, the kind that keeps coffee hot, about 25 centimetres tall.
 - The lamp: a small table lamp with a warm fabric shade and a heavy round base.
@@ -109,7 +109,7 @@ The crisis is scene 24, "She deletes the way home."; the climax is scenes 26 to 
 - Jude (shot through the shoulder), from scene 6: an olive canvas work jacket hanging open, a grey T-shirt soaked dark red at the right shoulder, a blue cloth pressed into the wound, a plain gold ring on his left hand.
 - Jude (shirt cut away), from scene 10: bare chest, the shirt cut away, a cleaned wound on the right shoulder, an old white scar low on the right of his belly, a plain gold ring on his left hand.
 - Dr Saye (dressed at four in the morning), from scene 10: dark grey trousers and flat black shoes, a stethoscope round her neck, a plain gold ring on her left hand.
-- Saye's kitchen (bare before dawn), from scene 10: a bare, clean kitchen with nothing on the walls or the fridge door.
+- Saye's kitchen (bare before dawn), from scene 10: a bare, clean kitchen, its walls and fridge door bare.
 - The water bottle (full, cap on), from scene 10: full, the cap on.
 - Saye's medical case (open), from scene 10: open, its instruments laid out.
 - The flask (the clip empty), from scene 7: a bare spring clip under its base, closed on nothing.

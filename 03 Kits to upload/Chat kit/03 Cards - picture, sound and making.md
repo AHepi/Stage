@@ -344,7 +344,7 @@ Yes or no (B1 §13).
 
 ## Words for AI models
 
-Works: "The camera holds completely still for the whole shot."; "The camera moves slowly closer to her face while she stays still." (B1 §15); one move per clip, saying where it ends; "over Iona's left shoulder toward Saye" (C3 §4). Fails: rack focus, dolly zoom, whip pan, zoom as distinct from push-in, "objective camera", a frame shape in the prompt (B1 §15; C3 §4). A lens number is a hint: write "compressed background, shallow focus" (C3 §4).
+Works: "The camera holds completely still for the whole shot."; "The camera moves slowly closer to her face while she breathes and blinks." (B1 §15); one move per clip, saying where it ends; "over Iona's left shoulder toward Saye" (C3 §4). Fails: rack focus, dolly zoom, whip pan, zoom as distinct from push-in, "objective camera", a frame shape in the prompt (B1 §15; C3 §4). A lens number is a hint: write "compressed background, shallow focus" (C3 §4).
 
 ## Look up for more
 
@@ -851,7 +851,7 @@ Yes or no (B1 §13; A2 §9; D15 §8).
 
 ## Words for AI models
 
-Works: one camera move and one action per clip, as timed steps with an end state (C3 §5); behaviour, not labels: "She stops chewing. Her eyes lose focus and drift down." (C3 §6), then small timed actions for the held time instead of its closing "she holds very still" (D15 R6, rewritten); one camera sentence on a static shot; "she listens; no dialogue" for a listener (A1 §11). Fails: emotion words; a list of parts that stay still (D15 R6, rewritten); purposes and reasons in prompt text (GEN-15); parted lips in silence without "No dialogue." (D15 R7).
+Works: one camera move and one action per clip, as timed steps with an end state (C3 §5); behaviour, not labels: "She stops chewing. Her eyes lose focus and drift down." (C3 §6), then small timed actions for the held time instead of its closing "she holds very still" (D15 R6, rewritten); one camera sentence on a static shot; small timed actions with the lips closed for a listener, "her lips closed; she breathes in; she blinks" (A1 §11, read through library/02 Errata, entry 27). Fails: emotion words; a list of parts that stay still (D15 R6, rewritten); purposes and reasons in prompt text (GEN-15); parted lips in silence without "No dialogue." (D15 R7).
 
 ## Look up for more
 

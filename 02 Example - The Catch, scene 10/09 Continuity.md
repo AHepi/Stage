@@ -11,7 +11,7 @@
 - Jude (shot through the shoulder), from scene 6: an olive canvas work jacket hanging open, a grey T-shirt soaked dark red at the right shoulder, a blue cloth pressed into the wound, a plain gold ring on his left hand.
 - Jude (shirt cut away), from scene 10: bare chest, the shirt cut away, a cleaned wound on the right shoulder, an old white scar low on the right of his belly, a plain gold ring on his left hand.
 - Dr Saye (dressed at four in the morning), from scene 10: dark grey trousers and flat black shoes, a stethoscope round her neck, a plain gold ring on her left hand.
-- Saye's kitchen (bare before dawn), from scene 10: a bare, clean kitchen with nothing on the walls or the fridge door.
+- Saye's kitchen (bare before dawn), from scene 10: a bare, clean kitchen, its walls and fridge door bare.
 - The water bottle (full, cap on), from scene 10: full, the cap on.
 - Saye's medical case (open), from scene 10: open, its instruments laid out.
 - The flask (the clip empty), from scene 7: a bare spring clip under its base, closed on nothing.
@@ -96,7 +96,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - element: LOC-SAYE-KITCHEN
 - from: SC10 | line: 399
 - cause: 404 | quote: "A kitchen with nothing of anybody in it."
-- state_line: a bare, clean kitchen with nothing on the walls or the fridge door
+- state_line: a bare, clean kitchen, its walls and fridge door bare
 - changes: first seen, through the back door
 - side: none
 - handedness: reversed

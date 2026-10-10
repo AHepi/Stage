@@ -460,47 +460,31 @@ def straight_text(text):
     return text
 
 
-def phrase_found(text, phrases):
-    lowered = f" {text.casefold()} "
-    found = None
-    for phrase in phrases:
-        index = None
-        match = re.search(r"(?<![\w-])" + re.escape(phrase.casefold()) + r"(?![\w-])", lowered)
-        if match:
-            index = match.start()
-        if index is not None and (found is None or index < found[0]):
-            found = (index, phrase)
-    return found
-
-
-def contact_words(words):
-    lists = words.get("contact_words") or {}
-    return list(lists.get("cause") or []), list(lists.get("effect") or [])
-
-
 def contact_in_shot(shot, words):
-    """(cause, effect) when a shot's moments, in order, hold a cause word and then an effect word: a contact shown on
-    screen inside one shot; else None."""
-    causes, effects = contact_words(words)
-    text = " ; ".join(words_of_moments(shot))
-    cause = phrase_found(text, causes)
-    if cause is None:
-        return None
-    effect = phrase_found(text[cause[0] + len(cause[1]):], effects)
-    return (cause[1], effect[1]) if effect else None
+    """(cause, effect) when a shot's moments, in order, show a contact and its result on screen inside one shot; else
+    None. Read by the same rule as CRAFT-28 (checks_craft_reasons_words.contact_found), so the plan check and the
+    clip grouping never disagree about what a contact is."""
+    from .checks_craft_reasons_words import contact_found, without_quotes
+    hit = contact_found(words, [without_quotes(text) for text in words_of_moments(shot)])
+    return (hit[1], hit[2]) if hit else None
 
 
 def contact_pair(first, second, words):
-    """True when shot first ends on a cause word and shot second opens on the result (an effect word)."""
-    causes, effects = contact_words(words)
-    first_moments = words_of_moments(first.shot)
-    second_moments = words_of_moments(second.shot)
+    """True when shot first ends on a cause (one thing driven into another) and shot second opens on the result: a
+    contact cut across the two shots, by the same rule as CRAFT-28."""
+    from .checks_craft_reasons_words import cause_positions, effect_positions, without_quotes
+    first_moments = [without_quotes(text) for text in words_of_moments(first.shot)]
+    second_moments = [without_quotes(text) for text in words_of_moments(second.shot)]
     if not first_moments or not second_moments:
         return False
     if contact_in_shot(first.shot, words):
         return False
-    ending = first_moments[-1] + " ; " + str(first.shot.get("end") or "")
-    return phrase_found(ending, causes) is not None and phrase_found(second_moments[0], effects) is not None
+    ending = first_moments[-1] + " ; " + without_quotes(straight_text(str(first.shot.get("end") or "")))
+    if not cause_positions(words, ending):
+        return False
+    opening = second_moments[0]
+    following = effect_positions(words, opening)
+    return bool(following) and not re.search(r"[;,]", opening[:following[0][0]])
 
 
 class Grouper:
