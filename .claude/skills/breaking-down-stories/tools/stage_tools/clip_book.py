@@ -12,9 +12,10 @@ In plain words:
   the template's Duration box land on the intended frames whichever way the template rounds;
 - the prompt is written by code from the records in MiniMax's reference format: six sections in MiniMax's order, a
   <Subject N> for the place and for each person (their fixed description and state line word for word, tied to
-  their <Picture N>), timed shots, spoken lines word for word inside <d>[Language] ...</d>, the room's sound, and
-  non_diegetic_music: N/A. Words H3 would show or say (no, not, still, words about speaking, comparisons) are kept
-  out: a clause that needs one is left out and listed on the clip page;
+  their <Picture N>; a person seen only in inserts is not wired and is defined by the parts seen), timed shots,
+  spoken lines word for word inside <d>[Language] ...</d> (every line the shot hears, in its order, inside the shot),
+  the room's sound, and non_diegetic_music: N/A. Words H3 would show or say (no, not, still, words about speaking,
+  comparisons) are kept out: a clause that needs one is left out and listed on the clip page, never leaving a fragment behind;
 - every clip gets a start picture brief built from its first moment, from a master picture of the empty place
   (one per place, numbered M1, M2 ... by the place's first scene in the whole project);
 - it writes the clip book in "20 Prompts for AI video/MiniMax H3 in ComfyUI/" (settings, pictures to make first,
@@ -72,6 +73,7 @@ PICTURE_ONE = ("<Picture 1> is the shot-planning reference for [Shot 1]: it sets
 PICTURE_ONE_EMPTY = ("<Picture 1> is the shot-planning reference for [Shot 1]: it sets where the camera stands, the "
                      "shot size, the set, the props and the light.")
 LEFT_OUT_WHY = "Left out, because H3 would show it"
+KEEP_THE_WAY_ROUND = "Keep these people exactly as in their pictures, the same way round."  # never 'do not mirror' (N4)
 
 
 # ---------------------------------------------------------------- the route's facts
@@ -876,7 +878,9 @@ class ClipWriter:
             return True
         for written in plan.shot.get_all("thing"):
             reference = (split_item(written).first or "").strip()
-            if reference and reference.lower() != "none" and thing_mirror_state(self.compiler, plan, reference) == "mirrored":
+            if not reference or reference.lower() == "none":
+                continue
+            if thing_mirror_state(self.compiler, plan, reference) == "mirrored":
                 return True
         return False
 
@@ -1884,7 +1888,7 @@ class ClipWriter:
         from .compile_prompts import plate_route_prompts
         plate, edit = plate_route_prompts(self.compiler, plan, self.fixer.fix(cast.rename(opening or "")))
         # through the gate like every other brief, and said as what to do, never as what not to do (review N4)
-        edit = edit.replace("Do not mirror them.", "Keep these people exactly as in their pictures, the same way round.")
+        edit = edit.replace("Do not mirror them.", KEEP_THE_WAY_ROUND)
         plate = self.gate(plate, clip, "the start picture's plate")
         edit = self.gate(edit, clip, "the start picture's added people") if edit else ""
         mirrored = [person for person in people if person.flipped]
@@ -1922,7 +1926,7 @@ class ClipWriter:
         edit = ""
         if mirror_route_of(plan) == "plate" and self.plate_needed(plan):
             prompt, edit = plate_route_prompts(self.compiler, plan, moment)
-            edit = edit.replace("Do not mirror them.", "Keep these people exactly as in their pictures, the same way round.")
+            edit = edit.replace("Do not mirror them.", KEEP_THE_WAY_ROUND)
         else:
             prompt = description_prompt(self.compiler, plan, moment)
         # a picture tool, not H3, makes it: only what names something absent is cut (as in the master pictures), and
@@ -1937,7 +1941,8 @@ class ClipWriter:
         attach += [f"your {person.name} picture ({self.picture_file(person)})" for person in people_of(plan)]
         names = [person.name for person in people_of(plan)]
         return {"shot": plan.identifier, "title": plan.shot.title or "",
-                "file": f"Stills/Scene {scene_number_words(plan.scene)} - shot {three_digits(plan.identifier)} - still.png",
+                "file": (f"Stills/Scene {scene_number_words(plan.scene)} - shot {three_digits(plan.identifier)} - "
+                         "still.png"),
                 "attach": attach, "left_out": left_out,
                 "prompt": prompt, "edit_prompt": edit, "people": names}
 
@@ -2498,8 +2503,8 @@ def pictures_page(compiler, route, packs, masters):
     if stills:
         # the shots made as stills moved slowly in the edit, not as clips: their pictures (review N10)
         lines += ["## Stills for the edit", "",
-                  "These shots are not clips: each is one still picture, moved slowly in the edit. Make each like a start "
-                  "picture, from its master picture and character pictures.", ""]
+                  "These shots are not clips: each is one still picture, moved slowly in the edit. Make each like a "
+                  "start picture, from its master picture and character pictures.", ""]
         for pack, still in stills:
             lines += [f"### Scene {scene_number_words(pack.get('scene'))}, shot {three_digits(still['shot'])}"
                       + (f" - {still['title']}" if still.get("title") else ""), ""]

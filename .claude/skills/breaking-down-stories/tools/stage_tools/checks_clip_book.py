@@ -21,7 +21,8 @@ The checks, each with its rule:
   ROUTE-04 (H3R-04) every person whose picture is connected is placed in a shot
   ROUTE-05 (H3R-05) speaker numbers (S1), (S2) in order of first speaking; none in retention_analysis
   ROUTE-06 (H3R-06) every line inside <d>[Language] ...</d>, the tags balanced
-  ROUTE-07 (H3R-07) the lines word for word from the story's speeches; none left out for want of the speeches
+  ROUTE-07 (H3R-07) the lines word for word from the story's speeches; none left out for want of the speeches, and
+            every line a shot hears in some clip (or laid in during the edit after a held take's keep point)
   ROUTE-08 (H3R-08) [Shot 1] without a time; later shots "[Shot N] At MM:SS.mmm," with times rising from 0
   ROUTE-09 (H3R-09) one "From ... to the end" line, inside the last shot and before the keep point
   ROUTE-10 (H3R-10) a tail of at least the route's smallest tail, nothing timed in it, no two lines over each other,
@@ -45,6 +46,9 @@ The checks, each with its rule:
   ROUTE-26 (H3R-26) a contact shown on screen inside one shot
   ROUTE-27 (H3R-27) a clip page that does not name its master picture and character pictures, or a part of the
             mirror world the route cannot make safely (or does not know yet)
+
+Each problem points at the shot record its fix belongs to, and names its clip and shot in plain words for the
+health check ('Scene 10, clip 07 (shot 150)'), with a plain sentence of its own (review N9).
 
 Standard library only.
 """
@@ -734,7 +738,9 @@ def route_problems(run, packs, facts=None, marks=None):
                         what = f"{what} (a suggestion: rule {rule_id} is unclear until the take log decides it)"
                     # the line points at the shot record the fix belongs to; the plain line names the clip and the
                     # shot (review N9)
-                    found_file, found_line, _ = run.location(shot) if shot and hasattr(run, "location") else (None, None, None)
+                    found_file, found_line = None, None
+                    if shot and hasattr(run, "location"):
+                        found_file, found_line, _ = run.location(shot)
                     problem = run.problem(level, check_id, entry["clip"], field_name, what, fix,
                                           file_name=found_file or page, line_number=found_line)
                     problem.plain_where = plain_where(pack, entry, shot)

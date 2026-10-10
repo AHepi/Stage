@@ -84,8 +84,8 @@ IMAGE_SIDE_PHRASES = re.compile(
     r"(?<=\bon the )(left|right)(?! (?:hand|arm|foot|leg|shoulder|side of (?:his|her|their)))\b", re.IGNORECASE)
 QUOTES = {"“": '"', "”": '"', "‘": "'", "’": "'"}
 # What a cut leaves must start with its own subject (WordFixer.stands_alone; review N2): these words never start one
-NOT_A_SUBJECT_START = {"on", "in", "at", "by", "from", "to", "toward", "towards", "into", "onto", "under", "over", "beside",
-                       "behind", "across", "along", "around", "round", "through", "near", "against", "between", "above",
+NOT_A_SUBJECT_START = {"on", "in", "at", "by", "from", "to", "toward", "towards", "into", "onto", "under", "over",
+                       "beside", "behind", "across", "along", "around", "round", "through", "near", "against", "between", "above",
                        "below", "off", "out", "up", "down", "away", "back", "either", "with", "without", "for", "of",
                        "as", "like", "until", "while", "before", "after", "during", "inside", "outside", "past", "and",
                        "but", "or", "nor", "yet", "so", "then", "also", "again", "once", "meanwhile", "still", "even"}
@@ -592,7 +592,8 @@ class WordFixer:
                 cut += pieces
                 first_kept = first_kept and (first or index > 0)
                 if words:
-                    kept_sentences.append(words.rstrip(".!?") + (piece.strip()[-1] if piece.strip()[-1] in "!?" else "."))
+                    ending = piece.strip()[-1] if piece.strip()[-1] in "!?" else "."
+                    kept_sentences.append(words.rstrip(".!?") + ending)
             return " ".join(kept_sentences), first_kept, cut
         ending = text[-1] if text[-1] in ".!?" else ""
         text = text.rstrip(".!?")
