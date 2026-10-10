@@ -112,3 +112,8 @@ Added in entry 43. Each item's "done when" is in note 42, section 6. Where it st
 68. **Several guides and kit files sit near their word limits** (CLAUDE.md 293 of 299, README 246 of 250, the Gemini guide 1,093 of 1,100). Any added sentence may fail the length test. *Low.*
 69. **SKILL.md is still about 5,500 tokens**, against the paper's 1,100 for the first two layers; only two sections moved out. *Low.*
 70. **Untested choices of entry 43:** four people's pictures in one clip; off-screen lines sent in the prompt; the closing "goes on with what she is doing" line; mirror-world shots kept as later shots of a clip; the 2.4:1 frame at 1152 x 480. All marked J; the test run decides. *Medium.*
+
+## 11. From the first H3 test (entries 45 and 46)
+
+71. **Action clips on another model.** Your verdict on the first H3 test (entry 46): H3's action was unusable, while dialogue can work. Let the clip book mark each clip for a model (H3 for dialogue and performance, Seedance or another for action) and test scene 5's trip on Seedance. *High.* Source: entry 46.
+72. **Several takes per dialogue clip.** Only 1 of 4 dialogue takes was usable; the clip page should say how many takes to make and how to choose. *Medium.* Source: entry 46.

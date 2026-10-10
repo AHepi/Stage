@@ -54,8 +54,24 @@ From frames (one or two a second) and from where the sound is loud or quiet. Lin
 - Whether each line is said once, by the right mouth, and how it sounds (rules 7 and 17). This needs your ears.
 - Whether people stay alive between the written actions at full speed.
 - Where the picture breaks up near the end of the 15-second clips (rule 10).
-- The rule marks in the kit are unchanged until your listening is in; then the takes go in through the take log.
+- The rule marks in the kit are unchanged until the blocking test is in too; then both sets of takes go in through the take log together.
+
+## Your verdict, and what it changes
+
+You watched and listened (log entry 46). Your verdict outweighs my reading of the frames.
+
+- **The old "Not mint." prompt, both takes: good acting, good camera placement,** but American accents and lines nobody can understand. That prompt has no voice description at all (one line, 136 words), and the sound shows five bursts of speech for one written line: H3 invents speech.
+- **The new prompt with Iona described as in her picture, take 1: the best of the bunch.** Clear British accent, clear dialogue, a deep and intimidating voice. Stage's new prompts give every speaker a voice line (Iona's says "British English with a working accent"). This is the only take where a line came out right.
+- **Everything else is unusable,** including the trip and clip 04. Action might need another model, such as Seedance.
+
+What it changes:
+
+1. **H3 is for dialogue and performance; action goes elsewhere.** Stage already writes Seedance 2.5 prompts for scene 10; trying the action clips on Seedance is the obvious next test for action. The contact-cut structure worked in H3, but the motion was not good enough to use.
+2. **The camera is the main problem with the new prompts.** You liked the old prompt's closer framings, and the new prompt's wide shots (copied from the start picture) were unusable. The blocking test with Blender grey previews now aims at exactly this, on dialogue and performance moments only.
+3. **Voices need an accent written in every time,** or H3 speaks American. Stage's voice lines already do this.
+4. **Expect few usable dialogue takes:** 1 in 4 with the new prompts. A 15-second take costs about 40 cents, so plan several takes per line.
+5. **Point 3 above ("calm without stillness words") stands only for the stillness words.** You preferred the old prompt's stronger acting, so calm is not the goal in itself.
 
 ## Next
 
-The blocking test (entry 46): Stage's own grey 3D preview, rendered with Blender on this computer, as H3's planning picture, to control the camera and where people stand. Blender's Python module (5.2.2) now runs here and has rendered the kit's sample plan.
+The blocking test (entry 47): Stage's own grey 3D preview, rendered with Blender on this computer, as H3's planning picture, to control the camera and where people stand. Blender's Python module (5.2.2) now runs here and has rendered the kit's sample plan.
