@@ -330,6 +330,8 @@ def prompts_in_format(project):
         for key in clip["keys"]:
             assert " ".join(key["text"].split()).rstrip(".") in normalised, (clip["clip"], key["record"])
         for person in clip["people"]:
+            if not person.get("wired", True):
+                continue  # seen only in inserts: no face, so no face's description (review N3)
             record = breakdown.record(person["person"])
             fixed = " ".join(str(record.get("fixed_description")).split()).rstrip(".")
             assert fixed in normalised, (clip["clip"], person["person"])
@@ -357,6 +359,7 @@ def prompts_in_format(project):
 @group("no word H3 would show or say (absence, stillness, talk about speaking, comparison) outside the spoken lines "
        "and the pasted descriptions")
 def no_banned_words(project):
+    from stage_tools.checks_clip_book import SPEAKER_BEFORE_LINE
     from stage_tools.compile_prompts import Adapters, WordFixer
     fixer = WordFixer(Adapters(), WORDS, None)
     pack = load(project / PROMPTS / f"SC10 - {ROUTE}.json")
@@ -367,6 +370,7 @@ def no_banned_words(project):
             for form in (key["text"], key["text"].rstrip(".")):
                 text = text.replace(form, " ")
         text = text.replace(clip["style_sentence"], " ")
+        text = SPEAKER_BEFORE_LINE.sub(" ", text)  # the code's own "a man's voice (S2) ... says:" before a line (N12)
         word = fixer.kept_out_word(outside_lines(text), ("absence", "stillness", "talk", "comparison"))
         if word:
             found.append(f"{clip['clip']}: {word}")
@@ -492,12 +496,15 @@ def pages_name_pictures(project):
     for part, clip in zip(parts, pack["clips"]):
         assert re.search(r"(?m)^Master picture: M\d+", part), part[:200]
         for person in clip["people"]:
-            assert f"{person['name']} (Reference pictures/" in part, (clip["clip"], person["name"])
+            # a person seen only in inserts is not connected, but their picture is given to the picture tool (N3)
+            named = (f"{person['name']} (Reference pictures/", f"your {person['name']} picture (Reference pictures/")
+            assert any(words in part for words in named), (clip["clip"], person["name"])
         assert "----- COPY FROM HERE -----" in part and "----- COPY TO HERE -----" in part
         assert re.search(r"Length: \d+ frames \(\d+\.\d\d seconds\)\. Type \d+(?:\.\d)? in Float \(Duration\)\.", part), \
             part[:300]
         assert "Connect nothing else." in part and "### Keep" in part and "### Check" in part
-        assert clip["master_picture"].get("code") and len(clip["character_pictures"]) == len(clip["people"])
+        assert clip["master_picture"].get("code") and \
+            len(clip["character_pictures"]) == len([person for person in clip["people"] if person.get("wired", True)])
     facts = adapters_documents()["video_models.json"]["models"][ROUTE]
     boxes = {setting["box"] for setting in facts["settings"]}
     settings = (project / BOOK / "00 Settings and how to run a clip.md").read_text(encoding="utf-8")
@@ -691,7 +698,7 @@ def lines_timed_apart(project):
     entry = {"speeches": [{"speech": "SC01-D01", "at": 0.0, "ends_s": 2.5}, {"speech": "SC01-D02", "at": 1.0, "ends_s": 2.0}],
              "keep_s": 9.0, "frames": 277, "prompt": "detailed_description:\n[Shot 1] x\n", "shots": [{"clip_from_s": 0}]}
     found = check_tail(None, {}, entry, {"tail_s_min": 1.3, "fps": 24})
-    assert any("before SC01-D01 has ended" in what for _, what, _ in found), found
+    assert any("before SC01-D01 has ended" in what for _, what, *_ in found), found
     return f"{three[0]}: " + ", ".join(f"{speech} at {at:g}" for speech, at in three[1])
 
 
@@ -713,7 +720,7 @@ def people_cap():
     clips, route = generic_grouping_cap([crowd], 2)
     assert len(clips) == 2 and clips[0].over_cap and not clips[1].over_cap, [clip.over_cap for clip in clips]
     found = check_shot_count(None, {}, clip_entry(clips[0], route, WORDS), route.facts)
-    assert any("people's pictures" in what for _, what, _ in found), found
+    assert any("people's pictures" in what for _, what, *_ in found), found
     facts = adapters_documents()["video_models.json"]["models"][ROUTE]
     assert facts["inputs"]["people_pictures_max"] == 4 and "J at most 4 character pictures" in facts["marks"]["inputs"]
     return "insert joins at the cap; a new face over the cap starts a clip; a crowded shot is reported once"

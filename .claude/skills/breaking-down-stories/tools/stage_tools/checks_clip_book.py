@@ -265,13 +265,33 @@ def check_lines(run, pack, entry, facts):
         # a line left out because the story's speeches are missing: the clip would run without its dialogue (review F8)
         found.append(("speeches", f"leaves out {len(unknown)} spoken line{'s' if len(unknown) != 1 else ''} "
                       f"({', '.join(unknown)}) because the story's speeches are missing, so the clip is not ready",
-                      "Fix: read the story (stage.py read) or compile with --story, then compile again."))
+                      "Fix: read the story (stage.py read) or compile with --story, then compile again.",
+                      "leaves out spoken lines because the story's speeches were not read: ask Claude to read the "
+                      "whole story again"))
+    # every line a shot hears reaches a clip (or the edit, after a held take's keep point): a line timed outside its
+    # shot would otherwise vanish with no word (review N1); said on the clip that holds the shot's last part
+    reached = set()
+    for clip in (pack or {}).get("clips") or [entry]:
+        reached |= {(speech.get("shot"), speech.get("speech")) for speech in clip.get("speeches") or []}
+        for shot in clip.get("shots") or []:
+            reached |= {(shot.get("shot"), identifier) for identifier in
+                        list(clip.get("lines_in_edit") or []) + list(clip.get("words_unknown") or [])}
+    for shot in entry.get("shots") or []:
+        if shot.get("part", 1) != shot.get("parts", 1):
+            continue
+        lost = [identifier for identifier in shot.get("heard") or [] if (shot.get("shot"), identifier) not in reached]
+        if lost:
+            found.append(("speeches", f"leaves out {len(lost)} spoken line{'s' if len(lost) != 1 else ''} of shot "
+                          f"{str(shot.get('shot'))[-3:]} ({', '.join(lost)}): no clip says "
+                          f"{'them' if len(lost) != 1 else 'it'}, because the line is timed outside the shot",
+                          "Fix: give the line a time inside the shot (the hear line's at) or the shot more screen "
+                          "time, then compile again.", "leaves out a spoken line that is timed outside its shot"))
     breakdown = breakdown_of(run)
     spoken = [normalised(inner) for inner in re.findall(r"<d>\[[A-Za-z]+\] (.*?)</d>", entry["prompt"], flags=re.DOTALL)]
     listed = [normalised(speech.get("line")) for speech in entry.get("speeches") or []]
     if spoken != listed:
         found.append(("speeches", "the lines in the prompt are not the clip's lines in order",
-                      "Fix: compile again."))
+                      "Fix: compile again.", "sends its spoken lines in another order than the clip's lines"))
     for speech in entry.get("speeches") or []:
         story = breakdown.speech(speech.get("speech")) if breakdown is not None else None
         text = re.sub(r"\s*\([^)]*\)\s*", " ", str((story or {}).get("text") or "")).strip()
@@ -332,29 +352,34 @@ def check_tail(run, pack, entry, facts):
             found.append(("speeches", f"starts {second['speech']} at {second['at']:g} seconds, before "
                           f"{first['speech']} has ended (about {first['ends_s']:g} seconds at its speaker's pace)",
                           "Fix: give the lines their own times in the shot (the hear line's at), or a speaking moment "
-                          "each, then compile again."))
+                          "each, then compile again.", "times two spoken lines over each other"))
             break
     late = [speech for speech in speeches if entry["keep_s"] - speech["ends_s"] < LINE_END_MARGIN_S - 1e-6]
     if late:
         found.append(("speeches", f"ends {', '.join(speech['speech'] for speech in late)} less than "
                       f"{LINE_END_MARGIN_S:g} second before the keep point ({entry['keep_s']:g}); H3 often starts lines "
                       "late, so the end may fall in the part thrown away",
-                      "Fix: move the line earlier in the shot, or give the shot more screen time; keep by what you see."))
+                      "Fix: move the line earlier in the shot, or give the shot more screen time; keep by what you see.",
+                      "ends a spoken line less than a second before the part to keep ends, and H3 often starts lines "
+                      "late"))
     smallest = float(facts.get("tail_s_min") or pack.get("tail_s_min") or 1.3)
     total = entry["frames"] / float(facts.get("fps") or pack.get("fps") or 24)
     if total - entry["keep_s"] < smallest - 1e-6:
         found.append(("keep_s", f"leaves a tail of {total - entry['keep_s']:.2f} seconds, under {smallest:g}",
-                      "Fix: compile again; the clip is made long enough for its tail."))
+                      "Fix: compile again; the clip is made long enough for its tail.",
+                      "leaves too short a tail at the end of the clip"))
     description = section_text(entry["prompt"], "detailed_description")
     filler = {int(minutes) * 60 + float(seconds) for minutes, seconds in TIMESTAMP_END.findall(description)}
     for stamp in TIMESTAMP.findall(description):
         moment = seconds_of(stamp)
         if moment >= total - smallest + 0.2 - 1e-6 and moment not in filler:
             found.append(("prompt", f"times something at {moment:g} seconds, inside the tail",
-                          "Fix: compile again; nothing is planned in the last seconds, which are thrown away."))
+                          "Fix: compile again; nothing is planned in the last seconds, which are thrown away.",
+                          "plans something in the last seconds of the clip, which are thrown away"))
             break
     if entry.get("shots") and entry["keep_s"] <= entry["shots"][-1]["clip_from_s"]:
-        found.append(("keep_s", "the part to keep ends before the last shot starts", "Fix: compile again."))
+        found.append(("keep_s", "the part to keep ends before the last shot starts", "Fix: compile again.",
+                      "ends the part to keep before its last shot starts"))
     return found
 
 
@@ -398,15 +423,20 @@ def check_length(run, pack, entry, facts):
     words = len(section_text(entry["prompt"], "detailed_description").split())
     if words < 200:
         return [("prompt", f"its detailed_description has {words} words; MiniMax's guide says normally 350 to 500",
-                 "Fix: write more small timed actions in the shot's moments, then compile again.")]
+                 "Fix: write more small timed actions in the shot's moments, then compile again.",
+                 "has an H3 prompt much shorter than MiniMax's guide asks")]
     if words > 700:
         return [("prompt", f"its detailed_description has {words} words; MiniMax's guide says normally 350 to 500",
                  "Fix: shorten the moments and things the shots carry, or give one of the clip's shots a clip of its "
-                 "own (fewer people or shots per clip), then compile again.")]
+                 "own (fewer people or shots per clip), then compile again.",
+                 "has an H3 prompt much longer than MiniMax's guide asks")]
     return []
 
 
 SAYS_BEFORE_LINE = re.compile(r"\bsays(?:,[^:<]{0,80})?:\s*(?=<d>)")
+# the code's own speaker phrase right before a line: "a man's voice (S2), low and warm, says:" (review N12)
+SPEAKER_BEFORE_LINE = re.compile(r"(?:\b(?:a|an) [\w-]+(?: [\w-]+)?'s voice )?\(S\d+\)(?:,[^:<]{0,200}?)?,? "
+                                 r"says(?:,[^:<]{0,80})?:\s*(?=<d>)")
 
 
 def first_clip_with(pack, problem):
@@ -432,7 +462,7 @@ def kept_out_check(list_name, label):
         if list_name == "talk":
             # only 'says' (with its delivery) right before a line introduces it; any other talk about speaking counts
             # (review F10)
-            text = SAYS_BEFORE_LINE.sub(" ", text)
+            text = SAYS_BEFORE_LINE.sub(" ", SPEAKER_BEFORE_LINE.sub(" ", text))
         word = fixer.kept_out_word(outside_lines(text), (list_name,))
         if word:
             found.append(("prompt", f"holds '{word}' ({label}) outside the spoken lines",
@@ -514,19 +544,21 @@ def check_shot_count(run, pack, entry, facts):
     found = []
     most = int(facts.get("shots_per_clip_max") or 3)
     if len(entry.get("shots") or []) > most:
-        found.append(("shots", f"holds {len(entry['shots'])} shots; a clip holds at most {most}", "Fix: compile again."))
+        found.append(("shots", f"holds {len(entry['shots'])} shots; a clip holds at most {most}", "Fix: compile again.",
+                      "holds more shots than a clip may"))
     over = entry.get("over_cap") or {}
     if over:
         found.append(("people", f"connects {over['pictures']} people's pictures, over the route's {over['cap']}, because "
                       f"shot {str(over['shot'])[-3:]} shows {over['pictures']} people",
-                      "Fix: frame fewer people in that shot, or split it into shots of fewer people, each a clip."))
+                      "Fix: frame fewer people in that shot, or split it into shots of fewer people, each a clip.",
+                      "shows more people's faces than H3 can keep apart in one clip"))
     for moment in entry.get("part_moments") or []:
         if moment.get("part", 1) > 1 and abs(float(moment.get("boundary_s", 0)) -
                                              float((entry.get("shots") or [{}])[0].get("shot_from_s", -1))) < 1e-6:
             found.append(("shots", f"goes on with the moment {moment['moment']} of shot {str(moment['shot'])[-3:]} "
                           f"across the cut between two parts of the shot (at second {moment['boundary_s']:g})",
                           f"Fix: split that moment at second {moment['boundary_s']:g} so each part has its own actions, "
-                          "then compile again."))
+                          "then compile again.", "cuts a moment of a long shot between two of its parts"))
     return found
 
 
@@ -585,21 +617,27 @@ def check_pictures_named(run, pack, entry, facts):
     found = []
     if not (entry.get("master_picture") or {}).get("code"):
         found.append(("master_picture", "names no master picture",
-                      "Fix: give the scene a place (SCENE location) so its master picture can be made, then compile."))
+                      "Fix: give the scene a place (SCENE location) so its master picture can be made, then compile.",
+                      "does not name the picture of its empty place to start from"))
     named = {picture.get("person") for picture in entry.get("character_pictures") or [] if picture.get("file")}
-    missing = [person["name"] for person in entry.get("people") or [] if person["person"] not in named]
+    missing = [person["name"] for person in entry.get("people") or [] if person["person"] not in named
+               and person.get("wired", True)]  # a person seen only in inserts is never wired (review N3)
     if missing:
         found.append(("character_pictures", f"names no character picture for {', '.join(missing)}",
-                      "Fix: compile again."))
+                      "Fix: compile again.", "does not name a character picture it needs"))
     # the mirror world: a part of it the route cannot make safely, or a scene whose mirror states are not known yet
     # (review F2)
     mirror = entry.get("mirror") or {}
     for problem in mirror.get("problems") or []:
         found.append(("mirror", f"the mirror world: {problem[:1].lower() + problem[1:]}",
-                      "Fix: see the clip's notes; check the sides in the take before keeping it."))
+                      "Fix: see the clip's notes; check the sides in the take before keeping it.",
+                      "has a part in the mirror world that H3 may get wrong: check the sides in the take with the "
+                      "clip's questions, then keep it or run it again"))
     if mirror.get("open_note"):
         found.append(("mirror", f"the mirror world: {mirror['open_note']}",
-                      "Fix: compile again with --story and the whole story, so the mirror rule's eras are found."))
+                      "Fix: compile again with --story and the whole story, so the mirror rule's eras are found.",
+                      "does not know yet who is mirrored, because the whole story was not read: ask Claude to read "
+                      "it again"))
     return found
 
 
@@ -657,7 +695,7 @@ CHECKS = [
     ("ROUTE-26", "H3R-26", check_contact, "A contact shown inside one shot",
      "shows one thing hitting another inside one shot, which H3 cannot do reliably"),
     ("ROUTE-27", "H3R-27", check_pictures_named, "A clip page without its pictures, or a mirror-world part unsafe",
-     "has a clip page that does not name the pictures to make first, or a mirror-world part it cannot make safely"),
+     "has a clip page that does not name its pictures, or a part in the mirror world that H3 may get wrong"),
 ]
 KIT_LEVELS = {"ROUTE-01": "E", "ROUTE-02": "E", "ROUTE-03": "E", "ROUTE-05": "E", "ROUTE-06": "E", "ROUTE-07": "E",
               "ROUTE-08": "E", "ROUTE-11": "E", "ROUTE-13": "E"}
@@ -688,12 +726,47 @@ def route_problems(run, packs, facts=None, marks=None):
                         run.skip(check_id, f"{entry.get('clip')} could not be read ({type(error).__name__}: {error}); "
                                            "compile the route again")
                     continue
-                for field_name, what, fix in found:
+                for found_entry in found:
+                    field_name, what, fix = found_entry[:3]
+                    plain = found_entry[3] if len(found_entry) > 3 else ""
+                    shot = shot_of_problem(entry, what)
                     if level == "W":
                         what = f"{what} (a suggestion: rule {rule_id} is unclear until the take log decides it)"
-                    problem = run.problem(level, check_id, entry["clip"], field_name, what, fix, file_name=page)
+                    # the line points at the shot record the fix belongs to; the plain line names the clip and the
+                    # shot (review N9)
+                    found_file, found_line, _ = run.location(shot) if shot and hasattr(run, "location") else (None, None, None)
+                    problem = run.problem(level, check_id, entry["clip"], field_name, what, fix,
+                                          file_name=found_file or page, line_number=found_line)
+                    problem.plain_where = plain_where(pack, entry, shot)
+                    if plain:
+                        problem.plain_detail = plain
                     problems.append(problem)
     return problems
+
+
+def shot_of_problem(entry, what):
+    """The plan shot a route problem is about: the shot its words name ('shot 150'), else the clip's first shot."""
+    shots = [shot.get("shot") for shot in entry.get("shots") or [] if shot.get("shot")]
+    named = re.search(r"\bshots? (\d{3})\b", what or "")
+    if named:
+        for identifier in shots:
+            if identifier.endswith(f"SH{named.group(1)}"):
+                return identifier
+    # a line named by its speech: the shot that hears it
+    by_speech = {speech.get("speech"): speech.get("shot") for speech in entry.get("speeches") or []}
+    for speech in re.findall(r"\bSC\d+[A-Z]?-D\d+\b", what or ""):
+        if by_speech.get(speech) in shots:
+            return by_speech[speech]
+    return shots[0] if shots else ""
+
+
+def plain_where(pack, entry, shot):
+    """'Scene 10, clip 07 (shot 150)': where a route problem is, in the words the clip pages use (review N9)."""
+    scene = re.sub(r"^SC0*", "", str(entry.get("scene") or (pack or {}).get("scene") or "")) or "?"
+    number = entry.get("number")
+    clip = f"clip {int(number):02d}" if isinstance(number, int) else "a clip"
+    shot_words = f" (shot {shot[-3:]})" if shot else ""
+    return f"Scene {scene}, {clip}{shot_words}"
 
 
 def lint_route_packs(compiler, project, packs, route=None):
