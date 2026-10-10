@@ -4,7 +4,7 @@ Part of the Stage chat kit (knowledge). It holds every empty record file of the 
 
 ---
 
-From the skill file `templates/00 Start here.md`:
+From the skill file `references/templates/00 Start here.md`:
 
 ~~~~markdown
 # <The story's title>
@@ -85,7 +85,7 @@ END OF FILE | Start here | 1 records
 
 ---
 
-From the skill file `templates/01 Choices.md`:
+From the skill file `references/templates/01 Choices.md`:
 
 ~~~~markdown
 # Choices
@@ -143,7 +143,7 @@ END OF FILE | Choices | 2 records
 
 ---
 
-From the skill file `templates/04 Scene list.md`:
+From the skill file `references/templates/04 Scene list.md`:
 
 ~~~~markdown
 # Scene list
@@ -162,7 +162,7 @@ From the skill file `templates/04 Scene list.md`:
 
 Below this line: details for the AI and the checker. You never need to read them.
 
-> The scene's list fields (step 1) and plan fields (step 2) live here; its design fields live in its scene file (templates/11 Scene.md). The copies merge by ID.
+> The scene's list fields (step 1) and plan fields (step 2) live here; its design fields live in its scene file (references/templates/11 Scene.md). The copies merge by ID.
 
 ### SCENE <SCnn> <the place, in plain words>
 - heading: <quick, code copies it from the story when source_is_screenplay; you write it when source_not_screenplay; in a chat without code you write it: text>
@@ -218,7 +218,7 @@ END OF FILE | Scene list | 1 records
 
 ---
 
-From the skill file `templates/05 Story plan.md`:
+From the skill file `references/templates/05 Story plan.md`:
 
 ~~~~markdown
 # Story plan
@@ -382,7 +382,7 @@ END OF FILE | Story plan | 7 records
 
 ---
 
-From the skill file `templates/06 World and style.md`:
+From the skill file `references/templates/06 World and style.md`:
 
 ~~~~markdown
 # World and style
@@ -468,7 +468,7 @@ END OF FILE | World and style | 3 records
 
 ---
 
-From the skill file `templates/07 Characters and voices.md`:
+From the skill file `references/templates/07 Characters and voices.md`:
 
 ~~~~markdown
 # Characters and voices
@@ -553,7 +553,7 @@ END OF FILE | Characters and voices | 2 records
 
 ---
 
-From the skill file `templates/08 Places and things.md`:
+From the skill file `references/templates/08 Places and things.md`:
 
 ~~~~markdown
 # Places and things
@@ -693,7 +693,7 @@ END OF FILE | Places and things | 5 records
 
 ---
 
-From the skill file `templates/09 Continuity.md`:
+From the skill file `references/templates/09 Continuity.md`:
 
 ~~~~markdown
 # Continuity
@@ -737,7 +737,7 @@ END OF FILE | Continuity | 1 records
 
 ---
 
-From the skill file `templates/10 Film rules.md`:
+From the skill file `references/templates/10 Film rules.md`:
 
 ~~~~markdown
 # Film rules
@@ -901,7 +901,7 @@ END OF FILE | Film rules | 8 records
 
 ---
 
-From the skill file `templates/11 Scene.md`:
+From the skill file `references/templates/11 Scene.md`:
 
 ~~~~markdown
 # Scene NN - <place>
@@ -1228,7 +1228,7 @@ END OF FILE | Scene NN - <place> | 9 records
 
 ---
 
-From the skill file `templates/13 Health check.md`:
+From the skill file `references/templates/13 Health check.md`:
 
 ~~~~markdown
 # Health check
@@ -1280,7 +1280,7 @@ END OF FILE | Health check | 2 records
 
 ---
 
-From the skill file `templates/18 Add-on jobs.md`:
+From the skill file `references/templates/18 Add-on jobs.md`:
 
 ~~~~markdown
 # Add-on jobs
@@ -1424,7 +1424,7 @@ END OF FILE | Add-on jobs | 6 records
 
 ---
 
-From the skill file `templates/22 Rights and credits.md`:
+From the skill file `references/templates/22 Rights and credits.md`:
 
 ~~~~markdown
 # Rights and credits
@@ -1470,11 +1470,22 @@ END OF FILE | Rights and credits | 1 records
 
 ---
 
-From the skill file `reference/01 Record format.md`:
+From the skill file `references/formats/01 Record format.md`:
 
 # Record format
 
-Every numbered file in a project stores its records in "record text": plain lines that people can read and code can check. This page is the whole grammar (rules G1 to G13), three examples, and the ten mistakes that come up most, with their fixes. Field names, kinds and allowed values live in `schema/schema.json`; `reference/03 Field guide.md` lists them in words.
+Every numbered file in a project stores its records in "record text": plain lines that people can read and code can check. This page is the whole grammar (rules G1 to G13), three examples, and the ten mistakes that come up most, with their fixes. Field names, kinds and allowed values live in `_config/schema/schema.json`; `references/formats/03 Field guide.md` lists them in words.
+
+## What you most often need
+
+This short list was the section "Records: what you most often need" of `SKILL.md`.
+
+- The grammar is on this page (G1 to G13): `### TYPE ID title`; `- field: value`; named sub-parts after ` | `; `none` empty, `open` undecided, `auto` code's choice; `> ` a note; one END line, `END OF FILE | <what the file holds> | <n> records`.
+- Never put a shortening marker ("...", "etc.", "same as above") inside a record (G11), or split a record across replies.
+- Field names and values come only from `_config/schema/schema.json`; words from `references/formats/02 Word list.md`; numbers by name from `_config/rules/constants.json` (without code, the last table of `references/formats/06`).
+- Code issues scene, chapter and speech IDs, and a block for the rest (beats SC10-B01 to SC10-B30; shots SC10-SH010 to SC10-SH400 in tens).
+- Before step 7, a moment inside a scene is a story point: the scene ID and a quote anchor (`SC24 "She deletes the way home."`).
+- When two rules disagree, the higher in `references/formats/04 Rule order.md` wins; the `why` says which.
 
 ## Example 1: one record
 
@@ -1573,7 +1584,7 @@ Below this line: details for the AI and the checker. You never need to read them
 END OF FILE | Continuity, scene 7 | 1 records
 ```
 
-This is Example 1 as it is saved from a chat app. The plain part comes first, then the fixed divider line, then the records, then the checks-in-words table after a `---` line, then the END line. The real table has a row for each of the 14 checks (`reference/06` part 1). In chat every line reference is a quote anchor; `stage.py adopt` turns anchors into numbers later.
+This is Example 1 as it is saved from a chat app. The plain part comes first, then the fixed divider line, then the records, then the checks-in-words table after a `---` line, then the END line. The real table has a row for each of the 14 checks (`references/formats/06` part 1). In chat every line reference is a quote anchor; `stage.py adopt` turns anchors into numbers later.
 
 ## Example 3: the turn shot of scene 10, and one scene item
 
@@ -1594,7 +1605,7 @@ This is Example 1 as it is saved from a chat app. The plain part comes first, th
 - why: "Her face changes." puts the turn inside her mouth, so the scene's closest frame is spent here.
 ```
 
-The lines above are some of the shot's fields, in their order; the whole record, with every Standard field, is in `examples/01 The Catch - scene 10.md`. In the same scene file the turn picture, written before any shot, reads `- turn_picture: SC10-B07 | picture: Iona close, eyes on Saye just off the lens, her mouth stopped mid-chew`.
+The lines above are some of the shot's fields, in their order; the whole record, with every Standard field, is in `references/examples/01 The Catch - scene 10.md`. In the same scene file the turn picture, written before any shot, reads `- turn_picture: SC10-B07 | picture: Iona close, eyes on Saye just off the lens, her mouth stopped mid-chew`.
 
 ## The ten most common mistakes
 
@@ -1611,11 +1622,11 @@ The lines above are some of the shot's fields, in their order; the whole record,
 
 ---
 
-From the skill file `reference/02 Word list.md`:
+From the skill file `references/formats/02 Word list.md`:
 
 # Word list
 
-One plain word for each thing. Write "turn shot", never "key shot"; in a record that is `- role: turn`. Use the middle column in every record, card, step file and message, and never the retired words in the last column. Where the AI's word and the user's word differ, the user's word is the only one allowed above a file's divider and in messages ("group 3", never "SQ03"). The same list, as data the checker reads, is `rules/words.json`; the user's plainer version is `06 Word list.md`.
+One plain word for each thing. Write "turn shot", never "key shot"; in a record that is `- role: turn`. Use the middle column in every record, card, step file and message, and never the retired words in the last column. Where the AI's word and the user's word differ, the user's word is the only one allowed above a file's divider and in messages ("group 3", never "SQ03"). The same list, as data the checker reads, is `_config/rules/words.json`; the user's plainer version is `06 Word list.md`.
 
 ## The words and the fields they map to
 
@@ -1703,13 +1714,13 @@ Only the user's words go above a file's divider, into reports and into messages:
 
 ## Where the checker looks
 
-WORDS-02 warns on a retired word in a field value or in user-facing text, read in its retired sense ("camera movement", "a sound bed"; "his movement" is plain English). Each entry in `rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03), only in prompts (GEN-12), or nowhere (`emblem` as a PROP kind, `spine` as a MOTIF rank).
+WORDS-02 warns on a retired word in a field value or in user-facing text, read in its retired sense ("camera movement", "a sound bed"; "his movement" is plain English). Each entry in `_config/rules/words.json` says where: everywhere, only in user text, only in named fields, only as a field name (FORM-03), only in prompts (GEN-12), or nowhere (`emblem` as a PROP kind, `spine` as a MOTIF rank).
 
 Always allowed: "Stage" as the product's name and `stage.py`; story words inside double quotes (a script's "torch" stays); the field names `CHARACTER.movement` (label "How they move") and `SETUP.look_at` (label "Aimed at"); research codes in AI-facing files. Mood-only reasons, emotion words and banned prompt words have their own lists (REASON-04, WORDS-01, GEN-12).
 
 ---
 
-From the skill file `reference/04 Rule order.md`:
+From the skill file `references/formats/04 Rule order.md`:
 
 # Rule order
 

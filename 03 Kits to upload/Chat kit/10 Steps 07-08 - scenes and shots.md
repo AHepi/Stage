@@ -4,7 +4,7 @@ Part of the Stage chat kit: a step-group file, attached to the chat that runs on
 
 ---
 
-From the skill file `steps/07 Scene design and shot list.md`:
+From the skill file `stages/07 Scene design and shot list/CONTEXT.md`:
 
 # Step 7. Scene design and shot list
 
@@ -62,7 +62,7 @@ In this order; shots come last.
 
 ## Record template
 
-`templates/11 Scene.md` (SCENE design fields, PART, BEAT, SPEECH, MOVE, SETUP, SHOTLIST).
+`references/templates/11 Scene.md` (SCENE design fields, PART, BEAT, SPEECH, MOVE, SETUP, SHOTLIST).
 
 ## IDs you will be given
 
@@ -86,7 +86,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-After each scene a short report (in chat ending with the list); after a sequence's last scene, checkpoint C's message (`reference/07`; your own counts):
+After each scene a short report (in chat ending with the list); after a sequence's last scene, checkpoint C's message (`references/formats/07`; your own counts):
 
 ```
 Done: group 3, scenes 7 to 10 (step 8 of 12). 58 shots, about 4 minutes.
@@ -130,7 +130,7 @@ if you prefer.
 Every line reference is a quote anchor: beat `lines`, `because` lines and story points quote the scene exactly, at least `quote_anchor_words_min` words, found once in it (`- lines: "Iona chews it." to "street signs either."`). Never add a ` = <beat>` ending.
 
 1. Number the speeches in cue order yourself (`SC10-D01` is the first cue); prose gets SPEECH records with the exact words.
-2. Write the scene file in one copy box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+2. Write the scene file in one copy box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 3. Write `status: approved`, `locked: yes` and SHOTLIST `approved: yes`; if the user changes the list, save the scene file again.
 4. Step 8 follows the group message; the check chat follows the group's last batch. Mid-group:
 
@@ -145,7 +145,7 @@ type: Continue my breakdown. Next is scene 12.
 
 ---
 
-From the skill file `steps/08 Shot details.md`:
+From the skill file `stages/08 Shot details/CONTEXT.md`:
 
 # Step 8. Shot details
 
@@ -195,7 +195,7 @@ For each list item in order, write one SHOT at the project's depth, in reason-fi
 10. **Never type what code works out**: labels, time floors, clip lengths, image sides, eyeline sides, mirror states, prompts, prices (FORM-10).
 11. **Check**: `stage.py check --step 8 --scene SC10`. During the scene, ID-07 and COVER-02 to COVER-04 cover only the batch's range; after its last batch they run in full, with TIME-03 (a warning: the shots against the list's total) and the scene-wide checks (COVER-08, TIME-09). Fix only what it prints, at most `repair_rounds_max` rounds: errors always, and a warning when its fix is in your own records. A warning you leave (a real choice, or a record this step may not write, such as a fact's `known_by`) goes in the report and waits for the next checkpoint.
 
-The turn shot's reasons, from `examples/01 The Catch - scene 10.md`:
+The turn shot's reasons, from `references/examples/01 The Catch - scene 10.md`:
 
 ```
 - purpose: Iona's body admits what her words denied; Saye's proof lands on her face.
@@ -205,7 +205,7 @@ The turn shot's reasons, from `examples/01 The Catch - scene 10.md`:
 
 ## Record template
 
-`templates/11 Scene.md` (SHOT, CUT).
+`references/templates/11 Scene.md` (SHOT, CUT).
 
 ## IDs you will be given
 
@@ -256,7 +256,7 @@ Every line reference is a quote anchor: `lines` is an anchor pair (`- lines: "Io
 
 1. Each `hear` item also carries the speech's exact words: `- hear: SC10-D11 | speaker: on_screen | words: "Not mint."` (CITE-04).
 2. Work out each floor in words to set `screen_time`: each speech's words divided by its voice's `pace_wps`, plus `speech_floor_extra_s` per speech, plus the pause owed (at least `turn_reaction_min_s` after a turn). Never write the floor into a record.
-3. Save each batch in one copy box, `11 Scenes/Scene 10 - Saye's kitchen - shots 130-200.md`: the records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line counting this file's records (`END OF FILE | Scene 10 shots 130-200 | 8 records`). Print "Checked in words: 14 of 14 passed" (or only the failures).
+3. Save each batch in one copy box, `11 Scenes/Scene 10 - Saye's kitchen - shots 130-200.md`: the records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line counting this file's records (`END OF FILE | Scene 10 shots 130-200 | 8 records`). Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. A box with no END line is never saved. When the user types **continue**, send its complete records again as their own file (`... - shots 130-160.md`), then, in the next reply, the rest from the start of the cut record (`... - shots 170-200.md`), each with its END line. A box short of the list's IDs: send only the missing records, then the END line (step 16).
 5. Report, then the resume line. After a group's last batch it names the check chat first: "Next: a check. New chat in this project; attach the files of scenes 7 to 10, your story, 02 Whole-film summary, 10 Film rules, 05 Checks in words and your last 13 Health check file; type: Check my group of scenes." Otherwise:
 

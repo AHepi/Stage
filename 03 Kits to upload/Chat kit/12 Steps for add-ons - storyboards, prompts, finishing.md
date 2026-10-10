@@ -4,7 +4,7 @@ Part of the Stage chat kit: a step-group file, attached to the chat that runs on
 
 ---
 
-From the skill file `steps/12 Add-on - storyboards.md`:
+From the skill file `stages/12 Add-on - storyboards/CONTEXT.md`:
 
 # Step 12. Add-on - storyboards
 
@@ -49,7 +49,7 @@ At every depth: card 21, whole.
 
 ## Record template
 
-`templates/18 Add-on jobs.md` (PIC), `templates/01 Choices.md` (CHOICE).
+`references/templates/18 Add-on jobs.md` (PIC), `references/templates/01 Choices.md` (CHOICE).
 
 ## IDs you will be given
 
@@ -110,7 +110,7 @@ Treatment floor; type: Make storyboards. Next is scene 11.
 
 ---
 
-From the skill file `steps/14 Add-on - generation packs.md`:
+From the skill file `stages/14 Add-on - generation packs/CONTEXT.md`:
 
 # Step 14. Add-on - generation packs
 
@@ -130,7 +130,7 @@ On request, after the book and exports; packs on any app, spending only with a c
 
 ## Inputs
 
-Every shot-related record; STYLE; CHARACTER, VOICE and STATE; LOOK; SOUNDPLAN; RIGHTS and PROJECT `rights`; the dated adapter files and `adapters/prices.json`.
+Every shot-related record; STYLE; CHARACTER, VOICE and STATE; LOOK; SOUNDPLAN; RIGHTS and PROJECT `rights`; the dated adapter files and `_config/adapters/prices.json`.
 
 ## Outputs
 
@@ -160,7 +160,7 @@ At every depth: card 21, whole; card 06, part "Lip sync and voice takes"; card 2
 
 ## Record template
 
-`templates/18 Add-on jobs.md` (PIC, TAKE, VOICETAKE), `templates/22 Rights and credits.md` (RIGHTS), `templates/01 Choices.md` (CHOICE).
+`references/templates/18 Add-on jobs.md` (PIC, TAKE, VOICETAKE), `references/templates/22 Rights and credits.md` (RIGHTS), `references/templates/01 Choices.md` (CHOICE).
 
 ## IDs you will be given
 
@@ -236,7 +236,7 @@ Saye's kitchen; type: Get it ready for AI video. Next is scene 10's takes.
 
 ---
 
-From the skill file `steps/15 Add-on - edit and finishing.md`:
+From the skill file `stages/15 Add-on - edit and finishing/CONTEXT.md`:
 
 # Step 15. Add-on - edit and finishing
 
@@ -283,7 +283,7 @@ At every depth: card 23, whole.
 
 ## Record template
 
-`templates/18 Add-on jobs.md` (FINISH, MUSIC), `templates/22 Rights and credits.md` (RIGHTS).
+`references/templates/18 Add-on jobs.md` (FINISH, MUSIC), `references/templates/22 Rights and credits.md` (RIGHTS).
 
 ## IDs you will be given
 

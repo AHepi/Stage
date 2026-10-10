@@ -4,7 +4,7 @@ Part of the Stage chat kit: a step-group file, attached to the chat that runs on
 
 ---
 
-From the skill file `steps/00 Start.md`:
+From the skill file `stages/00 Start/CONTEXT.md`:
 
 # Step 0. Start
 
@@ -59,7 +59,7 @@ At every depth: card 24, part "The rights question".
 
 ## Record template
 
-`templates/00 Start here.md` (PROJECT), `templates/01 Choices.md` (CHOICE), `templates/22 Rights and credits.md` (RIGHTS). The self-test's SHOT template is in its handout.
+`references/templates/00 Start here.md` (PROJECT), `references/templates/01 Choices.md` (CHOICE), `references/templates/22 Rights and credits.md` (RIGHTS). The self-test's SHOT template is in its handout.
 
 ## IDs you will be given
 
@@ -84,7 +84,7 @@ Answer each question yes or no from what you just wrote; each "no" is a fix befo
 
 ## The report
 
-The welcome, filled from the user's own story (The Catch here; `reference/07 Report and message formats.md`):
+The welcome, filled from the user's own story (The Catch here; `references/formats/07 Report and message formats.md`):
 
 ```
 Hello. I'll turn The Catch into a scene-by-scene plan for making it as a film,
@@ -137,11 +137,11 @@ The rights question, worded as in the welcome. It blocks: nothing else runs unti
 
 No code here (Gemini, or any app without it), so there is no numbered story: from now on every line reference is a quote anchor, a short exact quotation of the story (G5).
 
-1. **Self-test in words.** In your first reply quote the story's first line and its last line exactly ("= THE CATCH" and "= THE END"). If you cannot, the app did not read the whole file: ask the user to paste the missing part (`reference/07`, "When something goes wrong"). Then `batch_size: 12`, `code_execution: no`, `surface: gemini` (or `other`).
+1. **Self-test in words.** In your first reply quote the story's first line and its last line exactly ("= THE CATCH" and "= THE END"). If you cannot, the app did not read the whole file: ask the user to paste the missing part (`references/formats/07`, "When something goes wrong"). Then `batch_size: 12`, `code_execution: no`, `surface: gemini` (or `other`).
 2. Find the turn, write the example shot and send the welcome exactly as above.
 3. After the answer, write three files, each in its own copy box with "Save as:" above it: `00 Start here.md`, `01 Choices.md`, `22 Rights and credits.md`. Each box holds the plain part (for `00 Start here`, the template's six sections, with "Checked by the checker: never"), the divider line, the records, then the checks-in-words table and the END line.
 4. Write CHOICE-001 to CHOICE-003 whole: options (rights as in "Checkpoint"; depth a standard, b quick, c detailed; privacy a not confirmed, b off), one `sets` line per option, `answer`, `status`, `date`. Write every field the templates mark "in a chat without code you write it" (PROJECT `title` from the first title-page line, `source_fingerprint: none`, `checker_last_run: never`), every record's `status` and `locked`, and what the choices set: PROJECT `rights`, `depth`, `training_off`; RT-001 `subject`, `clearance`, `holder`.
-5. Run the checks of `reference/06 Checks in words.md` part 1 on each file; the table goes after a `---` line below the last record, before the END line, and rows about beats and shots say "PASS (no beats or shots in this file)". Print one line: "Checked in words: 14 of 14 passed" (or only the failures).
+5. Run the checks of `references/formats/06 Checks in words.md` part 1 on each file; the table goes after a `---` line below the last record, before the END line, and rows about beats and shots say "PASS (no beats or shots in this file)". Print one line: "Checked in words: 14 of 14 passed" (or only the failures).
 6. Tell the user once: make a folder "The Catch - breakdown" and save each box in it under its "Save as" name.
 7. End with the four-part report, then:
 
@@ -156,7 +156,7 @@ Next is reading the story.
 
 ---
 
-From the skill file `steps/01 Read the story.md`:
+From the skill file `stages/01 Read the story/CONTEXT.md`:
 
 # Step 1. Read the story
 
@@ -204,7 +204,7 @@ Once, after step 0: code reads the story and you confirm its odd lines, or, in c
 
 ## Record template
 
-`templates/04 Scene list.md` (SCENE), `templates/05 Story plan.md` (CHAPTER), `templates/07 Characters and voices.md` (CHARACTER), `templates/01 Choices.md` (CHOICE).
+`references/templates/04 Scene list.md` (SCENE), `references/templates/05 Story plan.md` (CHAPTER), `references/templates/07 Characters and voices.md` (CHARACTER), `references/templates/01 Choices.md` (CHOICE).
 
 ## IDs you will be given
 
@@ -227,7 +227,7 @@ Answer each question yes or no; each "no" is a fix before you report.
 
 ## The report
 
-For a screenplay, checkpoint A's message, with the first estimate as code computed it, a range (D13 R4). The Catch (`reference/07`):
+For a screenplay, checkpoint A's message, with the first estimate as code computed it, a range (D13 R4). The Catch (`references/formats/07`):
 
 ```
 Done: step 2 of 12, reading the story.
@@ -273,7 +273,7 @@ There is no numbered story, so every line reference is a quote anchor: the exact
 3. Prose: one chapter per reply, a CHAPTER with `title`, `lines` as an anchor pair, `words` (your count), and `first_line` and `last_line` quoted exactly (a first line that recurs, as the letters do, is matched within its chapter), saved as `05 Story plan - chapter I.md`; step 2 saves it again, whole, with the digest.
 4. The first estimate is a rough range labelled "rough", from the page check of D13 R22 or the word count, never a total you added up (D13 R4).
 5. Write CHOICE-004 (`format`, `asked: no`, `status: defaulted`, `short` under `short_runtime_max_s` by the rough estimate) and, for a screenplay, the length choice (`asked: yes`, `status: open`; option a sets `runtime_target_s: as_written` and `scope: all`) in `01 Choices - scene list.md`. After the answer, save that file again with `answer`, `status` and `date`, and `00 Start here.md` again, whole.
-6. Each file goes in one copy box with "Save as:" above it: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06` part 1), the END line; a second reply for the same file is saved as `04 Scene list - scenes 16-30.md` (merged by ID, G10). Print "Checked in words: 14 of 14 passed" (or only the failures).
+6. Each file goes in one copy box with "Save as:" above it: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06` part 1), the END line; a second reply for the same file is saved as `04 Scene list - scenes 16-30.md` (merged by ID, G10). Print "Checked in words: 14 of 14 passed" (or only the failures).
 7. Report as above, with the estimate marked rough, then the resume line:
 
 ```
@@ -287,7 +287,7 @@ type: Continue my breakdown. Next is planning the whole story.
 
 ---
 
-From the skill file `steps/02 Story plan.md`:
+From the skill file `stages/02 Story plan/CONTEXT.md`:
 
 # Step 2. Story plan
 
@@ -347,7 +347,7 @@ No beat or shot exists yet, so a moment inside a scene is a **story point**: the
 
 ## Record template
 
-`templates/05 Story plan.md` (PLAN, SEQUENCE, PLANT, FACT, CHAPTER, STRAND, CARDINAL), `templates/04 Scene list.md` (SCENE plan fields), `templates/06 World and style.md` (RULE), `templates/01 Choices.md`.
+`references/templates/05 Story plan.md` (PLAN, SEQUENCE, PLANT, FACT, CHAPTER, STRAND, CARDINAL), `references/templates/04 Scene list.md` (SCENE plan fields), `references/templates/06 World and style.md` (RULE), `references/templates/01 Choices.md`.
 
 ## IDs you will be given
 
@@ -390,7 +390,7 @@ Next: I'll settle where and when the story happens, and the film's style.
 
 Screenplay: none here; a second climax reading goes to the big choices.
 
-Prose: checkpoint P, "how the book becomes a film"; it blocks. Default for The Long Places: plan A, with chapter I first as a trial, which sets `PROJECT.scope` to its scenes (5 of 48); the device rules are small choices. Checks, the film pass, estimates and exports then cover only the scenes in scope ("Scope: 5 of 48 scenes"); "go on to chapter II" widens it. The message (`reference/07`; your own counts):
+Prose: checkpoint P, "how the book becomes a film"; it blocks. Default for The Long Places: plan A, with chapter I first as a trial, which sets `PROJECT.scope` to its scenes (5 of 48); the device rules are small choices. Checks, the film pass, estimates and exports then cover only the scenes in scope ("Scope: 5 of 48 scenes"); "go on to chapter II" widens it. The message (`references/formats/07`; your own counts):
 
 ```
 Done: step 3 of 12, planning the whole book (14 chapters, 49,152 words).
@@ -427,7 +427,7 @@ Every line reference is a quote anchor: story points are a scene ID and an exact
 1. Steps 0 to 2 share one chat (`08 Steps 00-02 - start, reading, plan.md`).
 2. Save each event unit's SCENE plan fields as `04 Scene list - plan, scenes 01-10.md` and so on (merged by ID, G10). The film unit saves `05 Story plan.md`, and a climax CHOICE (`status: open` until the big choices) as `01 Choices - story plan.md`.
 3. Prose: each digest saves `05 Story plan - chapter I.md` again, whole; each outline unit saves `04 Scene list - chapters I-III.md`; the whole-book unit saves `05 Story plan.md` and the plan choice in `01 Choices - story plan.md`, each plan's estimate rough and labelled so (D13 R4). After checkpoint P, save the choice file again with the answers, and `00 Start here.md`. From step 3 on, attach `05 Story plan` without the chapter files.
-4. Each copy box: "Save as:" above it; plain part, divider, records, a `---` line, the checks-in-words table (`reference/06` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+4. Each copy box: "Save as:" above it; plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 5. Report, then the resume line:
 
 ```

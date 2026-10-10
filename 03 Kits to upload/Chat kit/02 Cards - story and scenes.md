@@ -4,7 +4,7 @@ Part of the Stage chat kit (knowledge). It joins these craft cards, each whole: 
 
 ---
 
-From the skill file `cards/01 Reading the whole story.md`:
+From the skill file `references/cards/01 Reading the whole story.md`:
 
 # Card 01. Reading the whole story
 
@@ -129,11 +129,11 @@ The plan reaches prompts only through later records, so write it as things a cam
 
 ## Look up for more
 
-`stage.py lib D16 §4` (roles, sequences, peaks), `D16 §8` (The Catch), `D2 §5`, `§6`, `§8`, `D13 §4.1`, `B3 §2.6`, `B4 §3.1`, `A4 §6.5`, `A2 Step 7`, `A3 §3.2`; the files are in `library/`.
+`stage.py lib D16 §4` (roles, sequences, peaks), `D16 §8` (The Catch), `D2 §5`, `§6`, `§8`, `D13 §4.1`, `B3 §2.6`, `B4 §3.1`, `A4 §6.5`, `A2 Step 7`, `A3 §3.2`; the files are in `references/library/`.
 
 ---
 
-From the skill file `cards/02 Adapting prose.md`:
+From the skill file `references/cards/02 Adapting prose.md`:
 
 # Card 02. Adapting prose
 
@@ -260,11 +260,11 @@ Works: letters and documents as text graphics, exact words, never drawn by the m
 
 ## Look up for more
 
-`stage.py lib A3 §7` and `A3 Ex5`: `library/A3 Script breakdown, directing and adaptation.md`. `D2 §4`, `§8`: `library/D2 Adapting a whole work.md`. `D14 §2`, `§5` to `§9`: `library/D14 Reading any story format.md`. `A1 R32` to `R34`.
+`stage.py lib A3 §7` and `A3 Ex5`: `references/library/A3 Script breakdown, directing and adaptation.md`. `D2 §4`, `§8`: `references/library/D2 Adapting a whole work.md`. `D14 §2`, `§5` to `§9`: `references/library/D14 Reading any story format.md`. `A1 R32` to `R34`.
 
 ---
 
-From the skill file `cards/03 Scenes, values and beats.md`:
+From the skill file `references/cards/03 Scenes, values and beats.md`:
 
 # Card 03. Scenes, values and beats
 
@@ -397,11 +397,11 @@ Works: behaviour from the tactic, "she stops chewing, frowns, chews once more, s
 
 ## Look up for more
 
-`stage.py lib A2 §6` (the method), `A2 §7` (rules), `A2 §11`, `§12`, `§14` (worked scenes): `library/A2 Scene design, values and beats.md`. `A3 §3.2` (the director's pass): `library/A3 Script breakdown, directing and adaptation.md`.
+`stage.py lib A2 §6` (the method), `A2 §7` (rules), `A2 §11`, `§12`, `§14` (worked scenes): `references/library/A2 Scene design, values and beats.md`. `A3 §3.2` (the director's pass): `references/library/A3 Script breakdown, directing and adaptation.md`.
 
 ---
 
-From the skill file `cards/04 Dialogue on screen.md`:
+From the skill file `references/cards/04 Dialogue on screen.md`:
 
 # Card 04. Dialogue on screen
 
@@ -528,11 +528,11 @@ Works: each quote with its speaker named in the same sentence; a reaction clip t
 
 ## Look up for more
 
-`stage.py lib A1 §6` (rules, tie-breaks), `A1 §7`, `A1 §10`: `library/A1 Dialogue as action and subtext.md`. `D3 §5`, `§11`: `library/D3 Voices and dialogue audio.md`. `A2 §12` (scene 13).
+`stage.py lib A1 §6` (rules, tie-breaks), `A1 §7`, `A1 §10`: `references/library/A1 Dialogue as action and subtext.md`. `D3 §5`, `§11`: `references/library/D3 Voices and dialogue audio.md`. `A2 §12` (scene 13).
 
 ---
 
-From the skill file `cards/05 Characters.md`:
+From the skill file `references/cards/05 Characters.md`:
 
 # Card 05. Characters
 
@@ -647,11 +647,11 @@ Fails: left and right on bodies (fix the side in an edited still); words on clot
 
 ## Look up for more
 
-B5 §3.2 (the face), §5 (how people move, status, distance), §6 (non-human characters), §7.2 (fixed description rules), §9 (R1-R26), §10 (The Catch's cast), §11, §13, §14; B4 §6 (costume); K03 and K26 in `library/00 Resolved conflicts.md`. Print one rule with `stage.py lib B5 R21`.
+B5 §3.2 (the face), §5 (how people move, status, distance), §6 (non-human characters), §7.2 (fixed description rules), §9 (R1-R26), §10 (The Catch's cast), §11, §13, §14; B4 §6 (costume); K03 and K26 in `references/library/00 Resolved conflicts.md`. Print one rule with `stage.py lib B5 R21`.
 
 ---
 
-From the skill file `cards/06 Voices and performance.md`:
+From the skill file `references/cards/06 Voices and performance.md`:
 
 # Card 06. Voices and performance
 
@@ -777,7 +777,7 @@ D3 §1, §3 (R1-R27), §4 (voice design), §5 (delivery), §8 (paths), §11; D15
 
 ---
 
-From the skill file `cards/07 Places, things and motifs.md`:
+From the skill file `references/cards/07 Places, things and motifs.md`:
 
 # Card 07. Places, things and motifs
 
@@ -888,7 +888,7 @@ B4 §3 (procedure, tests, scales), §4 (sets), §5 (props), §7 (translation tab
 
 ---
 
-From the skill file `cards/15 Action scenes.md`:
+From the skill file `references/cards/15 Action scenes.md`:
 
 # Card 15. Action scenes
 
@@ -951,7 +951,7 @@ Works: one main action and its end state; the failure as the action; the directi
 
 ---
 
-From the skill file `cards/16 Glass, mirrors and sides.md`:
+From the skill file `references/cards/16 Glass, mirrors and sides.md`:
 
 # Card 16. Glass, mirrors and sides
 
@@ -1007,7 +1007,7 @@ B3 §7.2 (R28-R29), §8 (glass and mirrors); B1 §10.2; C2 §7; D6 W6; K02, K03,
 
 ---
 
-From the skill file `cards/17 Screens, text and in-story cameras.md`:
+From the skill file `references/cards/17 Screens, text and in-story cameras.md`:
 
 # Card 17. Screens, text and in-story cameras
 
@@ -1074,7 +1074,7 @@ D12 §3, §4 (mirrors), §11; B1 §10.4-§10.6; C3 §13; K04, K09, K17; card 16.
 
 ---
 
-From the skill file `cards/18 Suspense, reveals and the dark.md`:
+From the skill file `references/cards/18 Suspense, reveals and the dark.md`:
 
 # Card 18. Suspense, reveals and the dark
 
@@ -1141,11 +1141,11 @@ In scene 6 Eli's arm leaves the bottom of the frame: `keep_hidden: FT-03 | how: 
 
 ## Look up for more
 
-`stage.py lib A4 §6.5`, `A4 §6.6`, `A4 §9`: `library/A4 Editing, transitions, rhythm and sound.md`. `A1 §6`; `A3 §9`; `B1 §10.4`; `B2 §7`; card 17.
+`stage.py lib A4 §6.5`, `A4 §6.6`, `A4 §9`: `references/library/A4 Editing, transitions, rhythm and sound.md`. `A1 §6`; `A3 §9`; `B1 §10.4`; `B2 §7`; card 17.
 
 ---
 
-From the skill file `cards/19 Inner life, montage and time.md`:
+From the skill file `references/cards/19 Inner life, montage and time.md`:
 
 # Card 19. Inner life, montage and time
 
@@ -1202,11 +1202,11 @@ Works: the behaviour itself, "she holds the wheel so hard her skinned palm opens
 
 ## Look up for more
 
-`stage.py lib A3 §7.2`, `§7.4`, `§7.8`: `library/A3 Script breakdown, directing and adaptation.md`. `A1 R32` to `R34`: `library/A1 Dialogue as action and subtext.md`. `A4 T2`, `A4 §5`: `library/A4 Editing, transitions, rhythm and sound.md`.
+`stage.py lib A3 §7.2`, `§7.4`, `§7.8`: `references/library/A3 Script breakdown, directing and adaptation.md`. `A1 R32` to `R34`: `references/library/A1 Dialogue as action and subtext.md`. `A4 T2`, `A4 §5`: `references/library/A4 Editing, transitions, rhythm and sound.md`.
 
 ---
 
-From the skill file `cards/20 Creatures, violence and filters.md`:
+From the skill file `references/cards/20 Creatures, violence and filters.md`:
 
 # Card 20. Creatures, violence and filters
 
@@ -1264,4 +1264,4 @@ Works: "shaped like a person", never "humanoid"; the visible quality, "soft pale
 
 ## Look up for more
 
-`stage.py lib B5 §6` (non-human characters), `B5 §10.9` (the figure): `library/B5 Character design for story.md`. `C1 §4`, `C1 §6`; `C3 §14`; `D4 §3.6`, `D4 §4`; `D11 R28`. Card 24 for rights and content flags.
+`stage.py lib B5 §6` (non-human characters), `B5 §10.9` (the figure): `references/library/B5 Character design for story.md`. `C1 §4`, `C1 §6`; `C3 §14`; `D4 §3.6`, `D4 §4`; `D11 R28`. Card 24 for rights and content flags.

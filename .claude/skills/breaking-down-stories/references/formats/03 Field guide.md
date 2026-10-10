@@ -1,6 +1,6 @@
 # Field guide
 
-Every record type and every field of `schema/schema.json`, in plain words. This file is made by `stage.py build-kit` from the schema (version 1.0); edit the schema, never this file. Record grammar: `reference/01 Record format.md`. Words: `reference/02 Word list.md`.
+Every record type and every field of `_config/schema/schema.json`, in plain words. This file is made by `stage.py build-kit` from the schema (version 1.0); edit the schema, never this file. Record grammar: `references/formats/01 Record format.md`. Words: `references/formats/02 Word list.md`.
 
 Example first. The SHOT field `size` reads, in the table for SHOT:
 
@@ -939,7 +939,7 @@ Judge answers and rubric scores for a scene or the film. ID: RV- and a scene ID,
 |---|---|---|---|---|---|---|
 | `scope` | A scene or the film. | text | standard | ai | step 10 | `SC10` |
 | `answer` | One yes/no question answered against the story. | sub_parts; first part: text; answer: yes_no; evidence: text; one line each | standard | ai | step 10 | `Does Iona's face change before she says 'Not mint.' (l.454-463)? \| answer: yes \| evidence: SH150 moment 4-6` |
-| `score` | A rubric criterion's score (reference/05). | sub_parts; first part: number; score: number; evidence: text; one line each | standard | ai | step 10 | `3 \| score: 2 \| evidence: one turn shot per turn` |
+| `score` | A rubric criterion's score (references/formats/05). | sub_parts; first part: number; score: number; evidence: text; one line each | standard | ai | step 10 | `3 \| score: 2 \| evidence: one turn shot per turn` |
 
 Status values: draft, approved, stale, omitted.
 

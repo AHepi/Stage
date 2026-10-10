@@ -4,7 +4,7 @@ Part of the Stage chat kit: a step-group file, attached to the chat that runs on
 
 ---
 
-From the skill file `steps/03 World and style.md`:
+From the skill file `stages/03 World and style/CONTEXT.md`:
 
 # Step 3. World and style
 
@@ -62,7 +62,7 @@ Once, after the story plan. One unit (U-03-WORLD) for the whole film.
 
 ## Record template
 
-`templates/06 World and style.md` (STYLE, WORLD, RULE), `templates/01 Choices.md` (CHOICE, SETVALUE), and the PROJECT part of `templates/00 Start here.md` for `prompt_words`.
+`references/templates/06 World and style.md` (STYLE, WORLD, RULE), `references/templates/01 Choices.md` (CHOICE, SETVALUE), and the PROJECT part of `references/templates/00 Start here.md` for `prompt_words`.
 
 ## IDs you will be given
 
@@ -123,7 +123,7 @@ Every line reference is a quote anchor: `evidence` items, RULE start and end lin
 1. Harvest the locale cues yourself from the attached story: search it for place words, signs, vehicles, money and institutions, and quote each exactly.
 2. Write `06 World and style.md` in one copy box with "Save as:" above it, and the new CHOICE and SETVALUE records in a second box saved as `01 Choices - world and style.md` (`adopt` merges it with `01 Choices.md` by ID, G10). Leave the user's fields `open` in STYLE `medium`, WORLD `place` and `period` and RULE `era` until the big choices are answered; step 5's chat writes them then. PROJECT `prompt_words` waits for the next save of `00 Start here`.
 3. Write each CHOICE's `status: open`, each record's `status` and `locked`, and STYLE `provisional: yes` and `named_reference_policy: describe_qualities_only`.
-4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+4. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 5. Report as above, then the resume line:
 
 ```
@@ -138,7 +138,7 @@ type with the second: Continue my breakdown. Next is characters, places and thin
 
 ---
 
-From the skill file `steps/04 Characters, places and things.md`:
+From the skill file `stages/04 Characters, places and things/CONTEXT.md`:
 
 # Step 4. Characters, places and things
 
@@ -198,7 +198,7 @@ Each unit opens only the parts listed for it (steps.json):
 
 ## Record template
 
-`templates/07 Characters and voices.md` (CHARACTER, VOICE), `templates/08 Places and things.md` (LOCATION, PROP, TEXT, MOTIF, CAMERA), `templates/01 Choices.md`.
+`references/templates/07 Characters and voices.md` (CHARACTER, VOICE), `references/templates/08 Places and things.md` (LOCATION, PROP, TEXT, MOTIF, CAMERA), `references/templates/01 Choices.md`.
 
 ## IDs you will be given
 
@@ -255,7 +255,7 @@ Every line reference is a quote anchor: `evidence` items, `gesture` lines, PROP 
 2. Each unit's records go in one copy box with "Save as:" above it. The first unit that writes a file saves it under its name (`07 Characters and voices.md`); later units save theirs by content (`07 Characters and voices - Saye.md`), and choices as `01 Choices - characters.md`; `adopt` merges them by ID (G10).
 3. You write TEXT `words`, LOCATION `headings` and `voice: none` yourself. The things unit saves `04 Scene list.md` again, whole, with each device scene's `host`; `05 Story plan.md` again, whole, with the new FACT `element` lines; and the name checks as `22 Rights and credits - name checks.md`.
 4. Small choices (`asked: no`) are written `status: defaulted`, and their default values go into the records at once (`likeness_basis: invented`, VOICE `source: designed`); a change at the big choices saves that file again.
-5. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+5. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 6. Report as above, then the resume line naming every file saved so far that the next unit needs:
 
 ```
@@ -271,7 +271,7 @@ type with the last: Continue my breakdown. Next is Iona.
 
 ---
 
-From the skill file `steps/05 Continuity.md`:
+From the skill file `stages/05 Continuity/CONTEXT.md`:
 
 # Step 5. Continuity
 
@@ -330,7 +330,7 @@ After characters, places and things: units of scenes in story order, then the bi
 
 ## Record template
 
-`templates/09 Continuity.md` (STATE), `templates/01 Choices.md` (CHOICE, SETVALUE).
+`references/templates/09 Continuity.md` (STATE), `references/templates/01 Choices.md` (CHOICE, SETVALUE).
 
 ## IDs you will be given
 
@@ -358,7 +358,7 @@ After each unit, a short report; after the last, the big-choices message.
 
 ## Checkpoint
 
-Checkpoint B, shown to the user as "the big choices". It blocks. One message, at most `checkpoint_b_items_max` numbered items, each one or two lines with its default and reason, in this order: the climax reading; style and frame shape (with the home tone in the same line, only when it is unclear); place and time; music; the story-world rules (grouped, with eras and exceptions); what each principal's appearance must say (one sentence each); "small choices I made" (one accept item pointing to `01 Choices`). Mark with * the `checkpoint_b_marked_items` choices whose change would redo the most records (from each CHOICE's `affects`; for The Catch: the frame shape, the mirror world, the climax). The Catch (`reference/07`):
+Checkpoint B, shown to the user as "the big choices". It blocks. One message, at most `checkpoint_b_items_max` numbered items, each one or two lines with its default and reason, in this order: the climax reading; style and frame shape (with the home tone in the same line, only when it is unclear); place and time; music; the story-world rules (grouped, with eras and exceptions); what each principal's appearance must say (one sentence each); "small choices I made" (one accept item pointing to `01 Choices`). Mark with * the `checkpoint_b_marked_items` choices whose change would redo the most records (from each CHOICE's `affects`; for The Catch: the frame shape, the mirror world, the climax). The Catch (`references/formats/07`):
 
 ```
 Done: steps 4 to 6 of 12 (world and style; characters, places and things; continuity).
@@ -404,7 +404,7 @@ Every line reference is a quote anchor: `from` and `cause` quote the story exact
 
 1. Save each unit's STATE records in one copy box: `09 Continuity.md` first, then `09 Continuity - scenes 06-10.md` and so on (merged by ID, G10).
 2. After the big-choices answers, write in copy boxes: `01 Choices.md` again, whole, with every choice's `status` (`answered` or `defaulted`), `answer` and `date`; `00 Start here.md` again, whole, with "Big choices so far" and the PROJECT values the answers set (`frame_shape`) or earlier steps filled (`genre`, `tone_home`, `tone_range`, `prompt_words`); `06 World and style.md` again, whole, with the answered values in place of `open` (STYLE `medium`, WORLD `place` and `period`, RULE `era`) and any other file whose values an answer changed; then unit U-05-SUMMARY, `02 Whole-film summary.md`: the scene list with events, sequences and plan fields, fixed descriptions, state lines, voices, the `movement` field and status lines, FACT and PLANT lines and world rules, without set plans, at most `whole_film_summary_words_max` words. Tell the user which earlier choice files to delete. Leave `locked` as saved; `adopt` sets the locks from the answered choices.
-3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line:
 
 ```
@@ -420,7 +420,7 @@ type with the last: Continue my breakdown. Next is the film's rules.
 
 ---
 
-From the skill file `steps/06 Film rules.md`:
+From the skill file `stages/06 Film rules/CONTEXT.md`:
 
 # Step 6. Film rules
 
@@ -480,7 +480,7 @@ Work in this order (card 09, questions in order). Every line cites a plan, chara
 
 ## Record template
 
-`templates/10 Film rules.md` (CAMSYS, CAMRULE, RESERVE, LENS, LOOK, VISUAL, SOUNDPLAN, LADDER), `templates/01 Choices.md`, and the PROJECT part of `templates/00 Start here.md` for `fps`.
+`references/templates/10 Film rules.md` (CAMSYS, CAMRULE, RESERVE, LENS, LOOK, VISUAL, SOUNDPLAN, LADDER), `references/templates/01 Choices.md`, and the PROJECT part of `references/templates/00 Start here.md` for `fps`.
 
 ## IDs you will be given
 
@@ -532,7 +532,7 @@ Every line reference is a quote anchor: every story point (`break`, `closest`, `
 
 1. Save the three units' records as `10 Film rules.md`, then `10 Film rules - looks.md` and `10 Film rules - colour, sound and ladder.md`; `adopt` merges them by ID (G10). Save the voice choice, a small choice written `status: defaulted`, as `01 Choices - film rules.md`, and write its default (`voice_policy: designed_only`) in SOUNDPLAN, with `music_policy` as answered at the big choices and `clip_audio: No music in any clip.`
 2. Write each record's `status: approved` and `locked: yes`: film rules are locked on writing. Save `00 Start here.md` again, whole, with PROJECT `fps` and the log line.
-3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`reference/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
+3. Each box: plain part, divider, records, a `---` line, the checks-in-words table (`references/formats/06 Checks in words.md` part 1), the END line. Print "Checked in words: 14 of 14 passed" (or only the failures).
 4. Report, then the resume line for the first scene chat:
 
 ```

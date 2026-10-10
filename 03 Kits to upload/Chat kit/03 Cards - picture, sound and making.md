@@ -4,7 +4,7 @@ Part of the Stage chat kit (knowledge). It joins these craft cards, each whole: 
 
 ---
 
-From the skill file `cards/08 World, style and genre.md`:
+From the skill file `references/cards/08 World, style and genre.md`:
 
 # Card 08. World, style and genre
 
@@ -37,7 +37,7 @@ Decide once where and when the story happens, what the whole film is made to loo
 4. **Tone changes how a beat is played, not what happens:** it never changes which beat turns, what the text marks, in-story footage or physics (D10 §1).
 5. **A setting genre** (science fiction, fantasy, western, war, period) sets the world and the design, never the camera; camera, light and cutting come from tone (D10 §1). The Catch is science fiction in its world and a thriller in its tone.
 6. **Quote evidence for every tone value** (D10 R1). **Flag, never fix:** a `tone` outside `tone_range`, or undercurrents in more than `undercurrent_scene_share_max` of scenes, go to the user (D10 TN6-TN7; FILM-12).
-7. **Start from the tone's row** in `rules/tone_defaults.json`: shot-length factor, size and lens, camera behaviour, contrast band, music default and display level. Log any departure (D10 §2.2). The estimate multiplies `rhythm_class_asl_s` by the factor, and the film's average shot length is checked against `film_asl_range_s` (TIME-07); `rhythm_class_asl_s` is never a design target.
+7. **Start from the tone's row** in `_config/rules/tone_defaults.json`: shot-length factor, size and lens, camera behaviour, contrast band, music default and display level. Log any departure (D10 §2.2). The estimate multiplies `rhythm_class_asl_s` by the factor, and the film's average shot length is checked against `film_asl_range_s` (TIME-07); `rhythm_class_asl_s` is never a design target.
 8. **Each genre rations its own extremes,** on top of the camera's saved choices: horror its startles (about one per ten minutes, at most three in a short), comedy its broken patterns, a musical its song numbers, action its slow motion and big hits (D10 §1, HR1).
 9. **Comedy lives after the punch:** no pause before it, a held reaction after it, in a frame that holds both the cause and the victim (D10 CM1-CM3). **A startle needs three parts:** a character present, a threat implied off screen, and an intrusion into their space; the threat never causes a camera move (D10 HR2, HR5).
 
@@ -115,7 +115,7 @@ D17 §1, §3 (R1-R22), §4 (recipes), §6 (The Catch's world options), §7 (The 
 
 ---
 
-From the skill file `cards/09 Film rules and restraint.md`:
+From the skill file `references/cards/09 Film rules and restraint.md`:
 
 # Card 09. Film rules and restraint
 
@@ -236,7 +236,7 @@ Film rules reach prompts only as repeated words: the same lens, height and move 
 
 ---
 
-From the skill file `cards/10 Camera.md`:
+From the skill file `references/cards/10 Camera.md`:
 
 # Card 10. Camera
 
@@ -352,7 +352,7 @@ Works: "The camera holds completely still for the whole shot."; "The camera move
 
 ---
 
-From the skill file `cards/11 Light and colour.md`:
+From the skill file `references/cards/11 Light and colour.md`:
 
 # Card 11. Light and colour
 
@@ -483,7 +483,7 @@ Works (B2 §13): named sources ("a mostly dark room lit only by one small lamp o
 
 ---
 
-From the skill file `cards/12 Staging and composition.md`:
+From the skill file `references/cards/12 Staging and composition.md`:
 
 # Card 12. Staging and composition
 
@@ -615,7 +615,7 @@ Works (B3 §12): positions as parts of the image ("on the left side of the image
 
 ---
 
-From the skill file `cards/13 Cutting, rhythm and sound.md`:
+From the skill file `references/cards/13 Cutting, rhythm and sound.md`:
 
 # Card 13. Cutting, rhythm and sound
 
@@ -740,7 +740,7 @@ Works: only what happens inside the clip: speech with its speaker, sounds tied t
 
 ---
 
-From the skill file `cards/14 Shot design.md`:
+From the skill file `references/cards/14 Shot design.md`:
 
 # Card 14. Shot design
 
@@ -794,7 +794,7 @@ Write each SHOT reason first: `purpose`, `because`, `role`, then the camera.
 - `held: yes` where meaning depends on not cutting; turn shots count as held (GEN-10).
 - The film-level extreme close-up and push-in (the camera travelling toward the subject) are spent only where their RESERVE allows (FILM-08).
 - At the main turn at most `departments_changing_at_main_turn_max` departments change, named in `scene_idea` (B3 R7; B1 P11; CRAFT-19). Holding the baseline is a full **department idea**, the scene's one idea for camera, light, staging, sound or design (`holds_baseline`).
-- When rules disagree, the higher wins and the `why` names it: the story, readability, physical honesty, systems and budgets, flaws, turns, emotion over continuity, conflict type, beat defaults, the baseline (A1 §6; B1 §11; B2 §7; reference/04).
+- When rules disagree, the higher wins and the `why` names it: the story, readability, physical honesty, systems and budgets, flaws, turns, emotion over continuity, conflict type, beat defaults, the baseline (A1 §6; B1 §11; B2 §7; references/formats/04).
 
 ## Translation menus with pitfalls
 
@@ -859,11 +859,11 @@ Works: one camera move and one action per clip, as timed steps with an end state
 
 ---
 
-From the skill file `cards/21 Making pictures and video with AI.md`:
+From the skill file `references/cards/21 Making pictures and video with AI.md`:
 
 # Card 21. Making pictures and video with AI
 
-Add-ons A and C read it whole; step 10 reads only "Cost". "C1 R9" is rule 9 in C1 §6; "C2 Rule 12" is rule 12 in C2 §5 and "C2 R6" its recipe 6; "C3 R1" is rule 1 in C3 §18 and "C3 L14" its linter check 14. Model facts live only in `adapters/*.json`, dated (C1 §0).
+Add-ons A and C read it whole; step 10 reads only "Cost". "C1 R9" is rule 9 in C1 §6; "C2 Rule 12" is rule 12 in C2 §5 and "C2 R6" its recipe 6; "C3 R1" is rule 1 in C3 §18 and "C3 L14" its linter check 14. Model facts live only in `_config/adapters/*.json`, dated (C1 §0).
 
 ## The job
 
@@ -976,7 +976,7 @@ C1 §5-§11; C2 §2.2, §5-§9; C3 §4-§9, §15-§21; D13 §6, §9, §15; D5 §
 
 ---
 
-From the skill file `cards/22 Previs.md`:
+From the skill file `references/cards/22 Previs.md`:
 
 # Card 22. Previs
 
@@ -1073,7 +1073,7 @@ C4 §4, §5.2 (plan fields), §6 (routes), §8 (R1-R26), §9 (ladder), §10 (rec
 
 ---
 
-From the skill file `cards/23 Finishing, captions and delivery.md`:
+From the skill file `references/cards/23 Finishing, captions and delivery.md`:
 
 # Card 23. Finishing, captions and delivery
 
@@ -1173,7 +1173,7 @@ D8 §4, §5, §9; D6 §4, §5 (layer order), §6, §8; D18 §4, §5, §7, §8; D
 
 ---
 
-From the skill file `cards/24 Rights, consent and disclosure.md`:
+From the skill file `references/cards/24 Rights, consent and disclosure.md`:
 
 # Card 24. Rights, consent and disclosure
 
