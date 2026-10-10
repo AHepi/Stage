@@ -83,3 +83,20 @@ From Project notes 32 and 36; some may have been fixed along the way.
 47. **The size check offers no "kept on purpose" route** when the cause is a move in an earlier step. *Low.*
 48. **Shot numbers are printed with their zeros** ("shot 010") in the book and the health check, 523 times. *Low.* This is the film-industry habit, but a reader may not expect it.
 49. **A piece of work's own check takes about 15 seconds.** *Low.*
+
+## 9. The handover's work list (Project notes 42)
+
+Added in entry 43. Each item's "done when" is in note 42, section 6. Where it stands is updated each round.
+
+50. **W1. Test run first:** three clips on your rented computer, two seeds each, as Stage wrote them before entry 43 and as the clip file writes them; twelve runs in the take log. *High.* Waits: you asked not to use the RunPod setup yet.
+51. **W2. Stop asking for stillness.** *High.*
+52. **W3. Only say what is there.** *High.*
+53. **W4. Routes, not only models:** H3 on MiniMax's service and H3 in ComfyUI as separate entries. *High.*
+54. **W5. Compile in MiniMax's reference format** for the ComfyUI route, with the route's own checks. *High.*
+55. **W6. Clips as the unit:** one to three shots per clip, a shot map back to plan shots. *High.*
+56. **W7. Start pictures:** master set pictures and one start picture brief per clip. *High.*
+57. **W8. Physical sense checks.** *Medium.*
+58. **W9. Cut at contact.** *Medium.*
+59. **W10. Questions that catch real failures**, never rewarding stillness. *Medium.*
+60. **W11. The take log teaches the rules:** each route rule marked confirmed, wrong or unclear by real takes. *Medium.*
+61. **W12 (later). Send clips straight to ComfyUI** from Stage, with no copying by hand. *Low for now.*

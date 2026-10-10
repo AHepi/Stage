@@ -1,0 +1,12 @@
+# 43 Lessons
+
+Log entry 43 started this file. Only times the work itself failed and was fixed: what failed, the fix, and the lesson. Newest last. The entry numbers point to the project story's log.
+
+1. **A 3D mock-up kit put bodies through walls** (entry 9). A falling cage stalled then sped up, and depth pictures were wrongly encoded. Its fact-checker found it; it was fixed. *Lesson:* a second helper checking the first one's work finds what the builder can't.
+2. **Refreshing the start page after a full check broke the protection on locked records** (entry 21). The change was undone. *Lesson:* a convenience that writes files can undo a safety rule; test the locks after any change that writes.
+3. **The kit wrote into its own example folder** (entry 29). A command run from the Stage folder without naming a project picked the example. The tool now never picks the example from there. *Lesson:* a default that guesses can pick the one folder that must never change.
+4. **A light-check repair made four false alarms on The Catch** (entry 34): "turns the tag to the light", "the bright steel", "comes into the light", "a fire shutter". Caught on the re-check, fixed with tests. *Lesson:* re-check a finished breakdown after every new check, before calling it done.
+5. **A repair asked the sound plan to quote its moment while step 6 never told the writer to** (entry 35), which made a false alarm. *Lesson:* a check must ask only for what the step's instructions tell the writer to write.
+6. **The step 4 example for a silent person's arc was a form the kit refuses** (entry 37). The test helper caught it. *Lesson:* run every example through the kit's own checker before publishing it.
+7. **A new rule turned four finished "short" holds into errors** (entry 40). An old "short" is now read as "medium", with a note. *Lesson:* a new rule must not turn approved work into errors without a way through.
+8. **A judgement became a check, and the check pushed the wrong way** (entries 42 and 43). The library's rule "name every still part on a hold of 2 seconds or more" was marked [J], an untested judgement, yet the checker enforced it and the compiler wrote it into every prompt: "stays still" 44 times in scene 10's H3 prompts. On H3 those words freeze people: the wooden look. Fixed in entry 43: held moments are now small timed actions, and the new route's rules stay suggestions until real clips confirm them. *Lesson:* keep a judgement a suggestion until real results confirm it, and judge checks by the clips they lead to, not by how few warnings they leave.
