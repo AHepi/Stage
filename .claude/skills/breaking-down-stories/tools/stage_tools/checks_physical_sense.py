@@ -10,16 +10,19 @@ In plain words (Project notes 42, work item W8, and 43, part B3):
 - PHYS-04 reach: a person who touches, takes or grips a thing of the set plan from further away than they can reach
   (reach_share_of_height of their height; the positions come from the scene's starts and moves);
 - PHYS-05 cutting with nothing: someone cuts, slices or saws, and no knife, blade, scissors, razor, shears, saw or
-  glass shard is in the words, the shot's things, the person's description and state, or the scene's props;
+  glass shard is in the words, the shot's things, the person's description and state, or the scene's props ("cuts
+  him off", "cuts across", "cuts out" and "cuts in" are no cut);
 - PHYS-06 cover from above under something open: people take cover where the roof is a grid, mesh, wire, slats or
   open, and nothing solid is said to be above them;
-- PHYS-07 a fixed bar said to roll: a rung, bar, rail or pipe that rolls, with nothing saying it is loose;
+- PHYS-07 a fixed bar said to roll: a rung, bar, rail or pipe that rolls or spins (or turns under a hand or a foot),
+  with nothing saying it is loose;
 - PHYS-08 a person written as weak (weak, frail, drugged; or thin, hurt or exhausted in their build or state) who
   runs or sprints, or who carries, lifts or holds up a person written as heavy, big, broad or tall;
-- PHYS-09 doors: a brace against a door (a chair under the handle, a wedge), or a door or gate kicked open, when
+- PHYS-09 doors: a brace against a door (a chair under the handle, a wedge), or a door or gate kicked, shouldered,
+  barged or rammed open, when
   nothing says which way the door opens;
 - PHYS-10 one thing per hand: a person holding more than two things at once in one shot (in their does, the places
-  of the shot's things, or one clause of a moment; "in one hand ... in the other" counts as holding);
+  of the shot's things, or one clause of a moment; "in one hand ... in the other" and "juggles" count as holding);
 - PHYS-11 a thing given emphasis that is too small to see at the shot's size (visible_thing_min_size_m_by_size,
   from visible_thing_emphasis_min).
 
@@ -76,7 +79,11 @@ REACH_VERB = re.compile(
     re.I)
 CUT_VERB = re.compile(r"\b(cuts?|cutting|slices?|slicing|saws|sawing|sawed|slits?|slitting|severs?|severing|snips?|"
                       r"snipping|hacks? through)\b", re.I)
-NOT_A_CUT_AFTER = re.compile(r"\s+(?:to|away|back|in to|into black|from|between|on the|across to)\b", re.I)
+# "cuts him off", "cuts off mid-sentence", "cuts across the yard", "the light cuts out", "she cuts in" are no cut
+# with a blade (Project notes 43, round 2, finding N8); "cuts out the label" and "cuts it in half" still are.
+NOT_A_CUT_AFTER = re.compile(r"\s+(?:to|away|back|in to|into black|from|between|on the|across|short\b|"
+                             r"(?:him|her|them|me|us|you)\s+off|off\s+(?:mid|abruptly|sharply)|"
+                             r"out\b(?!\s+(?:the|a|an|her|his|its|their|one|some)\b)|in\b(?!\s+half))\b", re.I)
 NOT_A_CUT_BEFORE = re.compile(r"\b(?:the|a|an|camera|we|picture|shot|sound|edit|hard|jump|smash|match)\s+$", re.I)
 CUTTING_THINGS = ("knife", "knives", "penknife", "blade", "blades", "scissors", "razor", "shears", "saw", "scalpel",
                   "cutter", "machete", "axe", "hatchet", "sword", "bayonet", "clippers", "secateurs", "sickle",
@@ -95,9 +102,12 @@ SOLID_ABOVE = re.compile(r"\b(?:solid|steel|metal|iron|concrete|wooden|wood)\s+(
 # The bar must be the one that rolls: "the rung rolls under her hand", "the top rung rolls as she steps on it",
 # never "grips the rail and rolls her shoulders" or "on the rail as the boat rolls" (Project notes 43, round 1,
 # finding F16).
+# "Spins", and "turns" under a hand or a foot, are the same slip ("the bar spins under his hands"; Project notes 43,
+# round 2, finding N8); "the handrail turns a corner" is not.
 ROLLING_BAR = re.compile(r"\b(rung|rungs|bar|bars|crossbar|rail|rails|handrail|railing|pipe|pipes)\s+"
                          r"(?:(?:beneath|under|below|in|of)\s+(?:the|her|his|their|its|a)\s+[a-z-]+\s+|[a-z]+ly\s+|"
-                         r"(?:starts?|begins?)\s+to\s+)?(rolls|roll|rolling|rolled)\b(?!\s+pin)", re.I)
+                         r"(?:starts?|begins?)\s+to\s+)?(rolls|roll|rolling|rolled|spins|spin|spinning|spun|"
+                         r"(?:turns|turn|turning)(?=\s+(?:under|beneath|in)\b))\b(?!\s+pin)", re.I)
 LOOSE_WORDS = re.compile(r"\b(loose|free|falls|fallen|falling|dropped|drops|on the floor|across the floor|along the "
                          r"floor|off the|down the)\b", re.I)
 # Weak words: the strong ones count wherever they describe the person; the soft ones (thin is also said of cloth)
@@ -122,13 +132,18 @@ BRACE = re.compile(r"\b(?:wedges?|wedged|wedging|jams?|jammed|jamming|braces?|br
                    r"[^.;]{0,50}\b(?:under|against|beneath)\s+(?:" + DOOR_PART +
                    r"|(?:the\s+|a\s+)?(?:[a-z-]+\s+)?door\b(?!\s*(?:frame|jamb|post|way)))"
                    r"|\b(?:chair|wedge|table|plank|bar|broom)\b[^.;]{0,30}\bunder\s+" + DOOR_PART, re.I)
-KICKED_OPEN = re.compile(r"\b(?:kicks?|kicked|kicking|boots?|booted)\b[^.;]{0,25}\b(?:door|gate|hatch)\b[^.;]{0,25}"
-                         r"\bopen\b|\b(?:door|gate|hatch)\b[^.;]{0,15}\b(?:kicked|booted)\s+open\b", re.I)
+# A door shouldered, barged or rammed open is forced the same way as one kicked open (Project notes 43, round 2,
+# finding N8).
+FORCED_OPEN_VERB = (r"(?:kicks?|kicked|kicking|boots?|booted|shoulders?|shouldered|shouldering|barges?|barged|barging|"
+                    r"rams?|rammed|ramming)")
+KICKED_OPEN = re.compile(r"\b" + FORCED_OPEN_VERB + r"\b[^.;]{0,25}\b(?:door|gate|hatch)\b[^.;]{0,25}"
+                         r"\bopen\b|\b(?:door|gate|hatch)\b[^.;]{0,15}\b(?:kicked|booted|shouldered|barged|rammed)\s+"
+                         r"open\b", re.I)
 OPENS_WHICH_WAY = re.compile(r"\bopens?\s+(?:in|inward|inwards|out|outward|outwards|toward|towards|away|into|onto|"
                              r"on to)\b|\bswings?\s+(?:in|inward|inwards|out|outward|outwards|toward|towards|away|"
                              r"into|open toward)\b", re.I)
 HOLD_VERB = re.compile(r"\b(holds?|holding|carries|carrying|clutch(?:es|ing)?|grips?|gripping|clasps?|clasping|"
-                       r"cradles?|cradling)\b|"
+                       r"cradles?|cradling|juggles?|juggling|balances?|balancing)\b|"
                        r"\bin\s+(?:her|his|their)\s+(?:\w+\s+)?(?:hand|hands|fist|fists|arms|grip)\b|"
                        # "the lit phone in one hand, the flask and her scissors in the other" (Project notes 43,
                        # round 1, finding F16)
@@ -768,7 +783,7 @@ def check_phys_07(run):
                 problems.append(problem_at(
                     run, "W", "PHYS-07", shot, field_name,
                     f"Is this {found.group(1).lower()} fixed at both ends? A bar held at both ends can turn in a "
-                    f"broken bracket, bend or give way, but it cannot roll",
+                    f"broken bracket, bend or give way, but it cannot roll or spin freely",
                     f"Fix: write what a fixed bar can do: it bends, cracks, comes away from one end, or holds "
                     f"({J_NOTE}).", containing=(first or "").strip() or None))
                 break
@@ -898,8 +913,8 @@ def check_phys_09(run):
             if brace:
                 what = "Which way does this door open? A brace only holds a door that opens toward it"
             else:
-                what = ("Does this door open away from the person kicking it? A door that opens toward them is "
-                        "pulled, not kicked")
+                what = ("Does this door open away from the person forcing it? A door that opens toward them is "
+                        "pulled, not kicked or shouldered")
             problems.append(problem_at(
                 run, "W", "PHYS-09", shot, field_name, what,
                 f"Fix: say which way the door opens (in the place's exits or objects, or in the shot) and make the "

@@ -672,7 +672,7 @@ Claims here are modest: model behavior changes with versions, and the only relia
 | "Rack focus from the container to the reflection" | "Focus starts on the cloudy shape inside the clear container, then shifts to the reflection on its curved surface." |
 | "Static frame" | "The camera holds completely still for the whole shot." |
 | "Truck left" | "The camera slides sideways to the left, parallel to the wall." |
-| "Push-in on realization" | "The camera moves slowly closer to her face while she stays still." |
+| "Push-in on realization" | "The camera moves slowly closer to her face while she breathes and blinks." (Changed 10 October 2026, references/library/02 Errata, entry 23: the old ending asked her to stay still, which models read as an order to freeze.) |
 | "Hide his hand" | "Close-up of his face and shoulder in three-quarter view, his eyes fixed on someone just out of frame to the left; his right arm runs down behind the other man's back, out of the bottom of the frame." |
 | "Low angle, figure too tall for frame" | "Camera near the floor looking up; the tall black figure's head is cut off by the top of the frame." |
 | "Zero-g, no shake" | "Everyone floats slowly, in real time; the camera is perfectly steady; only the brick wall beyond the steel grid streaks upward, faster and faster." |
