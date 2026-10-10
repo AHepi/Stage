@@ -2300,21 +2300,12 @@ class PromptWriter:
 
 # ---------------------------------------------------------------- questions, takes and cost
 
-def check_questions(compiler, clip, facts):
-    """Yes/no questions for the take, built from the records (8.9; B2 R24; C1 Rec11)."""
-    phrase = compiler.adapters.phrase
-    plan = clip.plan
+def side_questions(compiler, plan):
+    """The side questions of one shot: for each visible own-sided plot feature (a ring, a scar), which side it is on in
+    the take, as the take is made: before the flip in the edit on routes a and b (8.5; C1 R22). Shared by the clip
+    pack and the clip book (clip_book.py)."""
     shot = plan.shot
     questions = []
-    faces = [person for person in plan.people if person.is_person and person.faces != "away"]
-    for person in [person for person in plan.people if person.is_person]:
-        template = phrase("check_questions", "same_face", default="Is it the same face as {name}'s reference pictures?")
-        questions.append(template.replace("{name}", person.name))
-    for person in faces:
-        if len(faces) > 1:
-            questions.append(phrase("check_questions", "face", default="").replace("{name}", person.name))
-        else:
-            questions.append(f"Is {person.name}'s face readable and true in colour in this light?")
     try:
         sides = image_sides(compiler.breakdown, shot)
     except Exception:
@@ -2332,6 +2323,25 @@ def check_questions(compiler, clip, facts):
             words = side_words(compiler.adapters, feature, where) if where and where != "open" else ""
             if words:
                 questions.append(f"Is {owner}'s {feature['feature']} {words}{flipped_note}?")
+    return questions
+
+
+def check_questions(compiler, clip, facts):
+    """Yes/no questions for the take, built from the records (8.9; B2 R24; C1 Rec11)."""
+    phrase = compiler.adapters.phrase
+    plan = clip.plan
+    shot = plan.shot
+    questions = []
+    faces = [person for person in plan.people if person.is_person and person.faces != "away"]
+    for person in [person for person in plan.people if person.is_person]:
+        template = phrase("check_questions", "same_face", default="Is it the same face as {name}'s reference pictures?")
+        questions.append(template.replace("{name}", person.name))
+    for person in faces:
+        if len(faces) > 1:
+            questions.append(phrase("check_questions", "face", default="").replace("{name}", person.name))
+        else:
+            questions.append(f"Is {person.name}'s face readable and true in colour in this light?")
+    questions += side_questions(compiler, plan)
     for identifier in clip.speeches:
         entry = next((entry for speech, _, entry in plan.on_screen if speech == identifier), {})
         speaker = element_of(entry.get("speaker") or "")

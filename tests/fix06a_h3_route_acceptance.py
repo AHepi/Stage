@@ -19,7 +19,13 @@ excerpt for the spoken lines) and on small generic shots built in code:
   adapter's settings name;
 - TAKE rule lines turn a rule confirmed or wrong, which changes its check's level (an error, or not run);
 - the hosted H3 prompts lose the stillness and absence words, no take question holds "stay still", stage.py check over
-  the project raises no GEN line for a route clip, and no new file holds an email address.
+  the project raises no GEN line for a route clip, and no new file holds an email address;
+- the repairs of the review of round 1 (F1 to F18), each in a group named after its finding: lines timed apart (F1),
+  the mirror world on the gold scene and on a shot forced onto route a (F2), the people cap counting new pictures
+  (F3), the place's words cut and listed once (F4, F6, F17), why each clip starts (F5), a long shot's parts (F7),
+  missing speeches as an error (F8), inserts and start pictures (F9), talk about speaking (F10), the take log in
+  plain words (F14) and the shot map and late lines (F18). Records are changed in copies with invented words, so
+  these groups never depend on how the gold or the fixture words the kitchen or the bottle.
 
 Usage: python tests/fix06a_h3_route_acceptance.py
 Standard library only.
@@ -550,8 +556,11 @@ def take_log_marks(project):
     code, output = stage(["compile", "--scene", "SC10", "--route", "h3-comfyui", "--project", project,
                           "--story", EXCERPT])
     log = (project / BOOK / "Take log.md").read_text(encoding="utf-8")
-    assert "| H3R-15 |" in log and "confirmed" in log and "TK-SC10-CL07-T01" in log, log[:600]
+    assert "| Rule 15 |" in log and "confirmed" in log and "scene 10, clip 07, take 1" in log, log[:600]
     assert "wrong (dropped" in log, "the take log does not list the dropped rule"
+    # review F14: the page a user reads holds no codes and never asks the user to write a record
+    assert not re.search(r"H3R-\d|\bTAKE\b|TK-SC|MM:SS|Takes\.md", log), \
+        re.findall(r".{30}(?:H3R-\d|\bTAKE\b|TK-SC|MM:SS|Takes\.md).{30}", log)[:3]
     assert not re.search(r"(?m)^[EW] ROUTE-14\b", output), "ROUTE-14 still ran after the takes showed it wrong"
     code, checked = stage(["check", "--project", project])
     # the rule lines and the route clip IDs are read as the schema says (the user's own field `kept` is left out on
@@ -611,6 +620,330 @@ def no_email(project):
     return f"{len(files)} files"
 
 
+# ---------------------------------------------------------------- the review of round 1 (Project notes 43, F1 to F18)
+# Each group below fails without its repair. Records are changed in a copy of the fixture with invented words, so the
+# groups never depend on how the gold or the fixture words the kitchen or the bottle.
+
+def set_field(path, heading_start, field_name, value):
+    """Set one field of the record whose heading starts with heading_start (the whole value is replaced)."""
+    text = path.read_text(encoding="utf-8")
+    start = text.index(heading_start)
+    end = text.find("\n### ", start + 1)
+    end = len(text) if end < 0 else end
+    block = text[start:end]
+    changed, count = re.subn(rf"(?m)^- {re.escape(field_name)}: .*$", lambda match: f"- {field_name}: {value}", block, count=1)
+    assert count == 1, f"{field_name} is not in {heading_start}"
+    path.write_text(text[:start] + changed + text[end:], encoding="utf-8")
+
+
+def field_value(path, heading_start, field_name):
+    text = path.read_text(encoding="utf-8")
+    start = text.index(heading_start)
+    end = text.find("\n### ", start + 1)
+    block = text[start:end if end > 0 else len(text)]
+    return re.search(rf"(?m)^- {re.escape(field_name)}: (.*)$", block).group(1)
+
+
+def set_moments(path, heading_start, moments):
+    """Replace every moment line of one shot with these."""
+    text = path.read_text(encoding="utf-8")
+    start = text.index(heading_start)
+    end = text.find("\n### ", start + 1)
+    end = len(text) if end < 0 else end
+    block = re.sub(r"(?m)^- moment: .*\n", "", text[start:end])
+    block = re.sub(r"(?m)^(- screen_time: .*\n)", lambda match: match.group(1) + "".join(f"- moment: {moment}\n" for moment in moments),
+                   block, count=1)
+    path.write_text(text[:start] + block + text[end:], encoding="utf-8")
+
+
+def scene_file(project, shot):
+    return next(path for path in (project / "11 Scenes").glob("*.md") if f"### SHOT {shot} " in path.read_text(encoding="utf-8"))
+
+
+def route_lines(output, check_id):
+    return [line for line in output.splitlines() if re.match(rf"^[EW] {check_id} ", line)]
+
+
+def generic_grouping_cap(plans, cap):
+    from stage_tools.clip_book import Grouper, RouteFacts
+    from stage_tools.compile_prompts import Adapters
+    records = [FakeRecord("SC01", {"location": "LOC-ROOM"}, type_name="SCENE")]
+    compiler = FakeCompiler(FakeBreakdown(records))
+    route = RouteFacts.from_adapters(Adapters(), ROUTE)
+    route.people_pictures_max = cap
+    return Grouper(compiler, route).group("SC01", plans), route
+
+
+@group("F1: lines without their own time each take a speaking moment of their own; no two lines start at the same "
+       "second or over each other, and the route check finds two lines timed over each other")
+def lines_timed_apart(project):
+    from stage_tools.checks_clip_book import check_tail
+    pack = load(project / PROMPTS / f"SC10 - {ROUTE}.json")
+    three = None
+    for clip in pack["clips"]:
+        speeches = sorted(clip["speeches"], key=lambda speech: speech["at"])
+        for first, second in zip(speeches, speeches[1:]):
+            assert second["at"] > first["at"] and second["at"] >= first["ends_s"] - 1e-6, \
+                (clip["clip"], [(speech["speech"], speech["at"], speech["ends_s"]) for speech in speeches])
+        if len(speeches) >= 3:
+            three = (clip["clip"], [(speech["speech"], speech["at"]) for speech in speeches])
+    assert three, "no clip holds three lines"
+    entry = {"speeches": [{"speech": "SC01-D01", "at": 0.0, "ends_s": 2.5}, {"speech": "SC01-D02", "at": 1.0, "ends_s": 2.0}],
+             "keep_s": 9.0, "frames": 277, "prompt": "detailed_description:\n[Shot 1] x\n", "shots": [{"clip_from_s": 0}]}
+    found = check_tail(None, {}, entry, {"tail_s_min": 1.3, "fps": 24})
+    assert any("before SC01-D01 has ended" in what for _, what, _ in found), found
+    return f"{three[0]}: " + ", ".join(f"{speech} at {at:g}" for speech, at in three[1])
+
+
+@group("F3: the cap counts only new pictures (an insert of a person already wired joins), refuses a shot that adds a "
+       "picture over the cap, and reports once a single shot that needs more pictures than the cap; the cap is 4, J")
+def people_cap():
+    from stage_tools.checks_clip_book import check_shot_count
+    from stage_tools.clip_book import clip_entry
+    two = fake_plan("SC01-SH010", [("CH-ANNA.S01", "left_third", "CH-BEN"), ("CH-BEN.S01", "right_third", "CH-ANNA")],
+                    size="medium_wide", setup="SC01-SU01")
+    insert = fake_plan("SC01-SH020", [("CH-ANNA.S01", "centre", "down")], size="insert", kind="insert", setup="SC01-SU02")
+    third = fake_plan("SC01-SH030", [("CH-CARA.S01", "centre", "camera")], size="close_up", setup="SC01-SU03")
+    clips, _ = generic_grouping_cap([two, insert, third], 2)
+    assert [[shot.identifier[-3:] for shot in clip.shots] for clip in clips] == [["010", "020"], ["030"]], \
+        [[shot.identifier[-3:] for shot in clip.shots] for clip in clips]
+    assert "would make three people's pictures" in clips[1].starts_because, clips[1].starts_because
+    crowd = fake_plan("SC01-SH040", [("CH-ANNA.S01", "left_edge", "camera"), ("CH-BEN.S01", "left_third", "camera"),
+                                     ("CH-CARA.S01", "right_third", "camera")], seconds=20.0)
+    clips, route = generic_grouping_cap([crowd], 2)
+    assert len(clips) == 2 and clips[0].over_cap and not clips[1].over_cap, [clip.over_cap for clip in clips]
+    found = check_shot_count(None, {}, clip_entry(clips[0], route, WORDS), route.facts)
+    assert any("people's pictures" in what for _, what, _ in found), found
+    facts = adapters_documents()["video_models.json"]["models"][ROUTE]
+    assert facts["inputs"]["people_pictures_max"] == 4 and "J at most 4 character pictures" in facts["marks"]["inputs"]
+    return "insert joins at the cap; a new face over the cap starts a clip; a crowded shot is reported once"
+
+
+@group("F5: every clip says under its heading why it starts a new clip, and each shot that shares it says why")
+def clip_pages_say_why(project):
+    pack = load(project / PROMPTS / f"SC10 - {ROUTE}.json")
+    page = (project / BOOK / "Scene 10 - Saye's kitchen.md").read_text(encoding="utf-8")
+    parts = re.split(r"(?m)^## Clip ", page)[1:]
+    for part, clip in zip(parts, pack["clips"]):
+        head = part.split("### Start picture")[0]
+        assert "Starts a new clip because " in head, head[:300]
+        assert head.count("Shares this clip: ") == len(clip["shots"]) - 1, head[:600]
+        assert not re.search(r"\b(?:H3R|ROUTE)-\d", head), head[:300]
+    example = re.search(r"Starts a new clip because [^\n]*", parts[1]).group(0)
+    return f"{len(parts)} clips, e.g. '{example}'"
+
+
+@group("F4, F6, F17: the place's state line loses only the clause naming something absent (listed once on the page, "
+       "no route warning); a person's description is pasted whole and its problem reported once a scene; a prop's "
+       "description keeps its subject; an empty description and a story-telling voice clause never reach the prompt")
+def place_words_once(scratch):
+    project = scratch / "place words"
+    shutil.copytree(CHAT_FOLDER, project)
+    continuity = project / "09 Continuity.md"
+    set_field(continuity, "### STATE LOC-SAYE-KITCHEN.S01 ", "state_line",
+              "a plain room, tidy and swept, with nothing on the shelves")
+    iona = field_value(continuity, "### STATE CH-IONA.S02 ", "state_line")
+    set_field(continuity, "### STATE CH-IONA.S02 ", "state_line", iona.rstrip(".") + ", never a glove on either hand")
+    things = project / "08 Places and things.md"
+    set_field(things, "### PROP PR-BOTTLE ", "fixed_description", "a tall green glass jar with a cork stopper and no label")
+    characters = project / "07 Characters and voices.md"
+    set_field(characters, "### CHARACTER CH-ELI ", "fixed_description", "none")
+    code, output = stage(["compile", "--scene", "SC10", "--route", "h3-comfyui", "--project", project, "--story", EXCERPT])
+    assert code in (0, 1), output[-1500:]
+    assert not [line for line in route_lines(output, "ROUTE-15") if "LOC-SAYE-KITCHEN" in line], route_lines(output, "ROUTE-15")
+    iona_lines = [line for line in route_lines(output, "ROUTE-15") if "CH-IONA.S02" in line]
+    assert len(iona_lines) == 1, iona_lines
+    pack = load(project / PROMPTS / f"SC10 - {ROUTE}.json")
+    page = (project / BOOK / "Scene 10 - Saye's kitchen.md").read_text(encoding="utf-8")
+    for clip in pack["clips"]:
+        prompt = clip["prompt"]
+        assert "a plain room, tidy and swept" in section_of(prompt, "subject_definitions"), clip["clip"]
+        assert "nothing on the shelves" not in prompt, clip["clip"]
+        if any(person["person"] == "CH-IONA" for person in clip["people"]):
+            assert "never a glove on either hand" in prompt, f"{clip['clip']}: Iona's state line was cut"
+        assert not re.search(r" is ;|\bthey is\b|\bthe the\b|at 's |over 's ", prompt), clip["clip"]
+        for voice in re.findall(r"\(S\d+\), ([^<]*?),? says", prompt):
+            # a voice is its sound only: short clauses, none tied to a time in the character's story
+            assert not re.search(r"\b(?:until|when|once|near the end)\b", voice), voice
+            assert all(len(clause.split()) <= 7 for clause in voice.split(", ")), voice
+        assert not [note for note in clip["left_out"] if "nothing on the shelves" in note or "no label" in note]
+        if "jar" in prompt:
+            assert "a tall green glass jar with a cork stopper" in prompt.lower() and "no label" not in prompt
+    assert page.count("with nothing on the shelves") == 1, page.count("with nothing on the shelves")
+    assert page.count("'and no label'") == 1, page.count("'and no label'")
+    assert page.count("which H3 would show or say") == 1, page.count("which H3 would show or say")
+    assert "jar with a cork stopper" in json.dumps(pack), "the jar is never described"
+    eli = [line for clip in pack["clips"] for line in section_of(clip["prompt"], "subject_definitions").splitlines()
+           if line.startswith("<Subject") and " is Eli" in line]
+    assert eli and all(" is Eli: " in line for line in eli), eli[:2]
+    pictures = (project / BOOK / "01 Pictures to make first.md").read_text(encoding="utf-8")
+    master = pictures.split("### M1")[1].split("```text")[1].split("```")[0]
+    assert "a plain room, tidy and swept" in master and "nothing" not in master, master[:400]
+    return "kitchen clause cut and listed once; Iona's description whole, its problem said once; the jar keeps its words"
+
+
+@group("F7: a long shot that is not held, made in parts, shares out a moment's actions so no part does them again; "
+       "a later part's start picture goes on from the part before, and the moment across the cut is reported")
+def long_shot_parts(scratch):
+    project = scratch / "long shot"
+    shutil.copytree(CHAT_FOLDER, project)
+    path = scene_file(project, "SC10-SH140")
+    set_field(path, "### SHOT SC10-SH140 ", "screen_time", "30")
+    set_moments(path, "### SHOT SC10-SH140 ", [
+        "0-3 | shows: she sets the box on the counter",
+        "3-30 | shows: she sorts the cards into piles, stacks them by the lamp, then files them in the drawer; she "
+        "squares the last pile with both hands"])
+    code, output = stage(["compile", "--scene", "SC10", "--route", "h3-comfyui", "--project", project, "--story", EXCERPT])
+    pack = load(project / PROMPTS / f"SC10 - {ROUTE}.json")
+    parts = [clip for clip in pack["clips"] if clip["shots"][0]["shot"] == "SC10-SH140"]
+    assert len(parts) >= 2, [clip["shots"][0]["shot"] for clip in pack["clips"]]
+    for action in ("sorts the cards into piles", "stacks them by the lamp", "files them in the drawer",
+                   "squares the last pile"):
+        holding = [clip["clip"] for clip in parts if action in section_of(clip["prompt"], "detailed_description")]
+        assert len(holding) == 1, (action, holding)
+    assert all(clip["part_moments"] for clip in parts)
+    assert "goes on from the part before" in parts[1]["start_picture"]["prompt"], parts[1]["start_picture"]["prompt"][-400:]
+    warned = [line for line in route_lines(output, "ROUTE-23") if "across the cut between two parts" in line]
+    assert warned, route_lines(output, "ROUTE-23") or output[-800:]
+    return f"{len(parts)} parts; each action once; {len(warned)} moment(s) across a cut reported"
+
+
+@group("F8: missing speeches make the route's lines check an error and the clip page says the clip is not ready")
+def missing_speeches(scratch):
+    project = scratch / "no story"
+    shutil.copytree(CHAT_FOLDER, project)
+    code, output = stage(["compile", "--scene", "SC10", "--route", "h3-comfyui", "--project", project])
+    errors = [line for line in route_lines(output, "ROUTE-07") if line.startswith("E ") and "speeches are missing" in line]
+    assert code == 1 and errors, (code, output[-800:])
+    page = (project / BOOK / "Scene 10 - Saye's kitchen.md").read_text(encoding="utf-8")
+    assert "1 spoken line is left out of this prompt" in page and "this clip is not ready" in page
+    assert "The words of 1 spoken line is" not in page
+    return f"{len(errors)} clips stopped with an error"
+
+
+@group("F9: an insert is written as the part it shows (no face, no face question, no blinks); a start picture "
+       "catches one instant and names what is already in hand, never the fixed phrase")
+def inserts_and_briefs(project):
+    pack = load(project / PROMPTS / f"SC10 - {ROUTE}.json")
+    inserts = [clip for clip in pack["clips"] if clip["shots"][0]["insert"]]
+    assert inserts, "no clip opens on an insert"
+    for clip in pack["clips"]:
+        brief = clip["start_picture"]["prompt"]
+        assert "hands are already on what they will move" not in brief and "At this first moment" not in brief
+        assert "The picture is the instant this begins: " in brief or not clip["start_picture"]["first_moment"]
+        description = section_of(clip["prompt"], "detailed_description")
+        for index, shot in enumerate(clip["shots"], start=1):
+            if shot["insert"]:
+                block = next(line for line in description.splitlines() if line.startswith(f"[Shot {index}]"))
+                assert "is in the shot only as" in block and "face is outside the frame" in block, block[:300]
+        for person in clip["people"]:
+            seen = [shot for shot in clip["shots"] if person["person"] in shot["people"]]
+            if seen and all(shot["insert"] for shot in seen):
+                assert f"Is it the same face as your {person['name']} picture?" not in clip["questions"]
+                assert f"{person['name']} at about" not in description, f"{person['name']} blinks out of frame"
+    brief = inserts[0]["start_picture"]["prompt"]
+    assert re.search(r": only (?:his|her|their) [a-z ,]+ (?:is|are) in the picture", brief), brief
+    assert "seen only as" in brief, brief[-300:]
+    example = re.search(r"only (?:his|her|their) [a-z ,]+ (?:is|are) in the picture", brief).group(0)
+    return f"{len(inserts)} insert clips; e.g. '{example}'"
+
+
+@group("F10: talk about speaking is caught (asks, says it, answers), and only 'says' right before a line passes")
+def talk_about_speaking():
+    from types import SimpleNamespace
+    from stage_tools.checks_clip_book import kept_out_check
+    check = kept_out_check("talk", "talk about speaking")
+    run = SimpleNamespace(cache={}, words=WORDS, project_record=None)
+    base = {"keys": [], "style_sentence": "", "key_problems": [], "clip": "SC01-CL01"}
+    for words in ("Anna looks up and asks.", "she straightens and says it.", "Ben's answer comes from below."):
+        entry = dict(base, prompt=f"detailed_description:\n[Shot 1] {words} <Subject 2> (S1) says: <d>[English] Go.</d>\n")
+        assert check(run, {"clips": [entry]}, entry, {}), words
+    entry = dict(base, prompt="detailed_description:\n[Shot 1] <Subject 2> (S1), a low voice, says, quietly: "
+                              "<d>[English] Go.</d> From off screen, a man's voice (S2) says: <d>[English] No.</d>\n")
+    assert not check(run, {"clips": [entry]}, entry, {}), check(run, {"clips": [entry]}, entry, {})
+    return "three kinds of talk caught; 'says' before a line passes"
+
+
+@group("F18: the shot map lists the shots made in the edit and the seconds of a held take made in the edit; a line "
+       "ending close to the keep point is reported and its clip made one step longer when it fits")
+def shot_map_and_late_lines(project, output):
+    shot_map = (project / BOOK / "Shot map.md").read_text(encoding="utf-8")
+    pack = load(project / PROMPTS / f"SC10 - {ROUTE}.json")
+    for identifier in pack["not_video"]:
+        assert re.search(rf"shot {identifier[-3:]} \| made in the edit", shot_map), identifier
+    overflow = [clip for clip in pack["clips"] if clip["overflow_s"]]
+    assert overflow and "made in the edit)" in shot_map, shot_map[-600:]
+    late = [line for line in route_lines(output, "ROUTE-10") if "before the keep point" in line]
+    longer = [clip for clip in pack["clips"] if clip["lengthened"]]
+    assert late and longer, (late, [clip["clip"] for clip in longer])
+    for clip in longer:
+        assert clip["frames"] <= 362 and (clip["frames"] - 5) % 17 == 0
+    return f"{len(pack['not_video'])} shots made in the edit listed; {len(late)} late lines; {len(longer)} clips one step longer"
+
+
+@group("F2: the mirror world on the route: flipped pictures where compile_prompts flips them, a plate picture in two "
+       "steps, side questions, a plate shot later in a clip reported; a take flipped in the edit says so on its page, "
+       "describes the take as made and never shares a clip with a take that is not")
+def mirror_world(scratch):
+    from stage_tools.build_kit import gold_project
+    from stage_tools.clip_book import RouteFacts, compile_scene, master_pictures, route_pack, scene_page
+    from stage_tools.compile_prompts import Adapters, Compiler, raw_speeches_of, swap_own_sides
+    from stage_tools.derive_fields import Breakdown, MirrorRoute
+    if not EXCERPT.is_file():
+        return "skipped: story not present"
+    folder, _ = gold_project(scratch / "mirror" / "The Catch", SKILL)
+    code, output = stage(["compile", "--scene", "SC10", "--route", "h3-comfyui", "--project", folder, "--story", EXCERPT])
+    assert code in (0, 1), output[-1200:]
+    pack = load(folder / PROMPTS / f"SC10 - {ROUTE}.json")
+    routes = {route for clip in pack["clips"] for route in clip["mirror"]["routes"]}
+    assert "plate" in routes, routes
+    plate = [clip for clip in pack["clips"] if clip["mirror"]["plate"]]
+    assert plate and "Step 1, the plate" in plate[0]["start_picture"]["prompt"] \
+        and "Then flip this picture left to right." in plate[0]["start_picture"]["prompt"], plate[0]["start_picture"]["prompt"][:300]
+    flipped = [picture for clip in pack["clips"] for picture in clip["character_pictures"] if picture.get("flipped")]
+    assert flipped and all(picture["file"].endswith(" - flipped.png") for picture in flipped), flipped[:2]
+    for clip in pack["clips"]:
+        for connection in clip["connections"][1:]:
+            assert connection["file"].endswith(" - flipped.png") == ("flipped left to right" in connection["picture"])
+    sides = [question for clip in pack["clips"] for question in clip["questions"] if " on the " in question
+             and re.search(r"\b(?:frame|hand|side)\?$", question)]
+    assert sides, "no side question"
+    later = [line for line in route_lines(output, "ROUTE-27") if "mirror world" in line and "later shot" in line]
+    assert later, route_lines(output, "ROUTE-27")
+    pictures = (folder / BOOK / "01 Pictures to make first.md").read_text(encoding="utf-8")
+    assert "## Copies flipped left to right (the mirror world)" in pictures
+    # a shot forced onto route a (the whole take flipped in the edit), through the derived mirror route itself
+    schema, words, constants = SCHEMA, WORDS, CONSTANTS
+    breakdown = Breakdown.from_project(folder, schema, words, constants)
+    breakdown.attach_story_file(str(EXCERPT))
+    breakdown._cache[("mirror_route", "SC10-SH160")] = MirrorRoute("flip_all", "a", False, ["a test of route a"])
+    adapters = Adapters()
+    compiler = Compiler(breakdown, adapters, words, raw_speeches_of(story_path=str(EXCERPT), constants=constants))
+    route = RouteFacts.from_adapters(adapters)
+    masters = master_pictures(compiler, route)
+    plans, clips = compile_scene(compiler, route, "SC10", masters)
+    alone = next(clip for clip in clips if clip.shots[0].identifier == "SC10-SH160")
+    assert [shot.identifier for shot in alone.shots] == ["SC10-SH160"], [shot.identifier for shot in alone.shots]
+    after = clips[clips.index(alone) + 1]
+    assert "flipped left to right in the edit" in after.starts_because, after.starts_because
+    assert alone.mirror["flip_in_edit"] and alone.master_picture.get("flipped_file"), alone.mirror
+    assert any("(in the take as made, before the flip in the edit)" in question for question in alone.questions)
+    swapped = {"left_third": "right_third", "right_third": "left_third"}
+    description = section_of(alone.prompt, "detailed_description")
+    for person in alone.shots[0].plan.people:
+        if person.is_person and person.at in swapped:
+            wanted = adapters.phrase("placement", swapped[person.at], default="")
+            assert f"{person.name}, " in description and wanted in description, (person.name, wanted)
+    for key in alone.keys:
+        if key.get("sides_turned"):
+            assert swap_own_sides(key["source"]) == key["text"], key
+    page = scene_page(compiler, route, route_pack(compiler, route, "SC10", plans, clips, masters, {}))
+    assert "Flip the kept part left to right in the edit" in page
+    assert "This picture is made as the take is made, before it is flipped" in alone.start_picture["prompt"]
+    return (f"{len(plate)} plate clips, {len(flipped)} flipped pictures, {len(sides)} side questions; shot 160 on "
+            "route a is a clip of its own, flipped in the edit")
+
+
 def main():
     route_entry()
     routing_unchanged()
@@ -618,6 +951,8 @@ def main():
     facing_singles()
     contact_pair()
     long_shot_split()
+    people_cap()
+    talk_about_speaking()
     with tempfile.TemporaryDirectory() as temporary:
         project = Path(temporary) / "scene 10"
         shutil.copytree(CHAT_FOLDER, project)
@@ -627,6 +962,14 @@ def main():
         prompts_in_format(project)
         no_banned_words(project)
         pages_name_pictures(project)
+        lines_timed_apart(project)
+        clip_pages_say_why(project)
+        inserts_and_briefs(project)
+        shot_map_and_late_lines(project, output)
+        place_words_once(Path(temporary))
+        long_shot_parts(Path(temporary))
+        missing_speeches(Path(temporary))
+        mirror_world(Path(temporary))
         hosted_h3_words(project)
         take_log_marks(project)
         no_email(project)

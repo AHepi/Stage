@@ -21,27 +21,30 @@ The checks, each with its rule:
   ROUTE-04 (H3R-04) every person whose picture is connected is placed in a shot
   ROUTE-05 (H3R-05) speaker numbers (S1), (S2) in order of first speaking; none in retention_analysis
   ROUTE-06 (H3R-06) every line inside <d>[Language] ...</d>, the tags balanced
-  ROUTE-07 (H3R-07) the lines word for word from the story's speeches
+  ROUTE-07 (H3R-07) the lines word for word from the story's speeches; none left out for want of the speeches
   ROUTE-08 (H3R-08) [Shot 1] without a time; later shots "[Shot N] At MM:SS.mmm," with times rising from 0
   ROUTE-09 (H3R-09) one "From ... to the end" line, inside the last shot and before the keep point
-  ROUTE-10 (H3R-10) a tail of at least the route's smallest tail, and nothing timed in it
+  ROUTE-10 (H3R-10) a tail of at least the route's smallest tail, nothing timed in it, no two lines over each other,
+            and every line ending a second before the keep point
   ROUTE-11 (H3R-11) the frames on the 17 x k + 5 grid, with a one-decimal value to type that lands on them
   ROUTE-12 (H3R-12) the frames between the route's shortest and longest lengths
   ROUTE-13 (H3R-13) a held take that is longer, with its tail, than H3's longest clip
   ROUTE-14 (H3R-14) detailed_description far from MiniMax's normal length (under 200 or over 700 words)
   ROUTE-15 (H3R-15) a word that names something absent, outside the spoken lines and printed words
   ROUTE-16 (H3R-16) a word that asks for stillness
-  ROUTE-17 (H3R-17) talk about speaking
+  ROUTE-17 (H3R-17) talk about speaking (only 'says' right before a line introduces it)
   ROUTE-18 (H3R-18) a comparison
   ROUTE-19 (H3R-19) a camera move written into a static clip
   ROUTE-20 (H3R-20) a fixed description or state line not word for word, or stale
   ROUTE-21 (H3R-21) the style sentence missing
   ROUTE-22 (H3R-22) a start picture brief that does not say who is in the picture
-  ROUTE-23 (H3R-23) more shots in a clip than the route allows
+  ROUTE-23 (H3R-23) more shots or people's pictures in a clip than the route allows, or a moment of a long shot cut
+            between two of its parts
   ROUTE-24 (H3R-24) two shots cut together with similar framing
   ROUTE-25 (H3R-25) two singles of people facing each other with no shot showing both first
   ROUTE-26 (H3R-26) a contact shown on screen inside one shot
-  ROUTE-27 (H3R-27) a clip page that does not name its master picture and character pictures
+  ROUTE-27 (H3R-27) a clip page that does not name its master picture and character pictures, or a part of the
+            mirror world the route cannot make safely (or does not know yet)
 
 Standard library only.
 """
@@ -257,6 +260,12 @@ def check_lines(run, pack, entry, facts):
     from .derive_fields import speech_words_part
     from .film_pass import breakdown_of
     found = []
+    unknown = entry.get("words_unknown") or []
+    if unknown:
+        # a line left out because the story's speeches are missing: the clip would run without its dialogue (review F8)
+        found.append(("speeches", f"leaves out {len(unknown)} spoken line{'s' if len(unknown) != 1 else ''} "
+                      f"({', '.join(unknown)}) because the story's speeches are missing, so the clip is not ready",
+                      "Fix: read the story (stage.py read) or compile with --story, then compile again."))
     breakdown = breakdown_of(run)
     spoken = [normalised(inner) for inner in re.findall(r"<d>\[[A-Za-z]+\] (.*?)</d>", entry["prompt"], flags=re.DOTALL)]
     listed = [normalised(speech.get("line")) for speech in entry.get("speeches") or []]
@@ -311,7 +320,26 @@ TIMESTAMP_END = re.compile(r"From (\d{2}):(\d{2}\.\d{3}) to the end")
 
 
 def check_tail(run, pack, entry, facts):
+    """The tail and the lines' timing: a tail of at least the smallest, nothing timed in it, no two lines over each
+    other at their speakers' pace (review F1), and every line ending at least a second before the keep point, since
+    H3 starts lines late (review F18)."""
+    from .clip_book import LINE_END_MARGIN_S
     found = []
+    speeches = sorted([speech for speech in entry.get("speeches") or [] if "ends_s" in speech],
+                      key=lambda speech: speech.get("at", 0))
+    for first, second in zip(speeches, speeches[1:]):
+        if second["at"] < first["ends_s"] - 1e-6:
+            found.append(("speeches", f"starts {second['speech']} at {second['at']:g} seconds, before "
+                          f"{first['speech']} has ended (about {first['ends_s']:g} seconds at its speaker's pace)",
+                          "Fix: give the lines their own times in the shot (the hear line's at), or a speaking moment "
+                          "each, then compile again."))
+            break
+    late = [speech for speech in speeches if entry["keep_s"] - speech["ends_s"] < LINE_END_MARGIN_S - 1e-6]
+    if late:
+        found.append(("speeches", f"ends {', '.join(speech['speech'] for speech in late)} less than "
+                      f"{LINE_END_MARGIN_S:g} second before the keep point ({entry['keep_s']:g}); H3 often starts lines "
+                      "late, so the end may fall in the part thrown away",
+                      "Fix: move the line earlier in the shot, or give the shot more screen time; keep by what you see."))
     smallest = float(facts.get("tail_s_min") or pack.get("tail_s_min") or 1.3)
     total = entry["frames"] / float(facts.get("fps") or pack.get("fps") or 24)
     if total - entry["keep_s"] < smallest - 1e-6:
@@ -378,6 +406,18 @@ def check_length(run, pack, entry, facts):
     return []
 
 
+SAYS_BEFORE_LINE = re.compile(r"\bsays(?:,[^:<]{0,80})?:\s*(?=<d>)")
+
+
+def first_clip_with(pack, problem):
+    """The first clip of the scene whose descriptions hold this key problem (the same record and field)."""
+    for clip in (pack or {}).get("clips") or []:
+        for other in clip.get("key_problems") or []:
+            if other.get("record") == problem.get("record") and other.get("what") == problem.get("what"):
+                return clip.get("clip")
+    return None
+
+
 def kept_out_check(list_name, label):
     def check(run, pack, entry, facts):
         fixer = word_fixer_of(run)
@@ -389,14 +429,17 @@ def kept_out_check(list_name, label):
                     text = text.replace(form, " ")
         if entry.get("style_sentence"):
             text = text.replace(entry["style_sentence"], " ")
+        if list_name == "talk":
+            # only 'says' (with its delivery) right before a line introduces it; any other talk about speaking counts
+            # (review F10)
+            text = SAYS_BEFORE_LINE.sub(" ", text)
         word = fixer.kept_out_word(outside_lines(text), (list_name,))
-        if list_name == "talk" and word:
-            # 'says' just before a line, and 'asks' or 'answers', are how a line is introduced
-            word = fixer.kept_out_word(re.sub(r"\bsays,?\s[^<]*<d>", " ", outside_lines(text)), (list_name,))
         if word:
             found.append(("prompt", f"holds '{word}' ({label}) outside the spoken lines",
                           "Fix: write what happens instead in the record it comes from, then compile again."))
         for problem in entry.get("key_problems") or []:
+            if first_clip_with(pack, problem) not in (None, entry.get("clip")):
+                continue  # a description's problem is reported once a scene, on its first clip (review F4)
             if fixer.kept_out_word(problem.get("word") or "", (list_name,)):
                 found.append(("prompt", f"the {problem['what']} of {problem['record']} holds '{problem['word']}' "
                               f"({label}), pasted word for word",
@@ -432,7 +475,10 @@ def check_keys(run, pack, entry, facts):
                  "look block": "look_block"}.get(key["what"], "state_line")
         if record is not None and record.get(field):
             current = fixer.key_words(str(record.get(field)).strip())
-            if normalised(current).rstrip(".") != normalised(text).rstrip("."):
+            # a key written with its sides turned (the mirror world) or a place's state line with a clause left out is
+            # compared by the stored words it was made from
+            stored = key.get("source") or text
+            if normalised(current).rstrip(".") != normalised(stored).rstrip("."):
                 found.append(("keys", f"the {key['what']} of {key['record']} changed since this clip was compiled",
                               "Fix: compile again; the prompt is stale."))
     return found
@@ -462,10 +508,26 @@ def check_start_picture(run, pack, entry, facts):
 
 
 def check_shot_count(run, pack, entry, facts):
+    """The clip's limits: at most the route's shots; a shot that shows more people than the route's cap of people's
+    pictures, said once, on its first clip (review F3); a moment of a long shot that runs across the cut between two
+    of its parts (review F7)."""
+    found = []
     most = int(facts.get("shots_per_clip_max") or 3)
     if len(entry.get("shots") or []) > most:
-        return [("shots", f"holds {len(entry['shots'])} shots; a clip holds at most {most}", "Fix: compile again.")]
-    return []
+        found.append(("shots", f"holds {len(entry['shots'])} shots; a clip holds at most {most}", "Fix: compile again."))
+    over = entry.get("over_cap") or {}
+    if over:
+        found.append(("people", f"connects {over['pictures']} people's pictures, over the route's {over['cap']}, because "
+                      f"shot {str(over['shot'])[-3:]} shows {over['pictures']} people",
+                      "Fix: frame fewer people in that shot, or split it into shots of fewer people, each a clip."))
+    for moment in entry.get("part_moments") or []:
+        if moment.get("part", 1) > 1 and abs(float(moment.get("boundary_s", 0)) -
+                                             float((entry.get("shots") or [{}])[0].get("shot_from_s", -1))) < 1e-6:
+            found.append(("shots", f"goes on with the moment {moment['moment']} of shot {str(moment['shot'])[-3:]} "
+                          f"across the cut between two parts of the shot (at second {moment['boundary_s']:g})",
+                          f"Fix: split that moment at second {moment['boundary_s']:g} so each part has its own actions, "
+                          "then compile again."))
+    return found
 
 
 def similar(first, second):
@@ -529,6 +591,15 @@ def check_pictures_named(run, pack, entry, facts):
     if missing:
         found.append(("character_pictures", f"names no character picture for {', '.join(missing)}",
                       "Fix: compile again."))
+    # the mirror world: a part of it the route cannot make safely, or a scene whose mirror states are not known yet
+    # (review F2)
+    mirror = entry.get("mirror") or {}
+    for problem in mirror.get("problems") or []:
+        found.append(("mirror", f"the mirror world: {problem[:1].lower() + problem[1:]}",
+                      "Fix: see the clip's notes; check the sides in the take before keeping it."))
+    if mirror.get("open_note"):
+        found.append(("mirror", f"the mirror world: {mirror['open_note']}",
+                      "Fix: compile again with --story and the whole story, so the mirror rule's eras are found."))
     return found
 
 
@@ -551,8 +622,8 @@ CHECKS = [
      "marks its shots or their times in a form H3 does not read"),
     ("ROUTE-09", "H3R-09", check_end_line, "The tail's line of small actions missing or misplaced",
      "leaves the end of the clip without the line of small actions that keeps it alive"),
-    ("ROUTE-10", "H3R-10", check_tail, "Tail too short, or something timed in the tail",
-     "plans something in the last seconds of a clip, which are thrown away"),
+    ("ROUTE-10", "H3R-10", check_tail, "Tail too short, something timed in the tail, or lines too close",
+     "plans something in the last seconds of a clip, which are thrown away, or times two lines over each other"),
     ("ROUTE-11", "H3R-11", check_frames_grid, "Clip length off H3's frame grid",
      "asks for a clip length H3 in ComfyUI does not make, or gives seconds that land elsewhere"),
     ("ROUTE-12", "H3R-12", check_frames_range, "Clip length outside the route's range",
@@ -577,16 +648,16 @@ CHECKS = [
      "leaves out the sentence that gives the film's look"),
     ("ROUTE-22", "H3R-22", check_start_picture, "A start picture brief that does not say who is in it",
      "has a start picture brief that does not say who is in the picture"),
-    ("ROUTE-23", "H3R-23", check_shot_count, "More shots in a clip than the route allows",
-     "puts more shots in one clip than the route allows"),
+    ("ROUTE-23", "H3R-23", check_shot_count, "A clip over the route's limits, or a moment cut between two parts",
+     "puts more shots or people's pictures in one clip than the route allows, or cuts a moment between two parts"),
     ("ROUTE-24", "H3R-24", check_similar_framing, "Two similar framings cut together in a clip",
      "cuts between two similar framings, which H3 may blend into one"),
     ("ROUTE-25", "H3R-25", check_facing_singles, "Facing singles with no shot showing both first",
      "cuts between two people facing each other without first showing both"),
     ("ROUTE-26", "H3R-26", check_contact, "A contact shown inside one shot",
      "shows one thing hitting another inside one shot, which H3 cannot do reliably"),
-    ("ROUTE-27", "H3R-27", check_pictures_named, "A clip page without its master or character pictures",
-     "has a clip page that does not name the pictures to make first"),
+    ("ROUTE-27", "H3R-27", check_pictures_named, "A clip page without its pictures, or a mirror-world part unsafe",
+     "has a clip page that does not name the pictures to make first, or a mirror-world part it cannot make safely"),
 ]
 KIT_LEVELS = {"ROUTE-01": "E", "ROUTE-02": "E", "ROUTE-03": "E", "ROUTE-05": "E", "ROUTE-06": "E", "ROUTE-07": "E",
               "ROUTE-08": "E", "ROUTE-11": "E", "ROUTE-13": "E"}
