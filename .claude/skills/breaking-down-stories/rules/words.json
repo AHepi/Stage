@@ -2832,5 +2832,178 @@
     "short": "medium"
    }
   }
+ },
+ "stillness_words": {
+  "source": "Project notes 42 (the handover) and the h3-storyboard testing notes (SKILL.md, sections 6.2 and 7.2, checked 10 October 2026): a strong 'do not move' line leaks across the whole shot, so parts that should move stop; time with nothing happening is squeezed out. Marked J: testers' notes, not yet tried on the user's own setup.",
+  "rule": "CRAFT-26 and CRAFT-27 (step 8) and the route checks: a held moment is written as small timed actions, never as a list of parts that stay still. These words in a moment, a 'does' or an 'end' ask for stillness; they are never sent to a video model.",
+  "words": [
+   "still",
+   "stillness",
+   "motionless",
+   "unmoving",
+   "frozen",
+   "freeze",
+   "freezes",
+   "stock-still",
+   "rigid",
+   "immobile"
+  ],
+  "phrases": [
+   "does not move",
+   "do not move",
+   "doesn't move",
+   "don't move",
+   "without moving",
+   "not moving",
+   "neither of them moves",
+   "neither moves",
+   "nobody moves",
+   "no one moves",
+   "nothing moves",
+   "holds still",
+   "hold still",
+   "stays still",
+   "stay still",
+   "keeps still",
+   "nothing changes",
+   "completely still",
+   "perfectly still"
+  ],
+  "not_an_action": [
+   "stays",
+   "stay",
+   "remains",
+   "remain",
+   "keeps",
+   "keep",
+   "waits",
+   "wait",
+   "listens",
+   "listen",
+   "holds her gaze",
+   "holds his gaze",
+   "holds their gaze"
+  ]
+ },
+ "absence_words": {
+  "source": "ComfyUI's MiniMax H3 prompt guide (checked 10 October 2026): its templates have no negative branch, and 'an instruction that names an unwanted element adds that wording to the description the model reads'; say what should be there instead. MiniMax's reference-mode guide writes non_diegetic_music: N/A when there is none.",
+  "rule": "For a model with no negative side (MiniMax H3, hosted or in ComfyUI) these words never appear outside the spoken lines and printed words in quotation marks. A sentence that needs them is turned by the negation rewriter or left out and listed on the page; music with none is written N/A.",
+  "words": [
+   "no",
+   "not",
+   "nothing",
+   "nobody",
+   "none",
+   "never",
+   "neither",
+   "nor",
+   "without",
+   "n't",
+   "no one",
+   "nowhere",
+   "and nothing else"
+  ],
+  "allowed_phrases": [
+   "with no camera movement whatsoever",
+   "n/a"
+  ],
+  "allowed_phrases_source": "'static, on a tripod, with no camera movement whatsoever' is the one camera line the h3-storyboard testers found holds (SKILL.md section 7.2); N/A is MiniMax's own word for an empty field."
+ },
+ "talk_about_speaking": {
+  "source": "h3-storyboard testing notes (SKILL.md section 6.2, cause 5, checked 10 October 2026): sentences in the prompt that talk about speaking get read aloud. Marked J.",
+  "rule": "Route checks: outside the spoken lines a prompt says what the mouth does ('her lips close'), never talk about the speaking itself. 'says' just before a line is allowed.",
+  "words": [
+   "sentence",
+   "sentences",
+   "word",
+   "words",
+   "speaks",
+   "speak",
+   "speaking",
+   "talk",
+   "talks",
+   "talking",
+   "unfinished line",
+   "finishes the line",
+   "two words",
+   "one word"
+  ],
+  "allowed_before_a_line": [
+   "says",
+   "asks",
+   "answers",
+   "calls",
+   "reads it out"
+  ]
+ },
+ "comparison_markers": {
+  "source": "h3-storyboard testing notes (SKILL.md section 5, checked 10 October 2026): a comparison can make the model draw the thing compared. Marked J.",
+  "rule": "Route checks: no comparison outside the spoken lines; write the movement itself.",
+  "markers": [
+   "like a",
+   "like an",
+   "like the",
+   "as if",
+   "as though",
+   "the way a",
+   "the way an"
+  ]
+ },
+ "contact_words": {
+  "source": "h3-storyboard testing notes (SKILL.md section 2.1, checked 10 October 2026): H3 cannot do contact-driven cause and effect (a cup falls without the hand touching it); the fix is not to show that instant. Project notes 42, W9: end the shot at the contact and start the next with the result already there. Marked J.",
+  "rule": "CRAFT-28 (step 8) and the clip grouping of the H3 route: a shot where a 'cause' word (one thing driven into another) is followed by an 'effect' word (the other thing breaking, falling or giving way) shows a contact on screen; split it at the contact.",
+  "cause": [
+   "drives into",
+   "drives it into",
+   "drives the",
+   "swings into",
+   "swings it into",
+   "rams",
+   "smashes into",
+   "slams into",
+   "slams against",
+   "hits",
+   "strikes",
+   "kicks",
+   "punches",
+   "pushes",
+   "shoves",
+   "knocks",
+   "trips",
+   "tackles",
+   "throws it at",
+   "hurls",
+   "barges",
+   "cuts through",
+   "cuts the",
+   "slashes",
+   "stabs",
+   "shoots"
+  ],
+  "effect": [
+   "cracks",
+   "shatters",
+   "breaks",
+   "snaps",
+   "splinters",
+   "splits",
+   "tears",
+   "gives way",
+   "falls",
+   "topples",
+   "tips over",
+   "goes down",
+   "goes flying",
+   "flies",
+   "skids",
+   "crumples",
+   "folds in",
+   "caves in",
+   "drops",
+   "spills",
+   "bursts",
+   "collapses",
+   "sprawls"
+  ]
  }
 }
