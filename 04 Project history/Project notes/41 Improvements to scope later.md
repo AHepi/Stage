@@ -117,3 +117,12 @@ Added in entry 43. Each item's "done when" is in note 42, section 6. Where it st
 
 71. **Action clips on another model.** Your verdict on the first H3 test (entry 46): H3's action was unusable, while dialogue can work. Let the clip book mark each clip for a model (H3 for dialogue and performance, Seedance or another for action) and test scene 5's trip on Seedance. *High.* Source: entry 46.
 72. **Several takes per dialogue clip.** Only 1 of 4 dialogue takes was usable; the clip page should say how many takes to make and how to choose. *Medium.* Source: entry 46.
+
+## 12. Found while designing the blocking test (entry 47)
+
+73. **A person who moves is written at the end of the move but used as the start.** In scene 10 shot 180 Iona's written place is where her cross ends, and code takes it as where she starts. *High.* Source: entry 47 design.
+74. **The H3 prompt never states depth, which side someone looks to, or how far away the camera is,** although the records hold all three; only the frame third and facing reach the words. *High.* Source: entry 47 design.
+75. **Master and start pictures carry no layout:** the master picture lists the room's objects without positions, and the start-picture briefs use compass words a picture model cannot place. A grey preview or a drawn layout could replace them. *Medium.* Source: entry 47 design.
+76. **Records contradictions that a planning picture would teach H3:** floor-plan move 4 leaves Dr Saye facing the phone while shots 180 to 200 say she faces Iona; shot 160's start-picture brief puts the phone already in her hand though she takes it up later. *Medium.* Source: entry 47 design.
+77. **No working check on the line (line of action) for scene 10:** the check is planned and skipped, so left and right across cuts are judged by eye only. *Medium.* Source: entry 47 design.
+

@@ -1,6 +1,6 @@
 # 43 Status
 
-Log entry 43 started this file. Where the project stands, rewritten each round. Last updated: 10 October 2026, entry 46.
+Log entry 43 started this file. Where the project stands, rewritten each round. Last updated: 11 October 2026, entry 47.
 
 ## In one paragraph
 
@@ -23,7 +23,7 @@ It no longer asks any video model for stillness. The repository is laid out as n
 
 ## Waiting
 
-- **The test run (W1):** done in entries 45 and 46 (note 45). Your verdict: one dialogue take usable (clear British voice); the old prompt's acting and camera good; action unusable on H3. Next: the blocking test with Blender grey previews (entry 47); action on another model later.
+- **The test run (W1):** done in entries 45 and 46 (note 45). The blocking test (entry 47) was designed but not run; you took a different direction and have the full prompt package (outside git). Two stopped pods still cost storage until you say to delete them.
 - **Scenes 1 to 6 compiled for the route:** needs the plan of The Catch (the "40 ... revised kit" files).
 - **One question for you:** your handover note (42) is in the public repository and quotes a few lines of clip 03's prompt from scenes 1 to 6. Keep it as it is, or replace those lines with a scene 10 example?
 

@@ -15,7 +15,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 ## Where things stand
 
 **Built and uploaded:**
-- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 to 46 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
+- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 to 47 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
 - **New in entry 43:** a way of making video with MiniMax H3 in ComfyUI. For each scene it makes a clip book: one page per clip with the start picture to make, the pictures to connect, the prompt in MiniMax's own format, the seconds to type, what to check and which seconds to keep. Stage no longer asks any video model for stillness, and it checks plans for physical slips (no room to climb, a heavy torch held in the teeth, nothing to cut a strap with).
 - **The repository is laid out as numbered folders** (entry 43): `CONTEXT.md` at the top says where to go; then `01 Start here`, `02 Example`, `03 Kits to upload` and `04 Project history`.
 - The kit is a Claude skill with its own checking program. It also comes as a bundle for ChatGPT and Gemini, with setup guides for each app.
@@ -299,6 +299,14 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - What it changes: H3 for dialogue and performance, action elsewhere. The camera is now the main thing to fix, and I restarted the blocking test's design so it uses only dialogue and performance moments, with more takes of fewer moments.
     - Files: note 45 (your verdict section); note 41, items 71 and 72.
 
+47. **Designed the blocking test, could not run it, and handed you the whole prompt package instead.**
+    - The design (two gatherers, a designer and a checker, two at a time): Stage's own grey 3D preview, rendered with Blender on this computer, as H3's planning picture for dialogue moments of scene 10. "Not mint." was to get your best take's prompt word for word with only the picture changed. Blender's Python module now runs here and rendered the previews.
+    - Failure of mine: after testing the pod's switch-off timer I left its one-minute end time on the pod's disk, so the next start stopped itself at once. Fixed: an end time already past when the pod starts is now ignored (the fixed cap still holds). The timer's log also showed that the pod's own key works with RunPod's newer interface, not the older one.
+    - Then the pod's machine had no free graphics card, the known risk of stopping a pod, so the test could not start. Nothing was sent.
+    - You took a different direction and asked for the prompts with their pictures. I made a zip, outside git because it holds story material: the first test's 14 runs, the blocking test's 19 runs with the grey planning pictures, and scene 10's 11 clips with their start-picture briefs, each folder numbered in connection order with a settings file.
+    - The design found faults in Stage, now in note 41, section 12.
+    - Files: note 41 (items 73 to 77); lesson 14 in `43 Lessons.md`; the zip "47 Prompt package - H3 with pictures.zip" (outside git).
+
 ## Next step
 
-The blocking test (entry 47): Stage's Blender grey preview as H3's planning picture, on dialogue and performance moments of scene 10, to see whether H3 copies the planned camera (close-up, over the shoulder, single). The design is being written now; you get its plan and cost before anything runs.
+Use the prompt package in the direction you choose. Two stopped pods still cost about $1.60 a day each for storage: tell me whether to delete them (everything from the tests is already on this computer), and change your RunPod key on RunPod.
