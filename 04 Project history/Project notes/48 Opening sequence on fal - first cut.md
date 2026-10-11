@@ -59,3 +59,12 @@ Added to note 41, section 13 (items 78 to 82): trim by the measured end of speec
 ## Next
 
 Your verdict on the cut. If it holds up, the same steps carry on to clips 04 onward, with two takes per clip and the trims set by the measured speech.
+
+## Your verdict (entry 49)
+
+"Everything is much better." Two faults you saw:
+
+- **Iona ends up under a lift with no room underneath it.** The start picture for clip 03 raised the car's floor to make a gap, so the lift's height above the floor changes between clips 02 and 03. The start pictures need the same physical sense check Stage gives plans: the lift sits at floor level, so the brackets must be reached from the side or seen in a close insert, not by crawling under.
+- **The tag changes shape when it flips** (wide card held, tall card hanging), as well as its print breaking up (point 5).
+
+You are thinking about how to go on before the next clips.

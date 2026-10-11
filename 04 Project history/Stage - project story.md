@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 11 October 2026 (log entry 48).
+Last updated: 11 October 2026 (log entry 49).
 
 ## The goal
 
@@ -327,6 +327,11 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - Not yet known: how the voices sound (accent, clarity, acting). This needs your ears.
     - Files: `Project notes/48 Opening sequence on fal - first cut.md`; note 41, section 13 (items 78 to 82); lesson 15 in `43 Lessons.md`; the cut "48 Opening sequence - first cut.mp4" and "48 Opening sequence - pictures used.jpg" (outside git).
 
+49. **You watched the opening sequence: "Everything is much better."**
+    - Two faults: Iona ends up under a lift that has no room underneath it (clip 03's start picture raised the car to make a gap), and the tag changes shape when it flips.
+    - You want to think about how to go on before the next clips. Nothing more was made.
+    - Files: note 48 (your verdict section).
+
 ## Next step
 
-Watch and listen to the 31-second cut and tell me what works and what doesn't, as you did for the first test. If it holds up, I carry on with clips 04 onward the same way, two takes per clip. Two stopped pods on RunPod still cost about $1.60 a day each: tell me whether to delete them, and change your RunPod key on RunPod.
+You decide how to go on with the opening. Meanwhile, two stopped pods on RunPod still cost about $1.60 a day each: tell me whether to delete them, and change your RunPod key on RunPod.
