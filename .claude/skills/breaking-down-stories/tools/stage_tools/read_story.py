@@ -48,7 +48,8 @@ from pathlib import Path
 from .project_files import (CHOICES_FILE, MACHINE_FOLDER, ORIGINAL_FOLDER, SCENE_LIST_FILE, START_HERE, Project,
                             StageStop, detect_surface, fingerprint_of_file, history_run_folder, keep_in_history,
                             now, today)
-from .record_format import (DIVIDER_LINE, Record, TextBlock, add_record, ensure_end_line, make_record,
+from .record_format import (DIVIDER_LINE, GOLD_SCENE_FILE, TEMPLATES_FOLDER, Record, TextBlock, add_record,
+                            ensure_end_line, make_record,
                             merge_copies, new_record_file, normalise_word, parse_file, parse_line_numbers,
                             parse_quote_anchor, parse_story_point, split_list, write_file)
 
@@ -220,7 +221,7 @@ GAME_MARKERS = [re.compile(r"^\s*->\s*\w"), re.compile(r"^===\s*\w+\s*===\s*$"),
 # ---------------------------------------------------------------- small helpers
 
 def constant(constants, name, default=None):
-    """The value of a named constant in rules/constants.json (the 5.8 table or the blueprint's other numbers)."""
+    """The value of a named constant in _config/rules/constants.json (the 5.8 table or the blueprint's other numbers)."""
     constants = constants or {}
     entry = constants.get("constants", {}).get(name)
     if entry is None:
@@ -3014,7 +3015,7 @@ def selftest_identifiers(project_record, story_map, constants):
 
 
 def shot_template(skill_folder):
-    path = Path(skill_folder) / "templates" / "11 Scene.md"
+    path = Path(skill_folder) / TEMPLATES_FOLDER / "11 Scene.md"
     if not path.is_file():
         return "### SHOT <ID> <a short plain title>\n(the SHOT template is missing from this copy of the skill)"
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -3130,7 +3131,7 @@ def prepare_selftest(context, project, story_map, scene, identifiers, inbox):
             f"in one reply, to {MACHINE_FOLDER}/inbox/{SELFTEST_UNIT}.md.")
     issued = selftest_issued_ids(scene)
     example = ""
-    example_path = Path(context.skill_folder) / "examples" / "01 The Catch - scene 10.md"
+    example_path = Path(context.skill_folder) / GOLD_SCENE_FILE
     if example_path.is_file():
         text = example_path.read_text(encoding="utf-8").splitlines()
         start = next((index for index, line in enumerate(text) if line.startswith("### SHOT SC10-SH150")), None)

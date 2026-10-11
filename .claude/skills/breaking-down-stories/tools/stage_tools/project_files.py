@@ -45,8 +45,8 @@ from pathlib import Path
 from .checks_form import (INBOX_CHECKS, ChoiceBook, FormContext, apply_tidy_fixes, locked, make_problem,
                           resolve_field, run_form_checks, setvalue_target_type)
 from .record_format import (DIVIDER_LINE, FieldLine, OtherLine, Record, TextBlock, add_record, ensure_end_line,
-                            load_json, load_skill_data, merge_copies, new_record_file, normalise_word, parse_file,
-                            quote_for_message, split_item, split_list, write_file)
+                            STEPS_FILE, load_json, load_skill_data, merge_copies, new_record_file, normalise_word,
+                            parse_file, quote_for_message, split_item, split_list, write_file)
 
 MACHINE_FOLDER = "For machines - do not edit"
 START_HERE = "00 Start here.md"
@@ -295,7 +295,7 @@ def find_project(explicit=None, start=None):
                         "Give the folder of a project made with stage.py new.")
     if is_project(start):
         return start
-    # At the Stage folder itself, projects live only in My breakdowns/: the kit's example folder (09 Example ...) is
+    # At the Stage folder itself, projects live only in My breakdowns/: the kit's example folder (02 Example ...) is
     # a project too, but it is for reading and must never be picked by a command run from here.
     stage_folder = repository_root(start)
     at_stage_folder = stage_folder is not None and stage_folder.resolve() == start
@@ -854,7 +854,7 @@ def plural(count, word):
 
 def load_steps(skill_folder=None):
     try:
-        return load_json("schema/steps.json", skill_folder)
+        return load_json(STEPS_FILE, skill_folder)
     except (OSError, ValueError):
         return {}
 

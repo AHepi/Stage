@@ -1,22 +1,22 @@
 """The acceptance test of work package 13: the user documents and the kit (blueprint 14.2, row WP13; 2.1, 2.3, 2.5, 13).
 
 What it proves, from the files as they are in the repository:
-- 07 Chat kit holds exactly the 13 files of blueprint 2.5, "00 Paste into instructions.txt" has at most 6,000
-  characters (rules/limits.json), and each knowledge and step-group file is within a quarter of its 2.5 target, with
+- 03 Kits to upload/Chat kit holds exactly the 13 files of blueprint 2.5, "00 Paste into instructions.txt" has at most 6,000
+  characters (_config/rules/limits.json), and each knowledge and step-group file is within a quarter of its 2.5 target, with
   the six knowledge files together about 60,000 words (these sizes are reported with their real numbers);
-- the chat kit, AGENTS.md and reference/03 Field guide.md are up to date: build-kit run again into a scratch folder
+- the chat kit, AGENTS.md and references/formats/03 Field guide.md are up to date: build-kit run again into a scratch folder
   gives the same bytes, ZIPs included;
-- 07 Tools.zip holds the tools and the skill's steps, cards, templates, examples, reference, schema, rules, adapters
+- 07 Tools.zip holds the tools and the skill's stages, cards, templates, examples, formats, schema, rules, adapters
   and library digests under breaking-down-stories/, no caches and none of the long research files; unzipped in a
   scratch folder, its stage.py lists build-kit and runs new, read and a handout on a small story;
-- 08 Skill for Claude apps.zip has breaking-down-stories/SKILL.md at its top folder, SKILL.md's front matter names
+- 03 Kits to upload/Skill for Claude apps.zip has breaking-down-stories/SKILL.md at its top folder, SKILL.md's front matter names
   the skill, and its library is cut to the digests, the D files and the three notes;
 - AGENTS.md is SKILL.md's body with every skill path written out, and every path it names exists;
-- the field guide names every record type and every field of schema/schema.json;
-- 09 Example - The Catch, scene 10 holds exactly the files blueprint 2.3 names, its scene file is the gold's, the
+- the field guide names every record type and every field of _config/schema/schema.json;
+- 02 Example - The Catch, scene 10 holds exactly the files blueprint 2.3 names, its scene file is the gold's, the
   book is there, and nothing in it holds a local path or an email address; its plain parts and book pass the
   checker's own word rules;
-- the guides (README.md, CLAUDE.md, 01 to 06) are within the lengths of 2.3, pass the checker's own word rules
+- the guides (README.md, CLAUDE.md, 01 to 06 in 01 Start here) are within the lengths of 2.3, pass the checker's own word rules
   (WORDS-02 retired words, WORDS-04 abbreviations and codes, the functions check_records uses), and every kit file
   they name exists;
 - no file this package writes holds an email address, and, given --story, none holds more than a tenth of the story.
@@ -44,12 +44,14 @@ sys.path.insert(0, str(TOOLS))
 from stage_tools.checks_craft_reasons_words import abbreviations_in_text, retired_words_in_text  # noqa: E402
 from stage_tools.record_format import DIVIDER_LINE  # noqa: E402
 
-WORDS = json.loads((SKILL / "rules" / "words.json").read_text(encoding="utf-8"))
-LIMITS = json.loads((SKILL / "rules" / "limits.json").read_text(encoding="utf-8"))
-KIT = REPOSITORY / "07 Chat kit"
-SKILL_ZIP = REPOSITORY / "08 Skill for Claude apps.zip"
-EXAMPLE = REPOSITORY / "09 Example - The Catch, scene 10"
-FIELD_GUIDE = SKILL / "reference" / "03 Field guide.md"
+WORDS = json.loads((SKILL / "_config" / "rules" / "words.json").read_text(encoding="utf-8"))
+LIMITS = json.loads((SKILL / "_config" / "rules" / "limits.json").read_text(encoding="utf-8"))
+KITS = "03 Kits to upload"
+KIT = REPOSITORY / KITS / "Chat kit"
+SKILL_ZIP = REPOSITORY / KITS / "Skill for Claude apps.zip"
+EXAMPLE = REPOSITORY / "02 Example - The Catch, scene 10"
+GUIDES_FOLDER = "01 Start here"
+FIELD_GUIDE = SKILL / "references" / "formats" / "03 Field guide.md"
 AGENTS = REPOSITORY / "AGENTS.md"
 TOP = "breaking-down-stories/"
 
@@ -70,13 +72,13 @@ KNOWLEDGE_TOTAL_ABOUT = 60000
 TOLERANCE = 0.25
 # Blueprint 2.3: the guides and their lengths in English words.
 GUIDES = {
-    "README.md": (150, 250), "CLAUDE.md": (1, 299), "01 Read me first.md": (700, 1000),
-    "02 Using Claude.md": (900, 1300), "03 Using ChatGPT.md": (700, 1000),
-    "04 Using Gemini or another chat app.md": (800, 1100), "05 How to read your breakdown.md": (1000, 1400),
-    "06 Word list.md": (1200, 1600),
+    "README.md": (150, 250), "CLAUDE.md": (1, 299), f"{GUIDES_FOLDER}/01 Read me first.md": (700, 1000),
+    f"{GUIDES_FOLDER}/02 Using Claude.md": (900, 1300), f"{GUIDES_FOLDER}/03 Using ChatGPT.md": (700, 1000),
+    f"{GUIDES_FOLDER}/04 Using Gemini or another chat app.md": (800, 1100),
+    f"{GUIDES_FOLDER}/05 How to read your breakdown.md": (1000, 1400), f"{GUIDES_FOLDER}/06 Word list.md": (1200, 1600),
 }
 USER_GUIDES = [name for name in GUIDES if name != "CLAUDE.md"]
-# Blueprint 2.3: 09 Example holds only these, plus the book made from them.
+# Blueprint 2.3: 02 Example holds only these, plus the book made from them.
 EXAMPLE_2_3 = {"00 Start here.md", "01 Choices.md", "04 Scene list.md", "07 Characters and voices.md",
                "08 Places and things.md", "09 Continuity.md", "10 Film rules.md",
                "11 Scenes/Scene 10 - Saye's kitchen.md", "15 The breakdown/The breakdown.md",
@@ -136,7 +138,7 @@ def group(title):
 
 # ---------------------------------------------------------------- the chat kit
 
-@group("07 Chat kit holds exactly the 13 files of blueprint 2.5")
+@group("the chat kit holds exactly the 13 files of blueprint 2.5")
 def kit_files():
     names = sorted(path.name for path in KIT.iterdir())
     wanted = sorted(name for name, _ in KIT_2_5)
@@ -191,9 +193,9 @@ def kit_up_to_date():
         assert FIELD_GUIDE.read_bytes() == guide_before, "the field guide changed when built again: it was stale"
         different = []
         for name, _ in KIT_2_5:
-            if (scratch / "07 Chat kit" / name).read_bytes() != (KIT / name).read_bytes():
+            if (scratch / KITS / "Chat kit" / name).read_bytes() != (KIT / name).read_bytes():
                 different.append(name)
-        for name in ("08 Skill for Claude apps.zip", "AGENTS.md"):
+        for name in (f"{KITS}/Skill for Claude apps.zip", "AGENTS.md"):
             if (scratch / name).read_bytes() != (REPOSITORY / name).read_bytes():
                 different.append(name)
         assert not different, "differs from a fresh build (run build-kit): " + ", ".join(different)
@@ -207,18 +209,19 @@ def tools_zip_layout():
     with zipfile.ZipFile(KIT / "07 Tools.zip") as archive:
         names = archive.namelist()
     assert all(name.startswith(TOP) for name in names), "a file outside breaking-down-stories/"
-    tops = {name[len(TOP):].split("/")[0] for name in names}
-    for needed in ("SKILL.md", "tools", "schema", "rules", "adapters", "steps", "cards", "templates", "examples",
-                   "reference", "library"):
-        assert needed in tops, f"no {needed}"
-    for needed in ("tools/stage.py", "tools/stage_tools/record_format.py", "schema/schema.json",
-                   "steps/08 Shot details.md", "reference/03 Field guide.md", "examples/01 The Catch - scene 10.md"):
+    for needed in ("SKILL.md", "tools/", "_config/schema/", "_config/rules/", "_config/adapters/", "stages/",
+                   "references/cards/", "references/templates/", "references/examples/", "references/formats/",
+                   "references/library/"):
+        assert any(name.startswith(TOP + needed) for name in names), f"no {needed}"
+    for needed in ("tools/stage.py", "tools/stage_tools/record_format.py", "_config/schema/schema.json",
+                   "stages/08 Shot details/CONTEXT.md", "references/formats/03 Field guide.md",
+                   "references/examples/01 The Catch - scene 10.md"):
         assert TOP + needed in names, f"no {needed}"
     assert not [name for name in names if "__pycache__" in name or name.endswith(".pyc")], "caches inside"
-    library = [name[len(TOP):] for name in names if name.startswith(TOP + "library/")]
-    long_files = [name for name in library if re.match(r"^library/[A-D]\d+ ", name)]
+    library = [name[len(TOP):] for name in names if name.startswith(TOP + "references/library/")]
+    long_files = [name for name in library if re.match(r"^references/library/[A-D]\d+ ", name)]
     assert not long_files, f"research files inside: {long_files[:2]}"
-    assert any(name.startswith("library/digests/") for name in library), "no digests"
+    assert any(name.startswith("references/library/digests/") for name in library), "no digests"
     return f"{len(names)} files; library: {len(library)} (digests and notes)"
 
 
@@ -252,7 +255,7 @@ def tools_zip_runs():
     return "help, new, read and handout U-01-ODDLINES ran from the unzipped copy"
 
 
-@group("08 Skill for Claude apps.zip: breaking-down-stories/SKILL.md at its top folder; library cut to digests, D files and notes")
+@group("Skill for Claude apps.zip: breaking-down-stories/SKILL.md at its top folder; library cut to digests, D files and notes")
 def skill_zip_layout():
     with zipfile.ZipFile(SKILL_ZIP) as archive:
         names = archive.namelist()
@@ -261,12 +264,13 @@ def skill_zip_layout():
     assert all(name.startswith(TOP) for name in names), "a file outside breaking-down-stories/"
     assert re.search(r"^name: breaking-down-stories$", skill_text, re.MULTILINE), "SKILL.md's front matter has no name"
     assert not [name for name in names if "__pycache__" in name or name.endswith(".pyc")], "caches inside"
-    library = [name[len(TOP):] for name in names if name.startswith(TOP + "library/")]
-    allowed = [name for name in library if name.startswith("library/digests/")
-               or re.match(r"^library/(D\d+ |0\d )", name)]
+    library = [name[len(TOP):] for name in names if name.startswith(TOP + "references/library/")]
+    allowed = [name for name in library if name.startswith("references/library/digests/")
+               or re.match(r"^references/library/(D\d+ |0\d )", name)]
     assert len(allowed) == len(library), f"other library files: {sorted(set(library) - set(allowed))[:3]}"
-    for needed in ("steps/00 Start.md", "cards/14 Shot design.md", "tools/stage.py", "schema/schema.json",
-                   "reference/03 Field guide.md", "templates/11 Scene.md"):
+    for needed in ("stages/00 Start/CONTEXT.md", "references/cards/14 Shot design.md", "tools/stage.py",
+                   "_config/schema/schema.json", "references/formats/03 Field guide.md",
+                   "references/templates/11 Scene.md"):
         assert TOP + needed in names, f"no {needed}"
     size = SKILL_ZIP.stat().st_size
     return f"{len(names)} files, {size // 1024:,} KB; library {len(library)} files"
@@ -292,9 +296,9 @@ def agents_file():
     return "every section of SKILL.md; every written-out path exists"
 
 
-@group("reference/03 Field guide.md names every record type and every field of schema.json")
+@group("references/formats/03 Field guide.md names every record type and every field of schema.json")
 def field_guide():
-    schema = json.loads(read(SKILL / "schema" / "schema.json"))
+    schema = json.loads(read(SKILL / "_config" / "schema" / "schema.json"))
     text = read(FIELD_GUIDE)
     missing = []
     for type_name, record_type in schema["record_types"].items():
@@ -310,13 +314,13 @@ def field_guide():
     return f"{len(schema['record_types'])} record types, {fields} fields"
 
 
-# ---------------------------------------------------------------- 09 Example
+# ---------------------------------------------------------------- 02 Example
 
-@group("09 Example holds exactly the files of blueprint 2.3; its scene file is the gold's; no local path or address")
+@group("02 Example holds exactly the files of blueprint 2.3; its scene file is the gold's; no local path or address")
 def example_folder():
     files = {path.relative_to(EXAMPLE).as_posix() for path in EXAMPLE.rglob("*") if path.is_file()}
     assert files == EXAMPLE_2_3, f"extra {sorted(files - EXAMPLE_2_3)}, missing {sorted(EXAMPLE_2_3 - files)}"
-    gold = SKILL / "examples" / "01 The Catch - scene 10.md"
+    gold = SKILL / "references" / "examples" / "01 The Catch - scene 10.md"
     assert (EXAMPLE / "11 Scenes/Scene 10 - Saye's kitchen.md").read_bytes() == gold.read_bytes(), \
         "the scene file differs from the gold"
     scene_list = read(EXAMPLE / "04 Scene list.md").split(DIVIDER_LINE, 1)[1]
@@ -332,7 +336,7 @@ def example_folder():
     return f"{len(files)} files"
 
 
-@group("09 Example: the plain parts and the book pass the checker's word rules")
+@group("02 Example: the plain parts and the book pass the checker's word rules")
 def example_words():
     problems = []
     for path in sorted(EXAMPLE.rglob("*.md")):
@@ -352,7 +356,7 @@ def guide_lengths():
     lines, outside = [], []
     for name, (low, high) in GUIDES.items():
         words = english_words(read(REPOSITORY / name))
-        lines.append(f"{name.split(' ')[0]} {words:,}")
+        lines.append(f"{Path(name).name.split(' ')[0]} {words:,}")
         if not low <= words <= high:
             outside.append(f"{name}: {words:,} words, not {low:,} to {high:,}")
     info("guide lengths: " + "; ".join(lines))
@@ -382,8 +386,10 @@ def guide_names():
             if re.match(r"^(0[0-9]|1[0-2]) (Paste|House|Cards|Templates|Checks|Example|Tools|Steps)", clean):
                 if clean not in kit_names and not (REPOSITORY / clean).exists():
                     missing.append(f"{name}: {mentioned}")
-        for folder in ("07 Chat kit", "08 Skill for Claude apps.zip", "09 Example - The Catch, scene 10",
-                       "My stories", "My breakdowns"):
+        # the folders of the top level as they are now, and the old names (which must no longer be named)
+        for folder in (GUIDES_FOLDER, "02 Example - The Catch, scene 10", KITS, f"{KITS}/Chat kit",
+                       f"{KITS}/Skill for Claude apps.zip", "04 Project history", "My stories", "My breakdowns",
+                       "07 Chat kit", "08 Skill for Claude apps.zip", "09 Example - The Catch, scene 10"):
             if folder in text:
                 assert (REPOSITORY / folder).exists(), f"{name} names {folder}, which does not exist"
     assert not missing, f"names not in the kit: {missing[:3]}"
@@ -394,8 +400,8 @@ def guide_names():
         assert needed in claude, f"CLAUDE.md does not say {needed!r}"
     readme = read(REPOSITORY / "README.md")
     assert "01 Read me first" in readme and "Not mint." in readme, "README.md lacks the example or the pointer"
-    first = read(REPOSITORY / "01 Read me first.md")
-    gold = read(SKILL / "examples" / "01 The Catch - scene 10.md")
+    first = read(REPOSITORY / GUIDES_FOLDER / "01 Read me first.md")
+    gold = read(SKILL / "references" / "examples" / "01 The Catch - scene 10.md")
     for line in re.findall(r"^shot \d{3}, .+$", first, re.MULTILINE):
         assert line.split(":")[0] in gold, f"{line[:30]} is not a line of the gold scene"
     return "kit names, folders, CLAUDE.md's required sentences, README's example and pointer, 01's gold lines"
@@ -426,7 +432,7 @@ def no_whole_story(story):
     story_lines = {line.strip() for line in read(story).splitlines() if len(line.strip()) >= 25}
     limit = len(story_lines) // 10
     texts = {name: read(REPOSITORY / name) for name in GUIDES}
-    texts.update({f"07 Chat kit/{name}": read(KIT / name) for name, _ in KIT_2_5 if not name.endswith(".zip")})
+    texts.update({f"Chat kit/{name}": read(KIT / name) for name, _ in KIT_2_5 if not name.endswith(".zip")})
     for path in EXAMPLE.rglob("*"):
         if path.is_file():
             texts[str(path.relative_to(REPOSITORY))] = path.read_text(encoding="utf-8", errors="replace")

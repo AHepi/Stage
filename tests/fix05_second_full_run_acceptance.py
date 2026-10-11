@@ -2,7 +2,7 @@
 "fix list.md" of that run, entries F01 to F63; the fixes are written up in Project notes 40).
 
 What it proves, one group per problem (instruction-text fixes share one group), on small fixtures only: copies of the
-WP12a gold (examples/01 and 02, scene 10), the scene 10 excerpt, and short texts written here. No group reads a whole
+WP12a gold (references/examples/01 and 02, scene 10), the scene 10 excerpt, and short texts written here. No group reads a whole
 story. It borrows its helpers from fix02_full_run_acceptance.py.
 
 Groups:
@@ -138,7 +138,7 @@ def side_choice(scratch):
     code, output = stage(["--project", project, "check", "--all"])
     assert code == 0 and not error_lines(output, "FORM-11"), error_lines(output)
     phrase = "its SETVALUE names only the sides it decides"
-    assert phrase in (SKILL / "steps" / "05 Continuity.md").read_text(encoding="utf-8")
+    assert phrase in (SKILL / "stages" / "05 Continuity" / "CONTEXT.md").read_text(encoding="utf-8")
     return "4 sides kept, 2 set; the corrected SETVALUE applied again; no FORM-11"
 
 
@@ -165,7 +165,7 @@ def world_text_on_nothing(scratch):
     parts = {name: how for name, _, how in time_floor(breakdown, shot).text_parts}
     assert "mirrored" in parts.get("TX-NOTICE", ""), parts
     phrase = "a sign in the world is on its place; only titles and captions are on none"
-    assert phrase in (SKILL / "steps" / "04 Characters, places and things.md").read_text(encoding="utf-8")
+    assert phrase in (SKILL / "stages" / "04 Characters, places and things" / "CONTEXT.md").read_text(encoding="utf-8")
     return f"the notice in the reversed kitchen reads mirrored ({parts['TX-NOTICE']}); the title stays normal"
 
 
@@ -576,7 +576,7 @@ def film_pass_check_unit(scratch):
     code, output = stage(["--project", project, "next"])
     assert "step 11 of 12" in output.splitlines()[0], output[:300]
     phrase = "`next` waits on it until it passes"
-    assert phrase in (SKILL / "steps" / "09 Film pass.md").read_text(encoding="utf-8")
+    assert phrase in (SKILL / "stages" / "09 Film pass" / "CONTEXT.md").read_text(encoding="utf-8")
     return "next waits on check --step 9 while FILM-08 is open, then goes on"
 
 
@@ -594,7 +594,7 @@ def invented_in_list(scratch):
     texts = edit(texts, "context", "TEXT TX-TITLE-CATCH", add_after=notice)
     texts = edit(texts, "scene", "SHOTLIST SC10-LIST", "| subject: CH-ELI | time: 3.5 |",
                  "| subject: CH-ELI, TX-NOTICE | time: 3.5 |")
-    assert "CRAFT-14" in json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))["steps"][7][
+    assert "CRAFT-14" in json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))["steps"][7][
         "checks"], "CRAFT-14 is not among step 7's checks"
     found = helpers.lines_of(helpers.checked(texts, ["CRAFT-14"], story=False, step=7), "CRAFT-14")
     assert found and found[0].record == "SC10-LIST" and "TX-NOTICE" in str(found[0]), found
@@ -603,7 +603,7 @@ def invented_in_list(scratch):
     found = helpers.lines_of(helpers.checked(texts, ["CRAFT-14"], story=False, step=7), "CRAFT-14")
     assert not found, found
     phrase = "in every scene that shows it, even one invented at an earlier step"
-    assert phrase in (SKILL / "steps" / "07 Scene design and shot list.md").read_text(encoding="utf-8")
+    assert phrase in (SKILL / "stages" / "07 Scene design and shot list" / "CONTEXT.md").read_text(encoding="utf-8")
     return "the unlisted invented sign fails at step 7; listed, it passes"
 
 
@@ -622,7 +622,7 @@ def step_7_floors_and_beat_states(scratch):
     if helpers.excerpt_story() is None:
         return "skip"
     assert found and found[0].level == "W" and "SC10-SH150" in str(found[0]), found
-    assert "TIME-01" in json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))["steps"][7][
+    assert "TIME-01" in json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))["steps"][7][
         "checks"], "TIME-01 is not among step 7's checks"
     later = ("### STATE PR-FLASK.S04 Set down for good\n- element: PR-FLASK\n- from: SC10 | line: 489\n"
              "- state_line: the flask on the counter, its cap off\n- origin: invented\n")
@@ -651,8 +651,8 @@ def rung_hold(scratch):
     found = [problem for problem in helpers.checked(texts, ["FORM-04"], story=False, step=6).problems
              if problem.check_id == "FORM-04" and "hold" in str(problem)]
     assert not found, found
-    phrases = {"steps/06 Film rules.md": "never on black or a card",
-               "steps/07 Scene design and shot list.md": "a rung on another beat sets that beat's shot"}
+    phrases = {"stages/06 Film rules/CONTEXT.md": "never on black or a card",
+               "stages/07 Scene design and shot list/CONTEXT.md": "a rung on another beat sets that beat's shot"}
     missing = [name for name, phrase in phrases.items() if phrase not in (SKILL / name).read_text(encoding="utf-8")]
     assert not missing, missing
     return "short read as medium with a note, medium kept; the two sentences written"
@@ -774,7 +774,7 @@ def mark_inside_object(scratch):
 def text_template_quote(scratch):
     from stage_tools.checks_form import FormContext, run_form_checks
     from stage_tools.record_format import parse_text
-    template = (SKILL / "templates" / "08 Places and things.md").read_text(encoding="utf-8")
+    template = (SKILL / "references" / "templates" / "08 Places and things.md").read_text(encoding="utf-8")
     assert '| quote: "<the exact words inside the line' in template
     text = ('### TEXT TX-STOP A stop sign\n- kind: sign\n- words_from: 400 | quote: "STOP"\n- on: none\n'
             "- origin: story\n\nEND OF FILE | Test | 1 records\n")
@@ -790,43 +790,43 @@ def text_template_quote(scratch):
 @group("F31, F34-F52, F53: the instructions say what the second full run had to guess (one phrase per entry)")
 def instructions(scratch):
     phrases = {
-        "steps/04 Characters, places and things.md": [
+        "stages/04 Characters, places and things/CONTEXT.md": [
             "writes \"from scene NN\" in its `material`",                                  # F31
             "sends only its END line (`0 records`)",                                        # F45 (20)
             "the things unit also sends the mirror RULE's `governs` again",                 # F45 (13, 23)
             "adding a text RULE for ordinary printed words in the world",                    # F45 (22)
             "(`sets: none`; step 5 reads the answer into the state's sides)"],              # F45 (16)
-        "templates/08 Places and things.md": ["\"from scene NN\" when it arrives later"],   # F31
-        "steps/07 Scene design and shot list.md": [
+        "references/templates/08 Places and things.md": ["\"from scene NN\" when it arrives later"],   # F31
+        "stages/07 Scene design and shot list/CONTEXT.md": [
             "alone, or when the world acts, name the person for both",                      # F34
             "a speech too long for one item is split by quoting",                           # F37
             "a flaw in an action line goes in the beat's `note`",                           # F46 (107)
             "written even when nobody moves",                                               # F46 (128)
             "the list unit sends it again when the list's average shot length lands elsewhere",  # F46 (101)
             "a black inside the scene takes a normal number with `kind: black`"],           # F48
-        "steps/08 Shot details.md": [
+        "stages/08 Shot details/CONTEXT.md": [
             "`at` and `faces` may be left out where a set plan exists",                      # F35
             "`origin: story` when the line states it, else `inferred`",                     # F39
             "numbers need not follow story order",                                          # F39
             "a fade-in before the first shot is `SC10-C000`",                               # F48
             "The book prints `why` and `note` for the user"],                               # F53 (d)
-        "cards/05 Characters.md": ["tempo: slow` (the body's tempo", "`skin_light: open` until the casting choice"],  # F36
-        "cards/08 World, style and genre.md": ["of any one scene's light"],                 # F36
-        "cards/07 Places, things and motifs.md": ["On its own shot a plant's or payoff's emphasis wins"],  # F41
-        "reference/07 Report and message formats.md": ["Left from group 2: 2 warnings, in 13 Health check"],  # F42
-        "templates/22 Rights and credits.md": ["but step 0 already writes it: text"],    # F43, X15
-        "templates/10 Film rules.md": ["code writes it from that choice, never type it on a code surface"],  # F44
-        "steps/01 Read the story.md": ["(with none, only its END line, `0 records`)"],     # F45 (3)
-        "cards/01 Reading the whole story.md": ["written in its `story_job`"],              # F45 (7)
-        "cards/17 Screens, text and in-story cameras.md": ["joined by a `continue` CUT",
+        "references/cards/05 Characters.md": ["tempo: slow` (the body's tempo", "`skin_light: open` until the casting choice"],  # F36
+        "references/cards/08 World, style and genre.md": ["of any one scene's light"],                 # F36
+        "references/cards/07 Places, things and motifs.md": ["On its own shot a plant's or payoff's emphasis wins"],  # F41
+        "references/formats/07 Report and message formats.md": ["Left from group 2: 2 warnings, in 13 Health check"],  # F42
+        "references/templates/22 Rights and credits.md": ["but step 0 already writes it: text"],    # F43, X15
+        "references/templates/10 Film rules.md": ["code writes it from that choice, never type it on a code surface"],  # F44
+        "stages/01 Read the story/CONTEXT.md": ["(with none, only its END line, `0 records`)"],     # F45 (3)
+        "references/cards/01 Reading the whole story.md": ["written in its `story_job`"],              # F45 (7)
+        "references/cards/17 Screens, text and in-story cameras.md": ["joined by a `continue` CUT",
                                                           "the in-story camera's, in metres"],  # F47
-        "cards/12 Staging and composition.md": ["one it implies is `origin: inferred`",    # F46 (143)
+        "references/cards/12 Staging and composition.md": ["one it implies is `origin: inferred`",    # F46 (143)
                                                 "Two people side by side in a car"],        # F49
-        "cards/10 Camera.md": ["in open space with no up or down"],                         # F49
-        "steps/10 Check and estimate.md": ["a fault no question asked about goes in the unit's report",
+        "references/cards/10 Camera.md": ["in open space with no up or down"],                         # F49
+        "stages/10 Check and estimate/CONTEXT.md": ["a fault no question asked about goes in the unit's report",
                                            "a \"no\" settles only what the user read"],     # F50
         "SKILL.md": ["a refused apply fixed in place is no round"],                         # F51
-        "steps/16 Resume and recovery.md": ["N is the number apply names"],                 # F51, X15
+        "stages/16 Resume and recovery/CONTEXT.md": ["N is the number apply names"],                 # F51, X15
     }
     missing = [(name, phrase) for name, wanted in phrases.items() for phrase in wanted
                if phrase not in (SKILL / name).read_text(encoding="utf-8")]
@@ -1285,8 +1285,8 @@ def text_none_keeps_featured_text(scratch):
     featured = edit(dict(texts), "scene", "SHOT SC10-SH020", "- thing: PR-FLASK.S03 | emphasis: 1 |",
                     "- thing: PR-FLASK.S03 | emphasis: 2 |")
     assert floor_texts(featured) == ["TX-FLASK-LABEL"], floor_texts(featured)
-    quoted = edit(dict(texts), "scene", "SHOT SC10-SH020", "shows: the flask held still in his fist,",
-                  "shows: the flask held still in his fist, KEEP FROZEN AT ALL TIMES on its side,")
+    quoted = edit(dict(texts), "scene", "SHOT SC10-SH020", "shows: the flask in his fist,",
+                  "shows: the flask in his fist, KEEP FROZEN AT ALL TIMES on its side,")
     assert floor_texts(quoted) == ["TX-FLASK-LABEL"], floor_texts(quoted)
     return "unfeatured: no floor; at emphasis 2 or quoted in a moment: the label's floor"
 
@@ -1457,7 +1457,7 @@ def move_marks_checked(scratch):
 # ---------------------------------------------------------------- X15: the instruction wording
 
 @group("X15: apply names the next repair file's number; step 16 says N is that number; card 05 names one tempo per "
-       "place; the rights template says step 0 writes evidence early; reference/01 names apply's two merges")
+       "place; the rights template says step 0 writes evidence early; references/formats/01 names apply's two merges")
 def instruction_wording_after_cross_examination(scratch):
     project = gold_command_project(scratch, "x15 fix numbers")
     review = ("### REVIEW RV-SC10 Scene 10's review\n- scope: SC10\n"
@@ -1467,13 +1467,13 @@ def instruction_wording_after_cross_examination(scratch):
     code, output = stage(["--project", project, "apply", write_inbox(project, "U-10-Q01 - fix 1.md", review)])
     assert code == 0 and 'Another repair of it goes in "U-10-Q01 - fix 2.md"' in output, output[-500:]
     texts = {name: (SKILL / name).read_text(encoding="utf-8") for name in (
-        "steps/16 Resume and recovery.md", "cards/05 Characters.md", "templates/22 Rights and credits.md",
-        "reference/01 Record format.md")}
-    assert "N is the number apply names" in texts["steps/16 Resume and recovery.md"]
-    assert "her quick hands go in `tempo`" not in texts["cards/05 Characters.md"] and \
-        'the field `tempo` says "fast hands, slow body"' in texts["cards/05 Characters.md"]
-    assert "<quick, written at step 0" not in texts["templates/22 Rights and credits.md"]
-    assert "except a review's answers and a side choice's sides" in texts["reference/01 Record format.md"]
+        "stages/16 Resume and recovery/CONTEXT.md", "references/cards/05 Characters.md", "references/templates/22 Rights and credits.md",
+        "references/formats/01 Record format.md")}
+    assert "N is the number apply names" in texts["stages/16 Resume and recovery/CONTEXT.md"]
+    assert "her quick hands go in `tempo`" not in texts["references/cards/05 Characters.md"] and \
+        'the field `tempo` says "fast hands, slow body"' in texts["references/cards/05 Characters.md"]
+    assert "<quick, written at step 0" not in texts["references/templates/22 Rights and credits.md"]
+    assert "except a review's answers and a side choice's sides" in texts["references/formats/01 Record format.md"]
     return "fix 1, then fix 2 named by apply; the four texts agree with the code and the schema"
 
 

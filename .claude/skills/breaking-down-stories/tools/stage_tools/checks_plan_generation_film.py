@@ -15,6 +15,9 @@ In plain words:
   three named sounds;
 - importing this module also imports film_pass.py, which registers FILM-01 to FILM-12 and the film strip
   (check_records loads this module under its planned name, so nothing else needs to list film_pass).
+- it also imports checks_clip_book.py, which registers ROUTE-01 ... for a route's clip book (MiniMax H3 in
+  ComfyUI, Project notes 43). A clip book's machine file is marked "kind": "clip_book"; the GEN checks leave it to
+  the ROUTE checks, so GEN-05 ("motion only") and the other GEN checks never apply to that route.
 
 Where the GEN checks read the prompts. stage.py compile (work package 8) writes each scene's compiled prompts as
 JSON files in "For machines - do not edit/prompts/". Each file holds one pack:
@@ -35,13 +38,13 @@ are in the prompt; without "subjects" (optional, state IDs), the shot's subject 
 compile can also call lint_packs(run, packs, forced=True) on packs it holds in memory: with forced (compile
 --force-model), GEN-02 and GEN-10 come out as notes.
 
-Model facts come from adapters/video_models.json and adapters/image_models.json (work package 8), in the shape
+Model facts come from _config/adapters/video_models.json and _config/adapters/image_models.json (work package 8), in the shape
 of blueprint 8.2. While those files are missing, the checks that need them skip with a plain reason (tests give
 stand-in facts through use_model_facts). Checks only read; every problem line has 7.2's form (level, check ID,
-record, field, what is wrong, then the fix). Numbers come from rules/constants.json by name
+record, field, what is wrong, then the fix). Numbers come from _config/rules/constants.json by name
 (step_outline_tolerance, clip_speech_rule, handles_s, model_facts_max_age_days, on_screen_speakers_per_clip_max,
-cheap_test_above_usd_per_take, named_sounds_per_prompt_max) and rules/limits.json (tokens_per_word_estimate);
-word lists from rules/words.json (banned_prompt_words, allowed_negations).
+cheap_test_above_usd_per_take, named_sounds_per_prompt_max) and _config/rules/limits.json (tokens_per_word_estimate);
+word lists from _config/rules/words.json (banned_prompt_words, allowed_negations).
 
 Standard library only.
 
@@ -65,18 +68,19 @@ from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
 from . import film_pass  # noqa: F401  (registers FILM-01 to FILM-12 and the film pass report section)
+from . import checks_clip_book  # noqa: F401  (registers ROUTE-01 ... for the clip book of a route)
 from .check_records import register_check, same_scene, scene_of
 from .derive_fields import (allowed_lengths, constant, element_of, held_take, number_of, project_prompt_swaps,
                             round_up_to, speech_words_part, swap_prompt_words, swap_sources_banned)
 from .film_pass import (MACHINE_FOLDER, breakdown_of, ends_before, film_scenes, id_range_pairs, in_pairs,
                         is_empty, is_kept, number_words, pairs_words, place_of, report, story_point_position)
-from .record_format import load_json, normalise_word, split_item, split_list
+from .record_format import LIMITS_FILE, adapter_file, load_json, normalise_word, split_item, split_list
 
 PROMPTS_FOLDER = "prompts"
-MODEL_FACTS_FILES = ("adapters/video_models.json", "adapters/image_models.json")
+MODEL_FACTS_FILES = (adapter_file("video_models.json"), adapter_file("image_models.json"))
 NO_PACKS = ("no compiled prompts yet: stage.py compile writes them to 'For machines - do not edit/prompts/' "
             "(add-on C, or step 10's compile --lint-only)")
-NO_FACTS = ("the model facts files (adapters/video_models.json, adapters/image_models.json) are missing from this copy of "
+NO_FACTS = ("the model facts files (_config/adapters/video_models.json, _config/adapters/image_models.json) are missing from this copy of "
             "the tools, so this check waits for them")
 # 5.5 PROJECT intended_use values that release the film to other people (GEN-14; D4).
 PUBLIC_USES = ("festival", "online_free", "online_monetised", "commercial")
@@ -109,8 +113,10 @@ WRITING_REQUESTS = [
 # (C3 §7F: "he is not visible").
 NEGATION = re.compile(r"\b(?:no|not|without)\b|\b\w+n't\b", re.IGNORECASE)
 ALLOWED_NEGATION_PHRASES = re.compile(r"\b(?:does|do|did)\s+not\s+\w+|\b(?:is|are)\s+not\s+visible\b"
-                                      r"|\bno\s+(?:longer|more|bigger|smaller|larger|wider|taller)\s+than\b",
-                                      re.IGNORECASE)  # a size ("no longer than a hand"), not a negation
+                                      r"|\bno\s+(?:longer|more|bigger|smaller|larger|wider|taller)\s+than\b"
+                                      r"|\bwith\s+no\s+camera\s+movement\s+whatsoever\b",
+                                      re.IGNORECASE)  # a size ("no longer than a hand"), not a negation; and H3's
+# one camera line, which testers found holds (Project notes 42, W3; words.json absence_words allowed_phrases)
 # GEN-15: the records' own IDs, which never belong in a prompt (the reasons' because list).
 STAGE_IDENTIFIER = re.compile(r"\b(?:SC\d{2,3}[A-Z]?(?:-[A-Z]+\d+)?|(?:CH|VO|LOC|PR|TX|MO|CAM|WR|LK|CR|VS|RC|LX|PL|FT|"
                               r"ST|CF|SQ|CP|FIND|CHOICE|RT|PIC|PV|TK|VT|FX|MU)-[A-Z0-9][A-Z0-9-]*)\b")
@@ -141,7 +147,7 @@ def clauses(text, least):
 
 def tokens_per_word():
     try:
-        return float(load_json("rules/limits.json").get("tokens_per_word_estimate", {}).get("value", 1.4))
+        return float(load_json(LIMITS_FILE).get("tokens_per_word_estimate", {}).get("value", 1.4))
     except (OSError, ValueError, AttributeError):
         return 1.4
 
@@ -349,7 +355,7 @@ def check_plan_05(run):
 # ---------------------------------------------------------------- the model facts (adapters) and the compiled packs
 
 class ModelFacts:
-    """The dated model facts of adapters/*.json: models by name, their aliases, the date they were checked."""
+    """The dated model facts of _config/adapters/*.json: models by name, their aliases, the date they were checked."""
 
     def __init__(self, documents):
         self.models = {}
@@ -380,7 +386,7 @@ class ModelFacts:
 
 
 def use_model_facts(document):
-    """Use these model facts (one dict shaped like adapters/video_models.json, or a list of them) instead of the
+    """Use these model facts (one dict shaped like _config/adapters/video_models.json, or a list of them) instead of the
     adapter files, for tests and dry runs; None goes back to the files."""
     if document is None:
         _MODEL_FACTS_OVERRIDE.update(facts=None, used=False)
@@ -442,6 +448,8 @@ def read_packs(run):
             except (OSError, ValueError):
                 run.skip("GEN-01", f"'{path.name}' in the prompts folder could not be read as JSON; compile it again")
                 continue
+            if isinstance(data, dict) and data.get("kind") == checks_clip_book.ROUTE_FILE_KIND:
+                continue  # a route's clip book: the ROUTE checks read it, never the GEN checks (GEN-05 and the rest)
             if isinstance(data, dict) and isinstance(data.get("clips"), list):
                 data = dict(data, _file=path.name)
                 packs.append(data)

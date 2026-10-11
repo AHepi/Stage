@@ -184,7 +184,7 @@ def handouts_and_instructions(scratch):
     from stage_tools.read_story import selftest_shot_template
     template = selftest_shot_template(SCHEMA, SKILL, "SC99")
     assert "Allowed values" in template and "- size:" in template.split("Allowed values", 1)[1]
-    steps = json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))
+    steps = json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))
 
     def writes(pattern):
         return next(unit for step in steps["steps"] for unit in step.get("units", [])
@@ -194,12 +194,12 @@ def handouts_and_instructions(scratch):
     assert "PROJECT" not in writes("U-00-START") and any(entry.startswith("RIGHTS") for entry in writes("U-00-START"))
     assert "PROJECT.fps" in writes("U-06-PLANS")
     assert "FILM-11" in next(step for step in steps["steps"] if step["step"] == 4)["checks"]
-    phrases = {"steps/01 Read the story.md": "Only do scenes 2, 13 and 26 for now",
-               "steps/06 Film rules.md": "quoting the story's words at its moment",
-               "steps/04 Characters, places and things.md": "the same at both ends",
-               "steps/05 Continuity.md": "gets a state even if nothing else changes",
-               "steps/08 Shot details.md": "(any time in scene 6)",
-               "cards/13 Cutting, rhythm and sound.md": "each shot's `words:` the run it hears"}
+    phrases = {"stages/01 Read the story/CONTEXT.md": "Only do scenes 2, 13 and 26 for now",
+               "stages/06 Film rules/CONTEXT.md": "quoting the story's words at its moment",
+               "stages/04 Characters, places and things/CONTEXT.md": "the same at both ends",
+               "stages/05 Continuity/CONTEXT.md": "gets a state even if nothing else changes",
+               "stages/08 Shot details/CONTEXT.md": "(any time in scene 6)",
+               "references/cards/13 Cutting, rhythm and sound.md": "each shot's `words:` the run it hears"}
     missing = [name for name, phrase in phrases.items() if phrase not in (SKILL / name).read_text(encoding="utf-8")]
     assert not missing, missing
     return f"allowed values printed; {len(phrases)} instructions written; the writes lists corrected"

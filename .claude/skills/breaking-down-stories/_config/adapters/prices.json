@@ -1,0 +1,431 @@
+{
+  "about": "The dated price table that stage.py estimate reads (blueprint 7.1 and 8.2; D13 §3, §6, §7 and §11.3). Every price carries the page it was read from, or the research file that holds it. Prices older than model_facts_max_age_days (_config/rules/constants.json) are never used: the estimate then prints no money until the table is refreshed (D13 R7, E11; C1 §0). The work_defaults section holds D13's starting values for takes, pictures and minutes per shot; they are judgements, to be replaced by measured values after the first group of scenes (D13 R16). Written by WP7 on 2026-09-28 from D13 and C1, with prices as checked on 2026-09-27.",
+  "price_date": "2026-09-27",
+  "checked_on": "2026-09-27",
+  "currency": "US dollars",
+  "evidence_marks": {
+    "verified": "read at the maker's page on the price date",
+    "research": "taken from the named research file, where it was checked on the price date",
+    "judgement": "a starting value from the research file's own judgement or arithmetic, no maker's page gives it"
+  },
+  "video": {
+    "about": "Per generated second: every take is paid for whole, kept or not (D13 P4; C1 §3A).",
+    "draft": {
+      "per_s": 0.05,
+      "what": "draft takes: Veo 3.1 Lite at 720p (Wan 3.0 at 480p is the same price)",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "evidence": "verified",
+      "source": "D13 §3, C1 §3A"
+    },
+    "budget": {
+      "per_s": 0.07,
+      "what": "final takes at the budget price level",
+      "evidence": "research",
+      "source": "C1 §10 (tier from the models below)",
+      "examples": [
+        {
+          "model": "veo-3.1 lite",
+          "per_s": [
+            0.05,
+            0.08
+          ],
+          "url": "https://ai.google.dev/gemini-api/docs/pricing"
+        },
+        {
+          "model": "wan-3.0 at 480p",
+          "per_s": 0.05,
+          "url": "https://fal.ai/wan-3"
+        },
+        {
+          "model": "gemini-omni-1.1-flash at 720p",
+          "per_s": 0.1,
+          "url": "https://ai.google.dev/gemini-api/docs/pricing"
+        }
+      ]
+    },
+    "mid": {
+      "per_s": 0.17,
+      "what": "final takes at the mid price level",
+      "evidence": "research",
+      "source": "C1 §10 (tier from the models below)",
+      "examples": [
+        {
+          "model": "kling-3.0 pro with sound",
+          "per_s": 0.168,
+          "url": "https://fal.ai/models/fal-ai/kling-video/v3/pro/image-to-video"
+        },
+        {
+          "model": "veo-3.1 fast at 1080p",
+          "per_s": 0.12,
+          "url": "https://ai.google.dev/gemini-api/docs/pricing"
+        },
+        {
+          "model": "wan-3.0 at 1080p",
+          "per_s": 0.2,
+          "url": "https://fal.ai/wan-3"
+        }
+      ]
+    },
+    "premium": {
+      "per_s": 0.45,
+      "what": "final takes at the premium price level",
+      "evidence": "research",
+      "source": "C1 §10 (tier from the models below)",
+      "examples": [
+        {
+          "model": "veo-3.1 standard",
+          "per_s": 0.4,
+          "url": "https://ai.google.dev/gemini-api/docs/pricing"
+        },
+        {
+          "model": "kling-3.0-omni at 4K",
+          "per_s": 0.42,
+          "url": "https://fal.ai/models/fal-ai/kling-video/o3/4k/reference-to-video"
+        },
+        {
+          "model": "seedance-2.5 at 720p on fal",
+          "per_s": 0.47,
+          "url": "https://fal.ai/models/bytedance/seedance-2.5/image-to-video"
+        }
+      ]
+    },
+    "min_clip_s": 5,
+    "min_clip_note": "the shortest clip when the model is not chosen yet; most models' shortest clip is 3 to 5 seconds (D13 §6.2, C1 §3A)",
+    "whole_seconds_when_no_model": true,
+    "hard_action_peak_clip_s": 7,
+    "hard_action_peak_note": "the first estimate bills a hard shot in an action peak at 7 seconds (D13 §6.2)"
+  },
+  "image": {
+    "storyboard_try": 0.0168,
+    "storyboard_tries_per_shot": 2,
+    "storyboard_what": "a storyboard frame on Nano Banana 2 Lite in batch, two tries a shot",
+    "storyboard_source": "C2 §3.7, D13 §6.4",
+    "start_picture_per_shot": 0.55,
+    "start_picture_what": "a start picture: about three tries at $0.134 to $0.17",
+    "start_picture_source": "C2 §3.7, D13 §6.4",
+    "reference_pictures_base": 100,
+    "reference_pictures_base_high": 135,
+    "reference_pictures_characters_in_base": 7,
+    "reference_pictures_locations_in_base": 3,
+    "reference_pictures_per_character_above": 10,
+    "reference_pictures_per_location_above": 7,
+    "reference_pictures_source": "C2 §3.7 and Recipe R2; the scale for other stories is D13 §6.4's arithmetic",
+    "evidence": "research"
+  },
+  "upscale": {
+    "up_to_720p_per_s": 0.01,
+    "to_1080p_per_s": 0.02,
+    "above_1080p_per_s": 0.08,
+    "sixty_frames_factor": 2,
+    "url": "https://fal.ai/models/fal-ai/topaz/upscale/video",
+    "evidence": "verified",
+    "whole_take_factor_first_estimate": 1.5,
+    "handles_factor": 1.3,
+    "factors_note": "to 1080p, whole kept takes (runtime x 1.5 before any shot exists, else the kept clips' own lengths); to 4K, the used seconds plus handles (runtime x 1.3). D13 §6.7, R14"
+  },
+  "plans": {
+    "claude_pro": {
+      "name": "Claude Pro",
+      "per_month": 20,
+      "url": "https://claude.com/pricing",
+      "evidence": "verified"
+    },
+    "claude_max": {
+      "name": "Claude Max",
+      "per_month": 100,
+      "url": "https://claude.com/pricing",
+      "evidence": "verified"
+    },
+    "elevenlabs_starter": {
+      "name": "ElevenLabs Starter",
+      "per_month": 6,
+      "credits_per_month": 30000,
+      "url": "https://elevenlabs.io/pricing",
+      "evidence": "verified"
+    },
+    "elevenlabs_creator": {
+      "name": "ElevenLabs Creator",
+      "per_month": 22,
+      "credits_per_month": 121000,
+      "first_month": 11,
+      "url": "https://elevenlabs.io/pricing",
+      "evidence": "verified"
+    },
+    "elevenlabs_pro": {
+      "name": "ElevenLabs Pro",
+      "per_month": 99,
+      "credits_per_month": 600000,
+      "url": "https://elevenlabs.io/pricing",
+      "evidence": "verified"
+    },
+    "suno_pro": {
+      "name": "Suno Pro",
+      "per_month": 8,
+      "downloads_per_month": 20,
+      "url": "https://suno.com/pricing",
+      "evidence": "verified"
+    },
+    "suno_premier": {
+      "name": "Suno Premier",
+      "per_month": 24,
+      "downloads_per_month": 60,
+      "url": "https://suno.com/pricing",
+      "evidence": "verified"
+    },
+    "resolve_studio_once": {
+      "name": "DaVinci Resolve Studio",
+      "once": 295,
+      "url": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": "verified"
+    },
+    "resolve_free": {
+      "name": "DaVinci Resolve (free)",
+      "once": 0,
+      "url": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": "verified"
+    },
+    "blender": {
+      "name": "Blender",
+      "once": 0,
+      "source": "C4",
+      "evidence": "research"
+    }
+  },
+  "voice_plans_in_order": [
+    "elevenlabs_starter",
+    "elevenlabs_creator",
+    "elevenlabs_pro"
+  ],
+  "credits": {
+    "speech_per_character": 1,
+    "effect_per_second": 40,
+    "speech_tries": 5,
+    "effect_tries": 2,
+    "effect_share_of_shots": 0.3,
+    "effect_seconds": 3,
+    "characters_per_word": 4.9,
+    "source": "D13 §6.5 (ElevenLabs pricing and sound effects pages, verified; tries and shares are judgement)",
+    "urls": [
+      "https://elevenlabs.io/pricing",
+      "https://elevenlabs.io/docs/overview/capabilities/sound-effects"
+    ]
+  },
+  "price_levels": {
+    "about": "What each price level buys besides video takes (D13 §15.2, judgement): the voice plan and its months, the music plan and its months, the upscale size, the assistant plan and the editing software.",
+    "budget": {
+      "voice_plan": "smallest",
+      "voice_months": 1,
+      "music_plan": "suno_pro",
+      "music_months": 2,
+      "upscale_to": "1080p",
+      "assistant_plan": "claude_pro",
+      "software": []
+    },
+    "mid": {
+      "voice_plan": "smallest",
+      "voice_months": 2,
+      "music_plan": "suno_premier",
+      "music_months": 1,
+      "upscale_to": "1080p",
+      "assistant_plan": "claude_pro",
+      "software": []
+    },
+    "premium": {
+      "voice_plan": "elevenlabs_pro",
+      "voice_months": 2,
+      "music_plan": "suno_premier",
+      "music_months": 2,
+      "upscale_to": "4k",
+      "assistant_plan": "claude_max",
+      "software": [
+        "resolve_studio_once"
+      ]
+    },
+    "mixed": {
+      "about": "drafts at the draft price, finals at mid, dialogue close-ups at premium (D13 R9); every other line as mid",
+      "like": "mid"
+    }
+  },
+  "licence_flags": {
+    "elevenlabs_music": "no_film_use_on_self_serve",
+    "elevenlabs_music_note": "every self-serve plan excludes film, so it is never budgeted for a film (D13 R19)",
+    "suno": "commercial_only_for_downloads",
+    "topaz_personal": "limited_commercial_use",
+    "free_plans": "no_commercial_use",
+    "urls": [
+      "https://elevenlabs.io/eleven-music-model-specific-terms",
+      "https://suno.com/terms",
+      "https://www.topazlabs.com/pricing"
+    ]
+  },
+  "work_defaults": {
+    "about": "D13's starting values (judgement): takes, pictures and minutes per shot by cost class, the first estimate's class shares, the user's minutes per job, the hours factors and the contingency. Replace them with measured values after the first group of scenes (D13 R16).",
+    "source": "D13 §4.1, §5, §6.1, §6.6, §6.9, §7.1, §7.2, §8.1",
+    "cost_classes": {
+      "graphic": {
+        "draft_takes": 0,
+        "final_takes": 0,
+        "start_pictures": 0,
+        "make_minutes": 10,
+        "review_minutes": 0,
+        "video": false
+      },
+      "reuse": {
+        "draft_takes": 0,
+        "final_takes": 0,
+        "start_pictures": 0,
+        "make_minutes": 0,
+        "review_minutes": 2,
+        "video": false
+      },
+      "still_move": {
+        "draft_takes": 0,
+        "final_takes": 0,
+        "start_pictures": 1,
+        "make_minutes": 0,
+        "review_minutes": 2,
+        "video": false
+      },
+      "easy": {
+        "draft_takes": 2,
+        "final_takes": 3,
+        "start_pictures": 1,
+        "make_minutes": 0,
+        "review_minutes": 5,
+        "video": true
+      },
+      "dialogue": {
+        "draft_takes": 2,
+        "final_takes": 4,
+        "start_pictures": 1,
+        "make_minutes": 0,
+        "review_minutes": 8,
+        "video": true
+      },
+      "hard": {
+        "draft_takes": 4,
+        "final_takes": 7,
+        "start_pictures": 1,
+        "make_minutes": 0,
+        "review_minutes": 10,
+        "video": true
+      }
+    },
+    "first_estimate_class_shares": {
+      "about": "Before any shot exists, each pace class carries these shares of still or graphic, easy, dialogue and hard shots, and of shots with a plate (D13 §6.1). Still or graphic shots are counted as stills.",
+      "action_peak": {
+        "still_move": 0.1,
+        "easy": 0.4,
+        "dialogue": 0.05,
+        "hard": 0.45,
+        "plates": 0.25
+      },
+      "suspense": {
+        "still_move": 0.15,
+        "easy": 0.55,
+        "dialogue": 0.1,
+        "hard": 0.2,
+        "plates": 0.2
+      },
+      "mixed": {
+        "still_move": 0.15,
+        "easy": 0.55,
+        "dialogue": 0.2,
+        "hard": 0.1,
+        "plates": 0.15
+      },
+      "dialogue": {
+        "still_move": 0.1,
+        "easy": 0.35,
+        "dialogue": 0.5,
+        "hard": 0.05,
+        "plates": 0.1
+      },
+      "contemplative": {
+        "still_move": 0.25,
+        "easy": 0.6,
+        "dialogue": 0.1,
+        "hard": 0.05,
+        "plates": 0.1
+      }
+    },
+    "default_rhythm_class": "mixed",
+    "minutes": {
+      "setup_once": 240,
+      "first_plan": {
+        "screenplay": 60,
+        "prose": 180
+      },
+      "scene_list_and_big_choices": 35,
+      "per_scene": 25,
+      "group_check": 10,
+      "scenes_per_group": 6,
+      "reference_pictures_character": 60,
+      "reference_pictures_location": 30,
+      "reference_pictures_prop": 6,
+      "storyboard_pick": 0.5,
+      "start_picture": 4,
+      "previs_shot": 22,
+      "previs_location_master": 30,
+      "phone_performance": 20,
+      "job_preparation": 1,
+      "compositing_plate": 40,
+      "voice_character": 20,
+      "voice_line": 1.5,
+      "music_cue": 45,
+      "post_per_finished_minute": {
+        "edit": 90,
+        "sound": 120,
+        "grade_and_conform": 45
+      },
+      "delivery_once": 240
+    },
+    "reference_counts_before_step_4": {
+      "characters": 7,
+      "locations": 3,
+      "props": 15
+    },
+    "hours_factors": {
+      "central": 1.3,
+      "high": 2.0
+    },
+    "contingency_share": 0.2,
+    "titles_and_credits_s": {
+      "short": 60,
+      "feature": 180
+    },
+    "hours_per_week_default": 20,
+    "weeks_per_month": 4.333,
+    "music": {
+      "seconds_per_cue_when_scored": 120,
+      "downloads_per_cue": 1.5,
+      "sparse_cues": 3,
+      "source_only_cues": 1,
+      "end_credits_only_cues": 1,
+      "policy_before_the_big_choices": "scored"
+    },
+    "prose_candidate_scene_s": [
+      120,
+      150
+    ],
+    "warning_bands": {
+      "generation_factor": [
+        5,
+        15
+      ],
+      "page_check_share": 0.25,
+      "pages_per_minute": 1.1,
+      "pages_per_minute_short_script": 0.8,
+      "short_script_pages_below": 90,
+      "extrapolated_below_pages": 60,
+      "weeks_central_max": {
+        "short": 26,
+        "other": 52
+      },
+      "average_shot_length_s": [
+        3,
+        7
+      ]
+    }
+  }
+}

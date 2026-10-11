@@ -6,7 +6,7 @@ What it proves (blueprint 7.2, 7.3, 14.2 row WP4):
 - one faulty fixture per check fires, naming the record it should (the faulty fixtures are the small invented
   projects in tests/fixtures/ids and citations/, each changed by one edit listed below; the FORM checks use WP2's
   grammar fixtures);
-- the same checks are silent on the WP12a gold fixture (examples/01 and 02, with the scene 10 excerpt, and with
+- the same checks are silent on the WP12a gold fixture (references/examples/01 and 02, with the scene 10 excerpt, and with
   the whole story when --story is given);
 - the command check: the report 13 Health check.md with its first line "In short: ...", tidy fixes made and
   logged, a locked record changed by hand caught on the next check (FORM-11), --step, --scene, --film, --all and
@@ -46,8 +46,8 @@ LAMP_PROJECT = OWN_FIXTURES / "prose base"
 LAMP_STORY = OWN_FIXTURES / "The lamp - prose story.md"
 GRAMMAR = FIXTURES / "grammar"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
-GOLD_SCENE = SKILL / "examples" / "01 The Catch - scene 10.md"
-GOLD_CONTEXT = SKILL / "examples" / "02 The Catch - scene 10 - context.md"
+GOLD_SCENE = SKILL / "references" / "examples" / "01 The Catch - scene 10.md"
+GOLD_CONTEXT = SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"
 SCENE_1 = "11 Scenes/Scene 01 - Mara's workshop.md"
 SCENE_2 = "11 Scenes/Scene 02 - The shop door.md"
 LAMP_SCENE = "11 Scenes/Scene 01 - The harbour wall.md"

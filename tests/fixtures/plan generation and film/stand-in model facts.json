@@ -1,5 +1,5 @@
 {
- "about": "STAND-IN model facts for tests/wp4e_acceptance.py only, in the shape of blueprint 8.2, until work package 8 writes adapters/video_models.json. Values are copied from blueprint 8.2 (kling-3.0-omni, seedance-2.5, veo-3.1) and C3 L02 and L28 (runway-gen-4.5: 2-10 s, 720p, no sound). Never read by the tools outside the test.",
+ "about": "STAND-IN model facts for tests/wp4e_acceptance.py only, in the shape of blueprint 8.2, until work package 8 writes _config/adapters/video_models.json. Values are copied from blueprint 8.2 (kling-3.0-omni, seedance-2.5, veo-3.1) and C3 L02 and L28 (runway-gen-4.5: 2-10 s, 720p, no sound). Never read by the tools outside the test.",
  "stand_in": true,
  "checked_on": "2026-09-27",
  "models": {

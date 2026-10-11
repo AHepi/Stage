@@ -1,5 +1,5 @@
 {
- "about": "One faulty fixture per SIDE and GEOM check (blueprint 7.2), made by wp4a_derive_acceptance.py from a temporary copy of the WP12a gold (with the staging patch while the gold needs it). Each fault edits lines inside named records; the test expects the check to fire on the named record. file is 'scene' (examples/01 The Catch - scene 10.md) or 'context' (examples/02 The Catch - scene 10 - context.md).",
+ "about": "One faulty fixture per SIDE and GEOM check (blueprint 7.2), made by wp4a_derive_acceptance.py from a temporary copy of the WP12a gold (with the staging patch while the gold needs it). Each fault edits lines inside named records; the test expects the check to fire on the named record. file is 'scene' (references/examples/01 The Catch - scene 10.md) or 'context' (references/examples/02 The Catch - scene 10 - context.md).",
  "faults": [
   {"check": "SIDE-01", "record": "CH-SAYE.S01", "about": "Saye's ring has no own side",
    "edits": [{"file": "context", "record": "STATE CH-SAYE.S01", "find": "- side: wedding ring | own: left | plot: yes", "replace": "- side: wedding ring | plot: yes"}]},
@@ -30,8 +30,8 @@
   {"check": "GEOM-06", "record": "SC10-SH080", "about": "Iona written at the right edge facing left, where the set plan puts her at the left third facing right",
    "edits": [{"file": "scene", "record": "SHOT SC10-SH080", "find": "- subject: CH-IONA.S02 | at: left_third | faces: frame_right", "replace": "- subject: CH-IONA.S02 | at: right_edge | faces: frame_left"}]},
   {"check": "GEOM-07", "record": "SC10-SH120", "about": "Iona travels left in shot 110 and right in shot 120, one stretch with no turn",
-   "edits": [{"file": "scene", "record": "SHOT SC10-SH110", "find": "her raised hand lowered now | tactic: doubting | energy: still | display: 1 | still: whole_body | travel: none", "replace": "her raised hand lowered now | tactic: doubting | energy: still | display: 1 | still: whole_body | travel: frame_left"},
-             {"file": "scene", "record": "SHOT SC10-SH120", "find": "her shoulder, soft at the edge of the frame | tactic: doubting | energy: still | display: 1 | still: whole_body | travel: none", "replace": "her shoulder, soft at the edge of the frame | tactic: doubting | energy: still | display: 1 | still: whole_body | travel: frame_right"}]},
+   "edits": [{"file": "scene", "record": "SHOT SC10-SH110", "find": "her raised hand lowered now | tactic: doubting | energy: still | display: 1 | travel: none", "replace": "her raised hand lowered now | tactic: doubting | energy: still | display: 1 | travel: frame_left"},
+             {"file": "scene", "record": "SHOT SC10-SH120", "find": "her shoulder, soft at the edge of the frame | tactic: doubting | energy: still | display: 1 | travel: none", "replace": "her shoulder, soft at the edge of the frame | tactic: doubting | energy: still | display: 1 | travel: frame_right"}]},
   {"check": "GEOM-08", "record": "SC10-SH170", "about": "Iona's single in part 2 made wider than Saye's, with no turn and no why",
    "edits": [{"file": "scene", "record": "SHOT SC10-SH170", "find": "- size: medium_close_up", "replace": "- size: medium"}]}
  ]

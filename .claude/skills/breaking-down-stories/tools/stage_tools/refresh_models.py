@@ -1,15 +1,15 @@
-"""refresh_models.py: keep the dated model facts in adapters/ fresh, and run the command refresh-models.
+"""refresh_models.py: keep the dated model facts in _config/adapters/ fresh, and run the command refresh-models.
 
 In plain words:
-- the model facts (adapters/video_models.json, image_models.json, audio_models.json, routing.json,
+- the model facts (_config/adapters/video_models.json, image_models.json, audio_models.json, routing.json,
   phrasebook.json and prices.json) carry the date they were checked on; above model_facts_max_age_days
-  (rules/constants.json) compile marks no pack ready to spend and estimate prints no money (blueprint 8.2, the
+  (_config/rules/constants.json) compile marks no pack ready to spend and estimate prints no money (blueprint 8.2, the
   freshness rule; GEN-11; D13 R7);
 - this tool never reads the web: an AI with web access re-reads the makers' pages and writes what it found in a
   findings file (the shape is below); `refresh-models --propose <findings file>` applies the findings to copies of
-  the files, checks their shape, and writes the proposal to adapters/proposal/ with a plain list of every change;
+  the files, checks their shape, and writes the proposal to _config/adapters/proposal/ with a plain list of every change;
 - the user approves any price change; `refresh-models --apply` then writes the proposal over the files with the new
-  date, and keeps the files it replaced in adapters/previous/<their date>/ so a refresh can be undone;
+  date, and keeps the files it replaced in _config/adapters/previous/<their date>/ so a refresh can be undone;
 - `refresh-models --check` checks the shape of the files as they are; with no option it says how old they are and
   what to do.
 
@@ -39,7 +39,7 @@ import re
 import shutil
 from pathlib import Path
 
-from .record_format import SKILL_FOLDER
+from .record_format import ADAPTERS_FOLDER, SKILL_FOLDER
 
 PROPOSAL_FOLDER = "proposal"
 PREVIOUS_FOLDER = "previous"
@@ -58,7 +58,7 @@ LIMIT_UNITS = ("characters", "tokens", "words")
 
 
 def adapters_folder(written=None):
-    return Path(written) if written else Path(SKILL_FOLDER) / "adapters"
+    return Path(written) if written else Path(SKILL_FOLDER) / ADAPTERS_FOLDER
 
 
 def read_documents(folder):
@@ -472,7 +472,7 @@ def apply_proposal(folder, prices_approved=False, today=None):
     with open(summary_path, encoding="utf-8") as handle:
         summary = json.load(handle)
     if not summary.get("shape_ok"):
-        return 1, ["The proposal has problems (see adapters/proposal/proposal.md): fix the findings and propose again."]
+        return 1, ["The proposal has problems (see _config/adapters/proposal/proposal.md): fix the findings and propose again."]
     for name, print_ in (summary.get("base_fingerprints") or {}).items():
         if fingerprint(folder / name) != print_:
             return 1, [f"{name} changed after the proposal was made: propose again from the same findings."]
@@ -506,7 +506,7 @@ def apply_proposal(folder, prices_approved=False, today=None):
         written.append(name)
     shutil.rmtree(proposal_folder, ignore_errors=True)
     lines = [f"Model facts refreshed: {', '.join(written) or 'no file changed'}; dated {summary.get('checked_on')}.",
-             f"The replaced files are kept in adapters/{PREVIOUS_FOLDER}/."]
+             f"The replaced files are kept in _config/adapters/{PREVIOUS_FOLDER}/."]
     if prices:
         lines.append(f"{len(prices)} price change{'s' if len(prices) != 1 else ''} applied with the user's approval.")
     return 0, lines
@@ -530,7 +530,7 @@ def add_refresh_arguments(parser):
     parser.add_argument("--prices-approved", action="store_true",
                         help="the user has approved the proposal's price changes")
     parser.add_argument("--check", action="store_true", help="check the shape of the model facts as they are")
-    parser.add_argument("--adapters", help="the adapters folder (default: the skill's adapters/)")
+    parser.add_argument("--adapters", help="the adapters folder (default: the skill's _config/adapters/)")
 
 
 def run_refresh(context):
@@ -541,7 +541,7 @@ def run_refresh(context):
     if not folder.is_dir() or not any(folder.glob("*.json")):
         raise StageStop("The model facts (the adapters folder) are missing. Use a complete copy of the skill folder.")
     from .derive_fields import constant
-    # rules/constants.json keeps its values under "constants" (and "from_blueprint_text"), never at the top level
+    # _config/rules/constants.json keeps its values under "constants" (and "from_blueprint_text"), never at the top level
     limit = constant(context.constants, "model_facts_max_age_days", 30) or 30
     if getattr(arguments, "propose", None):
         findings, problem = read_findings(arguments.propose)
@@ -556,11 +556,11 @@ def run_refresh(context):
         write_json(proposal_folder / PROPOSAL_FILE, summary)
         (proposal_folder / PROPOSAL_PAGE).write_text(proposal_page(summary), encoding="utf-8")
         real = [change for change in summary["changes"] if not change.get("same")]
-        context.say(f"Proposal written to adapters/{PROPOSAL_FOLDER}/: {len(real)} change{'s' if len(real) != 1 else ''} "
+        context.say(f"Proposal written to _config/adapters/{PROPOSAL_FOLDER}/: {len(real)} change{'s' if len(real) != 1 else ''} "
                     f"in {len(summary['files'])} file{'s' if len(summary['files']) != 1 else ''}, dated {summary['checked_on']}.")
         if summary["price_changes"]:
             context.say(f"{len(summary['price_changes'])} of them change a price: show them to the user for approval "
-                        f"(adapters/{PROPOSAL_FOLDER}/{PROPOSAL_PAGE}).")
+                        f"(_config/adapters/{PROPOSAL_FOLDER}/{PROPOSAL_PAGE}).")
         for problem in summary["problems"]:
             context.say(f"  Problem: {problem}")
         context.summary = f"refresh-models --propose: {len(real)} changes, {len(summary['problems'])} problems"

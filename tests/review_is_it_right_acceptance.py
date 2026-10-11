@@ -20,7 +20,7 @@ What it proves:
 - WORDS-01 does not report "hurt" or "tense" next to a body part ("his hurt arm"), which describe the body;
 - TIME-01 skips a shot whose lines (or its beats' lines) are quotes not found in the story given, instead of
   passing it on a floor that leaves out the pause owed;
-- refresh-models reads its age limit from rules/constants.json by name;
+- refresh-models reads its age limit from _config/rules/constants.json by name;
 - a spoken line is taken out of a moment's words as whole words ("No" never cuts "Nothing" apart);
 - the health check names the add-on records (pictures, grey previews, takes, voice takes, finishing jobs, music, the
   visual plan) in plain words, never by their codes;
@@ -55,8 +55,8 @@ from stage_tools.record_format import load_skill_data, parse_text  # noqa: E402
 
 SCHEMA, WORDS, CONSTANTS = load_skill_data()
 EXCERPT = REPOSITORY / "tests" / "fixtures" / "The Catch - lines 397-489.txt"
-GOLD_SCENE = SKILL / "examples" / "01 The Catch - scene 10.md"
-GOLD_CONTEXT = SKILL / "examples" / "02 The Catch - scene 10 - context.md"
+GOLD_SCENE = SKILL / "references" / "examples" / "01 The Catch - scene 10.md"
+GOLD_CONTEXT = SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"
 SCENE_FILE = "11 Scenes/Scene 10 - Saye's kitchen.md"
 CONTEXT_FILE = "05 Story plan and the other whole-film files.md"
 
@@ -184,8 +184,8 @@ def plate_route_pictures():
 def plate_route_travel():
     texts = gold_texts()
     texts[SCENE_FILE] = replace_in_record(texts[SCENE_FILE], "### SHOT SC10-SH080 ",
-                                          "still: head, torso | travel: none\n- subject: CH-JUDE",
-                                          "still: head, torso | travel: frame_left\n- subject: CH-JUDE")
+                                          "display: 1 | travel: none\n- subject: CH-JUDE",
+                                          "display: 1 | travel: frame_left\n- subject: CH-JUDE")
     breakdown = breakdown_of(texts, with_story=EXCERPT.is_file())
     compiler, scene = compile_scene(breakdown)
     clip = next(clip for clip in scene.clips if clip.plan.identifier == "SC10-SH080")
@@ -347,7 +347,7 @@ def time_01_unresolved_lines():
 
 # ---------------------------------------------------------------- refresh-models reads its age limit by name
 
-@group("refresh-models: the age limit is read from rules/constants.json by name (model_facts_max_age_days)")
+@group("refresh-models: the age limit is read from _config/rules/constants.json by name (model_facts_max_age_days)")
 def refresh_age_limit():
     import copy
     import types

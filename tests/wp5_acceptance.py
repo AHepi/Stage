@@ -3,7 +3,7 @@
 
 What it proves (blueprint 14.2 row WP5):
 - the handouts for U-07-SC10 and U-08-SC10-B1, built from the WP12a gold fixture, stay within the Claude ceiling of
-  rules/limits.json, with their card parts within card_tokens_per_unit_max; their pre-issued ID blocks are in the
+  _config/rules/limits.json, with their card parts within card_tokens_per_unit_max; their pre-issued ID blocks are in the
   handout and in the manifest (where ID-06 reads them, and the checker stays silent on the gold); the one-line task
   comes first and last; the records hold nothing code keeps (status, locks, approval, story-point endings); the
   step-8 handout prints each list item's provisional floor (shot 150: 13.8 s), leaves banned camera choices out and
@@ -46,12 +46,12 @@ SCHEMA, WORDS, CONSTANTS = load_skill_data()
 FIXTURES = REPOSITORY / "tests" / "fixtures"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
 SCREENPLAY_FIXTURE = FIXTURES / "reader" / "Night shift - Catch layout.txt"
-GOLD_SCENE = SKILL / "examples" / "01 The Catch - scene 10.md"
-GOLD_CONTEXT = SKILL / "examples" / "02 The Catch - scene 10 - context.md"
+GOLD_SCENE = SKILL / "references" / "examples" / "01 The Catch - scene 10.md"
+GOLD_CONTEXT = SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"
 MACHINE = "For machines - do not edit"
 SCENE_FILE = "11 Scenes/Scene 10 - Saye's kitchen.md"
-LIMITS = json.loads((SKILL / "rules" / "limits.json").read_text(encoding="utf-8"))
-STEPS = json.loads((SKILL / "schema" / "steps.json").read_text(encoding="utf-8"))
+LIMITS = json.loads((SKILL / "_config" / "rules" / "limits.json").read_text(encoding="utf-8"))
+STEPS = json.loads((SKILL / "_config" / "schema" / "steps.json").read_text(encoding="utf-8"))
 CLAUDE_CEILING = int(LIMITS["handout_tokens_max"]["claude_code"])
 CARD_CAP = int(LIMITS["card_tokens_per_unit_max"]["value"])
 PER_WORD = float(LIMITS["tokens_per_word_estimate"]["value"])
@@ -623,14 +623,13 @@ def make_stub_skill(folder):
     2.3 (1,800 words, their chat twin included) and stub cards whose parts are at steps.json's target_words (a whole
     card at its type's longest length)."""
     folder = Path(folder)
-    for name in ("schema", "rules", "templates", "examples"):
+    for name in ("_config/schema", "_config/rules", "references/templates", "references/examples"):
         shutil.copytree(SKILL / name, folder / name)
     filler = ("Stub words stand in for a real part of the kit at its target length so that the handout budget can be "
               "measured before the real file exists. ").split()
 
     def words(count):
         return " ".join(filler[index % len(filler)] for index in range(count))
-    (folder / "steps").mkdir()
     for entry in STEPS["steps"]:
         step = entry["step"]
         sections = ["Purpose", "When it runs", "Inputs", "Outputs", "Card parts to open", "Procedure",
@@ -643,9 +642,10 @@ def make_stub_skill(folder):
             body += [f"## {section}", "", words(each), ""]
         body += [f"**One-line task, again:** Stub one-line task of step {step}.", ""]
         path = folder / entry["step_file"]
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("\n".join(body), encoding="utf-8")
-    (folder / "cards").mkdir()
-    (folder / "reference").mkdir()
+    (folder / "references" / "cards").mkdir(parents=True, exist_ok=True)
+    (folder / "references" / "formats").mkdir(parents=True, exist_ok=True)
     whole_words = {"department": 2000, "situation": 1000, "production": 1800, "reference": 1000}
     for code, card in STEPS["cards"].items():
         parts = [(part["heading"], part.get("target_words", 300)) for name, part in card["parts"].items()

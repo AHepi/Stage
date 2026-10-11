@@ -1,7 +1,7 @@
 """The acceptance test of work package 8: generation (the adapter files, compile_prompts.py, make_text_graphics.py,
 refresh_models.py and the commands compile, graphics and refresh-models).
 
-What it proves, as the blueprint's row for WP8 asks (14.2), on the WP12a gold (examples/01 and 02 made into a
+What it proves, as the blueprint's row for WP8 asks (14.2), on the WP12a gold (references/examples/01 and 02 made into a
 project folder):
 - the dated model facts: every adapter file loads, carries its checked_on date and a mark (V, U or J) with a source
   for its facts; the facts compile and the GEN checks read are there (clip lengths, sizes, speaker forms), and the
@@ -44,7 +44,7 @@ REPOSITORY = Path(__file__).resolve().parent.parent
 SKILL = REPOSITORY / ".claude" / "skills" / "breaking-down-stories"
 TOOLS = SKILL / "tools"
 STAGE = TOOLS / "stage.py"
-ADAPTERS = SKILL / "adapters"
+ADAPTERS = SKILL / "_config" / "adapters"
 sys.path.insert(0, str(TOOLS))
 sys.path.insert(0, str(REPOSITORY / "tests"))
 
@@ -439,7 +439,7 @@ def graphics(workspace, story):
 
 @group("refresh-models checks, proposes and applies on a copy, and waits for the user's approval of a price change")
 def refresh(workspace):
-    folder = workspace / "adapters"
+    folder = workspace / "_config" / "adapters"
     shutil.copytree(ADAPTERS, folder)
     code, output = stage(["refresh-models", "--check", "--adapters", folder])
     assert code == 0 and "the model facts are in order" in output, f"exit {code}\n{output}"

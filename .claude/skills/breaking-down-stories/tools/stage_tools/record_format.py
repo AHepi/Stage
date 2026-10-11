@@ -7,7 +7,7 @@ What this file does, in plain words:
   come out in the canonical form (fields in the schema's order), the plain part and divider are untouched
   and the END line is counted again;
 - splits values into their parts (list items, sub-parts, line numbers, story points) and examines each
-  value against its kind in schema/schema.json, returning tidy fixes and problems;
+  value against its kind in _config/schema/schema.json, returning tidy fixes and problems;
 - merges the copies of one record found in several files (G10);
 - defines Problem, the one-line message every check prints (blueprint 7.2).
 
@@ -32,6 +32,44 @@ from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
 SKILL_FOLDER = Path(__file__).resolve().parents[2]
+
+# Where things are inside the skill folder (Project notes 43: the folders are the steps). Each is a path relative to
+# the skill folder, written with "/", so a caller joins it to whichever copy of the skill it reads
+# (skill_folder / CARDS_FOLDER, or load_json(LIMITS_FILE, skill_folder)). Change a folder here and nowhere else.
+STAGES_FOLDER = "stages"                                  # one folder per step: "00 Start/CONTEXT.md" and so on
+STAGE_CONTRACT_NAME = "CONTEXT.md"                        # the step file inside each step's folder
+REFERENCES_FOLDER = "references"                          # what the AI reads, the same every run
+CARDS_FOLDER = REFERENCES_FOLDER + "/cards"               # the craft cards 01 to 24
+LIBRARY_FOLDER = REFERENCES_FOLDER + "/library"           # the research files, their digests and three notes
+FORMATS_FOLDER = REFERENCES_FOLDER + "/formats"           # record format, word list, field guide, rule order, ...
+TEMPLATES_FOLDER = REFERENCES_FOLDER + "/templates"       # the empty record files
+EXAMPLES_FOLDER = REFERENCES_FOLDER + "/examples"         # the gold scene 10 and its context
+CONFIG_FOLDER = "_config"                                 # the settings the code reads, the same every run
+SCHEMA_FOLDER = CONFIG_FOLDER + "/schema"                 # schema.json and steps.json
+RULES_FOLDER = CONFIG_FOLDER + "/rules"                   # constants, words, limits, tone defaults
+ADAPTERS_FOLDER = CONFIG_FOLDER + "/adapters"             # dated model facts and prices
+SCHEMA_FILE = SCHEMA_FOLDER + "/schema.json"
+STEPS_FILE = SCHEMA_FOLDER + "/steps.json"
+CONSTANTS_FILE = RULES_FOLDER + "/constants.json"
+WORDS_FILE = RULES_FOLDER + "/words.json"
+LIMITS_FILE = RULES_FOLDER + "/limits.json"
+TONE_DEFAULTS_FILE = RULES_FOLDER + "/tone_defaults.json"
+GOLD_SCENE_FILE = EXAMPLES_FOLDER + "/01 The Catch - scene 10.md"
+GOLD_CONTEXT_FILE = EXAMPLES_FOLDER + "/02 The Catch - scene 10 - context.md"
+MESSAGE_FORMATS_FILE = FORMATS_FOLDER + "/07 Report and message formats.md"
+
+
+def stage_contract_file(step_folder_name):
+    """The step file of one step, relative to the skill folder: stage_contract_file("08 Shot details") is
+    "stages/08 Shot details/CONTEXT.md"."""
+    return f"{STAGES_FOLDER}/{step_folder_name}/{STAGE_CONTRACT_NAME}"
+
+
+def adapter_file(file_name):
+    """One file of the dated model facts, relative to the skill folder: adapter_file("prices.json")."""
+    return f"{ADAPTERS_FOLDER}/{file_name}"
+
+
 DIVIDER_LINE = "Below this line: details for the AI and the checker. You never need to read them."
 SUB_PART_SEPARATOR = " | "
 MISSING_WORDS = ("null", "n/a", "-", "")
@@ -89,7 +127,7 @@ _data_cache = {}
 
 
 def load_json(relative_path, skill_folder=None):
-    """Load one JSON file of the skill folder (for example 'schema/schema.json'), cached."""
+    """Load one JSON file of the skill folder (for example SCHEMA_FILE, '_config/schema/schema.json'), cached."""
     folder = Path(skill_folder) if skill_folder else SKILL_FOLDER
     path = folder / relative_path
     key = str(path)
@@ -101,9 +139,9 @@ def load_json(relative_path, skill_folder=None):
 
 def load_skill_data(skill_folder=None):
     """The schema (as a Schema), the word lists and the constants of the skill folder."""
-    schema = Schema(load_json("schema/schema.json", skill_folder))
-    words = load_json("rules/words.json", skill_folder)
-    constants = load_json("rules/constants.json", skill_folder)
+    schema = Schema(load_json(SCHEMA_FILE, skill_folder))
+    words = load_json(WORDS_FILE, skill_folder)
+    constants = load_json(CONSTANTS_FILE, skill_folder)
     return schema, words, constants
 
 
@@ -159,7 +197,7 @@ def quote_for_message(value, limit=60):
 # ---------------------------------------------------------------- the schema
 
 class Schema:
-    """schema/schema.json with the lookups the grammar and the checks need."""
+    """_config/schema/schema.json with the lookups the grammar and the checks need."""
 
     def __init__(self, data):
         self.data = data

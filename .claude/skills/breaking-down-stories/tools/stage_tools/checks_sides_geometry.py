@@ -51,7 +51,7 @@ from .derive_fields import (FACING_ROUND, PLACEMENT_WORDS, SIZE_LADDER, apparent
 
 # Nouns that name a feature on one side of a body when a state line names them (SIDE-01). Judgement from K26 and
 # B5 ("rings and wounds in state lines"): only features that exist on one side; features that come in pairs
-# (sleeves, palms, shoes) need a side item only when the AI declares them. A candidate for rules/words.json.
+# (sleeves, palms, shoes) need a side item only when the AI declares them. A candidate for _config/rules/words.json.
 ONE_SIDED_NOUNS = ("ring", "scar", "wound", "graze", "tattoo", "birthmark", "earring", "bracelet", "wristwatch",
                    "sling", "eyepatch", "parting", "mole")
 SIDE_PHRASE = re.compile(r"\b(own\s+)?(left|right)(?:\s+(?:hand|arm|side|shoulder|palm|foot|leg|cheek|eye|ear|"

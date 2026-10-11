@@ -13,7 +13,7 @@ In plain words:
 - check --film (and check --step 9) also writes what it finds into "12 Whole-film check.md": a plain audit report
   above the divider, then one FINDING record per problem (source: checker), numbered on from the highest finding
   number in the project. Findings already written keep their number, status and reason; only new problems get
-  new numbers (steps/09 "How to redo").
+  new numbers (stages/09 "How to redo").
 
 How it plugs in: checks_plan_generation_film.py (the family module check_records loads) imports this file, which
 registers FILM-01 to FILM-12 with check_records.register_check, and registers one report section with
@@ -22,10 +22,10 @@ run (--film or --step 9) it also writes the film strip and 12 Whole-film check.m
 section "The whole film" for 13 Health check. It writes nothing on other runs, and nothing without a project.
 
 Checks only read; every problem line has 7.2's form (level, check ID, record, field, what is wrong, then the fix).
-Numbers come from rules/constants.json by name (colour_monotony_run, compliant_sameness_run,
+Numbers come from _config/rules/constants.json by name (colour_monotony_run, compliant_sameness_run,
 high_intensity_scene_min, extreme_close_up_film_max, push_in_scene_share_max, motif_spines_max, sound_motif_max,
 body_motif_max, loud_sets_max, plant_inserts_per_scene_max, undercurrent_scene_share_max,
-departments_changing_at_main_turn_max, short_runtime_max_s) and rules/limits.json
+departments_changing_at_main_turn_max, short_runtime_max_s) and _config/rules/limits.json
 (film_strip_tokens_per_unit_max, tokens_per_word_estimate). Readings of 7.2 that the blueprint leaves open are
 written next to each check and in the WP4e build log.
 
@@ -51,7 +51,8 @@ from pathlib import Path
 from .check_records import register_check, register_report_section, same_scene, scene_of
 from .derive_fields import (SIZE_LADDER, breakdown_for_run, constant, element_of, focus_subject, is_insert_or_card,
                             number_of, resolve_story_point)
-from .record_format import (DIVIDER_LINE, EndLine, Record, TextBlock, load_json, make_record, normalise_word,
+from .record_format import (DIVIDER_LINE, LIMITS_FILE, EndLine, Record, TextBlock, load_json, make_record,
+                            normalise_word,
                             parse_file, parse_story_point, sort_key_for_identifier, split_item, split_list,
                             write_file)
 
@@ -439,10 +440,10 @@ def film_strip_text(rows, part_words=""):
 
 
 def strip_tokens(text):
-    """An estimate of a text's tokens: words x tokens_per_word_estimate (rules/limits.json)."""
+    """An estimate of a text's tokens: words x tokens_per_word_estimate (_config/rules/limits.json)."""
     per_word = 1.4
     try:
-        limits = load_json("rules/limits.json")
+        limits = load_json(LIMITS_FILE)
         per_word = float(limits.get("tokens_per_word_estimate", {}).get("value", per_word))
     except (OSError, ValueError, AttributeError):
         pass
@@ -453,7 +454,7 @@ def strip_token_limit(run):
     limit = constant(run.constants, "film_strip_tokens_per_unit_max", None)
     if limit is None:
         try:
-            limit = load_json("rules/limits.json").get("film_strip_tokens_per_unit_max", {}).get("value")
+            limit = load_json(LIMITS_FILE).get("film_strip_tokens_per_unit_max", {}).get("value")
         except (OSError, ValueError, AttributeError):
             limit = None
     return limit
@@ -1225,7 +1226,7 @@ def beat_flags(run, beat_identifier):
                 plain="points too hard at its meaning: too many inserts of planted things, music under what is left "
                       "unsaid, or a light change on the line that says the point")
 def check_film_09(run):
-    """Three counts (steps/09's heavy-handedness questions that code can count): inserts carrying a `plant:` thing
+    """Three counts (stages/09's heavy-handedness questions that code can count): inserts carrying a `plant:` thing
     item, more than plant_inserts_per_scene_max in a scene; a shot with music on a beat that has an `unsaid`; a light
     cue (LOOK light_cue resolved to a beat, or a shot's light_cue) on a beat flagged on_the_nose, the line that states
     the point."""

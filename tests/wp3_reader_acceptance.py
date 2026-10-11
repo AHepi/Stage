@@ -541,7 +541,7 @@ def make_project(story, parent):
 
 def selftest_shots(identifiers):
     """Twenty full SHOT records made from the gold turn shot, with the issued IDs and without code's fields."""
-    gold = (SKILL / "examples" / "01 The Catch - scene 10.md").read_text(encoding="utf-8").splitlines()
+    gold = (SKILL / "references" / "examples" / "01 The Catch - scene 10.md").read_text(encoding="utf-8").splitlines()
     start = next(index for index, line in enumerate(gold) if line.startswith("### SHOT SC10-SH150"))
     end = start + 1
     while end < len(gold) and gold[end].strip():

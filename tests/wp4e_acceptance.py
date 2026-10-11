@@ -7,18 +7,18 @@ What it proves (blueprint 7.2, 3 step 9, 14.2 row WP4):
   a temporary copy of the WP12a gold and of a clean compiled pack) fires with 7.2's message format (level, check
   ID, record, field, what is wrong, then the fix), naming the record and field it should, placed in a file and
   line; the build-2 checks FILM-05, FILM-07, FILM-09, GEN-16 and GEN-17 fire on theirs too;
-- every one of these checks is silent on the WP12a gold fixture (examples/01 and 02 with the scene 10 excerpt, the
+- every one of these checks is silent on the WP12a gold fixture (references/examples/01 and 02 with the scene 10 excerpt, the
   whole story when --story is given, and no story at all), at check --all and at steps 2, 9 and 10, with and
   without the stand-in model facts; silent on the chat-saved copy; and the GEN checks are silent on a clean
   compiled pack of scene 10;
-- while adapters/*.json (work package 8) are missing, the GEN checks that need model facts skip and say so;
+- while _config/adapters/*.json (work package 8) are missing, the GEN checks that need model facts skip and say so;
 - stage.py check --film on a project made from the gold writes the film strip (one line per shot) and
   12 Whole-film check.md (plain part, divider, FINDING records, END line); a FILM problem becomes one FINDING with
   source checker, a second run adds no duplicate, and check --all finds nothing wrong with the file it wrote.
 
 The GEN faults use STAND-IN model facts (tests/fixtures/plan generation and film/stand-in model facts.json, values
 from blueprint 8.2 and C3 L02 and L28), given to the checks through use_model_facts, so that the faults do not move
-when the dated adapter files change. The gold is also checked with the real adapters/*.json, and the groups about
+when the dated adapter files change. The gold is also checked with the real _config/adapters/*.json, and the groups about
 missing adapter files hide those files from the checks (without_adapter_files) rather than depend on their absence.
 
 Usage: python tests/wp4e_acceptance.py [--story "<The Catch, the whole story>"]
@@ -55,8 +55,8 @@ STAND_IN_FACTS = OWN_FIXTURES / "stand-in model facts.json"
 CLEAN_PACK = OWN_FIXTURES / "compiled pack SC10.json"
 EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
 CHAT_FOLDER = FIXTURES / "chat saved scene 10"
-GOLD_FILES = {"scene": SKILL / "examples" / "01 The Catch - scene 10.md",
-              "context": SKILL / "examples" / "02 The Catch - scene 10 - context.md"}
+GOLD_FILES = {"scene": SKILL / "references" / "examples" / "01 The Catch - scene 10.md",
+              "context": SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"}
 MACHINE = "For machines - do not edit"
 
 OWN_FAMILIES = ("PLAN", "GEN", "FILM")
@@ -80,7 +80,7 @@ RESULTS = []
 
 
 def without_adapter_files():
-    """Make the GEN checks behave as if adapters/video_models.json and image_models.json were missing (the files
+    """Make the GEN checks behave as if _config/adapters/video_models.json and image_models.json were missing (the files
     exist since work package 8, so their absence is simulated through the module's override)."""
     generation._MODEL_FACTS_OVERRIDE.update(facts=None, used=True)
 
@@ -320,7 +320,7 @@ def check_clean_pack():
         generation.use_model_facts(None)
         waiting = sorted(check_id for check_id, why in result.skipped if "model facts" in why)
         report(waiting == sorted(NEEDS_FACTS) and not own_lines(result),
-               "without adapters/*.json the GEN checks that need model facts skip and say so; the others still read "
+               "without _config/adapters/*.json the GEN checks that need model facts skip and say so; the others still read "
                "the pack", ", ".join(waiting))
         pack = apply_pack_edit(clean_pack(), {"clip": "SC10-SH170.1", "set": {"length_s": 17}})
         generation.use_model_facts(stand_in_facts())

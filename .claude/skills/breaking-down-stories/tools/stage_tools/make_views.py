@@ -57,7 +57,7 @@ import re
 from pathlib import Path
 from urllib.parse import quote
 
-from .record_format import (DIVIDER_LINE, FieldLine, Record, TextBlock, load_skill_data, normalise_word,
+from .record_format import (DIVIDER_LINE, LIMITS_FILE, FieldLine, Record, TextBlock, load_skill_data, normalise_word,
                             parse_file, parse_line_numbers, parse_story_point, record_lines, render_file,
                             sort_key_for_identifier, split_item, split_list)
 from .project_files import (CHOICES_FILE, FILES_IN_THIS_FOLDER, SCENE_LIST_FILE, SCENES_FOLDER, START_HERE, Project,
@@ -2197,7 +2197,7 @@ def summary_record_line(view, record, most_words=SUMMARY_TEXT_WORDS_MAX):
 
 
 def summary_words_limit(view):
-    """summary_words_max from rules/constants.json (else limits.json's whole_film_summary_words_max, else 6,000)."""
+    """summary_words_max from _config/rules/constants.json (else limits.json's whole_film_summary_words_max, else 6,000)."""
     try:
         value = view.constant("summary_words_max", None)
         if value:
@@ -2206,7 +2206,7 @@ def summary_words_limit(view):
         pass
     try:
         from .record_format import load_json
-        return int(load_json("rules/limits.json").get("whole_film_summary_words_max", {}).get("value", 6000))
+        return int(load_json(LIMITS_FILE).get("whole_film_summary_words_max", {}).get("value", 6000))
     except (OSError, ValueError, TypeError):
         return 6000
 

@@ -7,7 +7,7 @@ In plain words:
 - each TEXT is drawn as an SVG file reading normally and, for words that belong to the story world, a second copy
   mirrored, because a shot in the mirror world may need the reversed words (the orientation of each shot comes from
   derive_fields.text_orientation); title cards and captions are never mirrored (D12 rule 17);
-- sizes, fonts and colours come from adapters/phrasebook.json, "text_graphics" (D12 Recipe 7 and rules 6-7): the
+- sizes, fonts and colours come from _config/adapters/phrasebook.json, "text_graphics" (D12 Recipe 7 and rules 6-7): the
   title card is IBM Plex Sans Medium in capitals, off-white on black, capitals 6% of the picture height; words the
   audience must read have capitals at least 4% of the picture height;
 - the mirrored copy wraps the drawing in translate(width, 0) scale(-1, 1), because a bare scale(-1, 1) leaves a
@@ -29,7 +29,7 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 from .derive_fields import (Breakdown, number_of, scene_label, shot_number, text_orientation, text_reading_seconds)
-from .record_format import SKILL_FOLDER, normalise_word, split_item, split_list
+from .record_format import SKILL_FOLDER, adapter_file, normalise_word, split_item, split_list
 
 PACK_FOLDER = "20 Prompts for AI video"
 GRAPHICS_FOLDER = "Text graphics"
@@ -54,7 +54,7 @@ CONVERTERS = (
 
 
 def load_phrasebook(skill_folder=None):
-    path = Path(skill_folder or SKILL_FOLDER) / "adapters" / "phrasebook.json"
+    path = Path(skill_folder or SKILL_FOLDER) / adapter_file("phrasebook.json")
     if not path.is_file():
         return {}
     with open(path, encoding="utf-8") as handle:
@@ -340,7 +340,7 @@ def run_graphics(context):
     phrasebook = load_phrasebook(context.skill_folder)
     settings = phrasebook.get("text_graphics") or {}
     if not settings:
-        raise StageStop("The text graphic styles (adapters/phrasebook.json) are missing from the tools. Use a complete "
+        raise StageStop("The text graphic styles (_config/adapters/phrasebook.json) are missing from the tools. Use a complete "
                         "copy of the skill folder.")
     breakdown = Breakdown.from_project(folder, context.schema, context.words, context.constants)
     project_record = breakdown.project

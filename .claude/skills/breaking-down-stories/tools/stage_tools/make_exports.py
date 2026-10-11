@@ -952,7 +952,7 @@ def breakdown_schema(schema):
     properties = {
         "about": {"type": "string", "description": "What this file is."},
         "made_by": {"type": "string", "description": "The command that made it."},
-        "schema_version": {"type": "string", "description": "The version of schema/schema.json it follows."},
+        "schema_version": {"type": "string", "description": "The version of _config/schema/schema.json it follows."},
         "title": {"type": "string", "description": "The story's title."},
         "scope": {"type": "string", "description": "The scenes it covers: all, or a comma list of scene IDs."},
         "notice": {"type": "string", "description": "Private study, not for publication, or none."},

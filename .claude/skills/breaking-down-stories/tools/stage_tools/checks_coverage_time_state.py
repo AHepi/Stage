@@ -23,8 +23,8 @@ from derive_fields.py, and never changes a record. Every problem line has 7.2's 
 field, what is wrong, then the fix.
 
 Readings of 7.2 that the blueprint leaves open are written next to each check and in the WP4c build log. Numbers
-come from rules/constants.json by name (pause_tiers, long_pauses_per_scene_max, turn_reaction_min_s,
-scene_total_tolerance, main_actions_per_seconds, film_asl_range_s) and rules/tone_defaults.json.
+come from _config/rules/constants.json by name (pause_tiers, long_pauses_per_scene_max, turn_reaction_min_s,
+scene_total_tolerance, main_actions_per_seconds, film_asl_range_s) and _config/rules/tone_defaults.json.
 
 Standard library only.
 
@@ -57,8 +57,8 @@ from .derive_fields import (breakdown_for_run, constant, element_of, elements_pr
                             light_moves_in,
                             is_insert_or_card, list_items, number_of, provisional_floor, resolve_story_point,
                             seconds_text, state_from, states_in_play, time_floor)
-from .record_format import (load_json, normalise_word, parse_line_numbers, parse_quote_anchor, parse_story_point,
-                            sort_key_for_identifier, split_item, split_list)
+from .record_format import (TONE_DEFAULTS_FILE, load_json, normalise_word, parse_line_numbers, parse_quote_anchor,
+                            parse_story_point, sort_key_for_identifier, split_item, split_list)
 
 # Seconds are compared as written: a screen time of 13.8 against a floor of 13.8 is not under it.
 TIME_TOLERANCE_S = 0.001
@@ -1147,7 +1147,7 @@ def check_time_03(run):
     problems = []
     tolerance = constant(run.constants, "scene_total_tolerance", None)
     if tolerance is None:
-        run.skip("TIME-03", "scene_total_tolerance is missing from rules/constants.json")
+        run.skip("TIME-03", "scene_total_tolerance is missing from _config/rules/constants.json")
         return problems
     far = constant(run.constants, "scene_target_far_ratio", None)
     for scene in kept_scenes(run):
@@ -1266,7 +1266,7 @@ def check_time_04(run):
     problems = []
     most = constant(run.constants, "long_pauses_per_scene_max", None)
     if most is None:
-        run.skip("TIME-04", "long_pauses_per_scene_max is missing from rules/constants.json")
+        run.skip("TIME-04", "long_pauses_per_scene_max is missing from _config/rules/constants.json")
         return problems
     ranges, _ = pause_tier_ranges(run)
     for scene in kept_scenes(run):
@@ -1306,7 +1306,7 @@ def check_time_05(run):
     problems = []
     minimum = constant(run.constants, "turn_reaction_min_s", None)
     if minimum is None:
-        run.skip("TIME-05", "turn_reaction_min_s is missing from rules/constants.json")
+        run.skip("TIME-05", "turn_reaction_min_s is missing from _config/rules/constants.json")
         return problems
     ranges, _ = pause_tier_ranges(run)
     for scene in kept_scenes(run):
@@ -1405,7 +1405,7 @@ def check_time_08(run):
     problems = []
     ranges, hold_above = pause_tier_ranges(run)
     if not ranges:
-        run.skip("TIME-08", "pause_tiers is missing from rules/constants.json")
+        run.skip("TIME-08", "pause_tiers is missing from _config/rules/constants.json")
         return problems
     for scene in kept_scenes(run):
         for beat in breakdown.beats_of(scene.identifier):
@@ -1458,7 +1458,7 @@ def check_time_06(run):
     problems = []
     rule = constant(run.constants, "main_actions_per_seconds", None)
     if not isinstance(rule, dict) or not rule.get("per_s"):
-        run.skip("TIME-06", "main_actions_per_seconds is missing from rules/constants.json")
+        run.skip("TIME-06", "main_actions_per_seconds is missing from _config/rules/constants.json")
         return problems
     actions, per_seconds = float(rule.get("actions", 1)), float(rule["per_s"])
     for scene in kept_scenes(run):
@@ -1516,12 +1516,12 @@ def check_time_07(run):
     else:
         base = next((value for value in band.values() if isinstance(value, list)), None)
         try:
-            tones = load_json("rules/tone_defaults.json").get("tones", {})
+            tones = load_json(TONE_DEFAULTS_FILE).get("tones", {})
         except (OSError, ValueError):
             tones = {}
         factor = (tones.get(tone) or {}).get("shot_length_factor")
         if base is None or factor is None:
-            run.skip("TIME-07", f"no shot_length_factor for the home tone {tone} in rules/tone_defaults.json")
+            run.skip("TIME-07", f"no shot_length_factor for the home tone {tone} in _config/rules/tone_defaults.json")
             return problems
         low, high = base[0] * factor, base[1] * factor
         how = f"{seconds_words(base[0])}-{seconds_words(base[1])} s scaled by {tone}'s shot_length_factor {factor}"

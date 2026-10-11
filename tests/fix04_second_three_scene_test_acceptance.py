@@ -230,7 +230,7 @@ def length_and_choices(scratch):
     result = helpers.checked(texts, ["PLAN-04"], story=False)
     skipped = [why for check, why in result.skipped if check == "PLAN-04"]
     assert not any("excerpt" in why for why in skipped), skipped
-    choices = (SKILL.parent.parent.parent / "09 Example - The Catch, scene 10" / "01 Choices.md").read_text(
+    choices = (SKILL.parent.parent.parent / "02 Example - The Catch, scene 10" / "01 Choices.md").read_text(
         encoding="utf-8")
     small = choices.split("## Small choices I made", 1)[1].split("\n## ", 1)[0]
     assert "Faces: invented faces for everyone (choice 11)" in small, small[:400]
@@ -243,11 +243,11 @@ def length_and_choices(scratch):
        "everywhere")
 def instructions(scratch):
     from stage_tools.checks_craft_reasons_words import description_range
-    phrases = {"steps/06 Film rules.md": "matched `pause_after = hold`",
-               "steps/07 Scene design and shot list.md": "the staging always changes on a turn, so it is one of them",
-               "steps/04 Characters, places and things.md": "the same at both ends",
-               "steps/01 Read the story.md": "that `read` did not place",
-               "templates/07 Characters and voices.md": "25-40 words for a principal or non-human"}
+    phrases = {"stages/06 Film rules/CONTEXT.md": "matched `pause_after = hold`",
+               "stages/07 Scene design and shot list/CONTEXT.md": "the staging always changes on a turn, so it is one of them",
+               "stages/04 Characters, places and things/CONTEXT.md": "the same at both ends",
+               "stages/01 Read the story/CONTEXT.md": "that `read` did not place",
+               "references/templates/07 Characters and voices.md": "25-40 words for a principal or non-human"}
     missing = [name for name, phrase in phrases.items() if phrase not in (SKILL / name).read_text(encoding="utf-8")]
     assert not missing, missing
     definition = SCHEMA.field("PROJECT", "scope") or {}

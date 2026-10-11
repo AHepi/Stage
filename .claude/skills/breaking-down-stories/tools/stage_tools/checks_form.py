@@ -383,7 +383,7 @@ def field_suggestion(schema, words, type_name, field_name):
                if difflib.SequenceMatcher(None, field_name, match).ratio() >= 0.75]
     if matches:
         return f"Did you mean {matches[0]}?"
-    return "Fix: use a field of this record type (reference/03 Field guide lists them)"
+    return "Fix: use a field of this record type (references/formats/03 Field guide lists them)"
 
 
 def analyse(record_files, context):
@@ -815,8 +815,8 @@ def missing_field_fix(name, definition):
         return f'Fix: add a line such as "- {name}: {example}"'
     label = definition.get("label") or name
     if definition.get("repeat") or "none" in [str(value) for value in (definition.get("also_allowed") or [])]:
-        return f'Fix: add "- {name}: <{label.lower()}>", or "- {name}: none" when there is nothing (reference/03 Field guide)'
-    return f'Fix: add "- {name}: <{label.lower()}>" (reference/03 Field guide shows its form)'
+        return f'Fix: add "- {name}: <{label.lower()}>", or "- {name}: none" when there is nothing (references/formats/03 Field guide)'
+    return f'Fix: add "- {name}: <{label.lower()}>" (references/formats/03 Field guide shows its form)'
 
 
 def missing_sub_parts(record, name, definition, context, record_file, first_copy):

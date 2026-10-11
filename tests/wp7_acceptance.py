@@ -1,7 +1,7 @@
 """wp7_acceptance.py: the acceptance test of work package 7, the estimate (blueprint 14.2 row "WP7 Estimate").
 
 It checks, in plain groups:
-- the dated price table adapters/prices.json (date 2026-09-27, a page or a research file for every price, D13's shape);
+- the dated price table _config/adapters/prices.json (date 2026-09-27, a page or a research file for every price, D13's shape);
 - the estimator against D13's own worked figures (Recipe 0 and rule R25: scene 6 from its 36 shots gives 1,250
   generated seconds, $78 / $157 / $377 and 14.0 base hours; scene 6 from its words; the 15-minute plan's scene);
 - the first estimate of The Catch through stage.py new, read and estimate: between 1,926 and 2,309 seconds of
@@ -43,7 +43,7 @@ EXCERPT = FIXTURES / "The Catch - lines 397-489.txt"
 CHAT_SAVED = FIXTURES / "chat saved scene 10"
 NIGHT_SHIFT = FIXTURES / "reader" / "Night shift - Catch layout.txt"
 LAMP_KEEPER = FIXTURES / "reader" / "The lamp keeper - chapters.md"
-GOLD = [SKILL / "examples" / "01 The Catch - scene 10.md", SKILL / "examples" / "02 The Catch - scene 10 - context.md"]
+GOLD = [SKILL / "references" / "examples" / "01 The Catch - scene 10.md", SKILL / "references" / "examples" / "02 The Catch - scene 10 - context.md"]
 
 sys.path.insert(0, str(TOOLS))
 
@@ -163,7 +163,7 @@ def set_field(folder, file_name, type_name, identifier, field, value):
 
 def group_price_table():
     problems = []
-    path = SKILL / "adapters" / "prices.json"
+    path = SKILL / "_config" / "adapters" / "prices.json"
     data = json.loads(path.read_text(encoding="utf-8"))
     expect(problems, "price_date", data.get("price_date"), "2026-09-27")
     video = data.get("video", {})
@@ -203,7 +203,7 @@ def group_price_table():
         problems.append("an email address in the price table")
     if re.search(r"keyframe|bible", text):
         problems.append("a retired word (keyframe, bible) in the price table's keys")
-    report(not problems, "the price table adapters/prices.json: dated 2026-09-27, D13's prices, plans, takes and "
+    report(not problems, "the price table _config/adapters/prices.json: dated 2026-09-27, D13's prices, plans, takes and "
            "licence flags, a page or source for every price", shorten(problems))
 
 

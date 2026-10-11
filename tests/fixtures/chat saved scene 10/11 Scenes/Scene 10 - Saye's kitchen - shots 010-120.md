@@ -37,10 +37,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-SAYE
 - move: static
 - move_reason: none
-- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: PR-FLASK.S03 | dwell_s: 2.5 | does: holds the door open; her eyes go over the three of them, to the blood on Jude's shirt, then down to Eli's fist, and stay there | tactic: appraising | energy: still | display: 1 | still: head, torso | travel: none
-- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: stands on the step with her back to us, one arm round Jude | tactic: appealing | energy: held | display: 1 | still: head | travel: none
-- subject: CH-JUDE.S02 | at: centre | faces: down | eyeline: down | dwell_s: 4 | does: hangs between them, head down, the blue cloth dark on his shoulder | tactic: enduring | energy: spent | display: 1 | still: head, hands | travel: none
-- subject: CH-ELI.S03 | at: right_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: stands on the step with his back to us, one arm round Jude, the other hand low at his side | tactic: hiding | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: PR-FLASK.S03 | dwell_s: 2.5 | does: holds the door open; her eyes go over the three of them, to the blood on Jude's shirt, then down to Eli's fist, and stay there | tactic: appraising | energy: still | display: 1 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: stands on the step with her back to us, one arm round Jude | tactic: appealing | energy: held | display: 1 | travel: none
+- subject: CH-JUDE.S02 | at: centre | faces: down | eyeline: down | dwell_s: 4 | does: hangs between them, head down, the blue cloth dark on his shoulder | tactic: enduring | energy: spent | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: right_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: stands on the step with his back to us, one arm round Jude, the other hand low at his side | tactic: hiding | energy: still | display: 1 | travel: none
 - thing: PR-LAMP.S01 | emphasis: 0 | at: far behind Saye, a warm point on the kitchen table
 - text: none
 - keep_hidden: FT-01 | how: obstruction
@@ -56,7 +56,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - needs_description: yes
 - screen_time: 4
 - moment: 0-4 | shows: the door opens on Saye, dressed and buttoned; her eyes move over the three of them, to the blood, then down, and hold there
-- end: Saye still, eyes down on something below the frame
+- end: Saye in her doorway, eyes down on something below the frame
 - cut_out_on: keep_hidden
 - held: no
 - previs_level: 0
@@ -92,7 +92,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: PR-FLASK.S03
 - move: static
 - move_reason: none
-- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 3.5 | does: his fist holds the flask against his coat, knuckles white, dried blood on the sleeve; his other arm stays round Jude | tactic: hiding | energy: still | display: 1 | still: hands, torso | travel: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 3.5 | does: his fist holds the flask against his coat, knuckles white, dried blood on the sleeve; his other arm stays round Jude | tactic: hiding | energy: still | display: 1 | travel: none
 - thing: PR-FLASK.S03 | emphasis: 1 | at: centre, in Eli's fist
 - text: none
 - keep_hidden: FT-01 | how: frame_edge
@@ -107,8 +107,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 3.5
-- moment: 0-3.5 | shows: the flask held still in his fist, the empty clip under it; late in the shot Saye's one word, unseen
-- end: the fist still, the flask in it
+- moment: 0-3.5 | shows: the flask in his fist, his knuckles whitening round it, the empty clip under it; late in the shot Saye's one word, unseen
+- end: the fist closed tight on the flask
 - cut_out_on: line_end
 - held: no
 - previs_level: 0
@@ -144,10 +144,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - move: static
 - move_reason: none
 - glass: window | state: clear | camera: through
-- subject: CH-SAYE.S01 | at: right_third | faces: CH-JUDE | eyeline: CH-JUDE | dwell_s: 5 | does: bends over Jude, her case open on the counter behind her, and starts to cut his shirt | tactic: treating | energy: held | display: 1 | still: head | travel: none
-- subject: CH-IONA.S02 | at: left_third | faces: CH-SAYE | eyeline: CH-JUDE | dwell_s: 5 | does: holds the lamp out over Jude's chest at arm's length, so Saye can see | tactic: helping | energy: held | display: 1 | still: hands, head | travel: none
-- subject: CH-JUDE.S02 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 5 | does: lies on his back on the table, one hand over the blue cloth on his shoulder | tactic: enduring | energy: spent | display: 1 | still: whole_body | travel: none
-- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 5 | does: stands back by the bare fridge, empty-handed, arms at his sides | tactic: waiting | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-JUDE | eyeline: CH-JUDE | dwell_s: 5 | does: bends over Jude, her case open on the counter behind her, and starts to cut his shirt | tactic: treating | energy: held | display: 1 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: CH-SAYE | eyeline: CH-JUDE | dwell_s: 5 | does: holds the lamp out over Jude's chest at arm's length, so Saye can see | tactic: helping | energy: held | display: 1 | travel: none
+- subject: CH-JUDE.S02 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 5 | does: lies on his back on the table, one hand over the blue cloth on his shoulder | tactic: enduring | energy: spent | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 5 | does: stands back by the bare fridge, empty-handed, arms at his sides | tactic: waiting | energy: still | display: 1 | travel: none
 - thing: PR-MINT.S01 | emphasis: 1 | at: right edge, on the sill in the window | plant: PL-08
 - thing: PR-FLASK.S03 | emphasis: 0 | at: on the counter under the window
 - thing: PR-LAMP.S01 | emphasis: 0 | at: in Iona's hand over the table
@@ -166,7 +166,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 5
-- moment: 0-2.5 | shows: the room holds still: bare walls, a bare fridge door, the mint on the sill at the edge of the lamp's reach
+- moment: 0-2.5 | shows: the lamp in Iona's hand sways a little and its light moves over bare walls, a bare fridge door, the mint on the sill at the edge of the lamp's reach
 - moment: 2.5-5 | shows: Saye's scissors start up Jude's shirt; Iona brings the lamp closer
 - end: Saye bent over Jude, Iona's lamp low over them both
 - cut_out_on: action_midpoint
@@ -204,8 +204,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-SAYE
 - move: static
 - move_reason: none
-- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-JUDE.S03 | dwell_s: 4 | does: cuts the shirt open, wipes the wound, runs two flat hands down his chest and stops them over an old white scar low on his belly | tactic: examining | energy: rising | display: 1 | still: torso | travel: none
-- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 4 | does: his bare chest rises and falls under her hands | tactic: enduring | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-JUDE.S03 | dwell_s: 4 | does: cuts the shirt open, wipes the wound, runs two flat hands down his chest and stops them over an old white scar low on his belly | tactic: examining | energy: rising | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 4 | does: his bare chest rises and falls under her hands | tactic: enduring | energy: still | display: 1 | travel: none
 - thing: PR-SCISSORS.S01 | emphasis: 1 | at: in Saye's hand at the start
 - text: none
 - keep_hidden: FT-01 | how: frame_edge
@@ -221,7 +221,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - needs_description: yes
 - screen_time: 4
 - moment: 0-4 | shows: the scissors cut the shirt open; two flat hands work down his chest and stop over the old white scar low on his own right side
-- end: her hands still and flat, either side of the scar
+- end: her hands flat, either side of the scar, rising and falling with his breath
 - cut_out_on: thought_complete
 - held: no
 - previs_level: 0
@@ -257,8 +257,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - move: static
 - move_reason: none
 - glass: window | state: clear | camera: through
-- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: CH-JUDE.S03 | dwell_s: 6 | does: looks from the scar to Jude's face and asks it without looking up; hears his answer and her face stays as it was | tactic: probing | energy: still | display: 1 | still: head, torso | travel: none
-- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 7 | does: her shoulder and the lamp in her hand, soft at the edge of the frame | tactic: helping | energy: held | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: CH-JUDE.S03 | dwell_s: 6 | does: looks from the scar to Jude's face and asks it without looking up; hears his answer and her face stays as it was | tactic: probing | energy: still | display: 1 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 7 | does: her shoulder and the lamp in her hand, soft at the edge of the frame | tactic: helping | energy: held | display: 1 | travel: none
 - thing: PR-LAMP.S01 | emphasis: 0 | at: bottom left, in Iona's hand
 - text: none
 - keep_hidden: FT-01 | how: frame_edge
@@ -312,8 +312,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: PR-STETHOSCOPE.S01
 - move: static
 - move_reason: none
-- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-JUDE.S03 | dwell_s: 4 | does: sets the stethoscope on his chest and holds it; lifts it across to the other side and holds it there much longer | tactic: verifying | energy: held | display: 1 | still: torso | travel: none
-- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 4 | does: his chest rises and falls under the disc | tactic: enduring | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-JUDE.S03 | dwell_s: 4 | does: sets the stethoscope on his chest and holds it; lifts it across to the other side and holds it there much longer | tactic: verifying | energy: held | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 4 | does: his chest rises and falls under the disc | tactic: enduring | energy: still | display: 1 | travel: none
 - thing: PR-STETHOSCOPE.S01 | emphasis: 1 | at: centre, on his chest
 - text: none
 - keep_hidden: FT-01 | how: frame_edge
@@ -328,8 +328,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 4
-- moment: 0-4 | shows: the disc rests on his own right side; lifts; comes down on his own left side, over the heart, and stays there without moving
-- end: the disc still, on his own left side
+- moment: 0-4 | shows: the disc rests on his own right side; lifts; comes down on his own left side, over the heart, and stays there much longer, rising and falling with his chest
+- end: the disc on his own left side, rising with his breath
 - cut_out_on: keep_hidden
 - held: no
 - previs_level: 0
@@ -364,7 +364,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-IONA
 - move: static
 - move_reason: none
-- subject: CH-IONA.S02 | at: centre | faces: camera | eyeline: CH-SAYE | dwell_s: 4 | does: leans across the corner of the table and sets the lamp down by Jude's hip, straightens with both hands free, and says it plainly | tactic: normalizing | energy: held | display: 1 | still: head | travel: none
+- subject: CH-IONA.S02 | at: centre | faces: camera | eyeline: CH-SAYE | dwell_s: 4 | does: leans across the corner of the table and sets the lamp down by Jude's hip, straightens with both hands free, and says it plainly | tactic: normalizing | energy: held | display: 1 | travel: none
 - thing: PR-LAMP.S01 | emphasis: 1 | at: bottom of the frame, set down on the table
 - text: none
 - keep_hidden: FT-01 | how: frame_edge
@@ -380,7 +380,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - needs_description: no
 - screen_time: 5.5
 - moment: 0-1.5 | shows: she leans in and sets the lamp down on the table
-- moment: 1.5-5.5 | shows: she straightens, both hands free, and says it; her eyes stay on Saye
+- moment: 1.5-5.5 | shows: she straightens, both hands free, and says it; she blinks once, her eyes on Saye
 - end: Iona upright, hands empty, eyes on Saye
 - cut_out_on: line_end
 - held: no
@@ -418,10 +418,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-IONA
 - move: static
 - move_reason: none
-- subject: CH-IONA.S02 | at: left_third | faces: frame_right | eyeline: CH-SAYE | dwell_s: 9 | does: raises the hand nearest the camera, palm out, level with her face, and holds it there; answers without lowering it | tactic: refusing | energy: held | display: 1 | still: head, torso | must_not: a look down at her own hand, saved for shot 100 | travel: none
-- subject: CH-SAYE.S01 | at: right_third | faces: frame_left | eyeline: CH-IONA | dwell_s: 9 | does: looks up from Jude to Iona, raises the hand nearest the camera to the same height, palm out, and holds it while she speaks | tactic: demonstrating | energy: still | display: 1 | still: head, torso | travel: none
-- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 9 | does: lies still between them, his head toward the camera | tactic: enduring | energy: still | display: 1 | still: whole_body | travel: none
-- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 9 | does: stands small and still by the fridge far behind them, a water bottle in his hands | tactic: waiting | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: frame_right | eyeline: CH-SAYE | dwell_s: 9 | does: raises the hand nearest the camera, palm out, level with her face, and holds it there; answers without lowering it | tactic: refusing | energy: held | display: 1 | must_not: a look down at her own hand, saved for shot 100 | travel: none
+- subject: CH-SAYE.S01 | at: right_third | faces: frame_left | eyeline: CH-IONA | dwell_s: 9 | does: looks up from Jude to Iona, raises the hand nearest the camera to the same height, palm out, and holds it while she speaks | tactic: demonstrating | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 9 | does: lies between them, his head toward the camera, his chest rising and falling | tactic: enduring | energy: still | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 9 | does: stands small by the fridge far behind them, a water bottle in his hands | tactic: waiting | energy: still | display: 1 | travel: none
 - thing: MO-RINGS | emphasis: 0 | at: on the lowered far hands, out of sight | plant: PL-07
 - thing: PR-LAMP.S01 | emphasis: 0 | at: centre, low on the table between them
 - thing: PR-BOTTLE.S01 | emphasis: 0 | at: deep centre, in Eli's hands
@@ -442,7 +442,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - moment: 0-2 | shows: Saye looks up from Jude to Iona and speaks
 - moment: 2-4.5 | shows: Iona raises the hand nearest the camera; Saye raises hers to the same height; both hold
 - moment: 4.5-9 | shows: the two short lines pass between them; neither hand comes down
-- end: both hands still raised, palms out, the lamp low between them, Eli small in the middle behind
+- end: both hands raised, palms out, the lamp low between them, Eli small in the middle behind
 - cut_out_on: line_end
 - held: yes
 - previs_level: 2
@@ -478,7 +478,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-SAYE
 - move: static
 - move_reason: none
-- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-IONA | dwell_s: 2.5 | does: her lowered hand rests flat on the table's edge by Jude's shoulder, a plain gold ring on it | tactic: demonstrating | energy: still | display: 1 | still: hands | travel: none
+- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-IONA | dwell_s: 2.5 | does: her lowered hand rests flat on the table's edge by Jude's shoulder, a plain gold ring on it | tactic: demonstrating | energy: still | display: 1 | travel: none
 - thing: MO-RINGS | emphasis: 2 | at: centre, on Saye's lowered hand
 - text: none
 - must_show: MO-RINGS
@@ -492,8 +492,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 2.5
-- moment: 0-2.5 | shows: the hand lies still; the ring catches the lamp
-- end: the ringed hand still on the table's edge
+- moment: 0-2.5 | shows: the hand lies flat on the table's edge; the ring catches the lamp
+- end: the ringed hand flat on the table's edge
 - cut_out_on: thought_complete
 - held: no
 - previs_level: 0
@@ -528,7 +528,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-IONA
 - move: static
 - move_reason: none
-- subject: CH-IONA.S02 | at: centre | faces: down | eyeline: MO-RINGS | dwell_s: 2.5 | does: her left hand rests on the table's edge, the plain gold ring on it; the fingers do not move | tactic: doubting | energy: still | display: 1 | still: hands | travel: none
+- subject: CH-IONA.S02 | at: centre | faces: down | eyeline: MO-RINGS | dwell_s: 2.5 | does: her left hand rests flat on the table's edge, the plain gold ring on it | tactic: doubting | energy: still | display: 1 | travel: none
 - thing: MO-RINGS | emphasis: 2 | at: centre, on Iona's own left hand
 - text: none
 - must_show: MO-RINGS
@@ -542,8 +542,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - music: none
 - needs_description: yes
 - screen_time: 2.5
-- moment: 0-2.5 | shows: her ringed hand lies still on the table's edge
-- end: the hand still
+- moment: 0-2.5 | shows: her ringed hand rests flat on the table's edge; the lamp glints on the ring
+- end: the hand flat on the table's edge
 - cut_out_on: thought_complete
 - held: no
 - previs_level: 0
@@ -578,10 +578,10 @@ Below this line: details for the AI and the checker. You never need to read them
 - focus_on: CH-ELI
 - move: static
 - move_reason: none
-- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: PR-BOTTLE.S01 | dwell_s: 4 | does: twists the cap of a water bottle; it does not turn; he stops, twists it the other way, and it comes off; his eyes come up to Saye | tactic: compensating | energy: held | display: 1 | still: head | must_not: a look toward the lens, saved for scene 13 | travel: none
-- subject: CH-IONA.S02 | at: left_third | faces: frame_right | eyeline: CH-SAYE | dwell_s: 6 | does: soft at the left of the frame, her raised hand lowered now | tactic: doubting | energy: still | display: 1 | still: whole_body | travel: none
-- subject: CH-SAYE.S01 | at: right_third | faces: CH-ELI | eyeline: CH-ELI | dwell_s: 4 | does: soft at the right of the frame; her head turns toward the far end of the room and stays turned | tactic: noticing | energy: still | display: 1 | still: torso | travel: none
-- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 6 | does: lies still on the table between them | tactic: enduring | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: PR-BOTTLE.S01 | dwell_s: 4 | does: twists the cap of a water bottle; it does not turn; he stops, twists it the other way, and it comes off; his eyes come up to Saye | tactic: compensating | energy: held | display: 1 | must_not: a look toward the lens, saved for scene 13 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: frame_right | eyeline: CH-SAYE | dwell_s: 6 | does: soft at the left of the frame, her raised hand lowered now | tactic: doubting | energy: still | display: 1 | travel: none
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-ELI | eyeline: CH-ELI | dwell_s: 4 | does: soft at the right of the frame; her head turns toward the far end of the room and stays turned | tactic: noticing | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 6 | does: lies on the table between them, his chest rising and falling | tactic: enduring | energy: still | display: 1 | travel: none
 - thing: PR-BOTTLE.S01 | emphasis: 1 | at: centre, in Eli's hands
 - text: none
 - must_show: PR-BOTTLE.S01
@@ -597,7 +597,7 @@ Below this line: details for the AI and the checker. You never need to read them
 - screen_time: 6
 - moment: 0-3.5 | shows: he twists the cap; it will not turn; he stops
 - moment: 3.5-6 | shows: he twists it the other way and it comes off; his eyes come up to Saye
-- end: Eli still, the open bottle in one hand, eyes on Saye
+- end: Eli by the fridge, the open bottle in one hand, eyes on Saye
 - cut_out_on: thought_complete
 - held: no
 - previs_level: 0
@@ -632,8 +632,8 @@ Below this line: details for the AI and the checker. You never need to read them
 - move: static
 - move_reason: none
 - glass: window | state: clear | camera: through
-- subject: CH-SAYE.S01 | at: centre | faces: frame_left | eyeline: CH-ELI | dwell_s: 1.5 | does: her head stays turned toward Eli; then it turns further, to the counter behind her where the flask stands | tactic: noticing | energy: still | display: 1 | still: torso, hands | must_not: reaching for the flask, saved for beat 6 | travel: none
-- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 2.5 | does: her shoulder, soft at the edge of the frame | tactic: doubting | energy: still | display: 1 | still: whole_body | travel: none
+- subject: CH-SAYE.S01 | at: centre | faces: frame_left | eyeline: CH-ELI | dwell_s: 1.5 | does: her head stays turned toward Eli; then it turns further, to the counter behind her where the flask stands | tactic: noticing | energy: still | display: 1 | must_not: reaching for the flask, saved for beat 6 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 2.5 | does: her shoulder, soft at the edge of the frame | tactic: doubting | energy: still | display: 1 | travel: none
 - thing: PR-FLASK.S03 | emphasis: 0 | at: left third, soft on the counter behind Saye
 - text: none
 - must_show: none

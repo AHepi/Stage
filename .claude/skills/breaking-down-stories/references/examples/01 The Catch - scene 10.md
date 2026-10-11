@@ -1,0 +1,1776 @@
+# Scene 10 - Saye's kitchen
+
+## At a glance
+
+Before dawn Saye opens her back door on three bloodied people and looks longest at the flask in Eli's fist. In her bare kitchen she cleans Jude's wound and tests them: hold up your right hand. Then she hands Iona a mint leaf, and Iona's own mouth tells her the truth: it is not the world that turned, it is them. Saye picks up the phone, waits until Iona's body is out of her way, and keeps everyone in the room.
+
+11 beats, 20 shots and the title card, about 1 minute 53 seconds. The turn is beat 7, "Not mint.", in shot 150. The second turn is beat 11: Saye waits, and Iona steps aside.
+
+## The shots, one line each
+
+- shot 010, medium, 4 seconds: from the back step, Saye in her doorway, fully dressed; her eyes go from the three of them to the blood, then down to the flask, and stay there
+- shot 020, insert, 3.5 seconds: the flask in Eli's fist, blood on his coat sleeve; Saye, unseen: "Kitchen."
+- shot 030, medium wide, 5 seconds: the bare kitchen from the high corner by the hall door: Jude on the table, Saye cutting his shirt, Iona holding the lamp, Eli back by the fridge, the mint small on the sill
+- shot 040, insert, 4 seconds: Saye's quick flat hands work down Jude's chest and stop at an old white scar
+- shot 050, medium close-up, 7 seconds: "Was your appendix on the left?"; Jude, below the frame: "They didn't let me watch."; her face does not change
+- shot 060, insert, 4 seconds: the stethoscope crosses to the other side of his chest and stays there
+- shot 070, medium close-up, 5.5 seconds: Iona sets the lamp back on the table and explains the scar away (setting the lamp down is an addition)
+- shot 080, medium, 9 seconds: from far back along the table, the two women raise the hand nearest the camera, like a woman and her reflection; Eli small and deep in the middle
+- shot 090, insert, 2.5 seconds: Saye's wedding ring, on the hand that looks like her right
+- shot 100, insert, 2.5 seconds: Iona's own ring, on her own left hand
+- shot 110, medium wide, 6 seconds: the same far frame, sharp on Eli: the cap will not give; he twists it the other way; his eyes come up to Saye
+- shot 120, medium close-up, 2.5 seconds: Saye has seen him do it; her head turns to the flask on the counter
+- shot 130, insert, 3 seconds: her hand goes toward the flask; Eli, unseen: "Don't open the flask."; the hand stops
+- shot 140, medium wide, 7 seconds: the high corner again: scissors down; the leaf torn from the pot and held out into the lamplight: "Chew that."
+- shot 150, close-up, 15 seconds, the turn: Iona chews, stops, chews once more; "Not mint."; we stay on her through Saye's answer
+- shot 160, medium close-up, 4 seconds: Saye's one look at Iona, then she takes up her phone
+- shot 170, medium close-up, 6 seconds: "Who are you calling?"; Saye, off the frame: "The hospital. Then the police."
+- shot 180, medium wide, 4 seconds: down the table's line again: Iona steps into it, between Saye and Eli
+- shot 190, wide, 9 seconds, the second turn: held from the high corner: "Look at Jude. I cannot finish that here."; Saye waits; Iona steps aside
+- shot 200, medium, 3 seconds: "Nobody leave this room."; cut to black
+- shot 990, title card, 5 seconds: THE CATCH, white on black
+
+## Why it's shot this way
+
+- The scene turns inside Iona's mouth ("Her face changes."), so it has one close-up only, spent on the turn and held for 15 seconds while Saye's proof reaches her from off the frame. Nothing earlier is as close.
+- The raised hands are the film's first perfectly mirrored frame, taken from far back along the table on a long lens. It is kept for two moments only: here and the rings at the glass in scene 29, which is framed the same way.
+- The rings stay out of sight until the script shows them. Saye's hands are kept at the edge of every earlier frame, so the ring on the hand that looks like her right arrives when the story says it does.
+- Eli gives himself away with a bottle cap "Across the room", so it plays deep in the same far frame, and his line about the flask is heard over the flask, not his face. His close shots are saved for scene 13.
+- The light never changes for the mint. The story says "Nothing has happened to the mint", so only Iona's face changes; the room keeps its one lamp and its hum.
+- The second turn is a wait. The high corner frame holds all four people without a cut until Iona steps aside and Saye has the room.
+
+## Small choices I made
+
+- Iona sets the lamp back on the table before the raised hands. The story only says she holds it; putting it down frees her right hand and lights both women alike. Keep or cut it.
+- The three come to the back door, which opens into the kitchen, and Eli stands at the far end by the fridge, on the table's line. The story does not place them.
+- Staging option: the far camera down the table (chosen), or Saye in the front of the frame with Eli behind her. The first matches the rings in scene 29.
+
+Below this line: details for the AI and the checker. You never need to read them.
+
+### SCENE SC10 Saye's kitchen
+- location: LOC-SAYE-KITCHEN
+- look: LK-SAYE-KITCHEN-NIGHT
+- value: SC10-V1 | name: normal or altered, in Iona's belief about their own bodies | core: yes | open: + | close: --- | turns_at: SC10-B07 | kind: revelation
+- value: SC10-V2 | name: free or contained, in who decides where the three of them go | core: no | open: + | close: -- | turns_at: SC10-B11 | kind: action
+- value: SC10-V3 | name: trust or doubt, in Iona's trust in Eli | core: no | open: + | close: + | kind: none
+- want: CH-SAYE | want: to find out what has happened to them before anyone leaves | hidden: to see the flask Eli wrote to her about | holds_back: what she knows about the trial
+- want: CH-IONA | want: to get Jude treated and keep the three of them together and free | hidden: to go on believing the world changed and they did not | holds_back: how much the backwards signs have frightened her
+- want: CH-ELI | want: to get Saye's help without saying what he did | hidden: to keep the flask shut | holds_back: that he expected all of this
+- want: CH-JUDE | want: to stay alive and keep it light | hidden: how much the wound hurts | holds_back: his fear for Iona
+- driver: CH-SAYE
+- conflict: asymmetric
+- third_thing: the tests Saye sets them: the raised hands, then the mint leaf
+- staging: Staging assumed except the two women facing each other across the table (line 428): beat 1 at the back door, then Jude on his back on the table with his head to the west, Saye on its south side, Iona on its north side, Eli at the east end by the fridge on the table's line; stations: the table, the counter and sill under the window, the fridge end.
+- start: CH-SAYE | at: SAYE_DOOR | faces: [-1.0, 0.9] | posture: standing
+- start: CH-IONA | at: [-0.7, 1.25] | faces: [0.25, 0.9] | posture: standing
+- start: CH-ELI | at: [-0.7, 0.6] | faces: [0.25, 0.9] | posture: standing
+- start: CH-JUDE | at: [-0.7, 0.93] | faces: [0.25, 0.9] | posture: standing
+- scene_idea: Saye proves with a leaf what Iona would not accept from a street sign, then wins by waiting; at the main turn only the camera (the scene's one close-up, held) and the sound (room sound only) change.
+- department_idea: camera | idea: Level, static and at Iona's eye height throughout; the one long lens is the far frame down the table (the reflection, the cap, the body in the way); the one close-up is spent on the turn and held. | holds_baseline: no | because: CR-IONA, RC-01, LX-01, SC10-B07
+- department_idea: light | idea: One lamp is the only light; Iona lifts it for Saye and then sets it back between the women so both are lit alike, and it does not change at the mint because nothing has happened to the mint. | holds_baseline: yes | because: LK-SAYE-KITCHEN-NIGHT, PR-LAMP.S01
+- department_idea: staging | idea: The women face each other across Jude like reflections while Eli, the one who already knows, stands at the centre of the mirror on the table's line; at the second turn Iona's body stands in that line, then leaves it. | holds_baseline: no | because: LOC-SAYE-KITCHEN, SC10-B04, SC10-B11
+- department_idea: sound | idea: The room's hum under everything; the scissors set down and the chewing are the loudest sounds, and everything but the room drops away under the turn and under the wait. | holds_baseline: no | because: SC10-B07, SC10-B11, LOC-SAYE-KITCHEN
+- department_idea: design | idea: A kitchen with nothing of anybody in it; the pot of mint is the only living thing and its green the only colour, and it becomes the proof. | holds_baseline: yes | because: LOC-SAYE-KITCHEN, MO-MINT, PR-MINT.S01
+- turn_picture: SC10-B07 | picture: Iona close, eyes on Saye just off the lens, her mouth stopped mid-chew
+- turn_picture: SC10-B11 | picture: The held wide from the high corner: Saye still at the counter with the lit phone, Iona standing between her and Eli, Jude on the table in front; Iona steps aside and the frame lets Saye win.
+- dial: SC10-B01 | size: medium | distance_m: 2.3 | height: eye:CH-IONA | light: as_look | sound: room_sound
+- dial: SC10-B02 | size: medium_wide | distance_m: 3.3 | height: 2.1 | light: as_look | sound: room_sound
+- dial: SC10-B03 | size: medium_close_up | distance_m: 1.9 | height: eye:CH-IONA | light: as_look | sound: room_sound
+- dial: SC10-B04 | size: medium | distance_m: 6.3 | height: 1.45 | light: as_look | sound: room_sound
+- dial: SC10-B05 | size: medium_wide | distance_m: 8.6 | height: 1.45 | light: as_look | sound: room_sound
+- dial: SC10-B06 | size: insert | distance_m: 1.1 | height: eye:CH-SAYE | light: as_look | sound: room_sound
+- dial: SC10-B07 | size: close_up | distance_m: 1.4 | height: eye:CH-IONA | light: as_look | sound: room_sound
+- dial: SC10-B08 | size: close_up | distance_m: 1.4 | height: eye:CH-IONA | light: as_look | sound: room_sound
+- dial: SC10-B09 | size: medium_close_up | distance_m: 2.2 | height: eye:CH-SAYE | light: as_look | sound: room_sound
+- dial: SC10-B10 | size: medium_wide | distance_m: 7.7 | height: 1.45 | light: as_look | sound: room_sound
+- dial: SC10-B11 | size: wide | distance_m: 4.3 | height: 2.1 | light: as_look | sound: room_sound
+- coverage: designed
+- rhythm_shape: build_rupture_aftermath
+- target_asl_s: 5
+- rupture: SC10-B07 | device: hold | breaks: the cutting every few seconds through Saye's tests
+- tone_shift: none
+- room_sound: as_place
+- departure: none
+- additions: Iona sets the lamp back on the table between the women before the raised hands | changes_meaning: yes
+- additions: the three arrive at the back door, which opens into the kitchen | changes_meaning: no
+- additions: Eli stands at the far end of the table by the fridge, on the table's line | changes_meaning: no
+- additions: Saye's phone lies on the counter beside the flask | changes_meaning: no
+- flags: none
+
+### PART SC10-P1 Diagnosis
+- beats: SC10-B01..SC10-B08
+- turn: SC10-B07
+- starts: scene_start
+- status: approved
+- locked: yes
+
+### PART SC10-P2 Containment
+- beats: SC10-B09..SC10-B11
+- turn: SC10-B11
+- starts: after_drop
+- status: approved
+- locked: yes
+
+### BEAT SC10-B01 On her step
+- lines: 399-402
+- action: CH-IONA | tactic: appealing
+- reaction: CH-SAYE | tactic: admitting
+- task: CH-SAYE | does: holds her back door open
+- task: CH-ELI | does: holds Jude up with one arm and the flask in the other fist
+- beat_intensity: 2
+- turn: none
+- charge: SC10-V1 | charge: +
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: +
+- engaged_pair: CH-SAYE, CH-IONA
+- silent_third: CH-ELI
+- unsaid: CH-SAYE | thought: so this is what his letter was about
+- carrier: PR-FLASK.S03
+- pause_after: short | seconds: 0.5 | picture: cut | sound: the back door opening; the fridge hum from inside
+- emphasis: PR-FLASK.S03 | level: 1
+- added_emphasis: 0 | what: nothing added; the script already holds her eyes on the flask for "a long moment"
+- status: approved
+- locked: yes
+
+### BEAT SC10-B02 The scar
+- lines: 404-414
+- action: CH-SAYE | tactic: probing
+- reaction: CH-JUDE | tactic: joking
+- task: CH-SAYE | does: cuts the shirt away, cleans the wound, works down his chest with flat hands
+- task: CH-IONA | does: holds the lamp out over Jude so Saye can see
+- beat_intensity: 2
+- turn: none
+- charge: SC10-V1 | charge: +
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: +
+- engaged_pair: CH-SAYE, CH-JUDE
+- silent_third: CH-IONA
+- pause_after: short | seconds: 0.5 | picture: cut | sound: room sound
+- emphasis: PR-MINT.S01 | level: 1
+- added_emphasis: 0 | what: nothing added; her hands find the scar
+- status: approved
+- locked: yes
+
+### BEAT SC10-B03 The other side
+- lines: 416-419
+- action: CH-SAYE | tactic: verifying
+- reaction: CH-IONA | tactic: normalizing
+- task: CH-SAYE | does: listens with the stethoscope on one side of his chest, then on the other
+- task: CH-IONA | does: sets the lamp back down on the table between them
+- beat_intensity: 3
+- turn: none
+- charge: SC10-V1 | charge: +
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: +
+- engaged_pair: CH-SAYE, CH-IONA
+- silent_third: CH-JUDE
+- pause_after: short | seconds: 0.5 | picture: cut | sound: the lamp's base on the table
+- emphasis: PR-STETHOSCOPE.S01 | level: 1
+- added_emphasis: 0 | what: nothing added; the move across his chest is the story
+- status: approved
+- locked: yes
+
+### BEAT SC10-B04 Hold up your right hand
+- lines: 421-438
+- action: CH-SAYE | tactic: demonstrating
+- reaction: CH-IONA | tactic: refusing
+- task: CH-SAYE | does: raises the hand nearest Iona, palm out, and holds it
+- task: CH-IONA | does: raises her right hand, palm out; then looks down at her own ring
+- beat_intensity: 3
+- turn: none
+- charge: SC10-V1 | charge: 0
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: +
+- engaged_pair: CH-SAYE, CH-IONA
+- silent_third: CH-ELI
+- landing_face: wide
+- pause_after: medium | seconds: 1.5 | picture: cut | sound: room sound
+- emphasis: MO-RINGS | level: 2
+- added_emphasis: 0 | what: nothing added; the script draws the frame itself, "like a woman and her reflection"
+- status: approved
+- locked: yes
+
+### BEAT SC10-B05 The cap
+- lines: 440-442
+- action: CH-ELI | tactic: compensating
+- reaction: CH-SAYE | tactic: noticing
+- task: CH-ELI | does: twists the bottle cap one way, stops, twists it the other way
+- beat_intensity: 3
+- turn: none
+- charge: SC10-V1 | charge: 0
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: +
+- engaged_pair: CH-ELI, CH-SAYE
+- silent_third: CH-IONA
+- unsaid: CH-ELI | thought: I know which way everything turns now, and why
+- carrier: PR-BOTTLE.S01
+- pause_after: short | seconds: 0.5 | picture: cut | sound: the cap's plastic ring cracking
+- emphasis: PR-BOTTLE.S01 | level: 1
+- added_emphasis: 0 | what: nothing added; his hands carry it
+- status: approved
+- locked: yes
+
+### BEAT SC10-B06 Don't open the flask
+- lines: 444-447
+- action: CH-SAYE | tactic: testing
+- reaction: CH-ELI | tactic: forbidding
+- task: CH-SAYE | does: reaches toward the flask, stops, and sets her scissors down on the counter
+- beat_intensity: 4
+- turn: none
+- charge: SC10-V1 | charge: 0
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: 0
+- engaged_pair: CH-SAYE, CH-ELI
+- silent_third: CH-IONA
+- five_steps: desire | shows: Eli's eyes on Saye's hand
+- five_steps: obstacle | shows: her hand going toward the flask on the counter
+- five_steps: choice | shows: he speaks before her hand reaches it
+- five_steps: action | shows: "Don't open the flask." heard over the flask itself
+- five_steps: expression | shows: her hand stops short of the flask, and she sets her scissors down
+- landing_face: insert:PR-FLASK.S03
+- unsaid: CH-ELI | thought: what is in the flask has to stay in it
+- carrier: PR-FLASK.S03
+- pause_after: medium | seconds: 1 | picture: cut | sound: the scissors on the counter
+- emphasis: PR-FLASK.S03 | level: 2
+- added_emphasis: 0 | what: nothing added; the scissors set down are the script's own signal
+- status: approved
+- locked: yes
+
+### BEAT SC10-B07 Not mint
+- lines: 449-463
+- action: CH-SAYE | tactic: proving
+- reaction: CH-IONA | tactic: discovering
+- task: CH-SAYE | does: tears a leaf from the pot on the sill and holds it out across the table
+- task: CH-IONA | does: takes the leaf and chews it
+- beat_intensity: 5
+- turn: main_turn
+- turn_kind: revelation
+- charge: SC10-V1 | charge: --
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: 0
+- engaged_pair: CH-SAYE, CH-IONA
+- silent_third: CH-ELI
+- five_steps: desire | shows: her eyes on Saye, still refusing from the raised hands
+- five_steps: obstacle | shows: the leaf held out into her side of the lamplight
+- five_steps: choice | shows: half a second before her hand moves to take it
+- five_steps: action | shows: she chews, in one unbroken close-up
+- five_steps: expression | shows: she stops chewing, draws her brows together and chews once more, slowly, before "Not mint." arrives
+- landing_face: CH-IONA
+- unsaid: CH-IONA | thought: then it is us that turned, not the world
+- carrier: MO-MINT
+- pause_after: medium | seconds: 2 | picture: hold | sound: room sound only
+- emphasis: MO-MINT | level: 2
+- added_emphasis: 0 | what: nothing added; the script marks the beat: "Her face changes."
+- change: Saye comes back from the sill to stand square to Iona and hold the leaf across the table, the first time either reaches over it; once the leaf is taken, only Iona's mouth moves.
+- status: approved
+- locked: yes
+
+### BEAT SC10-B08 The street signs
+- lines: 465-466
+- action: CH-SAYE | tactic: naming
+- reaction: CH-IONA | tactic: absorbing
+- task: CH-IONA | does: stops chewing and swallows once
+- beat_intensity: 4
+- turn: none
+- charge: SC10-V1 | charge: ---
+- charge: SC10-V2 | charge: +
+- charge: SC10-V3 | charge: 0
+- engaged_pair: CH-SAYE, CH-IONA
+- silent_third: CH-ELI
+- five_steps: desire | shows: her eyes stay on Saye, waiting for some other answer
+- five_steps: obstacle | shows: Saye's level voice naming the street signs
+- five_steps: choice | shows: she does not answer
+- five_steps: action | shows: she swallows once
+- five_steps: expression | shows: her face stops moving; only her eyes stay alive, on Saye
+- landing_face: CH-IONA
+- pause_after: none | picture: cut | sound: room sound
+- emphasis: MO-MINT | level: 1
+- added_emphasis: 0 | what: nothing added; the line lands on her face
+- status: approved
+- locked: yes
+
+### BEAT SC10-B09 The phone
+- lines: 468-474
+- action: CH-SAYE | tactic: reporting
+- reaction: CH-IONA | tactic: challenging
+- task: CH-SAYE | does: picks up her phone from the counter
+- beat_intensity: 3
+- turn: none
+- charge: SC10-V1 | charge: ---
+- charge: SC10-V2 | charge: -
+- charge: SC10-V3 | charge: 0
+- engaged_pair: CH-SAYE, CH-IONA
+- silent_third: CH-ELI
+- landing_face: CH-IONA
+- pause_after: short | seconds: 0.5 | picture: cut | sound: room sound
+- emphasis: PR-PHONE.S01 | level: 1
+- added_emphasis: 0 | what: nothing added; the phone's own screen is the only light that changes
+- status: approved
+- locked: yes
+
+### BEAT SC10-B10 Between them
+- lines: 476-479
+- action: CH-IONA | tactic: shielding
+- reaction: CH-SAYE | tactic: redirecting
+- task: CH-IONA | does: walks round the end of the table and stands between Saye and Eli
+- beat_intensity: 4
+- turn: none
+- charge: SC10-V1 | charge: ---
+- charge: SC10-V2 | charge: 0
+- charge: SC10-V3 | charge: +
+- engaged_pair: CH-IONA, CH-SAYE
+- silent_third: CH-ELI
+- five_steps: desire | shows: her eyes go from the lit phone to Eli
+- five_steps: obstacle | shows: Saye at the counter with the phone in her hand
+- five_steps: choice | shows: she steps round the end of the table
+- five_steps: action | shows: she stands square between Saye and Eli, facing Saye
+- five_steps: expression | shows: her hands open at her sides, her weight forward, and she does not speak
+- landing_face: wide
+- pause_after: long | seconds: 3 | picture: hold | sound: room sound only
+- emphasis: none
+- added_emphasis: 0 | what: nothing added; her body in the way is the signal
+- status: approved
+- locked: yes
+
+### BEAT SC10-B11 She waits
+- lines: 481-488
+- action: CH-SAYE | tactic: outwaiting
+- reaction: CH-IONA | tactic: yielding
+- task: CH-IONA | does: steps aside, toward Jude
+- beat_intensity: 5
+- turn: turn
+- turn_kind: action
+- charge: SC10-V1 | charge: ---
+- charge: SC10-V2 | charge: --
+- charge: SC10-V3 | charge: +
+- engaged_pair: CH-SAYE, CH-IONA
+- silent_third: CH-ELI
+- five_steps: desire | shows: Iona holds her place between them, eyes on Saye
+- five_steps: obstacle | shows: Saye does not move and does not speak again
+- five_steps: choice | shows: Iona's eyes go to Jude on the table
+- five_steps: action | shows: she steps aside, toward him
+- five_steps: expression | shows: Saye's one line lands on a room that has stopped moving
+- landing_face: wide
+- unsaid: CH-IONA | thought: Jude first, even before Eli
+- carrier: CH-JUDE.S03
+- pause_after: none | picture: cut | sound: the room sound cuts with the picture
+- emphasis: none
+- added_emphasis: 0 | what: nothing added; the script writes the cut to black
+- change: Iona steps out of the line between Saye and Eli to stand at Jude's feet; Saye has not moved from the counter, and the room is hers.
+- status: approved
+- locked: yes
+
+### MOVE SC10-M01 Saye's hand goes to the flask
+- beat: SC10-B06
+- who: CH-SAYE
+- from: SAYE_MARK
+- to: SAYE_COUNTER
+- via: none
+- start_s: 0
+- dur_s: 1.5
+- faces: PR-FLASK.S03
+- posture: standing
+- why: her hand goes toward the flask: she tests what Eli will do
+- origin: story
+- status: approved
+- locked: yes
+
+### MOVE SC10-M02 Saye goes to the sill
+- beat: SC10-B07
+- who: CH-SAYE
+- from: SAYE_COUNTER
+- to: SAYE_SILL
+- via: none
+- start_s: 1
+- dur_s: 1.5
+- faces: PR-MINT.S01
+- posture: standing
+- why: she turns her back on Iona to fetch the test from the sill
+- origin: story
+- status: approved
+- locked: yes
+
+### MOVE SC10-M03 Saye brings the leaf back
+- beat: SC10-B07
+- who: CH-SAYE
+- from: SAYE_SILL
+- to: SAYE_MARK
+- via: none
+- start_s: 4
+- dur_s: 1.5
+- faces: CH-IONA
+- posture: standing
+- why: she brings the leaf back into the lamplight and holds it out across the table
+- origin: inferred
+- status: approved
+- locked: yes
+
+### MOVE SC10-M04 Saye goes for the phone
+- beat: SC10-B09
+- who: CH-SAYE
+- from: SAYE_MARK
+- to: SAYE_COUNTER
+- via: none
+- start_s: 1.5
+- dur_s: 1.5
+- faces: PR-PHONE.S01
+- posture: standing
+- why: she goes for the phone: containment begins
+- origin: story
+- status: approved
+- locked: yes
+
+### MOVE SC10-M05 Iona gets between them
+- beat: SC10-B10
+- who: CH-IONA
+- from: IONA_MARK
+- to: IONA_BETWEEN
+- via: [3.95, 2.45]
+- start_s: 0.5
+- dur_s: 3
+- faces: CH-SAYE
+- posture: standing
+- why: she puts her body on the line between Saye and Eli
+- origin: story
+- status: approved
+- locked: yes
+
+### MOVE SC10-M06 Iona steps aside
+- beat: SC10-B11
+- who: CH-IONA
+- from: IONA_BETWEEN
+- to: IONA_ASIDE
+- via: none
+- start_s: 7.5
+- dur_s: 1.5
+- faces: CH-JUDE.S03
+- posture: standing
+- why: she yields: Jude's need is the one argument she cannot refuse
+- origin: story
+- status: approved
+- locked: yes
+
+### MOVE SC10-M07 Saye lets them in
+- beat: SC10-B02
+- who: CH-SAYE
+- from: SAYE_DOOR
+- to: SAYE_MARK
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: CH-IONA
+- posture: standing
+- why: she lets them in and takes her place at the table; the cut from the step to the table leaves out the walk
+- origin: inferred
+- status: approved
+- locked: yes
+
+### MOVE SC10-M08 Iona comes in
+- beat: SC10-B02
+- who: CH-IONA
+- from: [-0.7, 1.25]
+- to: IONA_MARK
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: CH-SAYE
+- posture: standing
+- why: she brings Jude in and takes the lamp to the table's far side; the cut leaves out the walk
+- origin: inferred
+- status: approved
+- locked: yes
+
+### MOVE SC10-M09 Eli comes in
+- beat: SC10-B02
+- who: CH-ELI
+- from: [-0.7, 0.6]
+- to: ELI_MARK
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: CH-SAYE
+- posture: standing
+- why: he stays as far from Saye as the room allows, by the fridge; the cut leaves out the walk
+- origin: inferred
+- status: approved
+- locked: yes
+
+### MOVE SC10-M10 Jude is laid on the table
+- beat: SC10-B02
+- who: CH-JUDE
+- from: [-0.7, 0.93]
+- to: [2.6, 1.8]
+- via: none
+- start_s: 0
+- dur_s: 0
+- faces: [1.0, 1.8]
+- posture: lying
+- why: they lay him on the table for Saye to treat; the cut leaves out the carrying
+- origin: inferred
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU01 Camera A: down the table's line
+- at: [-3.5, 1.8, 1.45]
+- look_at: [2.8, 1.8, 1.4]
+- lens_mm: 85
+- use: the far frame through the wild west wall, down the table's line: the reflection two-shot, then Eli's cap, then Iona standing in the line
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU02 Camera B: Iona close
+- at: [2.55, 1.2, 1.57]
+- look_at: [2.95, 2.55, 1.57]
+- lens_mm: 50
+- use: Iona's close-up from beside Saye's shoulder, kept for the turn
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU03 Camera C: Saye
+- at: [2.5, 3.25, 1.55]
+- look_at: [2.9, 1.0, 1.5]
+- lens_mm: 50
+- use: Saye's medium close-up over Iona's shoulder, the window behind her
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU04 Camera D: Iona
+- at: [2.35, 0.7, 1.57]
+- look_at: [2.75, 2.55, 1.55]
+- lens_mm: 50
+- use: Iona's medium close-up from Saye's side of the table
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU05 Camera E: the back step
+- at: [-2.0, 0.95, 1.57]
+- look_at: [0.15, 0.9, 1.55]
+- lens_mm: 35
+- use: Saye in her back doorway, over the three of them on the step, through the wild west wall
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU06 Camera F: the high corner
+- at: [0.3, 3.4, 2.1]
+- look_at: [3.6, 1.5, 1.2]
+- lens_mm: 35
+- use: the whole room from high in the north-west corner by the hall door: the kitchen's one wide, the mint's return and the held wait
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU07 Camera G: the flask on the step
+- at: [-1.2, 0.3, 1.57]
+- look_at: [-0.65, 0.6, 1.05]
+- lens_mm: 50
+- use: the flask in Eli's fist, looked down on from Iona's eye height on the step
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU08 Camera H: over Jude
+- at: [2.65, 2.4, 1.57]
+- look_at: [2.55, 1.8, 0.95]
+- lens_mm: 50
+- use: Saye's hands on Jude's chest, from beside Iona and the lamp
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU09 Camera I: Saye's ring
+- at: [2.75, 2.45, 1.57]
+- look_at: [3.0, 1.4, 0.95]
+- lens_mm: 50
+- use: Saye's lowered ringed hand on the table's edge, from Iona's eyes
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU10 Camera J: Iona's ring
+- at: [2.7, 2.6, 1.57]
+- look_at: [3.05, 2.3, 0.95]
+- lens_mm: 50
+- use: Iona's own ringed hand, framed as the mirror of camera I
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SETUP SC10-SU11 Camera K: the counter
+- at: [2.55, 0.8, 1.55]
+- look_at: [3.6, 0.35, 1.0]
+- lens_mm: 50
+- use: the flask on the counter as Saye's hand comes toward it
+- side: a
+- mount: world
+- status: approved
+- locked: yes
+
+### SHOTLIST SC10-LIST The shot list
+- item: SC10-SH010 | beats: SC10-B01 | role: must_keep | size: medium | frame: over_shoulder | subject: CH-SAYE, CH-IONA, CH-JUDE, CH-ELI | time: 4 | shows: from the back step, Saye in her doorway, fully dressed; her eyes go from the three of them to the blood, then down to the flask, and stay there
+- item: SC10-SH020 | beats: SC10-B01 | role: must_keep | size: insert | frame: single | subject: CH-ELI | time: 3.5 | shows: the flask in Eli's fist, blood on his coat sleeve; Saye, unseen: "Kitchen."
+- item: SC10-SH030 | beats: SC10-B02 | role: must_keep | size: medium_wide | frame: group | subject: CH-SAYE, CH-IONA, CH-JUDE, CH-ELI | time: 5 | shows: the bare kitchen from the high corner: Jude on the table, Saye cutting his shirt, Iona holding the lamp, Eli back by the fridge, the mint small on the sill
+- item: SC10-SH040 | beats: SC10-B02 | role: normal | size: insert | frame: near_pov | subject: CH-SAYE, CH-JUDE | time: 4 | shows: Saye's quick flat hands work down Jude's chest and stop at an old white scar
+- item: SC10-SH050 | beats: SC10-B02 | role: normal | size: medium_close_up | frame: over_shoulder | subject: CH-SAYE, CH-IONA | time: 7 | shows: "Was your appendix on the left?"; Jude, below the frame: "They didn't let me watch."; her face does not change
+- item: SC10-SH060 | beats: SC10-B03 | role: must_keep | size: insert | frame: near_pov | subject: CH-SAYE, CH-JUDE | time: 4 | shows: the stethoscope crosses to the other side of his chest and stays there
+- item: SC10-SH070 | beats: SC10-B03 | role: normal | size: medium_close_up | frame: single | subject: CH-IONA | time: 5.5 | shows: Iona sets the lamp back on the table and explains the scar away (setting the lamp down is an addition)
+- item: SC10-SH080 | beats: SC10-B04 | role: must_keep | size: medium | frame: two_shot | subject: CH-IONA, CH-SAYE, CH-JUDE, CH-ELI | time: 9 | shows: camera A, far back along the table: the two women raise the hand nearest the camera, like a woman and her reflection; Eli small and deep in the middle
+- item: SC10-SH090 | beats: SC10-B04 | role: must_keep | size: insert | frame: near_pov | subject: CH-SAYE | time: 2.5 | shows: Saye's wedding ring, on the hand that looks like her right
+- item: SC10-SH100 | beats: SC10-B04 | role: must_keep | size: insert | frame: near_pov | subject: CH-IONA | time: 2.5 | shows: Iona's own ring, on her own left hand
+- item: SC10-SH110 | beats: SC10-B05 | role: must_keep | size: medium_wide | frame: group | subject: CH-ELI, CH-IONA, CH-SAYE, CH-JUDE | time: 6 | shows: the same far frame, sharp on Eli: the cap will not give; he twists it the other way; his eyes come up to Saye
+- item: SC10-SH120 | beats: SC10-B05 | role: normal | size: medium_close_up | frame: over_shoulder | subject: CH-SAYE, CH-IONA | time: 2.5 | shows: Saye has seen him do it; her head turns to the flask on the counter
+- item: SC10-SH130 | beats: SC10-B05, SC10-B06 | role: must_keep | size: insert | frame: single | subject: CH-SAYE | time: 3 | shows: her hand goes toward the flask; Eli, unseen: "Don't open the flask."; the hand stops
+- item: SC10-SH140 | beats: SC10-B06, SC10-B07 | role: must_keep | size: medium_wide | frame: group | subject: CH-SAYE, CH-IONA, CH-ELI, CH-JUDE | time: 7 | shows: the high corner again: scissors down; the leaf torn from the pot and held out into the lamplight: "Chew that."
+- item: SC10-SH150 | beats: SC10-B07, SC10-B08 | role: turn | size: close_up | frame: single | subject: CH-IONA | time: 15 | shows: Iona chews, stops, chews once more; "Not mint."; we stay on her through Saye's answer
+- item: SC10-SH160 | beats: SC10-B09 | role: normal | size: medium_close_up | frame: over_shoulder | subject: CH-SAYE, CH-IONA | time: 4 | shows: Saye's one look at Iona, then she takes up her phone
+- item: SC10-SH170 | beats: SC10-B09 | role: normal | size: medium_close_up | frame: single | subject: CH-IONA | time: 6 | shows: "Who are you calling?"; Saye, off the frame: "The hospital. Then the police."
+- item: SC10-SH180 | beats: SC10-B10 | role: must_keep | size: medium_wide | frame: group | subject: CH-IONA, CH-SAYE, CH-ELI, CH-JUDE | time: 4 | shows: down the table's line again: Iona steps into it, between Saye and Eli
+- item: SC10-SH190 | beats: SC10-B10, SC10-B11 | role: turn | size: wide | frame: group | subject: CH-IONA, CH-SAYE, CH-ELI, CH-JUDE | time: 9 | shows: held from the high corner: "Look at Jude. I cannot finish that here."; Saye waits; Iona steps aside
+- item: SC10-SH200 | beats: SC10-B11 | role: normal | size: medium | frame: single | subject: CH-SAYE | time: 3 | shows: "Nobody leave this room."; cut to black
+- item: SC10-SH990 | beats: SC10-B11 | role: must_keep | size: wide | frame: empty | subject: none | time: 5 | shows: the title card, white on black: THE CATCH
+- approved: yes
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH010 Saye in her doorway
+- beats: SC10-B01
+- lines: 399-402
+- purpose: Saye's first look passes over three bleeding people and settles on the flask; the audience learns what she cares about before she says a word.
+- because: SC10-B01, MO-FLASK, CR-SAYE, line:399
+- role: must_keep
+- kind: live
+- why: The back step is too narrow for the normal lens to hold her whole, and the story's picture of her is her whole self in the doorway, "fully dressed at four in the morning", so the camera takes the 35 on the step at Iona's eye height.
+- origin: story
+- additions: none
+- setup: SC10-SU05
+- frame: over_shoulder
+- size: medium
+- angle: eye_level
+- height: eye:CH-IONA
+- lens_mm: 35
+- focus: moderate
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: PR-FLASK.S03 | dwell_s: 2.5 | does: holds the door open; her eyes go over the three of them, to the blood on Jude's shirt, then down to Eli's fist, and stay there | tactic: appraising | energy: still | display: 1 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: stands on the step with her back to us, one arm round Jude | tactic: appealing | energy: held | display: 1 | travel: none
+- subject: CH-JUDE.S02 | at: centre | faces: down | eyeline: down | dwell_s: 4 | does: hangs between them, head down, the blue cloth dark on his shoulder | tactic: enduring | energy: spent | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: right_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: stands on the step with his back to us, one arm round Jude, the other hand low at his side | tactic: hiding | energy: still | display: 1 | travel: none
+- thing: PR-LAMP.S01 | emphasis: 0 | at: far behind Saye, a warm point on the kitchen table
+- text: none
+- keep_hidden: FT-01 | how: obstruction
+- must_show: CH-SAYE.S01
+- must_not_show: PR-FLASK.S03
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: the back door opening | at: 0 | sound_emphasis: 1
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 4
+- moment: 0-4 | shows: the door opens on Saye, dressed and buttoned; her eyes move over the three of them, to the blood, then down, and hold there
+- end: Saye in her doorway, eyes down on something below the frame
+- cut_out_on: keep_hidden
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: blood_small
+- policy_route: as_written
+- cost_class: easy
+- reuse_of: none
+- note: Saye's ringed hand stays behind the door's edge, so the ring cannot show before the raised hands.
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH020 The flask in his fist
+- beats: SC10-B01
+- lines: 399-402
+- purpose: The flask in Eli's fist is what Saye looks at longest; her one word lets them in.
+- because: SC10-B01, MO-FLASK, CR-ELI, line:399
+- role: must_keep
+- kind: insert
+- why: Saye's eyes go down to it ("Then, for a long moment, at the flask."), so the camera looks down on the flask from Iona's eye height and holds it that long moment; Eli's face stays above the frame (CR-ELI).
+- origin: story
+- additions: none
+- setup: SC10-SU07
+- frame: single
+- size: insert
+- angle: high
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: PR-FLASK.S03
+- move: static
+- move_reason: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 3.5 | does: his fist holds the flask against his coat, knuckles white, dried blood on the sleeve; his other arm stays round Jude | tactic: hiding | energy: still | display: 1 | travel: none
+- thing: PR-FLASK.S03 | emphasis: 1 | at: centre, in Eli's fist
+- text: none
+- keep_hidden: FT-01 | how: frame_edge
+- must_show: PR-FLASK.S03
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: SC10-D01 | speaker: off_screen | at: 2.5
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 3.5
+- moment: 0-3.5 | shows: the flask in his fist, his knuckles whitening round it, the empty clip under it; late in the shot Saye's one word, unseen
+- end: the fist closed tight on the flask
+- cut_out_on: line_end
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: blood_small
+- policy_route: as_written
+- cost_class: easy
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH030 The bare kitchen
+- beats: SC10-B02
+- lines: 404-406
+- purpose: The bare kitchen, the one living thing on its sill, and where everyone is: Jude on the table, Saye at work, Iona holding the lamp, Eli back by the fridge.
+- because: SC10-B02, MO-MINT, PL-08, LK-SAYE-KITCHEN-NIGHT, VS-SQ03
+- role: must_keep
+- kind: live
+- why: The kitchen's one wide shows what the room is for the story, "A kitchen with nothing of anybody in it", so it is taken from high in the corner on the 35 with deep focus: the bare fridge at one edge, the mint on the sill at the other, all four people readable and Eli's head clear above Iona's.
+- origin: story
+- additions: none
+- setup: SC10-SU06
+- frame: group
+- size: medium_wide
+- angle: high
+- height: 2.1
+- lens_mm: 35
+- focus: deep
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- glass: window | state: clear | camera: through
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-JUDE | eyeline: CH-JUDE | dwell_s: 5 | does: bends over Jude, her case open on the counter behind her, and starts to cut his shirt | tactic: treating | energy: held | display: 1 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: CH-SAYE | eyeline: CH-JUDE | dwell_s: 5 | does: holds the lamp out over Jude's chest at arm's length, so Saye can see | tactic: helping | energy: held | display: 1 | travel: none
+- subject: CH-JUDE.S02 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 5 | does: lies on his back on the table, one hand over the blue cloth on his shoulder | tactic: enduring | energy: spent | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 5 | does: stands back by the bare fridge, empty-handed, arms at his sides | tactic: waiting | energy: still | display: 1 | travel: none
+- thing: PR-MINT.S01 | emphasis: 1 | at: right edge, on the sill in the window | plant: PL-08
+- thing: PR-FLASK.S03 | emphasis: 0 | at: on the counter under the window
+- thing: PR-LAMP.S01 | emphasis: 0 | at: in Iona's hand over the table
+- thing: PR-CASE.S01 | emphasis: 0 | at: open on the counter
+- thing: PR-SCISSORS.S01 | emphasis: 0 | at: in Saye's hand
+- text: none
+- keep_hidden: FT-01 | how: obstruction
+- must_show: PR-MINT.S01, CH-JUDE.S02
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: scissors cutting cloth | at: 3 | sound_emphasis: 0
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 5
+- moment: 0-2.5 | shows: the lamp in Iona's hand sways a little and its light moves over bare walls, a bare fridge door, the mint on the sill at the edge of the lamp's reach
+- moment: 2.5-5 | shows: Saye's scissors start up Jude's shirt; Iona brings the lamp closer
+- end: Saye bent over Jude, Iona's lamp low over them both
+- cut_out_on: action_midpoint
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: blood_small
+- policy_route: as_written
+- cost_class: hard
+- reuse_of: none
+- note: Saye's ringed hand works on the far side of Jude's body from this corner, so the ring cannot read.
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH040 Quick flat hands
+- beats: SC10-B02
+- lines: 408
+- purpose: Saye's hands find the old scar and stop; her first test is in her hands before it is in her words.
+- because: SC10-B02, CH-SAYE, CH-JUDE.S03, line:408
+- role: normal
+- kind: insert
+- why: Her hands are the story here ("works down his chest with quick flat hands"), so the camera looks down on them from beside Iona's lamp, the way Iona sees them; the scar is a sided detail, so the picture is made at its final side and never flipped.
+- origin: story
+- additions: none
+- setup: SC10-SU08
+- frame: near_pov
+- size: insert
+- angle: high
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-JUDE.S03 | dwell_s: 4 | does: cuts the shirt open, wipes the wound, runs two flat hands down his chest and stops them over an old white scar low on his belly | tactic: examining | energy: rising | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 4 | does: his bare chest rises and falls under her hands | tactic: enduring | energy: still | display: 1 | travel: none
+- thing: PR-SCISSORS.S01 | emphasis: 1 | at: in Saye's hand at the start
+- text: none
+- keep_hidden: FT-01 | how: frame_edge
+- must_show: CH-JUDE.S03
+- must_not_show: MO-RINGS
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: the scissors through wet cloth | at: 0.5 | sound_emphasis: 1
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 4
+- moment: 0-4 | shows: the scissors cut the shirt open; two flat hands work down his chest and stop over the old white scar low on his own right side
+- end: her hands flat, either side of the scar, rising and falling with his breath
+- cut_out_on: thought_complete
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: start_picture
+- flip: never
+- content_flags: blood_small
+- policy_route: as_written
+- cost_class: easy
+- reuse_of: none
+- note: Her ringed hand stays palm-down under the cut cloth at the frame's edge.
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH050 Was your appendix on the left
+- beats: SC10-B02
+- lines: 410-414
+- purpose: Saye asks her first mirror question as if it were routine; Jude answers with a joke, and she does not smile.
+- because: SC10-B02, CR-SAYE, CH-JUDE
+- role: normal
+- kind: live
+- origin: story
+- additions: none
+- setup: SC10-SU03
+- frame: over_shoulder
+- size: medium_close_up
+- angle: eye_level
+- height: eye:CH-SAYE
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- glass: window | state: clear | camera: through
+- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: CH-JUDE.S03 | dwell_s: 6 | does: looks from the scar to Jude's face and asks it without looking up; hears his answer and her face stays as it was | tactic: probing | energy: still | display: 1 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 7 | does: her shoulder and the lamp in her hand, soft at the edge of the frame | tactic: helping | energy: held | display: 1 | travel: none
+- thing: PR-LAMP.S01 | emphasis: 0 | at: bottom left, in Iona's hand
+- text: none
+- keep_hidden: FT-01 | how: frame_edge
+- must_show: none
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: SC10-D02 | speaker: on_screen
+- hear: SC10-D03 | speaker: off_screen | at: 4
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: no
+- screen_time: 7
+- moment: 0-3.5 | shows: Saye looks at the scar, then at his face, and asks
+- moment: 3.5-7 | shows: Jude's answer comes from below the frame; her face does not change; she lifts the stethoscope from her neck
+- end: Saye with the stethoscope in her hand, eyes on his chest
+- cut_out_on: line_end
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: dialogue
+- reuse_of: none
+- note: Her hands work below the frame's bottom edge.
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH060 The other side
+- beats: SC10-B03
+- lines: 416
+- purpose: The stethoscope crosses to the other side of his chest and stays there; the doctor has found his heart where, for her, it should not be.
+- because: SC10-B03, CH-JUDE.S03, FT-01, line:416
+- role: must_keep
+- kind: insert
+- why: The move across his chest is the story ("Moves it to the other side."), so the camera looks down on it from Iona's side of the table; which side of him it ends on is the point, so the picture is made at its final side and never flipped.
+- origin: story
+- additions: none
+- setup: SC10-SU08
+- frame: near_pov
+- size: insert
+- angle: high
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: PR-STETHOSCOPE.S01
+- move: static
+- move_reason: none
+- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-JUDE.S03 | dwell_s: 4 | does: sets the stethoscope on his chest and holds it; lifts it across to the other side and holds it there much longer | tactic: verifying | energy: held | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 4 | does: his chest rises and falls under the disc | tactic: enduring | energy: still | display: 1 | travel: none
+- thing: PR-STETHOSCOPE.S01 | emphasis: 1 | at: centre, on his chest
+- text: none
+- keep_hidden: FT-01 | how: frame_edge
+- must_show: PR-STETHOSCOPE.S01
+- must_not_show: MO-RINGS
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: the stethoscope's disc set down on skin | at: 0.5 | sound_emphasis: 0
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 4
+- moment: 0-4 | shows: the disc rests on his own right side; lifts; comes down on his own left side, over the heart, and stays there much longer, rising and falling with his chest
+- end: the disc on his own left side, rising with his breath
+- cut_out_on: keep_hidden
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: start_picture
+- flip: never
+- content_flags: none
+- policy_route: as_written
+- cost_class: easy
+- reuse_of: none
+- note: Saye is mirrored in this era, so the side her habit chooses first shows as his right; his heart, on his own left, is where she ends.
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH070 It's where it should be
+- beats: SC10-B03
+- lines: 418-419
+- purpose: Iona explains the scar away and sets the lamp back on the table, freeing her hands.
+- because: SC10-B03, CR-IONA, PR-LAMP.S01, LK-SAYE-KITCHEN-NIGHT
+- role: normal
+- kind: live
+- origin: story
+- additions: Iona sets the lamp back on the table between them
+- setup: SC10-SU04
+- frame: single
+- size: medium_close_up
+- angle: eye_level
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-IONA
+- move: static
+- move_reason: none
+- subject: CH-IONA.S02 | at: centre | faces: camera | eyeline: CH-SAYE | dwell_s: 4 | does: leans across the corner of the table and sets the lamp down by Jude's hip, straightens with both hands free, and says it plainly | tactic: normalizing | energy: held | display: 1 | travel: none
+- thing: PR-LAMP.S01 | emphasis: 1 | at: bottom of the frame, set down on the table
+- text: none
+- keep_hidden: FT-01 | how: frame_edge
+- must_show: PR-LAMP.S01
+- must_not_show: none
+- light: as_look
+- light_cue: the lamp's light drops from Iona's hand to the table and steadies | when: 1 | why: the lamp set down frees her right hand and lights both women alike (an addition)
+- hear: SC10-D04 | speaker: on_screen
+- effect: the lamp's base on the table | at: 1 | sound_emphasis: 0
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: no
+- screen_time: 5.5
+- moment: 0-1.5 | shows: she leans in and sets the lamp down on the table
+- moment: 1.5-5.5 | shows: she straightens, both hands free, and says it; she blinks once, her eyes on Saye
+- end: Iona upright, hands empty, eyes on Saye
+- cut_out_on: line_end
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: dialogue
+- reuse_of: none
+- note: Saye stays outside this frame, so no ring can show.
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH080 The reflection
+- beats: SC10-B04
+- lines: 421-434
+- purpose: The two women face each other across Jude and raise the same-side hand like a woman and her reflection; the audience sees the mirror before Iona will admit it.
+- because: SC10-B04, SC10-V1, RC-01, LX-01, MO-RINGS, PL-07, FT-01
+- role: must_keep
+- kind: live
+- why: The script draws this frame ("like a woman and her reflection"), so it gets the film's first saved symmetrical profile two-shot (RC-01): camera A far back through the wild wall on the 85 exception (LX-01), level between the women at 1.45 metres, both profiles the same distance from the centre line.
+- origin: story
+- additions: none
+- setup: SC10-SU01
+- frame: two_shot
+- frame_detail: symmetrical_profile
+- size: medium
+- angle: eye_level
+- height: 1.45
+- lens_mm: 85
+- focus: moderate
+- focus_on: CH-IONA
+- move: static
+- move_reason: none
+- subject: CH-IONA.S02 | at: left_third | faces: frame_right | eyeline: CH-SAYE | dwell_s: 9 | does: raises the hand nearest the camera, palm out, level with her face, and holds it there; answers without lowering it | tactic: refusing | energy: held | display: 1 | must_not: a look down at her own hand, saved for shot 100 | travel: none
+- subject: CH-SAYE.S01 | at: right_third | faces: frame_left | eyeline: CH-IONA | dwell_s: 9 | does: looks up from Jude to Iona, raises the hand nearest the camera to the same height, palm out, and holds it while she speaks | tactic: demonstrating | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 9 | does: lies between them, his head toward the camera, his chest rising and falling | tactic: enduring | energy: still | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 9 | does: stands small by the fridge far behind them, a water bottle in his hands | tactic: waiting | energy: still | display: 1 | travel: none
+- thing: MO-RINGS | emphasis: 0 | at: on the lowered far hands, out of sight | plant: PL-07
+- thing: PR-LAMP.S01 | emphasis: 0 | at: centre, low on the table between them
+- thing: PR-BOTTLE.S01 | emphasis: 0 | at: deep centre, in Eli's hands
+- text: none
+- must_show: CH-ELI.S03, PR-LAMP.S01
+- must_not_show: MO-RINGS
+- light: as_look
+- light_cue: none
+- hear: SC10-D05 | speaker: on_screen
+- hear: SC10-D06 | speaker: on_screen
+- hear: SC10-D07 | speaker: on_screen
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 9
+- moment: 0-2 | shows: Saye looks up from Jude to Iona and speaks
+- moment: 2-4.5 | shows: Iona raises the hand nearest the camera; Saye raises hers to the same height; both hold
+- moment: 4.5-9 | shows: the two short lines pass between them; neither hand comes down
+- end: both hands raised, palms out, the lamp low between them, Eli small in the middle behind
+- cut_out_on: line_end
+- held: yes
+- previs_level: 2
+- storyboard: yes
+- framing_critical: yes
+- route: start_end_pictures
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: hard
+- reuse_of: none
+- gen_note: generate the picture silent and lay the three lines in from the voice takes; the two profiles are small in the frame, so their lip sync can stay loose
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH090 On her right hand
+- beats: SC10-B04
+- lines: 436
+- purpose: The proof in plain sight: Saye's wedding ring is on the hand that looks like her right.
+- because: SC10-B04, MO-RINGS, CH-SAYE.S01, FT-01, line:436
+- role: must_keep
+- kind: insert
+- why: Iona's eyes go to Saye's lowered hand ("Saye's wedding ring. On her right hand."), so the insert is her view down across the table from her eye height; it is made from an edited still at its final side and never flipped.
+- origin: story
+- additions: none
+- setup: SC10-SU09
+- frame: near_pov
+- size: insert
+- angle: high
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- subject: CH-SAYE.S01 | at: centre | faces: down | eyeline: CH-IONA | dwell_s: 2.5 | does: her lowered hand rests flat on the table's edge by Jude's shoulder, a plain gold ring on it | tactic: demonstrating | energy: still | display: 1 | travel: none
+- thing: MO-RINGS | emphasis: 2 | at: centre, on Saye's lowered hand
+- text: none
+- must_show: MO-RINGS
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 2.5
+- moment: 0-2.5 | shows: the hand lies flat on the table's edge; the ring catches the lamp
+- end: the ringed hand flat on the table's edge
+- cut_out_on: thought_complete
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: yes
+- route: still_with_move
+- flip: never
+- content_flags: none
+- policy_route: as_written
+- cost_class: still_move
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH100 Her own left hand
+- beats: SC10-B04
+- lines: 438
+- purpose: Iona looks down at her own ring, on her own left hand, and the doubt begins.
+- because: SC10-B04, MO-RINGS, CH-IONA.S02, line:438
+- role: must_keep
+- kind: insert
+- why: The script gives her the look ("Iona looks down at her own ring, on her own left hand."), so the camera takes her eyes' angle down to her hand, framed as the mirror of shot 090 and made from an edited still that is never flipped.
+- origin: story
+- additions: none
+- setup: SC10-SU10
+- frame: near_pov
+- size: insert
+- angle: high
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-IONA
+- move: static
+- move_reason: none
+- subject: CH-IONA.S02 | at: centre | faces: down | eyeline: MO-RINGS | dwell_s: 2.5 | does: her left hand rests flat on the table's edge, the plain gold ring on it | tactic: doubting | energy: still | display: 1 | travel: none
+- thing: MO-RINGS | emphasis: 2 | at: centre, on Iona's own left hand
+- text: none
+- must_show: MO-RINGS
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 2.5
+- moment: 0-2.5 | shows: her ringed hand rests flat on the table's edge; the lamp glints on the ring
+- end: the hand flat on the table's edge
+- cut_out_on: thought_complete
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: yes
+- route: still_with_move
+- flip: never
+- content_flags: none
+- policy_route: as_written
+- cost_class: still_move
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH110 The cap
+- beats: SC10-B05
+- lines: 440
+- purpose: Across the room Eli's hands find the mirror before anyone names it: the cap will not give, and he twists it the other way without thinking.
+- because: SC10-B05, CR-ELI, FT-01, PR-BOTTLE.S01, LX-01
+- role: must_keep
+- kind: live
+- why: The script puts it "Across the room", so it plays deep in camera A's far frame on the 85 exception (LX-01) with the focus moved from the women to Eli; the rack focus is split into two shots (this and shot 080) because a video model cannot be trusted to rack.
+- origin: story
+- additions: none
+- setup: SC10-SU01
+- frame: group
+- size: medium_wide
+- angle: eye_level
+- height: 1.45
+- lens_mm: 85
+- focus: moderate
+- focus_on: CH-ELI
+- move: static
+- move_reason: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: PR-BOTTLE.S01 | dwell_s: 4 | does: twists the cap of a water bottle; it does not turn; he stops, twists it the other way, and it comes off; his eyes come up to Saye | tactic: compensating | energy: held | display: 1 | must_not: a look toward the lens, saved for scene 13 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: frame_right | eyeline: CH-SAYE | dwell_s: 6 | does: soft at the left of the frame, her raised hand lowered now | tactic: doubting | energy: still | display: 1 | travel: none
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-ELI | eyeline: CH-ELI | dwell_s: 4 | does: soft at the right of the frame; her head turns toward the far end of the room and stays turned | tactic: noticing | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: up | dwell_s: 6 | does: lies on the table between them, his chest rising and falling | tactic: enduring | energy: still | display: 1 | travel: none
+- thing: PR-BOTTLE.S01 | emphasis: 1 | at: centre, in Eli's hands
+- text: none
+- must_show: PR-BOTTLE.S01
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: the cap's plastic ring cracking open | at: 4 | sound_emphasis: 1
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 6
+- moment: 0-3.5 | shows: he twists the cap; it will not turn; he stops
+- moment: 3.5-6 | shows: he twists it the other way and it comes off; his eyes come up to Saye
+- end: Eli by the fridge, the open bottle in one hand, eyes on Saye
+- cut_out_on: thought_complete
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: hard
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH120 She saw it
+- beats: SC10-B05
+- lines: 442
+- purpose: Saye has watched him do it and he has seen her watching; then her head turns to the flask.
+- because: SC10-B05, CR-SAYE, MO-FLASK
+- role: normal
+- kind: live
+- origin: story
+- additions: none
+- setup: SC10-SU03
+- frame: over_shoulder
+- size: medium_close_up
+- angle: eye_level
+- height: eye:CH-SAYE
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- glass: window | state: clear | camera: through
+- subject: CH-SAYE.S01 | at: centre | faces: frame_left | eyeline: CH-ELI | dwell_s: 1.5 | does: her head stays turned toward Eli; then it turns further, to the counter behind her where the flask stands | tactic: noticing | energy: still | display: 1 | must_not: reaching for the flask, saved for beat 6 | travel: none
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 2.5 | does: her shoulder, soft at the edge of the frame | tactic: doubting | energy: still | display: 1 | travel: none
+- thing: PR-FLASK.S03 | emphasis: 0 | at: left third, soft on the counter behind Saye
+- text: none
+- must_show: none
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 2.5
+- moment: 0-2.5 | shows: Saye holds Eli's look, then her head turns to the flask on the counter
+- end: Saye turned toward the counter
+- cut_out_on: thought_complete
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: easy
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH130 Don't open the flask
+- beats: SC10-B05, SC10-B06
+- lines: 442-445
+- purpose: Saye's hand goes toward the flask; Eli's voice stops it before we see his face.
+- because: SC10-B06, CR-ELI, MO-FLASK, PL-09
+- role: must_keep
+- kind: insert
+- why: Eli's closest shots are saved for scene 13 (CR-ELI), so his line lands on the thing it protects: the camera looks down on the counter from Saye's eye height as her hand comes toward "the flask on the counter".
+- origin: story
+- additions: none
+- setup: SC10-SU11
+- frame: single
+- size: insert
+- angle: high
+- height: eye:CH-SAYE
+- lens_mm: 50
+- focus: moderate
+- focus_on: PR-FLASK.S03
+- move: static
+- move_reason: none
+- subject: CH-SAYE.S01 | at: left_edge | faces: frame_right | eyeline: PR-FLASK.S03 | dwell_s: 3 | does: her hand comes in from the left toward the flask and stops a short way from it | tactic: testing | energy: rising | display: 1 | travel: frame_right
+- thing: PR-FLASK.S03 | emphasis: 2 | at: centre, on the counter | plant: PL-09
+- thing: PR-PHONE.S01 | emphasis: 0 | at: right third, on the counter beside the flask
+- text: none
+- must_show: PR-FLASK.S03
+- must_not_show: CH-ELI.S03
+- light: as_look
+- light_cue: none
+- hear: SC10-D08 | speaker: off_screen | at: 1.2
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 3
+- moment: 0-3 | shows: the hand comes toward the flask; Eli's voice; the hand stops and stays in the air
+- end: Saye's hand in the air, short of the flask
+- cut_out_on: line_end
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: easy
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH140 Chew that
+- beats: SC10-B06, SC10-B07
+- lines: 447-452
+- purpose: Saye gives up the flask, sets her scissors down and fetches her test from the sill; the leaf reaches Iona in the same frame that first showed the mint, with Eli watching from the far end.
+- because: SC10-B07, SC10-V1, MO-MINT, PL-08, PR-MINT.S01
+- role: must_keep
+- kind: live
+- why: The mint's payoff comes back to the frame that planted it (shot 030): high in the corner on the 35 with deep focus, so the sill, the table and Eli watching from the far end all read when "She goes to the windowsill".
+- origin: story
+- additions: none
+- setup: SC10-SU06
+- frame: group
+- size: medium_wide
+- angle: high
+- height: 2.1
+- lens_mm: 35
+- focus: deep
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- glass: window | state: clear | camera: through
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: PR-MINT.S01 | dwell_s: 3 | does: sets her scissors down on the counter, crosses to the sill with her back to the room, tears a leaf from the pot, comes back to the table and holds it out to Iona | tactic: proving | energy: held | display: 1 | travel: frame_right
+- subject: CH-IONA.S02 | at: left_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 7 | does: waits at the table with her hands empty, and takes the leaf when it reaches her | tactic: defying | energy: held | display: 1 | must_not: any change in her face, saved for the next shot, where "Her face changes." | travel: none
+- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: PR-MINT.S01 | dwell_s: 5 | does: stands by the fridge with the open bottle and watches the leaf, not the women | tactic: hiding | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 7 | does: lies on the table, his chest rising and falling | tactic: enduring | energy: still | display: 1 | travel: none
+- thing: PR-MINT.S01 | emphasis: 2 | at: right edge, on the sill; then the leaf in Saye's hand
+- thing: PR-SCISSORS.S01 | emphasis: 0 | at: set down on the counter
+- thing: PR-LAMP.S01 | emphasis: 0 | at: on the table between them
+- text: none
+- must_show: PR-MINT.S01, CH-ELI.S03
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: SC10-D09 | speaker: on_screen | at: 6
+- effect: the scissors set down on the counter | at: 0.5 | sound_emphasis: 2
+- effect: the leaf torn from its stem | at: 3 | sound_emphasis: 1
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 7
+- moment: 0-3 | shows: the scissors go down on the counter; Saye turns her back on the room and crosses to the sill
+- moment: 3-7 | shows: she tears a leaf, comes back into the lamplight and holds it out; its green shows for the first time; "Chew that."
+- end: the leaf held out over the table, Iona's hand coming up to take it
+- cut_out_on: action_midpoint
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: hard
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH150 Not mint
+- beats: SC10-B07, SC10-B08
+- lines: 454-466
+- purpose: Iona's body admits what her words denied; Saye's proof lands on her face.
+- because: SC10-B07, SC10-V1, MO-MINT, CR-IONA
+- role: turn
+- kind: live
+- why: "Her face changes." puts the turn inside her mouth, so the scene's closest frame is spent here and held while Saye's proof lands off screen, on its target.
+- origin: story
+- additions: none
+- setup: SC10-SU02
+- frame: single
+- size: close_up
+- angle: eye_level
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-IONA
+- move: static
+- move_reason: none
+- subject: CH-IONA.S02 | at: left_third | faces: camera | eyeline: CH-SAYE | dwell_s: 15 | does: chews slowly; stops chewing; a small frown; chews once more, slowly; then listens | tactic: discovering | energy: held | display: 1 | travel: none
+- thing: MO-MINT | emphasis: 2 | payoff: PL-08
+- text: none
+- must_show: none
+- must_not_show: CH-SAYE.S01
+- light: as_look
+- light_cue: none
+- hear: SC10-D10 | speaker: off_screen
+- hear: SC10-D11 | speaker: on_screen
+- hear: SC10-D12 | speaker: off_screen
+- effect: her chewing, close, then stopping | at: 0 | sound_emphasis: 1
+- room_sound: as_place
+- silence: room_sound_only
+- music: none
+- needs_description: yes
+- screen_time: 15
+- moment: 0-4 | shows: chews slowly, eyes on Saye just right of the lens; breathes in through her nose; blinks once
+- moment: 4-6 | shows: stops chewing; a small frown; chews once more, slowly
+- moment: 6-8 | shows: says two words, unsteady
+- moment: 8-15 | shows: swallows once; breathes out slowly through her nose; blinks; her lips press together; a slow breath in, her eyes on Saye; she blinks again
+- end: mouth closed, eyes on Saye, breathing slowly
+- cut_out_on: thought_complete
+- held: yes
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: start_picture
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: dialogue
+- reuse_of: none
+- note: The frown is the script's "Her face changes." as recognition, not disgust: mint to a turned mouth tastes familiar and wrong.
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH160 One look
+- beats: SC10-B09
+- lines: 468
+- purpose: Saye gives one look at what her proof has done, then turns to the phone: containment begins.
+- because: SC10-B09, SC10-V2, CR-SAYE, LK-SAYE-KITCHEN-NIGHT
+- role: normal
+- kind: live
+- origin: story
+- additions: none
+- setup: SC10-SU03
+- frame: over_shoulder
+- size: medium_close_up
+- angle: eye_level
+- height: eye:CH-SAYE
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- glass: window | state: clear | camera: through
+- subject: CH-SAYE.S01 | at: centre | faces: camera | eyeline: CH-IONA | dwell_s: 1.5 | does: holds her eyes on Iona for a moment, then turns to the counter, takes up her phone, and its screen lights her hand | tactic: reporting | energy: still | display: 1 | travel: frame_left
+- subject: CH-IONA.S02 | at: left_third | faces: away | eyeline: CH-SAYE | dwell_s: 4 | does: her shoulder, soft at the edge of the frame, rising and falling with her breath | tactic: absorbing | energy: still | display: 1 | travel: none
+- thing: PR-PHONE.S01 | emphasis: 1 | at: left third, on the counter, then in her hand
+- thing: PR-FLASK.S03 | emphasis: 0 | at: on the counter beside the phone
+- text: none
+- must_show: PR-PHONE.S01
+- must_not_show: none
+- light: as_look
+- light_cue: the phone's screen lights her hand and chin from below | when: 3 | why: the story gives her the phone ("She picks up her phone.")
+- hear: none
+- effect: the phone lifted off the counter | at: 2.5 | sound_emphasis: 0
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 4
+- moment: 0-4 | shows: she looks at Iona once, then turns to the counter and takes up the phone; its screen lights her hand
+- end: Saye turned to the counter, the lit phone in her hand
+- cut_out_on: action_midpoint
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: easy
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH170 Who are you calling
+- beats: SC10-B09
+- lines: 470-474
+- purpose: Iona challenges her; the answer lands on Iona's face, not on Saye's.
+- because: SC10-B09, SC10-V2, CR-IONA
+- role: normal
+- kind: live
+- origin: story
+- additions: none
+- setup: SC10-SU04
+- frame: single
+- size: medium_close_up
+- angle: eye_level
+- height: eye:CH-IONA
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-IONA
+- move: static
+- move_reason: none
+- subject: CH-IONA.S02 | at: centre | faces: camera | eyeline: CH-SAYE | dwell_s: 3.5 | does: asks it straight; hears the answer; her eyes go past Saye to Eli at the far end | tactic: challenging | energy: rising | display: 2 | travel: none
+- thing: none
+- text: none
+- must_show: none
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: SC10-D13 | speaker: on_screen
+- hear: SC10-D14 | speaker: off_screen
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: no
+- screen_time: 6
+- moment: 0-2.5 | shows: she asks
+- moment: 2.5-6 | shows: the answer comes from off the frame; her eyes go past Saye to Eli
+- end: Iona's eyes on Eli
+- cut_out_on: thought_complete
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: dialogue
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH180 In the line
+- beats: SC10-B10
+- lines: 476
+- purpose: Iona puts her body between Saye and Eli, in a frame that holds all three.
+- because: SC10-B10, SC10-V2, SC10-V3, CR-IONA, LX-01
+- role: must_keep
+- kind: live
+- why: A body in the way needs a frame that sees both people it separates ("Iona moves between her and Eli."), so the scene goes back to camera A's far frame on the 85 (LX-01) with deep focus: the table's line where the two women stood like reflections now has Iona standing in it.
+- origin: story
+- additions: none
+- setup: SC10-SU01
+- frame: group
+- size: medium_wide
+- angle: eye_level
+- height: 1.45
+- lens_mm: 85
+- focus: deep
+- focus_on: CH-IONA
+- move: static
+- move_reason: none
+- subject: CH-IONA.S02 | at: right_third | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 2 | does: walks round the end of the table and stops square between Saye and Eli, facing Saye, her hands open at her sides | tactic: shielding | energy: rising | display: 2 | travel: frame_right
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: CH-IONA | dwell_s: 4 | does: stands at the counter with the lit phone, her eyes on Iona | tactic: reporting | energy: still | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: centre | faces: CH-SAYE | eyeline: CH-IONA | dwell_s: 4 | does: stays by the fridge, the open bottle in his hand | tactic: hiding | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: centre | faces: up | eyeline: CH-IONA | dwell_s: 4 | does: lies on the table in the front of the frame | tactic: enduring | energy: still | display: 1 | travel: none
+- thing: PR-PHONE.S01 | emphasis: 1 | at: lit, in Saye's hand
+- text: none
+- must_show: CH-ELI.S03, CH-SAYE.S01
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: none
+- effect: Iona's steps on the floor | at: 0.5 | sound_emphasis: 0
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: yes
+- screen_time: 4
+- moment: 0-4 | shows: Iona crosses round the end of the table; she stops between them, facing Saye, her hands open at her sides
+- end: Iona square between Saye and Eli
+- cut_out_on: thought_complete
+- held: no
+- previs_level: 0
+- storyboard: yes
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: hard
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH190 She waits
+- beats: SC10-B10, SC10-B11
+- lines: 478-481
+- purpose: Saye does not argue; she waits, and the wait moves Iona out of the way. The scene turns on nothing but time.
+- because: SC10-B11, SC10-V2, CR-SAYE, CH-JUDE.S03
+- role: turn
+- kind: live
+- why: "She waits until Iona steps aside." makes waiting the tactic, so the frame waits too: the high corner wide on the 35 holds all four without a cut through the long pause, room sound only, the camera above them as Saye takes charge of the room.
+- origin: story
+- additions: none
+- setup: SC10-SU06
+- frame: group
+- size: wide
+- angle: high
+- height: 2.1
+- lens_mm: 35
+- focus: deep
+- focus_on: CH-IONA
+- move: static
+- move_reason: none
+- glass: window | state: clear | camera: through
+- subject: CH-IONA.S02 | at: centre | faces: CH-SAYE | eyeline: CH-SAYE | dwell_s: 6 | does: stands square between them through the line and the wait; her eyes go to Jude on the table; she steps aside, toward him | tactic: yielding | energy: spent | display: 1 | travel: frame_left
+- subject: CH-SAYE.S01 | at: right_third | faces: CH-IONA | eyeline: CH-IONA | dwell_s: 9 | does: says it once, level, then waits with the phone in her hand, her eyes on Iona, breathing slowly | tactic: outwaiting | energy: still | display: 1 | travel: none
+- subject: CH-ELI.S03 | at: left_third | faces: CH-SAYE | eyeline: CH-IONA | dwell_s: 9 | does: stays by the fridge behind his sister; when she steps aside he is in plain sight again | tactic: hiding | energy: still | display: 1 | travel: none
+- subject: CH-JUDE.S03 | at: right_third | faces: up | eyeline: CH-IONA | dwell_s: 9 | does: lies on the table in the front of the frame | tactic: enduring | energy: still | display: 1 | travel: none
+- thing: PR-PHONE.S01 | emphasis: 1 | at: in Saye's hand, lit
+- text: none
+- must_show: CH-JUDE.S03, CH-ELI.S03
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: SC10-D15 | speaker: on_screen
+- effect: none
+- room_sound: as_place
+- silence: room_sound_only
+- music: none
+- needs_description: yes
+- screen_time: 9
+- moment: 0-4 | shows: Saye speaks, level, from the counter; Iona breathes in, her eyes on Saye
+- moment: 4-7.5 | shows: Saye waits, her eyes on Iona; Iona swallows, her hands open at her sides; Jude's chest rises and falls on the table
+- moment: 7.5-9 | shows: Iona's eyes go to Jude and she steps aside, toward him; Eli is in plain sight again
+- end: Iona at Jude's feet, Saye at the counter, Eli clear behind
+- cut_out_on: thought_complete
+- held: yes
+- previs_level: 2
+- storyboard: yes
+- framing_critical: yes
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: hard
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH200 Nobody leave this room
+- beats: SC10-B11
+- lines: 483-484
+- purpose: Saye's verdict, given from where she stands: the room is hers.
+- because: SC10-B11, SC10-V2, CR-SAYE
+- role: normal
+- kind: live
+- origin: story
+- additions: none
+- setup: SC10-SU03
+- frame: single
+- size: medium
+- angle: eye_level
+- height: eye:CH-SAYE
+- lens_mm: 50
+- focus: moderate
+- focus_on: CH-SAYE
+- move: static
+- move_reason: none
+- glass: window | state: clear | camera: through
+- subject: CH-SAYE.S01 | at: left_third | faces: frame_left | eyeline: CH-IONA | dwell_s: 3 | does: says it once, without raising her voice, the lit phone at her side | tactic: containing | energy: still | display: 1 | travel: none
+- thing: PR-PHONE.S01 | emphasis: 0 | at: in her hand at her side
+- thing: PR-FLASK.S03 | emphasis: 0 | at: on the counter behind her
+- text: none
+- must_show: none
+- must_not_show: none
+- light: as_look
+- light_cue: none
+- hear: SC10-D16 | speaker: on_screen
+- effect: none
+- room_sound: as_place
+- silence: none
+- music: none
+- needs_description: no
+- screen_time: 3
+- moment: 0-3 | shows: Saye says it, level; she breathes out, her eyes on Iona
+- end: Saye, the lit phone at her side, eyes on Iona
+- cut_out_on: line_end
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: auto
+- flip: auto
+- content_flags: none
+- policy_route: as_written
+- cost_class: dialogue
+- reuse_of: none
+- status: approved
+- locked: yes
+
+### CUT SC10-C200 Cut to black
+- to: SC10-SH990
+- type: cut_to_black
+- black_frames: 24
+- why: The story writes "CUT TO BLACK." after "Nobody leave this room."
+- status: approved
+- locked: yes
+
+### SHOT SC10-SH990 The title
+- beats: SC10-B11
+- lines: 486-488
+- purpose: Black, then the film's title: the opening ends on the word that locks them in.
+- because: SC10-B11, WR-TITLES, line:486
+- role: must_keep
+- kind: card
+- why: The story writes the cut to black and then the title, "THE CATCH", so the card is white letters on black with no light and no sound, read normally in every era (WR-TITLES) and held long enough to read twice.
+- origin: story
+- additions: none
+- frame: empty
+- size: wide
+- angle: eye_level
+- move: static
+- move_reason: none
+- subject: none
+- thing: TX-TITLE-CATCH | emphasis: 2 | at: centre
+- text: TX-TITLE-CATCH
+- must_show: TX-TITLE-CATCH
+- must_not_show: none
+- light: none; white letters drawn on black
+- light_cue: none
+- hear: none
+- effect: none
+- room_sound: none
+- silence: true_silence
+- music: none
+- needs_description: yes
+- screen_time: 5
+- moment: 0-5 | shows: the title appears on black and holds
+- end: the title on black
+- cut_out_on: rhythm
+- held: no
+- previs_level: 0
+- storyboard: no
+- framing_critical: no
+- route: composite_only
+- flip: never
+- content_flags: none
+- policy_route: as_written
+- cost_class: graphic
+- reuse_of: none
+- status: approved
+- locked: yes
+
+END OF FILE | Scene 10 - Saye's kitchen | 58 records

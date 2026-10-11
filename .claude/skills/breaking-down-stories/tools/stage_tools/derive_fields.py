@@ -31,7 +31,7 @@ provisional_floor, clip_plan, held_take, scene_era, era_at, mirror_state_at, sho
 image_sides, eyeline_sides, projected_placement, size_check, face_heights, lip_sync, main_light_side,
 story_points, scene_eighths, script_marked, dominant_of, derive_shot, derive_scene, derive_all.
 
-Numbers come from rules/constants.json by name. The few layout numbers that are judgement (where a third of
+Numbers come from _config/rules/constants.json by name. The few layout numbers that are judgement (where a third of
 the frame ends) are named below with a note.
 
 Standard library only.
@@ -58,7 +58,8 @@ import re
 from dataclasses import dataclass, field as dataclass_field
 from pathlib import Path
 
-from .record_format import (load_json, load_skill_data, merge_copies, normalise_word, parse_file, parse_line_numbers,
+from .record_format import (adapter_file, load_json, load_skill_data, merge_copies, normalise_word, parse_file,
+                            parse_line_numbers,
                             parse_story_point, sort_key_for_identifier, split_item, split_list, split_outside_quotes)
 
 MACHINE_FOLDER = "For machines - do not edit"
@@ -94,7 +95,7 @@ HELD_ROLES = ("turn",)
 # ---------------------------------------------------------------- small helpers
 
 def constant(constants, name, default=None):
-    """The value of a named constant of rules/constants.json (either table), or default."""
+    """The value of a named constant of _config/rules/constants.json (either table), or default."""
     if not constants:
         return default
     for section in (constants.get("constants", {}), constants.get("from_blueprint_text", {}).get("constants", {})):
@@ -470,9 +471,9 @@ def speeches_from_json(data):
 
 
 def load_video_models(skill_folder=None):
-    """The dated video model facts of adapters/video_models.json, or None while that file does not exist."""
+    """The dated video model facts of _config/adapters/video_models.json, or None while that file does not exist."""
     try:
-        return load_json("adapters/video_models.json", skill_folder).get("models")
+        return load_json(adapter_file("video_models.json"), skill_folder).get("models")
     except (OSError, ValueError):
         return None
 
