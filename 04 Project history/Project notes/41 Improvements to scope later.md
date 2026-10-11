@@ -126,3 +126,11 @@ Added in entry 43. Each item's "done when" is in note 42, section 6. Where it st
 76. **Records contradictions that a planning picture would teach H3:** floor-plan move 4 leaves Dr Saye facing the phone while shots 180 to 200 say she faces Iona; shot 160's start-picture brief puts the phone already in her hand though she takes it up later. *Medium.* Source: entry 47 design.
 77. **No working check on the line (line of action) for scene 10:** the check is planned and skipped, so left and right across cuts are judged by eye only. *Medium.* Source: entry 47 design.
 
+
+## 13. From the opening sequence made on fal (entry 48)
+
+78. **Keep seconds set by the measured end of speech, not by the plan.** H3 Max put clip 01's cut 1.4 seconds late, and the planned keep of 10.1 seconds would have cut the last line after its first word. The clip page should say "keep to at least the end of the last line plus a breath" and the take log should record where speech actually ends. *High.* Source: entry 48.
+79. **Printed words on a prop only while it is held still.** The tag's print was right while held and broke up once it swung. A clip that shows printed words should end the words' moment before the prop moves, or cut away. *Medium.* Source: entry 48.
+80. **Every costume colour fixed in the costume picture and in each start-picture brief.** Jude's trousers changed from dark to light brown between clips 01 and 02. *Medium.* Source: entry 48.
+81. **No "film set" or "camera" in picture briefs.** The look block's "a real photograph from a film set" put a film crew in the empty set; "viewpoint" instead of "camera" and a line saying the place is otherwise empty fixed it. Stage's start-picture and master-picture briefs should be written this way. *High.* Source: entry 48.
+82. **Close actions need their geometry in the start-picture brief.** Clip 03's brief ("kneels at the front of the floor frame ... touching a bolt hole under the frame") got her pointing at the gate post; naming the floor beam's height, the gap under it and where her head is got it right. Also useful: the previous clip's start picture as a picture to match. *Medium.* Source: entry 48.

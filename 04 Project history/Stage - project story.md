@@ -1,6 +1,6 @@
 # Stage - project story
 
-Last updated: 10 October 2026 (log entry 43).
+Last updated: 11 October 2026 (log entry 48).
 
 ## The goal
 
@@ -15,11 +15,12 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 ## Where things stand
 
 **Built and uploaded:**
-- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 to 47 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
+- Everything up to entry 41 is on the branch `claude/screenplay-video-pipeline-5j08tw` of your GitHub repository "Stage". Entries 42 to 48 are on the branch `ccr-4d8c31da-huictk`, with a draft pull request (number 1) asking to merge them into it.
 - **New in entry 43:** a way of making video with MiniMax H3 in ComfyUI. For each scene it makes a clip book: one page per clip with the start picture to make, the pictures to connect, the prompt in MiniMax's own format, the seconds to type, what to check and which seconds to keep. Stage no longer asks any video model for stillness, and it checks plans for physical slips (no room to climb, a heavy torch held in the teeth, nothing to cut a strap with).
 - **The repository is laid out as numbered folders** (entry 43): `CONTEXT.md` at the top says where to go; then `01 Start here`, `02 Example`, `03 Kits to upload` and `04 Project history`.
 - The kit is a Claude skill with its own checking program. It also comes as a bundle for ChatGPT and Gemini, with setup guides for each app.
 - There is one finished model scene (The Catch, scene 10, Saye's kitchen) and its 3D mock-up.
+- **New in entry 48: the first finished film.** The opening of The Catch (clips 01 to 03 of your clip file), made on fal with MiniMax H3 Max and joined into a 31-second cut. Costume pictures and character sheets came first, so nobody changes clothes between clips. The cut and its pictures are outside git (they hold story material).
 
 **Tested:**
 - The automatic tests: 25 of 27 test files pass (entry 43). The two that fail failed before entry 43: one checks a size target (see "Known issues"), the other reads a PDF with a converter this computer lacks.
@@ -39,7 +40,7 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 - A real person answering the questions. In the tests, the answers were always "defaults" and "no changes".
 - The Long Places (you asked to leave it for later).
 - The chat-app route in the real ChatGPT and Gemini apps. It is designed and bundled, but was only simulated here.
-- Actually making pictures, videos or voices. This computer has no accounts for those services, so the prompt packs stop at "ready to send, checked and priced". For MiniMax H3 in ComfyUI, a test run of 16 clips is ready to run on your rented computer (entry 43); until then the route's judgement rules are only suggestions.
+- Making pictures, videos and voices for most routes. H3 has now been run twice: 14 runs on your rented computer (entries 45 and 46) and the opening sequence on fal (entry 48). The other routes' prompt packs still stop at "ready to send, checked and priced", and the H3 route's judgement rules stay suggestions until your verdicts confirm them.
 - The H3 route on scenes 1 to 6 of The Catch: their plan is not in the session where entry 43 was done, so the clip-for-clip comparison with your hand-made clip file waits.
 
 **Known issues:**
@@ -148,6 +149,14 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
 | Rule mark | Whether a route's rule is verified (in the makers' documents), confirmed or wrong (by two takes), or unclear. Only verified and confirmed rules are enforced. |
 | Test run | A few real clips made on your own setup to confirm or reject the rules. |
 | CONTEXT.md | A short "where to go" page; there is one at the top of the repository and one in each big folder of the kit. |
+| fal | An online service that runs picture and video models and charges per picture or per second of video, with no computer to rent. This session is connected to it. |
+| H3 Max | fal's tuned version of MiniMax H3. It takes the same kind of prompt and pictures, and made each 11.5-second clip in about 11 seconds. |
+| Nano Banana Pro | The picture model used on fal for the costume pictures, character sheets and start pictures. |
+| Costume picture | A full-length picture of one character in their clothes for a scene, made once and used for every start picture and video after, so the clothes stay the same. |
+| Character sheet | One picture showing a character from the front, three-quarter and back, plus a close face, to check the costume holds from every side. |
+| Keep seconds | The part of a clip that goes into the film; the rest (the tail) is thrown away. |
+| Speech-to-text | A program that writes down the words said in a sound recording, with their times. One ran on this computer to check the lines. |
+| Pitch | How high a voice is, in vibrations a second; it tells a man's voice (about 85 to 180) from a woman's (about 165 to 255) without listening. |
 
 ## Numbered log
 
@@ -307,6 +316,17 @@ The film craft behind it comes from research: dialogue, scenes, camera, light, c
     - The design found faults in Stage, now in note 41, section 12.
     - Files: note 41 (items 73 to 77); lesson 14 in `43 Lessons.md`; the zip "47 Prompt package - H3 with pictures.zip" (outside git).
 
+48. **Made the opening sequence on fal: three clips joined into a 31-second cut.**
+    - You asked for the opening first, with the sets, the props and character sheets made first so nobody changes clothes, then about 30 seconds of video joined together. Your fal account was connected to this session; you switched the mode to "Accept edits" and approved each step.
+    - Made first: a costume picture and a character sheet for Iona and for Jude, from your character pictures, and the empty tunnel set. Failure of mine: the first tunnel had a film crew in it, because the look block said "a real photograph from a film set". Without those words, and with "viewpoint" instead of "camera", it came back empty.
+    - Then a start picture per clip from the set and the costume pictures. Clip 03's first try had Iona pointing at the gate post instead of kneeling with her torch under the floor; the second try, describing the floor frame and the gap under it, was right.
+    - Then three videos with H3 Max, 11.5 seconds each: each took about 11 seconds to make. I trimmed each to its keep part and joined them with a fade in from black.
+    - Results, from frames, a speech-to-text program run on this computer, and voice pitch: every line was said once, with the right words, by the right voice (a man's for Jude, the same woman's voice in two clips); the silent clip stayed silent; the written actions happen in order; the set and the costumes hold across clips.
+    - Faults: clip 01's cut came 1.4 seconds late, so the planned trim would have cut the last line; I kept 11.1 seconds of that clip instead of 10.1. The tag's print breaks up after it swings. Jude's trousers change from dark to light brown between clips 01 and 02.
+    - Cost: about $3.40 (11 pictures and three videos). No rented pod.
+    - Not yet known: how the voices sound (accent, clarity, acting). This needs your ears.
+    - Files: `Project notes/48 Opening sequence on fal - first cut.md`; note 41, section 13 (items 78 to 82); lesson 15 in `43 Lessons.md`; the cut "48 Opening sequence - first cut.mp4" and "48 Opening sequence - pictures used.jpg" (outside git).
+
 ## Next step
 
-Use the prompt package in the direction you choose. Two stopped pods still cost about $1.60 a day each for storage: tell me whether to delete them (everything from the tests is already on this computer), and change your RunPod key on RunPod.
+Watch and listen to the 31-second cut and tell me what works and what doesn't, as you did for the first test. If it holds up, I carry on with clips 04 onward the same way, two takes per clip. Two stopped pods on RunPod still cost about $1.60 a day each: tell me whether to delete them, and change your RunPod key on RunPod.
